@@ -16,7 +16,7 @@ export const TabsCtx = {
 	import { Tabs } from "@melt-ui/builders";
 	import { getContext, setContext, type Snippet } from "svelte";
 
-	let { value = $bindable(), children }: { value?: string | undefined; children: Snippet } = $props();
+	let { value = $bindable(), children }: { value?: string | undefined; children: Snippet<[Tabs]> } = $props();
 
 	const tabs = new Tabs({
 		value: () => value as string,
@@ -26,4 +26,4 @@ export const TabsCtx = {
 	TabsCtx.set(tabs);
 </script>
 
-{@render children()}
+{@render children(tabs)}

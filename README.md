@@ -1,25 +1,14 @@
-# Melt Monorepo
+# Melt Next
 
-Melt. Agnostic.
+Next generation of Melt UI.
 
-## TODO
+Focus on simplicity and flexibility. Ships builders, but also components powered by builders.
+Use `asChild` to get complete control over the component and its elements.
+Alternatively, just use the returned builder instance from the component.
 
-### Framework support
+Controlled usage in builders, in components, everywhere.
 
-- [x] Vanilla JS support
-- [x] Vanilla JS SSR
-- [x] Runes support
-- [ ] React support
-- [ ] Vue support
-- [ ] Solid support
-- [ ] Angular support
+This is not an agnostic implementation. Let's leverage the best of runes.
 
-### Docs && DX
-- [ ] Typedoc
-- [ ] Examples for every framework
-- [ ] Examples with different styling solutions
-  - [ ] Tailwind
-  - [ ] CSS
-  - [ ] No styles
-- [ ] CLI to copy component
-- [ ] Anatomy pictures
+Keep it simple. No super advanced examples or extra features. Just well documented components.
+The future comes afterwards.
