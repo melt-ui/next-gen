@@ -1,0 +1,26 @@
+{
+	"name": "@melt-ui/docs",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"start": "astro dev",
+		"build": "astro check && astro build",
+		"preview": "astro preview",
+		"astro": "astro"
+	},
+	"dependencies": {
+		"@astrojs/check": "^0.5.10",
+		"@astrojs/starlight": "^0.22.1",
+		"@astrojs/starlight-tailwind": "^2.0.2",
+		"@astrojs/svelte": "^5.4.0",
+		"@astrojs/tailwind": "^5.1.0",
+		"@melt-ui/builders": "workspace:^",
+		"@melt-ui/components": "workspace:^",
+		"svelte": "5.0.0-next.123",
+		"astro": "^4.3.5",
+		"sharp": "^0.32.5",
+		"tailwindcss": "^3.4.3",
+		"typescript": "^5.4.5"
+	}
+}
