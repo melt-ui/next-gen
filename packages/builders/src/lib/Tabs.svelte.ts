@@ -1,15 +1,10 @@
+import { Synced } from "./Synced.svelte";
 import type { MaybeGetter } from "./types";
-import { extract } from "./utils/extract.svelte";
-import { isFunction, isHtmlElement } from "./utils/is";
+import { createIdentifiers } from "./utils/identifiers.svelte";
+import { isHtmlElement } from "./utils/is";
 
 const TRIGGER_KEYS = ["ArrowLeft", "ArrowRight", "Home", "End"];
 
-function createIdentifiers<Parts extends string[]>(name: string, parts: Parts) {
-	return parts.reduce((acc, part) => {
-		acc[part as Parts[number]] = `data-melt-${name}-${part}`;
-		return acc;
-	}, {} as Record<Parts[number], string>);
-}
 const identifiers = createIdentifiers("tabs", ["trigger", "content", "trigger-list"]);
 
 export type TabsProps<T extends string = string> = {
@@ -23,35 +18,29 @@ export type TabsProps<T extends string = string> = {
 	 *
 	 * @default undefined
 	 */
-	active?: MaybeGetter<T>;
+	value?: MaybeGetter<T>;
 	/**
 	 * Called when the `Tabs` instance tries to change the active tab.
 	 */
-	onActiveChange?: (active: T) => void;
+	onValueChange?: (active: T) => void;
 };
 
 export class Tabs<T extends string = string> {
-	active = $state<T>();
+	#value: Synced<T>;
 	#props: TabsProps<T>;
-	#activeProp = $derived.by(() => extract(this.#props.active));
 
 	constructor(props: TabsProps<T> = {}) {
 		this.#props = { selectWhenFocused: true, ...props };
-
-		const initActive = () => {
-			if (this.#activeProp === undefined) return;
-			this.active = this.#activeProp;
-		};
-		initActive();
-		$effect(initActive);
+		// eslint-disable-next-line ts/no-explicit-any
+		this.#value = new Synced<T>(props.value as any, props.onValueChange);
 	}
 
-	#setActive(newActive: T) {
-		this.#props.onActiveChange?.(newActive);
+	get value() {
+		return this.#value.current;
+	}
 
-		if (!isFunction(this.#props.active)) {
-			this.active = newActive;
-		}
+	set value(value: T) {
+		this.#value.current = value;
 	}
 
 	get triggerList() {
@@ -61,15 +50,15 @@ export class Tabs<T extends string = string> {
 	}
 
 	getTrigger(id: T) {
-		if (this.active === undefined) {
-			this.#setActive(id);
+		if (this.value === undefined) {
+			this.value = id;
 		}
 
 		return {
 			[identifiers.trigger]: id,
-			"data-active": this.active === id ? "" : undefined,
-			"tabindex": this.active === id ? 0 : -1,
-			"onclick": () => (this.#setActive(id)),
+			"data-active": this.value === id ? "" : undefined,
+			"tabindex": this.value === id ? 0 : -1,
+			"onclick": () => (this.value = id),
 			"onkeydown": (e: KeyboardEvent) => {
 				const el = e.target;
 				if (!TRIGGER_KEYS.includes(e.key) || !isHtmlElement(el)) {
@@ -107,7 +96,7 @@ export class Tabs<T extends string = string> {
 				next.focus();
 
 				if (this.#props.selectWhenFocused) {
-					this.#setActive(next.getAttribute(identifiers.trigger) as T);
+					this.value = (next.getAttribute(identifiers.trigger) as T);
 				}
 			},
 		};
@@ -116,7 +105,7 @@ export class Tabs<T extends string = string> {
 	getContent(id: T) {
 		return {
 			[identifiers.content]: "",
-			hidden: this.active !== id,
+			hidden: this.value !== id,
 		};
 	}
 }
