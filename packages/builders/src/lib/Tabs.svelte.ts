@@ -1,6 +1,5 @@
 import { Synced } from "./Synced.svelte";
 import type { MaybeGetter } from "./types";
-import { extractAll, type ExtractedAll } from "./utils/extract.svelte";
 import { createIdentifiers } from "./utils/identifiers.svelte";
 import { isHtmlElement } from "./utils/is";
 import { omit } from "./utils/object";
@@ -63,6 +62,7 @@ export class Tabs<T extends string = string> {
 	get triggerList() {
 		return {
 			[identifiers.triggerList]: "",
+			role: "tablist",
 		};
 	}
 
@@ -75,6 +75,8 @@ export class Tabs<T extends string = string> {
 			[identifiers.trigger]: value,
 			"data-active": this.value === value ? "" : undefined,
 			tabindex: this.value === value ? 0 : -1,
+			role: "tab",
+			"aria-selected": this.value === value ? "true" : "false",
 			onclick: () => (this.value = value),
 			onkeydown: (e: KeyboardEvent) => {
 				const el = e.target;
