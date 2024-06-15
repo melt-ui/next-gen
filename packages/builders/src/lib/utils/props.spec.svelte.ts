@@ -1,6 +1,26 @@
 import type { MaybeGetter } from "$lib/types";
-import { describe, expectTypeOf, test } from "vitest";
-import type { ParsedProps, WithDefault } from "./props.svelte";
+import { describe, expect, expectTypeOf, test } from "vitest";
+import { parseProps, type ParsedProps, type WithDefault } from "./props.svelte";
+
+export function testWithEffect(name: string, fn: () => void | Promise<void>) {
+	test(name, async () => {
+		let promise: void | Promise<void>;
+		const cleanup = $effect.root(() => {
+			promise = fn();
+		});
+
+		try {
+			await promise!;
+		} finally {
+			cleanup();
+		}
+	});
+}
+
+testWithEffect("parseProps", () => {
+	const parsed = parseProps({ a: 1, b: undefined }, { b: 2, c: 3 });
+	expect(parsed).toEqual({ a: 1, b: 2, c: 3 });
+});
 
 describe("parseProps types", () => {
 	test("WithDefault", () => {

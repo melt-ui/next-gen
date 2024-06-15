@@ -18,14 +18,16 @@ export function parseProps<Props extends Record<string, unknown>, Defaults exten
 ) {
 	const result = {} as ParsedProps<Props, Defaults>;
 
-	keys(props).forEach((key) => {
+	keys({ ...props, ...defaults }).forEach((key) => {
 		const derived = $derived.by(() => {
-			const prop = extract(props[key]);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const prop = extract(props[key as any]);
 			if (prop !== undefined) return prop;
 			return defaults[key];
 		});
 
 		Object.defineProperty(result, key, {
+			enumerable: true,
 			get: () => derived,
 		});
 	});

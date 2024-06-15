@@ -39,9 +39,9 @@ export default defineConfig({
 					},
 				},
 				{
-					label: "Builders",
+					label: "Examples",
 					autogenerate: {
-						directory: "builders",
+						directory: "examples",
 					},
 				},
 			],
