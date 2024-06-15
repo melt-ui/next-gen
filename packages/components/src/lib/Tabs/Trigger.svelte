@@ -1,12 +1,17 @@
 <script lang="ts">
-import type { Snippet } from "svelte";
-import { TabsCtx } from "./Root.svelte";
-import type { Tabs } from "@melt-ui/builders";
+	import type { Snippet } from "svelte";
+	import { TabsCtx } from "./Root.svelte";
+	import type { Tabs } from "@melt-ui/builders";
 
-type Trigger = ReturnType<Tabs["getTrigger"]>;
-const { asChild, children, id, ...rest }: { id: string; asChild?: Snippet<[Trigger]>; children?: Snippet } = $props();
+	type Trigger = ReturnType<Tabs["getTrigger"]>;
+	const {
+		asChild,
+		children,
+		id,
+		...rest
+	}: { id: string; asChild?: Snippet<[Trigger]>; children?: Snippet } = $props();
 
-const tabs = TabsCtx.get();
+	const tabs = TabsCtx.get();
 </script>
 
 {#if asChild}

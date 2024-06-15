@@ -1,4 +1,4 @@
-import { defineConfig } from "tsup"
+import { defineConfig } from "tsup";
 
 export default defineConfig({
 	clean: true,
@@ -7,4 +7,4 @@ export default defineConfig({
 	target: "es2020",
 	sourcemap: true,
 	format: ["esm"],
-})
+});

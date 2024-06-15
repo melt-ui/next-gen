@@ -3,7 +3,7 @@
 	import { Tabs } from "@melt-ui/components";
 
 	const tabIds = ["Tab 1", "Tab 2", "Tab 3", "Tab 4"] as const;
-	type TabId = typeof tabIds[number];
+	type TabId = (typeof tabIds)[number];
 	const tabs = new TabsBuilder<TabId>();
 
 	const withDefault = new TabsBuilder<TabId>({
@@ -57,7 +57,10 @@
 
 <div class="flex gap-2 items-center" {...controlledTabs.triggerList}>
 	{#each tabIds as id}
-		<button class="!m-0 hover:opacity-75 data-[active]:font-bold" {...controlledTabs.getTrigger(id)}>
+		<button
+			class="!m-0 hover:opacity-75 data-[active]:font-bold"
+			{...controlledTabs.getTrigger(id)}
+		>
 			{id}
 		</button>
 	{/each}
@@ -91,14 +94,14 @@ Active: {value}
 <Tabs.Root>
 	<Tabs.TriggerList class="flex gap-2 items-center">
 		{#each tabIds as id}
-			<Tabs.Trigger class="!m-0 hover:opacity-75 data-[active]:font-bold" id={id}>
+			<Tabs.Trigger class="!m-0 hover:opacity-75 data-[active]:font-bold" {id}>
 				{id}
 			</Tabs.Trigger>
 		{/each}
 	</Tabs.TriggerList>
 
 	{#each tabIds as id}
-		<Tabs.Content class="[hidden]:hidden" id={id}>
+		<Tabs.Content class="[hidden]:hidden" {id}>
 			{id}
 		</Tabs.Content>
 	{/each}
@@ -109,14 +112,14 @@ Active: {value}
 <Tabs.Root value="Tab 2">
 	<Tabs.TriggerList class="flex gap-2 items-center">
 		{#each tabIds as id}
-			<Tabs.Trigger class="!m-0 hover:opacity-75 data-[active]:font-bold" id={id}>
+			<Tabs.Trigger class="!m-0 hover:opacity-75 data-[active]:font-bold" {id}>
 				{id}
 			</Tabs.Trigger>
 		{/each}
 	</Tabs.TriggerList>
 
 	{#each tabIds as id}
-		<Tabs.Content class="[hidden]:hidden" id={id}>
+		<Tabs.Content class="[hidden]:hidden" {id}>
 			{id}
 		</Tabs.Content>
 	{/each}
@@ -124,17 +127,17 @@ Active: {value}
 
 <h2>Controlled Component (syncs with controlled)</h2>
 
-<Tabs.Root bind:value={value}>
+<Tabs.Root bind:value>
 	<Tabs.TriggerList class="flex gap-2 items-center">
 		{#each tabIds as id}
-			<Tabs.Trigger class="!m-0 hover:opacity-75 data-[active]:font-bold" id={id}>
+			<Tabs.Trigger class="!m-0 hover:opacity-75 data-[active]:font-bold" {id}>
 				{id}
 			</Tabs.Trigger>
 		{/each}
 	</Tabs.TriggerList>
 
 	{#each tabIds as id}
-		<Tabs.Content class="[hidden]:hidden" id={id}>
+		<Tabs.Content class="[hidden]:hidden" {id}>
 			{id}
 		</Tabs.Content>
 	{/each}
@@ -145,18 +148,18 @@ Active: {value}
 <Tabs.Root>
 	<Tabs.TriggerList class="flex gap-2 items-center">
 		{#each tabIds as id}
-			<Tabs.Trigger id={id}>
+			<Tabs.Trigger {id}>
 				{#snippet asChild(props)}
-				<button class="!m-0 hover:opacity-75 data-[active]:font-bold" {...props}>
-					{id}
-				</button>
+					<button class="!m-0 hover:opacity-75 data-[active]:font-bold" {...props}>
+						{id}
+					</button>
 				{/snippet}
 			</Tabs.Trigger>
 		{/each}
 	</Tabs.TriggerList>
 
 	{#each tabIds as id}
-		<Tabs.Content class="[hidden]:hidden" id={id}>
+		<Tabs.Content class="[hidden]:hidden" {id}>
 			{id}
 		</Tabs.Content>
 	{/each}

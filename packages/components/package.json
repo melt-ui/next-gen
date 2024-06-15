@@ -27,7 +27,6 @@
 	"peerDependencies": {
 		"@melt-ui/builders": "workspace:^",
 		"svelte": "^5.0.0-next.155"
-
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",

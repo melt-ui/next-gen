@@ -31,7 +31,7 @@ export class Tabs<T extends string = string> {
 
 	constructor(props: TabsProps<T> = {}) {
 		this.#props = { selectWhenFocused: true, ...props };
-		// eslint-disable-next-line ts/no-explicit-any
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.#value = new Synced<T>(props.value as any, props.onValueChange);
 	}
 
@@ -57,9 +57,9 @@ export class Tabs<T extends string = string> {
 		return {
 			[identifiers.trigger]: id,
 			"data-active": this.value === id ? "" : undefined,
-			"tabindex": this.value === id ? 0 : -1,
-			"onclick": () => (this.value = id),
-			"onkeydown": (e: KeyboardEvent) => {
+			tabindex: this.value === id ? 0 : -1,
+			onclick: () => (this.value = id),
+			onkeydown: (e: KeyboardEvent) => {
 				const el = e.target;
 				if (!TRIGGER_KEYS.includes(e.key) || !isHtmlElement(el)) {
 					return;
@@ -96,7 +96,7 @@ export class Tabs<T extends string = string> {
 				next.focus();
 
 				if (this.#props.selectWhenFocused) {
-					this.value = (next.getAttribute(identifiers.trigger) as T);
+					this.value = next.getAttribute(identifiers.trigger) as T;
 				}
 			},
 		};

@@ -1,28 +1,31 @@
 {
-  "name": "@melt-ui/monorepo",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "dev": "pnpm --parallel dev",
-    "test": "vitest",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "type": "module",
-  "devDependencies": {
-    "@antfu/eslint-config": "^2.16.1",
-    "@types/eslint": "8.56.10",
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
-    "@typescript-eslint/parser": "^7.8.0",
-    "eslint": "^9.2.0",
-    "eslint-plugin-svelte": "2.36.0-next.13",
-    "svelte": "^4.2.15",
-    "svelte-eslint-parser": "^0.35.0",
-    "tsup": "8.0.2",
+	"name": "@melt-ui/monorepo",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "pnpm --parallel dev",
+		"test": "vitest",
+		"lint": "prettier --check . && eslint .",
+		"format": "prettier --write ."
+	},
+	"keywords": [],
+	"author": "",
+	"license": "MIT",
+	"type": "module",
+	"devDependencies": {
+		"@types/eslint": "8.56.10",
+		"eslint": "^9.0.0",
+		"eslint-config-prettier": "^9.1.0",
+		"eslint-plugin-svelte": "^2.39.3",
+		"globals": "^15.0.0",
+		"prettier": "^3.1.1",
+		"prettier-plugin-svelte": "^3.1.2",
+		"svelte-check": "^3.6.0",
+		"tslib": "^2.4.1",
+		"typescript": "^5.0.0",
+		"typescript-eslint": "^8.0.0-alpha.20",
+		"tsup": "8.0.2",
 		"vitest": "^1.6.0"
-  }
+	}
 }
