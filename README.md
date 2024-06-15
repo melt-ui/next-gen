@@ -12,3 +12,12 @@ This is not an agnostic implementation. Let's leverage the best of runes.
 
 Keep it simple. No super advanced examples or extra features. Just well documented components.
 The future comes afterwards.
+
+## TODO
+
+- [ ] Auto API reference for builders
+- [ ] Auto API reference for components
+- [ ] Auto changelog (?)
+- [ ] Tests for utilities
+- [ ] Tests for components
+- [ ] Good docs structure

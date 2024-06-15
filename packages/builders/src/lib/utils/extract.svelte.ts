@@ -14,6 +14,8 @@ export function extract<T>(value: MaybeGetter<T>, defaultValue?: T): T {
 	return value ?? defaultValue ?? value;
 }
 
+export type Extracted<T> = T extends MaybeGetter<infer U> ? U : T;
+
 export type Expand<T> = T extends (...args: infer A) => infer R
 	? (...args: Expand<A>) => Expand<R>
 	: T extends infer O

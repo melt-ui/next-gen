@@ -13,15 +13,22 @@
 </script>
 
 <script lang="ts">
-	import { Tabs } from "@melt-ui/builders";
+	import { Tabs, type TabsProps } from "@melt-ui/builders";
 	import { getContext, setContext, type Snippet } from "svelte";
+	import type { WithoutGetters } from "../types";
 
-	let { value = $bindable(), children }: { value?: string | undefined; children: Snippet<[Tabs]> } =
-		$props();
+	type Props = WithoutGetters<Omit<TabsProps, "value" | "onValueChange">> & {
+		value?: string | undefined;
+		children: Snippet<[Tabs]>;
+	};
+
+	let { value = $bindable(), children, ...rest }: Props = $props();
 
 	const tabs = new Tabs({
 		value: () => value as string,
 		onValueChange: (v) => (value = v),
+		selectWhenFocused: () => rest.selectWhenFocused,
+		loop: () => rest.loop,
 	});
 
 	TabsCtx.set(tabs);
