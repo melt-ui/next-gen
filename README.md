@@ -21,3 +21,4 @@ The future comes afterwards.
 - [ ] Tests for utilities
 - [ ] Tests for components
 - [ ] Good docs structure
+- [ ] Automatically check if returned types are valid HTML attributes

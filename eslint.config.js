@@ -7,7 +7,22 @@ import globals from "globals";
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
 	js.configs.recommended,
-	...ts.configs.recommended,
+	...ts.config(...ts.configs.recommended, {
+		rules: {
+			"@typescript-eslint/no-unused-vars": [
+				"error",
+				{
+					args: "all",
+					argsIgnorePattern: "^_",
+					caughtErrors: "all",
+					caughtErrorsIgnorePattern: "^_",
+					destructuredArrayIgnorePattern: "^_",
+					varsIgnorePattern: "^_",
+					ignoreRestSiblings: true,
+				},
+			],
+		},
+	}),
 	...svelte.configs["flat/recommended"],
 	prettier,
 	...svelte.configs["flat/prettier"],

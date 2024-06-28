@@ -1,0 +1,79 @@
+{
+  "Tabs": {
+    "constructorProps": [
+      {
+        "name": "selectWhenFocused",
+        "type": "MaybeGetter<boolean>",
+        "description": "If `true`, the value will be changed whenever a trigger is focused."
+      },
+      {
+        "name": "loop",
+        "type": "MaybeGetter<boolean>",
+        "description": "If the the trigger selection should loop when navigating with the arrow keys."
+      },
+      {
+        "name": "value",
+        "type": "MaybeGetter<T>",
+        "description": "The default value for `tabs.active`.\n\nWhen passing a getter, will be used as source of truth,\nmeaning that tabs.active only changes when the getter returns a new value."
+      },
+      {
+        "name": "onValueChange",
+        "type": "(active: T) => void",
+        "description": "Called when the `Tabs` instance tries to change the active tab."
+      }
+    ],
+    "methods": [
+      {
+        "name": "getTrigger",
+        "args": [
+          {
+            "name": "value",
+            "type": "T"
+          }
+        ],
+        "returns": [
+          {
+            "name": "data-active",
+            "type": "string"
+          },
+          {
+            "name": "tabindex",
+            "type": "number"
+          },
+          {
+            "name": "role",
+            "type": "string"
+          },
+          {
+            "name": "aria-selected",
+            "type": "boolean"
+          },
+          {
+            "name": "onclick",
+            "type": "() => T"
+          },
+          {
+            "name": "onkeydown",
+            "type": "(e: KeyboardEvent) => void"
+          }
+        ]
+      },
+      {
+        "name": "getContent",
+        "args": [
+          {
+            "name": "value",
+            "type": "T"
+          }
+        ],
+        "returns": [
+          {
+            "name": "hidden",
+            "type": "boolean"
+          }
+        ]
+      }
+    ],
+    "properties": []
+  }
+}

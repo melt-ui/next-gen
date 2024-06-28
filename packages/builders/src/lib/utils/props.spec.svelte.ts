@@ -18,7 +18,18 @@ export function testWithEffect(name: string, fn: () => void | Promise<void>) {
 }
 
 testWithEffect("parseProps", () => {
-	const parsed = parseProps({ a: 1, b: undefined }, { b: 2, c: 3 });
+	type Props = {
+		a: number;
+		b?: number;
+		c?: number;
+	};
+
+	type Defaults = {
+		b: number;
+		c: number;
+	};
+
+	const parsed = parseProps<Props, Defaults>({ a: 1, b: undefined }, { b: 2, c: 3 });
 	expect(parsed).toEqual({ a: 1, b: 2, c: 3 });
 });
 

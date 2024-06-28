@@ -1,9 +1,9 @@
-import { Synced } from "./Synced.svelte";
-import type { MaybeGetter } from "./types";
-import { createIdentifiers } from "./utils/identifiers.svelte";
-import { isHtmlElement } from "./utils/is";
-import { omit } from "./utils/object";
-import { parseProps, type ParsedProps } from "./utils/props.svelte";
+import { Synced } from "../Synced.svelte";
+import type { MaybeGetter } from "../types";
+import { createIdentifiers } from "../utils/identifiers.svelte";
+import { isHtmlElement } from "../utils/is";
+import { omit } from "../utils/object";
+import { parseProps, type ParsedProps } from "../utils/props.svelte";
 
 const TRIGGER_KEYS = ["ArrowLeft", "ArrowRight", "Home", "End"];
 
@@ -76,7 +76,7 @@ export class Tabs<T extends string = string> {
 			"data-active": this.value === value ? "" : undefined,
 			tabindex: this.value === value ? 0 : -1,
 			role: "tab",
-			"aria-selected": this.value === value ? "true" : "false",
+			"aria-selected": this.value === value ,
 			onclick: () => (this.value = value),
 			onkeydown: (e: KeyboardEvent) => {
 				const el = e.target;
