@@ -2,45 +2,100 @@
 import { writeFileSync } from "fs";
 import { globSync } from "glob";
 import { join } from "path";
-import { ModuleResolutionKind, Project, Symbol, Type } from "ts-morph";
+import {
+	GetAccessorDeclaration,
+	JSDoc,
+	MethodDeclaration,
+	ModuleResolutionKind,
+	Project,
+	PropertyDeclaration,
+	Symbol,
+	Type,
+} from "ts-morph";
 import { getBuilderPackage } from "./get-packages";
 
-function trimType(value: string) {
+type TypeSchema =
+	| {
+			name: string;
+			type: string;
+			description?: string;
+			defaultValue?: string;
+	  }
+	| string;
+
+type ResultSchema = Record<string, Record<string, Array<TypeSchema>>>;
+
+function toArray<T>(value: T | T[]): T[] {
+	return Array.isArray(value) ? value : [value];
+}
+
+function trimType(value: string): string {
 	return value
 		.split("=>")
 		.map((t) => t.replace(/import\(".*"\)\./, ""))
 		.join("=>");
 }
 
-function getDescription(property: Symbol) {
-	// @ts-expect-error - ts-morph types are inconsistent
-	const [description] = property.compilerSymbol.getDocumentationComment(typeChecker);
+function getDefaultValue(property: Symbol): string {
+	const tags = property.getJsDocTags();
+	const [defaultValue] = tags.find((tag) => tag.getName() === "default")?.getText() ?? [];
+	return defaultValue?.text;
+}
+
+function getDescription(property: any): string | undefined {
+	const [description] = property.compilerSymbol?.getDocumentationComment(typeChecker) ?? [];
 	return description?.text;
 }
 
-function parseType(t: Type) {
-	if (t.isObject()) {
-		return t.getProperties().map((p) => {
-			const valueDeclaration = p.getValueDeclaration();
-			if (!valueDeclaration) return {};
+function getDescriptionFromJsDocs(property: { getJsDocs: () => Array<JSDoc> }): string | undefined {
+	const tags = property.getJsDocs();
+	return tags.map((j) => j.getText().replace("/**", "").replace("*/", "").trim()).join("\n");
+}
 
-			return {
-				name: p.getName(),
-				type: trimType(valueDeclaration.getType().getText()),
-				description: getDescription(p),
-					defaultValue: getDefaultValue(p),
-			};
-		});
+function parseMethod(method: MethodDeclaration): TypeSchema {
+	return {
+		name: method.getName(),
+		type: trimType(method.getType().getText()),
+		description: getDescriptionFromJsDocs(method),
+	};
+}
+
+function parseProperty(property: PropertyDeclaration): TypeSchema {
+	return {
+		name: property.getName(),
+		type: trimType(property.getType().getText()),
+		description: getDescriptionFromJsDocs(property),
+	};
+}
+
+function parseAccessor(accessor: GetAccessorDeclaration): TypeSchema {
+	return {
+		name: accessor.getName(),
+		type: trimType(accessor.getType().getText()),
+		description: getDescriptionFromJsDocs(accessor),
+	};
+}
+
+function parseSymbol(symbol: Symbol): TypeSchema {
+	const valueDeclaration = symbol.getValueDeclaration();
+	const declaredType = valueDeclaration?.getType() ?? symbol.getDeclaredType();
+
+	return {
+		name: symbol.getName(),
+		type: trimType(declaredType.getText()),
+		description: getDescription(symbol),
+		defaultValue: getDefaultValue(symbol),
+	};
+}
+
+function parseType(t: Type): TypeSchema | Array<TypeSchema> {
+	if (t.isObject()) {
+		return t.getProperties().map(parseSymbol);
 	}
 
 	return trimType(t.getText());
 }
 
-function getDefaultValue(property: Symbol) {
-	const tags = property.getJsDocTags();
-	const [defaultValue] = tags.find((tag) => tag.getName() === "default")?.getText() ?? [];
-	return defaultValue?.text;
-}
 const project = new Project({
 	compilerOptions: {
 		moduleResolution: ModuleResolutionKind.NodeNext,
@@ -51,7 +106,7 @@ const typeChecker = project.getTypeChecker();
 async function main() {
 	console.log("Generating API reference...");
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const result: Record<string, any> = {};
+	const result: ResultSchema = {};
 
 	const builderPackage = await getBuilderPackage();
 	const { dir } = builderPackage;
@@ -78,41 +133,22 @@ async function main() {
 		const constructor = builderClass?.getConstructors()?.[0];
 		if (constructor) {
 			const props = constructor.getParameters()?.[0];
-			result[name].constructorProps = parseType(props?.getType());
+			result[name].constructorProps = toArray(parseType(props?.getType()));
 		}
 
-		const methods = builderClass.getMethods();
-		methods.forEach((m) => {
-			result[name].methods.push({
-				name: m.getName(),
-				args: m.getParameters().map((p) => {
-					const type = p.getType();
-					return {
-						name: p.getName(),
-						type: parseType(type),
-					};
-				}),
-				returns: parseType(m.getReturnType()),
-			});
-		});
+		result[name].methods = builderClass
+			.getMethods()
+			.filter((m) => !m.getName().startsWith("#"))
+			.map(parseMethod);
 
-		const properties = builderClass.getProperties();
-		properties
+		result[name].properties = builderClass
+			.getProperties()
 			.filter((p) => !p.getName().startsWith("#"))
-			.forEach((p) => {
-				console.log(p.getName());
-				result[name].properties.push({
-					name: p.getName(),
-					type: parseType(p.getType()),
-				});
-			});
+			.map(parseProperty);
 
 		const accessors = builderClass.getGetAccessors();
 		accessors.forEach((a) => {
-			result[name].properties.push({
-				name: a.getName(),
-				type: parseType(a.getType()),
-			});
+			result[name].properties.push(parseAccessor(a));
 		});
 	});
 

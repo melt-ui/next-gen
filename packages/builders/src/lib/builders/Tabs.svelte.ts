@@ -51,6 +51,7 @@ export class Tabs<T extends string = string> {
 		this.#value = new Synced<T>(props.value as T, props.onValueChange);
 	}
 
+	/** The current selected tab. */
 	get value() {
 		return this.#value.current;
 	}
@@ -59,13 +60,15 @@ export class Tabs<T extends string = string> {
 		this.#value.current = value;
 	}
 
+	/** The attributes for the list that contains the tab triggers */
 	get triggerList() {
 		return {
-			[identifiers.triggerList]: "",
+			[identifiers["trigger-list"]]: "",
 			role: "tablist",
-		};
+		} as const;
 	}
 
+	/** Gets the attributes and listeners for a tab trigger. Requires an identifying tab value */
 	getTrigger(value: T) {
 		if (this.value === undefined) {
 			this.value = value;
@@ -76,7 +79,7 @@ export class Tabs<T extends string = string> {
 			"data-active": this.value === value ? "" : undefined,
 			tabindex: this.value === value ? 0 : -1,
 			role: "tab",
-			"aria-selected": this.value === value ,
+			"aria-selected": this.value === value,
 			onclick: () => (this.value = value),
 			onkeydown: (e: KeyboardEvent) => {
 				const el = e.target;
@@ -85,7 +88,7 @@ export class Tabs<T extends string = string> {
 				}
 
 				e.preventDefault();
-				const triggerList = el.closest(`[${identifiers.triggerList}]`);
+				const triggerList = el.closest(`[${identifiers["trigger-list"]}]`);
 				if (!triggerList) return;
 
 				const triggers = [...triggerList.querySelectorAll(`[${identifiers.trigger}]`)];
@@ -122,13 +125,15 @@ export class Tabs<T extends string = string> {
 					this.value = next.getAttribute(identifiers.trigger) as T;
 				}
 			},
-		};
+		} as const;
 	}
 
+
+	/** Gets the attributes and listeners for the tabs contents. Requires an identifying tab value */
 	getContent(value: T) {
 		return {
 			[identifiers.content]: "",
 			hidden: this.value !== value,
-		};
+		} as const;
 	}
 }

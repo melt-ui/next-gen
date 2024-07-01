@@ -1,6 +1,6 @@
 ---
-import api from '@api.json';
-import {Code} from "astro:components";
+import api from "@api.json";
+import { Code } from "astro:components";
 
 interface Props {
 	entry: keyof typeof api;
@@ -11,35 +11,139 @@ const { entry }: Props = Astro.props;
 const apiEntry = api[entry];
 
 type TextContent = {
-	type: 'text';
+	type: "text";
 	content: string;
-}
+};
 
 type CodeContent = {
-	type: 'code';
+	type: "code";
 	content: string;
+};
+type Parsed = TextContent | CodeContent;
+function parseDescription(description: string): Parsed[] {
+	// Everything wrapped in backticks is CodeContent. Everything else is TextContent.
+	const res: Parsed[] = [];
+
+	let curr: Parsed = {
+		type: "text",
+		content: "",
+	};
+	for (const char of description) {
+		if (char === "`") {
+			res.push(curr);
+			curr = {
+				type: curr.type === "text" ? "code" : "text",
+				content: "",
+			};
+			continue;
+		}
+
+		curr.content += char;
+	}
+	res.push(curr);
+
+	return res;
 }
-type Parsed = TextContent | CodeContent
-function parseDescription(desription: string): Parsed[] {}
 ---
 
-{apiEntry.constructorProps && (
-	<>
-<h3><code>Constructor Props</h3>
-		<p>The props that are passed when calling <Code code={`new ${entry}()`} lang="ts" inline /></p>
-		{apiEntry.constructorProps.map((prop, i) => {
-			const isLast = i === apiEntry.constructorProps.length - 1;
+{
+	apiEntry.constructorProps && (
+		<>
+			<h3>Constructor Props</h3>
+			<p>
+				The props that are passed when calling <Code code={`new ${entry}()`} lang="ts" inline />
+			</p>
+			{apiEntry.constructorProps.map((prop, i) => {
+				const isLast = i === apiEntry.constructorProps.length - 1;
+				const parsedDescription = parseDescription(prop.description);
+				console.log(parsedDescription);
 
-			return (
-				<div key={i}>
-					<h4>{prop.name}</h4>
-					<Code code={prop.type} lang="ts" inline />
-					<p>{prop.description}</p>
-{'defaultValue' in prop && <p>Default: <Code code={prop.defaultValue} lang="ts" inline /></p>}
-					{!isLast && <hr />}
-				</div>
-			);
-		})}
-	</>
-)}
+				return (
+					<div key={i}>
+						<h4>{prop.name}</h4>
+						<Code code={prop.type} lang="ts" inline />
+						<p>
+							{parsedDescription.map((c) =>
+								c.type === "text" ? c.content : <Code code={c.content} lang="ts" inline />,
+							)}
+						</p>
+						{"defaultValue" in prop && (
+							<p>
+								Default: <Code code={prop.defaultValue} lang="ts" inline />
+							</p>
+						)}
+						{!isLast && <hr />}
+					</div>
+				);
+			})}
+		</>
+	)
+}
 
+{
+	apiEntry.methods && (
+		<>
+			<h3>Methods</h3>
+			<p>
+				The methods returned from <Code code={`new ${entry}()`} lang="ts" inline />
+			</p>
+			{apiEntry.methods.map((prop, i) => {
+				const isLast = i === apiEntry.constructorProps.length - 1;
+				const parsedDescription = prop.description ? parseDescription(prop.description) : [];
+				console.log(parsedDescription);
+
+				return (
+					<div key={i}>
+						<h4>{prop.name}</h4>
+						<Code code={prop.type} lang="ts"  />
+						<p>
+							{parsedDescription.map((c) =>
+								c.type === "text" ? c.content : <Code code={c.content} lang="ts" inline />,
+							)}
+						</p>
+						{"defaultValue" in prop && (
+							<p>
+								Default: <Code code={prop.defaultValue} lang="ts" inline />
+							</p>
+						)}
+						{!isLast && <hr />}
+					</div>
+				);
+			})}
+		</>
+	)
+}
+
+{
+	apiEntry.properties && (
+		<>
+			<h3>Properties</h3>
+			<p>
+				The properties returned from <Code code={`new ${entry}()`} lang="ts" inline />
+			</p>
+			{apiEntry.properties.map((prop, i) => {
+				const isLast = i === apiEntry.constructorProps.length - 1;
+				const parsedDescription = prop.description ? parseDescription(prop.description) : [];
+				console.log(parsedDescription);
+
+				return (
+					<div key={i}>
+						<h4>{prop.name}</h4>
+						<Code code={prop.type} lang="ts" inline />
+						<p>
+							{parsedDescription.map((c) =>
+								c.type === "text" ? c.content : <Code code={c.content} lang="ts" inline />,
+							)}
+						</p>
+						{"defaultValue" in prop && (
+							<p>
+								Default: <Code code={prop.defaultValue} lang="ts" inline />
+							</p>
+						)}
+						{!isLast && <hr />}
+					</div>
+				);
+			})}
+		</>
+	)
+}

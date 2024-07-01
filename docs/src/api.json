@@ -28,68 +28,25 @@
     "methods": [
       {
         "name": "getTrigger",
-        "args": [
-          {
-            "name": "value",
-            "type": "T"
-          }
-        ],
-        "returns": [
-          {
-            "name": "data-active",
-            "type": "string"
-          },
-          {
-            "name": "tabindex",
-            "type": "number"
-          },
-          {
-            "name": "role",
-            "type": "string"
-          },
-          {
-            "name": "aria-selected",
-            "type": "boolean"
-          },
-          {
-            "name": "onclick",
-            "type": "() => T"
-          },
-          {
-            "name": "onkeydown",
-            "type": "(e: KeyboardEvent) => void"
-          }
-        ]
+        "type": "(value: T) => { readonly \"data-melt-trigger\": T; readonly \"data-active\": \"\"; readonly tabindex: 0 | -1; readonly role: \"tab\"; readonly \"aria-selected\": boolean; readonly onclick: () => T; readonly onkeydown: (e: KeyboardEvent) => void; }",
+        "description": "Gets the attributes and listeners for a tab trigger. Requires an identifying tab value"
       },
       {
         "name": "getContent",
-        "args": [
-          {
-            "name": "value",
-            "type": "T"
-          }
-        ],
-        "returns": [
-          {
-            "name": "hidden",
-            "type": "boolean"
-          }
-        ]
+        "type": "(value: T) => { readonly \"data-melt-content\": \"\"; readonly hidden: boolean; }",
+        "description": "Gets the attributes and listeners for the tabs contents. Requires an identifying tab value"
       }
     ],
     "properties": [
       {
         "name": "value",
-        "type": "T"
+        "type": "T",
+        "description": "The current selected tab."
       },
       {
         "name": "triggerList",
-        "type": [
-          {
-            "name": "role",
-            "type": "string"
-          }
-        ]
+        "type": "{ readonly \"data-melt-trigger-list\": \"\"; readonly role: \"tablist\"; }",
+        "description": "The attributes for the list that contains the tab triggers"
       }
     ]
   }

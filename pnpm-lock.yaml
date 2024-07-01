@@ -38,6 +38,9 @@ importers:
       prettier:
         specifier: ^3.1.1
         version: 3.3.2
+      prettier-plugin-astro:
+        specifier: ^0.14.0
+        version: 0.14.0
       prettier-plugin-svelte:
         specifier: ^3.1.2
         version: 3.2.4(prettier@3.3.2)(svelte@5.0.0-next.123)
@@ -67,7 +70,7 @@ importers:
     dependencies:
       '@astrojs/check':
         specifier: ^0.5.10
-        version: 0.5.10(prettier@3.3.2)(typescript@5.4.5)
+        version: 0.5.10(prettier-plugin-astro@0.14.0)(prettier@3.3.2)(typescript@5.4.5)
       '@astrojs/starlight':
         specifier: ^0.22.1
         version: 0.22.1(astro@4.7.1)
@@ -189,13 +192,13 @@ packages:
       '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.25
 
-  /@astrojs/check@0.5.10(prettier@3.3.2)(typescript@5.4.5):
+  /@astrojs/check@0.5.10(prettier-plugin-astro@0.14.0)(prettier@3.3.2)(typescript@5.4.5):
     resolution: {integrity: sha512-vliHXM9cu/viGeKiksUM4mXfO816ohWtawTl2ADPgTsd4nUMjFiyAl7xFZhF34yy4hq4qf7jvK1F2PlR3b5I5w==}
     hasBin: true
     peerDependencies:
       typescript: ^5.0.0
     dependencies:
-      '@astrojs/language-server': 2.8.4(prettier@3.3.2)(typescript@5.4.5)
+      '@astrojs/language-server': 2.8.4(prettier-plugin-astro@0.14.0)(prettier@3.3.2)(typescript@5.4.5)
       chokidar: 3.6.0
       fast-glob: 3.3.2
       kleur: 4.1.5
@@ -206,6 +209,9 @@ packages:
       - prettier-plugin-astro
     dev: false
 
+  /@astrojs/compiler@1.8.2:
+    resolution: {integrity: sha512-o/ObKgtMzl8SlpIdzaxFnt7SATKPxu4oIP/1NL+HDJRzxfJcAkOTAb/ZKMRyULbz4q+1t2/DAebs2Z1QairkZw==}
+
   /@astrojs/compiler@2.8.0:
     resolution: {integrity: sha512-yrpD1WRGqsJwANaDIdtHo+YVjvIOFAjC83lu5qENIgrafwZcJgSXDuwVMXOgok4tFzpeKLsFQ6c3FoUdloLWBQ==}
     dev: false
@@ -214,7 +220,7 @@ packages:
     resolution: {integrity: sha512-6B13lz5n6BrbTqCTwhXjJXuR1sqiX/H6rTxzlXx+lN1NnV4jgnq/KJldCQaUWJzPL5SiWahQyinxAbxQtwgPHA==}
     dev: false
 
-  /@astrojs/language-server@2.8.4(prettier@3.3.2)(typescript@5.4.5):
+  /@astrojs/language-server@2.8.4(prettier-plugin-astro@0.14.0)(prettier@3.3.2)(typescript@5.4.5):
     resolution: {integrity: sha512-sJH5vGTBkhgA8+hdhzX78UUp4cFz4Mt7xkEkevD188OS5bDMkaue6hK+dtXWM47mnrXFveXA2u38K7S+5+IRjA==}
     hasBin: true
     peerDependencies:
@@ -235,6 +241,7 @@ packages:
       '@volar/typescript': 2.1.6
       fast-glob: 3.3.2
       prettier: 3.3.2
+      prettier-plugin-astro: 0.14.0
       volar-service-css: 0.0.34(@volar/language-service@2.1.6)
       volar-service-emmet: 0.0.34(@volar/language-service@2.1.6)
       volar-service-html: 0.0.34(@volar/language-service@2.1.6)
@@ -5469,6 +5476,14 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
+  /prettier-plugin-astro@0.14.0:
+    resolution: {integrity: sha512-7jRGJsexaRIyUzTk8uzXlP45cw6DQ5Ci4bTe0xCBCcuO1Fff8jJy9oI+kRCQKSdDFTSAArMSg8GpvzlKBtSaZA==}
+    engines: {node: ^14.15.0 || >=16.0.0}
+    dependencies:
+      '@astrojs/compiler': 1.8.2
+      prettier: 3.3.2
+      sass-formatter: 0.7.9
+
   /prettier-plugin-svelte@3.2.4(prettier@3.3.2)(svelte@5.0.0-next.123):
     resolution: {integrity: sha512-tZv+ADfeOWFNQkXkRh6zUXE16w3Vla8x2Ug0B/EnSmjR4EnwdwZbGgL/liSwR1kcEALU5mAAyua98HBxheCxgg==}
     peerDependencies:
@@ -5825,6 +5840,9 @@ packages:
     dependencies:
       queue-microtask: 1.2.3
 
+  /s.color@0.0.15:
+    resolution: {integrity: sha512-AUNrbEUHeKY8XsYr/DYpl+qk5+aM+DChopnWOPEzn8YKzOhv4l2zH6LzZms3tOZP3wwdOyc0RmTciyi46HLIuA==}
+
   /sade@1.8.1:
     resolution: {integrity: sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==}
     engines: {node: '>=6'}
@@ -5848,6 +5866,11 @@ packages:
       mkdirp: 0.5.6
       rimraf: 2.7.1
     dev: true
+
+  /sass-formatter@0.7.9:
+    resolution: {integrity: sha512-CWZ8XiSim+fJVG0cFLStwDvft1VI7uvXdCNJYXhDvowiv+DsbD1nXLiQ4zrE5UBvj5DWZJ93cwN0NX5PMsr1Pw==}
+    dependencies:
+      suf-log: 2.5.3
 
   /sax@1.3.0:
     resolution: {integrity: sha512-0s+oAmw9zLl1V1cS9BtZN7JAd0cW5e0QH4W3LWEK6a4LaLEA2OTpGYWDY+6XasBLtz6wkm3u1xRw95mRuJ59WA==}
@@ -6202,6 +6225,11 @@ packages:
       mz: 2.7.0
       pirates: 4.0.6
       ts-interface-checker: 0.1.13
+
+  /suf-log@2.5.3:
+    resolution: {integrity: sha512-KvC8OPjzdNOe+xQ4XWJV2whQA0aM1kGVczMQ8+dStAO6KfEB140JEVQ9dE76ONZ0/Ylf67ni4tILPJB41U0eow==}
+    dependencies:
+      s.color: 0.0.15
 
   /supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
