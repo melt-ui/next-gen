@@ -4,17 +4,20 @@
       {
         "name": "selectWhenFocused",
         "type": "MaybeGetter<boolean>",
-        "description": "If `true`, the value will be changed whenever a trigger is focused."
+        "description": "If `true`, the value will be changed whenever a trigger is focused.",
+        "defaultValue": "true"
       },
       {
         "name": "loop",
         "type": "MaybeGetter<boolean>",
-        "description": "If the the trigger selection should loop when navigating with the arrow keys."
+        "description": "If the the trigger selection should loop when navigating with the arrow keys.",
+        "defaultValue": "true"
       },
       {
         "name": "value",
         "type": "MaybeGetter<T>",
-        "description": "The default value for `tabs.active`.\n\nWhen passing a getter, will be used as source of truth,\nmeaning that tabs.active only changes when the getter returns a new value."
+        "description": "The default value for `tabs.active`.\n\nWhen passing a getter, will be used as source of truth,\nmeaning that tabs.active only changes when the getter returns a new value.",
+        "defaultValue": "undefined"
       },
       {
         "name": "onValueChange",
@@ -74,6 +77,20 @@
         ]
       }
     ],
-    "properties": []
+    "properties": [
+      {
+        "name": "value",
+        "type": "T"
+      },
+      {
+        "name": "triggerList",
+        "type": [
+          {
+            "name": "role",
+            "type": "string"
+          }
+        ]
+      }
+    ]
   }
 }

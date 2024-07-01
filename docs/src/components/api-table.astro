@@ -1,0 +1,45 @@
+---
+import api from '@api.json';
+import {Code} from "astro:components";
+
+interface Props {
+	entry: keyof typeof api;
+}
+
+const { entry }: Props = Astro.props;
+
+const apiEntry = api[entry];
+
+type TextContent = {
+	type: 'text';
+	content: string;
+}
+
+type CodeContent = {
+	type: 'code';
+	content: string;
+}
+type Parsed = TextContent | CodeContent
+function parseDescription(desription: string): Parsed[] {}
+---
+
+{apiEntry.constructorProps && (
+	<>
+<h3><code>Constructor Props</h3>
+		<p>The props that are passed when calling <Code code={`new ${entry}()`} lang="ts" inline /></p>
+		{apiEntry.constructorProps.map((prop, i) => {
+			const isLast = i === apiEntry.constructorProps.length - 1;
+
+			return (
+				<div key={i}>
+					<h4>{prop.name}</h4>
+					<Code code={prop.type} lang="ts" inline />
+					<p>{prop.description}</p>
+{'defaultValue' in prop && <p>Default: <Code code={prop.defaultValue} lang="ts" inline /></p>}
+					{!isLast && <hr />}
+				</div>
+			);
+		})}
+	</>
+)}
+

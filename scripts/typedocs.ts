@@ -2,7 +2,7 @@
 import { writeFileSync } from "fs";
 import { globSync } from "glob";
 import { join } from "path";
-import { ModuleResolutionKind, Project, Type, Symbol, Node } from "ts-morph";
+import { ModuleResolutionKind, Project, Symbol, Type } from "ts-morph";
 import { getBuilderPackage } from "./get-packages";
 
 function trimType(value: string) {
@@ -18,7 +18,7 @@ function getDescription(property: Symbol) {
 	return description?.text;
 }
 
-function parseType(t: Type): any {
+function parseType(t: Type) {
 	if (t.isObject()) {
 		return t.getProperties().map((p) => {
 			const valueDeclaration = p.getValueDeclaration();
@@ -28,6 +28,7 @@ function parseType(t: Type): any {
 				name: p.getName(),
 				type: trimType(valueDeclaration.getType().getText()),
 				description: getDescription(p),
+					defaultValue: getDefaultValue(p),
 			};
 		});
 	}
@@ -35,6 +36,11 @@ function parseType(t: Type): any {
 	return trimType(t.getText());
 }
 
+function getDefaultValue(property: Symbol) {
+	const tags = property.getJsDocTags();
+	const [defaultValue] = tags.find((tag) => tag.getName() === "default")?.getText() ?? [];
+	return defaultValue?.text;
+}
 const project = new Project({
 	compilerOptions: {
 		moduleResolution: ModuleResolutionKind.NodeNext,
@@ -89,9 +95,28 @@ async function main() {
 				returns: parseType(m.getReturnType()),
 			});
 		});
+
+		const properties = builderClass.getProperties();
+		properties
+			.filter((p) => !p.getName().startsWith("#"))
+			.forEach((p) => {
+				console.log(p.getName());
+				result[name].properties.push({
+					name: p.getName(),
+					type: parseType(p.getType()),
+				});
+			});
+
+		const accessors = builderClass.getGetAccessors();
+		accessors.forEach((a) => {
+			result[name].properties.push({
+				name: a.getName(),
+				type: parseType(a.getType()),
+			});
+		});
 	});
 
-	const outPath = join(process.cwd(), "api.json");
+	const outPath = join(process.cwd(), "docs/src/api.json");
 
 	writeFileSync(outPath, JSON.stringify(result, null, 2));
 	console.log("Finished generating API reference!");

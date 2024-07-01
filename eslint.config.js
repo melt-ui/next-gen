@@ -43,6 +43,6 @@ export default [
 		},
 	},
 	{
-		ignores: ["build/", "**/dist/", "**/.svelte-kit/", "**/.astro/"],
+		ignores: ["build/", "**/dist/", "**/.svelte-kit/"],
 	},
 ];
