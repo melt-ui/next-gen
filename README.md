@@ -15,7 +15,7 @@ The future comes afterwards.
 
 ## TODO
 
-- [ ] Auto API reference for builders
+- [x] Auto API reference for builders
 - [ ] Auto API reference for components
 - [ ] Auto changelog (?)
 - [ ] Tests for utilities

@@ -13,6 +13,7 @@ import {
 	Type,
 } from "ts-morph";
 import { getBuilderPackage } from "./get-packages";
+import * as prettier from "prettier";
 
 type TypeSchema =
 	| {
@@ -29,11 +30,21 @@ function toArray<T>(value: T | T[]): T[] {
 	return Array.isArray(value) ? value : [value];
 }
 
-function trimType(value: string): string {
-	return value
-		.split("=>")
-		.map((t) => t.replace(/import\(".*"\)\./, ""))
-		.join("=>");
+async function formatType(type: string): Promise<string> {
+	const prefix = "type TEMP = ";
+	return (await prettier.format(prefix + type, { parser: "typescript", semi: false })).replace(
+		prefix,
+		"",
+	);
+}
+
+async function trimType(value: string): Promise<string> {
+	return await formatType(
+		value
+			.split("=>")
+			.map((t) => t.replace(/import\(".*"\)\./, ""))
+			.join("=>"),
+	);
 }
 
 function getDefaultValue(property: Symbol): string {
@@ -52,45 +63,45 @@ function getDescriptionFromJsDocs(property: { getJsDocs: () => Array<JSDoc> }): 
 	return tags.map((j) => j.getText().replace("/**", "").replace("*/", "").trim()).join("\n");
 }
 
-function parseMethod(method: MethodDeclaration): TypeSchema {
+async function parseMethod(method: MethodDeclaration): Promise<TypeSchema> {
 	return {
 		name: method.getName(),
-		type: trimType(method.getType().getText()),
+		type: await trimType(method.getType().getText()),
 		description: getDescriptionFromJsDocs(method),
 	};
 }
 
-function parseProperty(property: PropertyDeclaration): TypeSchema {
+async function parseProperty(property: PropertyDeclaration): Promise<TypeSchema> {
 	return {
 		name: property.getName(),
-		type: trimType(property.getType().getText()),
+		type: await trimType(property.getType().getText()),
 		description: getDescriptionFromJsDocs(property),
 	};
 }
 
-function parseAccessor(accessor: GetAccessorDeclaration): TypeSchema {
+async function parseAccessor(accessor: GetAccessorDeclaration): Promise<TypeSchema> {
 	return {
 		name: accessor.getName(),
-		type: trimType(accessor.getType().getText()),
+		type: await trimType(accessor.getType().getText()),
 		description: getDescriptionFromJsDocs(accessor),
 	};
 }
 
-function parseSymbol(symbol: Symbol): TypeSchema {
+async function parseSymbol(symbol: Symbol): Promise<TypeSchema> {
 	const valueDeclaration = symbol.getValueDeclaration();
 	const declaredType = valueDeclaration?.getType() ?? symbol.getDeclaredType();
 
 	return {
 		name: symbol.getName(),
-		type: trimType(declaredType.getText()),
+		type: await trimType(declaredType.getText()),
 		description: getDescription(symbol),
 		defaultValue: getDefaultValue(symbol),
 	};
 }
 
-function parseType(t: Type): TypeSchema | Array<TypeSchema> {
+async function parseType(t: Type): Promise<TypeSchema | Array<TypeSchema>> {
 	if (t.isObject()) {
-		return t.getProperties().map(parseSymbol);
+		return await Promise.all(t.getProperties().map((p) => parseSymbol(p)));
 	}
 
 	return trimType(t.getText());
@@ -116,7 +127,7 @@ async function main() {
 
 	const builders = globSync(`${dir}/src/**/builders/*.svelte.ts`);
 
-	builders.forEach((builderDir) => {
+	for (const builderDir of builders) {
 		const name = builderDir.split("/").pop()!.split(".")[0];
 		result[name] = {
 			constructorProps: [],
@@ -133,24 +144,29 @@ async function main() {
 		const constructor = builderClass?.getConstructors()?.[0];
 		if (constructor) {
 			const props = constructor.getParameters()?.[0];
-			result[name].constructorProps = toArray(parseType(props?.getType()));
+			result[name].constructorProps = toArray(await parseType(props?.getType()));
 		}
 
-		result[name].methods = builderClass
-			.getMethods()
-			.filter((m) => !m.getName().startsWith("#"))
-			.map(parseMethod);
+		result[name].methods = await Promise.all(
+			builderClass
+				.getMethods()
+				.filter((m) => !m.getName().startsWith("#"))
+				.map(parseMethod),
+		);
 
-		result[name].properties = builderClass
-			.getProperties()
-			.filter((p) => !p.getName().startsWith("#"))
-			.map(parseProperty);
+		result[name].properties = await Promise.all(
+			builderClass
+				.getProperties()
+				.filter((p) => !p.getName().startsWith("#"))
+				.map(parseProperty),
+		);
 
 		const accessors = builderClass.getGetAccessors();
-		accessors.forEach((a) => {
-			result[name].properties.push(parseAccessor(a));
+		const parsed = await Promise.all(accessors.map(parseAccessor));
+		parsed.forEach((p) => {
+			result[name].properties.push(p);
 		});
-	});
+	}
 
 	const outPath = join(process.cwd(), "docs/src/api.json");
 
