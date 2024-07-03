@@ -22,3 +22,4 @@ The future comes afterwards.
 - [ ] Tests for components
 - [ ] Good docs structure
 - [ ] Automatically check if returned types are valid HTML attributes
+- [ ] Component JSDoc with @component
