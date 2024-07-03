@@ -1,6 +1,7 @@
 ---
 import api from "@api.json";
 import { Code } from "astro:components";
+import ThemedCode from "./themed-code.astro";
 
 interface Props {
 	entry: keyof typeof api;
@@ -51,7 +52,8 @@ type Section = {
 	description: string;
 	stuff: (typeof apiEntry)[keyof typeof apiEntry];
 };
-const sections = [
+
+const sections: Section[] = [
 	{
 		title: "Constructor Props",
 		description: "The props that are passed when calling `" + `new ${entry}()` + "`",
@@ -68,71 +70,45 @@ const sections = [
 		stuff: apiEntry.properties,
 	},
 ];
-
-type CodeTheme = Parameters<typeof Code>[0]["theme"];
-const themes = {
-	dark: "catppuccin-mocha",
-	light: "rose-pine-dawn",
-} satisfies Record<string, CodeTheme>;
 ---
 
-{
-	sections.map((section) => (
-		<div>
-			<h3>{section.title}</h3>
-			<p>
-				{parseText(section.description).map((c) =>
-					c.type === "text" ? (
-						c.content
-					) : (
-						<>
-							<Code class="dark:hidden" code={c.content} lang="ts" theme={themes.light} inline />
-							<Code
-								class="hidden dark:inline"
-								code={c.content}
-								theme={themes.dark}
-								lang="ts"
-								inline
-							/>
-						</>
-					),
-				)}
-			</p>
-			<ul class="border-l border-gray-700 ml-2 pl-4">
-				{section.stuff.map((entry) => (
-					<li class="list-none">
-						<h4>{entry.name}</h4>
-						<>
-							<Code class="dark:hidden" code={entry.type} lang="ts" theme={themes.light} />
-							<Code class="hidden dark:block" code={entry.type} theme={themes.dark} lang="ts" />
-						</>
-						<p>
-							{parseText(entry.description).map((c) =>
-								c.type === "text" ? (
-									c.content
-								) : (
-									<>
-										<Code
-											class="dark:hidden"
-											code={c.content}
-											lang="ts"
-											theme={themes.light}
-											inline
-										/>
-										<Code
-											class="hidden dark:inline"
-											code={c.content}
-											theme={themes.dark}
-											lang="ts"
-											inline
-										/>
-									</>
-								),
+<div class="flex flex-col gap-4 !mt-8">
+	{
+		sections.map((section) => (
+			<div>
+				<h3>{section.title}</h3>
+				<div>
+					{parseText(section.description).map((c) =>
+						c.type === "text" ? c.content : <ThemedCode code={c.content} inline />,
+					)}
+				</div>
+				<ul class="ml-0 pl-0">
+					{section.stuff.map((entry) => (
+						<li class="list-none relative pl-6 py-0 !mt-8 ">
+				<div class="absolute left-0 top-0 h-full w-1.5 rounded-full overflow-hidden dark:bg-gray-700/50 bg-gray-200" />
+							<h4 class="!text-lg flex items-baseline gap-2">
+								<span class="font-mono bg-accent-200/50 dark:bg-accent-950 px-2 dark:text-accent-200 py-0.5 font-normal rounded-lg">
+									{entry.name}
+								</span>
+								<span class="italic font-light text-gray-400">
+									{"optional" in entry && entry.optional ? "(optional)" : ""}
+								</span>
+							</h4>
+							<ThemedCode code={entry.type} />
+							<div>
+								{parseText(entry.description).map((c) =>
+									c.type === "text" ? c.content : <ThemedCode code={c.content} inline />,
+								)}
+							</div>
+							{"defaultValue" in entry && entry.defaultValue && (
+								<div class="text-gray-300">
+									<i>Default:</i> <ThemedCode code={entry.defaultValue} inline />
+								</div>
 							)}
-						</p>
-					</li>
-				))}
-			</ul>
-		</div>
-	))
-}
+						</li>
+					))}
+				</ul>
+			</div>
+		))
+	}
+</div>

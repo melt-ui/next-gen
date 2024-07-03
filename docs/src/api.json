@@ -5,24 +5,28 @@
         "name": "selectWhenFocused",
         "type": "MaybeGetter<boolean>\n",
         "description": "If `true`, the value will be changed whenever a trigger is focused.",
-        "defaultValue": "true"
+        "defaultValue": "true",
+        "optional": true
       },
       {
         "name": "loop",
         "type": "MaybeGetter<boolean>\n",
         "description": "If the the trigger selection should loop when navigating with the arrow keys.",
-        "defaultValue": "true"
+        "defaultValue": "true",
+        "optional": true
       },
       {
         "name": "value",
         "type": "MaybeGetter<T>\n",
         "description": "The default value for `tabs.active`.\n\nWhen passing a getter, will be used as source of truth,\nmeaning that tabs.active only changes when the getter returns a new value.",
-        "defaultValue": "undefined"
+        "defaultValue": "undefined",
+        "optional": true
       },
       {
         "name": "onValueChange",
         "type": "(active: T) => void\n",
-        "description": "Called when the `Tabs` instance tries to change the active tab."
+        "description": "Called when the `Tabs` instance tries to change the active tab.",
+        "optional": true
       }
     ],
     "methods": [

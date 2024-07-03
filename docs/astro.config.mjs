@@ -12,6 +12,8 @@ export default defineConfig({
 			customCss: [
 				// Path to your Tailwind base styles:
 				"./src/tailwind.css",
+				"@fontsource-variable/inter",
+				"@fontsource-variable/fira-code",
 			],
 			logo: {
 				light: "./src/assets/logo-light.svg",

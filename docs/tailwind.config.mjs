@@ -24,6 +24,10 @@ export default {
 	theme: {
 		extend: {
 			colors: { accent, gray },
+			fontFamily: {
+				sans: ["Inter Variable", "sans-serif"],
+				mono: ["Fira Code Variable", "monospace"],
+			},
 		},
 	},
 	plugins: [starlightPlugin()],

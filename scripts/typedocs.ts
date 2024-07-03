@@ -15,12 +15,13 @@ import {
 import { getBuilderPackage } from "./get-packages";
 import * as prettier from "prettier";
 
-type TypeSchema =
+export type TypeSchema =
 	| {
 			name: string;
 			type: string;
 			description?: string;
 			defaultValue?: string;
+			optional?: boolean;
 	  }
 	| string;
 
@@ -96,6 +97,7 @@ async function parseSymbol(symbol: Symbol): Promise<TypeSchema> {
 		type: await trimType(declaredType.getText()),
 		description: getDescription(symbol),
 		defaultValue: getDefaultValue(symbol),
+		optional: symbol.isOptional(),
 	};
 }
 
