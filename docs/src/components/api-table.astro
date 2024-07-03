@@ -68,6 +68,12 @@ const sections = [
 		stuff: apiEntry.properties,
 	},
 ];
+
+type CodeTheme = Parameters<typeof Code>[0]["theme"];
+const themes = {
+	dark: "catppuccin-mocha",
+	light: "rose-pine-dawn",
+} satisfies Record<string, CodeTheme>;
 ---
 
 {
@@ -76,17 +82,52 @@ const sections = [
 			<h3>{section.title}</h3>
 			<p>
 				{parseText(section.description).map((c) =>
-					c.type === "text" ? c.content : <Code code={c.content} lang="ts" inline />,
+					c.type === "text" ? (
+						c.content
+					) : (
+						<>
+							<Code class="dark:hidden" code={c.content} lang="ts" theme={themes.light} inline />
+							<Code
+								class="hidden dark:inline"
+								code={c.content}
+								theme={themes.dark}
+								lang="ts"
+								inline
+							/>
+						</>
+					),
 				)}
 			</p>
 			<ul class="border-l border-gray-700 ml-2 pl-4">
 				{section.stuff.map((entry) => (
 					<li class="list-none">
 						<h4>{entry.name}</h4>
-						<Code code={entry.type} lang="ts" />
+						<>
+							<Code class="dark:hidden" code={entry.type} lang="ts" theme={themes.light} />
+							<Code class="hidden dark:block" code={entry.type} theme={themes.dark} lang="ts" />
+						</>
 						<p>
 							{parseText(entry.description).map((c) =>
-								c.type === "text" ? c.content : <Code code={c.content} lang="ts" inline />,
+								c.type === "text" ? (
+									c.content
+								) : (
+									<>
+										<Code
+											class="dark:hidden"
+											code={c.content}
+											lang="ts"
+											theme={themes.light}
+											inline
+										/>
+										<Code
+											class="hidden dark:inline"
+											code={c.content}
+											theme={themes.dark}
+											lang="ts"
+											inline
+										/>
+									</>
+								),
 							)}
 						</p>
 					</li>
