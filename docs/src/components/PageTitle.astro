@@ -1,0 +1,21 @@
+---
+import type { Props } from "@astrojs/starlight/props";
+---
+
+<h1>{Astro.props.entry.data.title}</h1>
+<p>{Astro.props.entry.data.description}</p>
+
+<style>
+	h1 {
+		margin-top: 1rem;
+		font-size: var(--sl-text-h1);
+		line-height: var(--sl-line-height-headings);
+		font-weight: 800;
+		color: var(--sl-color-white);
+	}
+
+	p {
+		margin-top: 0.5rem !important;
+		font-weight: 600;
+	}
+</style>

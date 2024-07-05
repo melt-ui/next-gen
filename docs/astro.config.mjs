@@ -9,6 +9,9 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: "Melt UI",
+			components: {
+				PageTitle: "./src/components/PageTitle.astro",
+			},
 			customCss: [
 				// Path to your Tailwind base styles:
 				"./src/tailwind.css",
