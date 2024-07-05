@@ -18,7 +18,7 @@
       {
         "name": "value",
         "type": "MaybeGetter<T>\n",
-        "description": "The default value for `tabs.active`.\n\nWhen passing a getter, will be used as source of truth,\nmeaning that tabs.active only changes when the getter returns a new value.",
+        "description": "The default value for `tabs.value`.\n\nWhen passing a getter, will be used as source of truth,\nmeaning that tabs.active only changes when the getter returns a new value.",
         "defaultValue": "undefined",
         "optional": true
       },

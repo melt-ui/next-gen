@@ -23,3 +23,4 @@ The future comes afterwards.
 - [ ] Good docs structure
 - [ ] Automatically check if returned types are valid HTML attributes
 - [ ] Component JSDoc with @component
+- [ ] Use inert for focus trapping, also solves scrollbar issues

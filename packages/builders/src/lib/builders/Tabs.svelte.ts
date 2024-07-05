@@ -23,7 +23,7 @@ export type TabsProps<T extends string = string> = {
 	 */
 	loop?: MaybeGetter<boolean | undefined>;
 	/**
-	 * The default value for `tabs.active`.
+	 * The default value for `tabs.value`.
 	 *
 	 * When passing a getter, will be used as source of truth,
 	 * meaning that tabs.active only changes when the getter returns a new value.
