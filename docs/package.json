@@ -10,6 +10,7 @@
 		"astro": "astro"
 	},
 	"dependencies": {
+		"@antfu/utils": "^0.7.10",
 		"@astrojs/check": "^0.5.10",
 		"@astrojs/starlight": "^0.22.1",
 		"@astrojs/starlight-tailwind": "^2.0.2",

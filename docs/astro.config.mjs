@@ -10,7 +10,7 @@ export default defineConfig({
 		starlight({
 			title: "Melt UI",
 			components: {
-				PageTitle: "./src/components/PageTitle.astro",
+				PageTitle: "./src/components/page-title.astro",
 			},
 			customCss: [
 				// Path to your Tailwind base styles:

@@ -68,6 +68,9 @@ importers:
 
   docs:
     dependencies:
+      '@antfu/utils':
+        specifier: ^0.7.10
+        version: 0.7.10
       '@astrojs/check':
         specifier: ^0.5.10
         version: 0.5.10(prettier-plugin-astro@0.14.0)(prettier@3.3.2)(typescript@5.4.5)
@@ -197,6 +200,10 @@ packages:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.25
+
+  /@antfu/utils@0.7.10:
+    resolution: {integrity: sha512-+562v9k4aI80m1+VuMHehNJWLOFjBnXn3tdOitzD0il5b7smkSBal4+a3oKiQTbrwMmN/TBUMDvbdoWDehgOww==}
+    dev: false
 
   /@astrojs/check@0.5.10(prettier-plugin-astro@0.14.0)(prettier@3.3.2)(typescript@5.4.5):
     resolution: {integrity: sha512-vliHXM9cu/viGeKiksUM4mXfO816ohWtawTl2ADPgTsd4nUMjFiyAl7xFZhF34yy4hq4qf7jvK1F2PlR3b5I5w==}
