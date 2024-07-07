@@ -131,7 +131,7 @@
 
 	<div
 		class="absolute bottom-2 left-2 top-2 w-[200px] rounded-xl border border-gray-300 bg-gray-100 p-3
-		shadow-xl dark:border-none dark:bg-gray-800/80 backdrop-blur z-50"
+		shadow-xl dark:border-none dark:bg-gray-800/80 backdrop-blur-xl z-50"
 		data-preview
 		data-open={open}
 	>
@@ -167,13 +167,13 @@
 		transition:
 			opacity 0.15s var(--ease-out-quad),
 			scale 0.15s var(--ease-out-quad),
-			translate 0.15s var(--ease-out-quad) 0.15s;
+			translate 0.15s var(--ease-out-quad);
 	}
 
 	[data-preview][data-open="true"] {
 		transition:
-			opacity 0.15s var(--ease-out-quad) 0.15s,
-			scale 0.15s var(--ease-out-quad) 0.15s,
+			opacity 0.15s var(--ease-out-quad),
+			scale 0.15s var(--ease-out-quad),
 			translate 0.15s var(--ease-out-quad);
 	}
 </style>

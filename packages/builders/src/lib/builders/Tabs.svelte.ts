@@ -131,6 +131,7 @@ export class Tabs<T extends string = string> {
 		return {
 			[identifiers.content]: "",
 			hidden: this.value !== value,
+			"data-active": this.value === value ? "" : undefined,
 		} as const;
 	}
 }
