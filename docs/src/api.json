@@ -18,7 +18,7 @@
       {
         "name": "value",
         "type": "MaybeGetter<T>\n",
-        "description": "The default value for `tabs.value`.\n\nWhen passing a getter, will be used as source of truth,\nmeaning that tabs.active only changes when the getter returns a new value.",
+        "description": "The default value for `tabs.value`\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that `tabs.value` only changes when the getter returns a new value.\n\nIf omitted, it will use the first tab as default.",
         "defaultValue": "undefined",
         "optional": true
       },
@@ -33,12 +33,12 @@
       {
         "name": "getTrigger",
         "type": "(value: T) => {\n  readonly \"data-melt-trigger\": T\n  readonly \"data-active\": \"\"\n  readonly tabindex: 0 | -1\n  readonly role: \"tab\"\n  readonly \"aria-selected\": boolean\n  readonly onclick: () => T\n  readonly onkeydown: (e: KeyboardEvent) => void\n}\n",
-        "description": "Gets the attributes and listeners for a tab trigger. Requires an identifying tab value"
+        "description": "Gets the attributes and listeners for a tab trigger. Requires an identifying tab value."
       },
       {
         "name": "getContent",
         "type": "(value: T) => {\n  readonly \"data-melt-content\": \"\"\n  readonly hidden: boolean\n}\n",
-        "description": "Gets the attributes and listeners for the tabs contents. Requires an identifying tab value"
+        "description": "Gets the attributes and listeners for the tabs contents. Requires an identifying tab value."
       }
     ],
     "properties": [
@@ -50,7 +50,7 @@
       {
         "name": "triggerList",
         "type": "{ readonly \"data-melt-trigger-list\": \"\"; readonly role: \"tablist\" }\n",
-        "description": "The attributes for the list that contains the tab triggers"
+        "description": "The attributes for the list that contains the tab triggers."
       }
     ]
   }

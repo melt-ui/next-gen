@@ -22,10 +22,12 @@ export type TabsProps<T extends string = string> = {
 	 */
 	loop?: MaybeGetter<boolean | undefined>;
 	/**
-	 * The default value for `tabs.value`.
+	 * The default value for `tabs.value`
 	 *
-	 * When passing a getter, will be used as source of truth,
-	 * meaning that tabs.active only changes when the getter returns a new value.
+	 * When passing a getter, it will be used as source of truth,
+	 * meaning that `tabs.value` only changes when the getter returns a new value.
+	 *
+	 * If omitted, it will use the first tab as default.
 	 *
 	 * @default undefined
 	 */
@@ -56,7 +58,7 @@ export class Tabs<T extends string = string> {
 		this.#value.current = value;
 	}
 
-	/** The attributes for the list that contains the tab triggers */
+	/** The attributes for the list that contains the tab triggers. */
 	get triggerList() {
 		return {
 			[identifiers["trigger-list"]]: "",
@@ -64,7 +66,7 @@ export class Tabs<T extends string = string> {
 		} as const;
 	}
 
-	/** Gets the attributes and listeners for a tab trigger. Requires an identifying tab value */
+	/** Gets the attributes and listeners for a tab trigger. Requires an identifying tab value. */
 	getTrigger(value: T) {
 		if (this.value === undefined) {
 			this.value = value;
@@ -124,7 +126,7 @@ export class Tabs<T extends string = string> {
 		} as const;
 	}
 
-	/** Gets the attributes and listeners for the tabs contents. Requires an identifying tab value */
+	/** Gets the attributes and listeners for the tabs contents. Requires an identifying tab value. */
 	getContent(value: T) {
 		return {
 			[identifiers.content]: "",

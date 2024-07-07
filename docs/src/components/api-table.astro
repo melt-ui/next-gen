@@ -97,11 +97,15 @@ const sections: Section[] = [
 							<ThemedCode code={entry.type} />
 							<div>
 								{parseText(entry.description).map((c) =>
-									c.type === "text" ? c.content : <ThemedCode code={c.content} inline />,
+									c.type === "text" ? (
+										<span class="whitespace-pre-wrap">{c.content}</span>
+									) : (
+										<ThemedCode code={c.content} inline />
+									),
 								)}
 							</div>
 							{"defaultValue" in entry && entry.defaultValue && (
-								<div class="text-gray-300">
+								<div class="dark:text-gray-300">
 									<i>Default:</i> <ThemedCode code={entry.defaultValue} inline />
 								</div>
 							)}

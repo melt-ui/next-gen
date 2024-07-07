@@ -55,6 +55,8 @@
 <script lang="ts">
 	import { objectMap } from "@antfu/utils";
 	import { getContext, setContext, type Snippet } from "svelte";
+	import { linear } from "svelte/easing";
+	import { fade, fly, type TransitionConfig } from "svelte/transition";
 
 	const { controls, labels } = ctx.get();
 
@@ -62,27 +64,115 @@
 		children: Snippet;
 	}
 	const { children }: Props = $props();
+
+	let open = $state(true);
+
+	function fix<El extends HTMLElement | SVGElement>(
+		node: El,
+		fn: (node: El) => TransitionConfig,
+	): TransitionConfig {
+		const config = fn(node);
+		if (!config.delay) return config;
+
+		const easing = config.easing ?? linear;
+		const delay = config.delay;
+		const duration = config.duration ?? 0;
+		const newDuration = duration + delay;
+
+		const getTimingValues = (t: number) => {
+			const transpired = t * newDuration;
+			const withoutDelay = Math.max(0, transpired - delay);
+			const actualT = withoutDelay / duration;
+			const easedT = easing(actualT);
+
+			return [easedT, 1 - easedT];
+		};
+
+		const css = (_t: number) => {
+			const [t, u] = getTimingValues(_t);
+			return config.css?.(t, u) ?? "";
+		};
+
+		const tick = (_t: number) => {
+			const [t, u] = getTimingValues(_t);
+			return config.tick?.(t, u) ?? Promise.resolve();
+		};
+
+		return {
+			...config,
+			delay: 0,
+			duration: newDuration,
+			css,
+			tick,
+			easing: linear,
+		};
+	}
 </script>
 
-<div class="border-2 border-gray-700 rounded-2xl overflow-clip grid grid-cols-12 min-h-[300px]">
-	<div class="col-span-7 grid place-items-center p-4">
-		<div>
-			{@render children()}
-		</div>
+<div
+	class="not-content relative grid min-h-[500px] place-items-center overflow-clip rounded-2xl border
+	bg-gray-100 p-4 dark:border-gray-700 dark:bg-gray-950"
+>
+	<div>
+		{@render children()}
 	</div>
 
-	<div class="col-span-5 bg-gray-800 p-4 overflow-y-auto flex flex-col gap-2 border-l-2 border-gray-700">
-		{#each Object.keys(controls ?? {}) as key}
-			<label>
-				{labels[key]}
-				<input type="checkbox" bind:checked={controls[key]} />
-			</label>
-		{/each}
+	{#if !open}
+		<button
+			class="absolute bottom-4 left-4 cursor-pointer rounded-lg bg-gray-600 px-2 py-1 text-sm
+		text-white transition hover:bg-gray-700 active:bg-gray-800"
+			onclick={() => (open = !open)}
+			in:fix={(el) => fade(el, { delay: 300, duration: 200 })}
+			out:fade={{ duration: 100 }}
+		>
+			Edit props
+		</button>
+	{/if}
+
+	<div
+		class="absolute bottom-2 left-2 top-2 w-[200px] rounded-xl border border-gray-300 bg-gray-100 p-3
+		shadow-xl dark:border-none dark:bg-gray-800"
+		data-preview
+		data-open={open}
+	>
+		<div class="flex items-center justify-between">
+			<p class="text-xl font-bold text-black dark:text-white">Props</p>
+			<button
+				class="cursor-pointer rounded-lg bg-gray-500 px-2 py-1 text-sm
+		text-white transition hover:bg-gray-600 active:bg-gray-700"
+				onclick={() => (open = !open)}
+			>
+				Close
+			</button>
+		</div>
+		<hr class="mt-2 block h-[2px] rounded-full bg-gray-300/50 dark:bg-gray-600" />
+
+		<div class="mt-2 flex flex-col gap-2">
+			{#each Object.keys(controls ?? {}) as key}
+				<label class="flex items-center gap-1 text-sm font-medium">
+					<input type="checkbox" bind:checked={controls[key]} />
+					{labels[key]}
+				</label>
+			{/each}
+		</div>
 	</div>
 </div>
 
 <style>
-	* {
-		margin: 0 !important;
+	[data-preview][data-open="false"] {
+		scale: 0.95;
+		translate: -110%;
+		opacity: 0.75;
+		transition:
+			opacity 0.15s var(--ease-out-quad),
+			scale 0.15s var(--ease-out-quad),
+			translate 0.15s var(--ease-out-quad) 0.15s;
+	}
+
+	[data-preview][data-open="true"] {
+		transition:
+			opacity 0.15s var(--ease-out-quad) 0.15s,
+			scale 0.15s var(--ease-out-quad) 0.15s,
+			translate 0.15s var(--ease-out-quad);
 	}
 </style>
