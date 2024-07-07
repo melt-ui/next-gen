@@ -65,7 +65,7 @@
 	}
 	const { children }: Props = $props();
 
-	let open = $state(true);
+	let open = $state(false);
 
 	function fix<El extends HTMLElement | SVGElement>(
 		node: El,
@@ -120,7 +120,7 @@
 	{#if !open}
 		<button
 			class="absolute bottom-4 left-4 cursor-pointer rounded-lg bg-gray-600 px-2 py-1 text-sm
-		text-white transition hover:bg-gray-700 active:bg-gray-800"
+		text-white transition hover:bg-gray-700 active:bg-gray-800  z-10"
 			onclick={() => (open = !open)}
 			in:fix={(el) => fade(el, { delay: 300, duration: 200 })}
 			out:fade={{ duration: 100 }}
@@ -131,7 +131,7 @@
 
 	<div
 		class="absolute bottom-2 left-2 top-2 w-[200px] rounded-xl border border-gray-300 bg-gray-100 p-3
-		shadow-xl dark:border-none dark:bg-gray-800"
+		shadow-xl dark:border-none dark:bg-gray-800/80 backdrop-blur z-50"
 		data-preview
 		data-open={open}
 	>
@@ -139,12 +139,13 @@
 			<p class="text-xl font-bold text-black dark:text-white">Props</p>
 			<button
 				class="cursor-pointer rounded-lg bg-gray-500 px-2 py-1 text-sm
-		text-white transition hover:bg-gray-600 active:bg-gray-700"
+				text-white transition hover:bg-gray-600 active:bg-gray-700"
 				onclick={() => (open = !open)}
 			>
 				Close
 			</button>
 		</div>
+
 		<hr class="mt-2 block h-[2px] rounded-full bg-gray-300/50 dark:bg-gray-600" />
 
 		<div class="mt-2 flex flex-col gap-2">
