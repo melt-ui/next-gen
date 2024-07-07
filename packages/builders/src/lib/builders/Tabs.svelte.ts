@@ -1,9 +1,8 @@
+import { extract } from "$lib/utils/extract.svelte";
 import { Synced } from "../Synced.svelte";
 import type { MaybeGetter } from "../types";
 import { createIdentifiers } from "../utils/identifiers.svelte";
 import { isHtmlElement } from "../utils/is";
-import { omit } from "../utils/object";
-import { parseProps, type ParsedProps } from "../utils/props.svelte";
 
 const TRIGGER_KEYS = ["ArrowLeft", "ArrowRight", "Home", "End"];
 
@@ -37,17 +36,14 @@ export type TabsProps<T extends string = string> = {
 	onValueChange?: (active: T) => void;
 };
 
-const defaults = {
-	selectWhenFocused: true,
-	loop: true,
-} satisfies Partial<TabsProps>;
-
 export class Tabs<T extends string = string> {
 	#value: Synced<T>;
-	#props: ParsedProps<Omit<TabsProps<T>, "value" | "onValueChange">, typeof defaults>;
+	#props!: TabsProps<T>;
+	#selectWhenFocused = $derived(extract(this.#props.selectWhenFocused, true));
+	#loop = $derived(extract(this.#props.loop, true));
 
 	constructor(props: TabsProps<T> = {}) {
-		this.#props = parseProps(omit(props, "value", "onValueChange"), defaults);
+		this.#props = props
 		this.#value = new Synced<T>(props.value as T, props.onValueChange);
 	}
 
@@ -97,13 +93,13 @@ export class Tabs<T extends string = string> {
 				let next = el as Element | undefined;
 				switch (e.key) {
 					case "ArrowLeft": {
-						next = this.#props.loop
+						next = this.#loop
 							? triggers.at(currIndex - 1)
 							: triggers.at(Math.max(currIndex - 1, 0));
 						break;
 					}
 					case "ArrowRight": {
-						next = this.#props.loop
+						next = this.#loop
 							? triggers.at((currIndex + 1) % triggers.length)
 							: triggers.at(currIndex + 1);
 						break;
@@ -121,13 +117,12 @@ export class Tabs<T extends string = string> {
 				if (!isHtmlElement(next)) return;
 				next.focus();
 
-				if (this.#props.selectWhenFocused) {
+				if (this.#selectWhenFocused) {
 					this.value = next.getAttribute(identifiers.trigger) as T;
 				}
 			},
 		} as const;
 	}
-
 
 	/** Gets the attributes and listeners for the tabs contents. Requires an identifying tab value */
 	getContent(value: T) {

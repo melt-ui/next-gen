@@ -8,7 +8,8 @@ import type { Getter, MaybeGetter } from "$lib/types";
 export function extract<T>(value: MaybeGetter<T>, defaultValue?: T): T {
 	if (isFunction(value)) {
 		const getter = value as Getter<T>;
-		return getter() ?? defaultValue ?? getter();
+		const gotten = getter();
+		return gotten ?? defaultValue ?? gotten;
 	}
 
 	return value ?? defaultValue ?? value;
