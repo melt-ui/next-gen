@@ -111,16 +111,16 @@
 
 <div
 	class="not-content relative grid min-h-[500px] place-items-center overflow-clip rounded-2xl border
-	bg-gray-100 p-4 dark:border-gray-700 dark:bg-gray-950"
+	bg-gray-100 dark:border-gray-700 dark:bg-gray-950"
 >
-	<div>
+	<div class="w-full min-w-0 overflow-clip p-4">
 		{@render children()}
 	</div>
 
 	{#if !open}
 		<button
-			class="absolute bottom-4 left-4 cursor-pointer rounded-lg bg-gray-600 px-2 py-1 text-sm
-		text-white transition hover:bg-gray-700 active:bg-gray-800  z-10"
+			class="absolute bottom-4 left-4 z-10 cursor-pointer rounded-lg bg-gray-600 px-2 py-1
+		text-sm text-white transition hover:bg-gray-700 active:bg-gray-800"
 			onclick={() => (open = !open)}
 			in:fix={(el) => fade(el, { delay: 300, duration: 200 })}
 			out:fade={{ duration: 100 }}
@@ -130,8 +130,8 @@
 	{/if}
 
 	<div
-		class="absolute bottom-2 left-2 top-2 w-[200px] rounded-xl border border-gray-300 bg-gray-100 p-3
-		shadow-xl dark:border-none dark:bg-gray-800/80 backdrop-blur-xl z-50"
+		class="absolute bottom-2 left-2 top-2 z-50 w-[200px] rounded-xl border border-gray-300 bg-gray-100
+		p-3 shadow-xl backdrop-blur-xl dark:border-none dark:bg-gray-800/80"
 		data-preview
 		data-open={open}
 	>

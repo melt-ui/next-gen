@@ -1,19 +1,18 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
 	import { Tabs } from "@melt-ui/builders";
-	import { Debounced, ElementSize, Previous, useDebounce, useEventListener, watch } from "runed";
+	import { Debounced, ElementSize, Previous } from "runed";
 	import Transition from "@components/transition.svelte";
-	import { Map } from "svelte/reactivity";
 
 	const controls = usePreviewControls({
 		loop: { label: "Loop", defaultValue: true },
 		selectWhenFocused: { label: "Select when focused", defaultValue: true },
 	});
 
-	const tabIds = ["Movies & TV", "Anime & Manga", "Gaming", "Music"] as const;
+	const tabIds = ["Movies & TV", "Anime & Manga", "Games", "Music"] as const;
 	type TabId = (typeof tabIds)[number];
 	const tabs = new Tabs<TabId>({
-		value: "Anime & Manga",
+		value: "Movies & TV",
 		loop: () => controls.loop,
 		selectWhenFocused: () => controls.selectWhenFocused,
 	});
@@ -21,45 +20,17 @@
 	let inner = $state<HTMLElement>();
 	const innerSize = new ElementSize(() => inner);
 
-	const transitioningElements = new Map<Element, boolean>();
-	const transitioning = $derived([...transitioningElements.values()].some(Boolean));
-	$inspect(transitioningElements);
-
-	function detectTransitions(node: HTMLElement) {
-		const children = [...node.children];
-		children.forEach((c) => {
-			useEventListener(
-				() => c,
-				"transitionstart",
-				() => {
-					transitioningElements.set(c, true);
-				},
-			);
-			useEventListener(
-				() => c,
-				"transitionend",
-				() => {
-					transitioningElements.set(c, false);
-				},
-			);
-			useEventListener(
-				() => c,
-				"transitioncancel",
-				() => {
-					transitioningElements.set(c, false);
-				},
-			);
-		});
-	}
-
+	let transitioning = $state(false);
 	let activeTab = $state<TabId>(tabs.value);
+	$effect(() => {
+		if (transitioning || activeTab === tabs.value) return;
+		activeTab = tabs.value;
+		transitioning = true;
+		setTimeout(() => (transitioning = false), 350);
+	});
+
 	// Hack to make sure transitions behave
 	const debouncedTab = new Debounced(() => activeTab, 1);
-
-	$effect(() => {
-		if (transitioning) return;
-		activeTab = tabs.value;
-	});
 
 	const previousTab = new Previous(() => activeTab);
 	const forwards = $derived.by(() => {
@@ -69,12 +40,12 @@
 </script>
 
 <Preview>
-	<div class="flex h-[600px] flex-col items-center justify-center">
-		<div class="flex items-center justify-center gap-2" {...tabs.triggerList}>
+	<div class="flex h-[700px] flex-col items-center justify-center">
+		<div class="flex w-full flex-wrap items-center justify-center gap-2" {...tabs.triggerList}>
 			{#each tabIds as id}
 				<button
-					class="focus-visible:ring-accent-600 cursor-pointer rounded-full bg-transparent px-4 py-1 font-medium outline-none
-				transition focus-visible:ring-4 data-[active]:bg-white data-[active]:text-black [&:not([data-active])]:hover:bg-white/10"
+					class="focus-visible:ring-accent-600 min-w-0 shrink-0 cursor-pointer whitespace-nowrap rounded-full bg-transparent px-4 py-1 font-medium
+					outline-none transition focus-visible:ring-4 data-[active]:bg-white data-[active]:text-black [&:not([data-active])]:hover:bg-white/10"
 					{...tabs.getTrigger(id)}
 				>
 					{id}
@@ -82,11 +53,23 @@
 			{/each}
 		</div>
 
+		{#snippet media(name: string, src: string)}
+			<div class="media overflow-hidden">
+				<img class="h-full w-full rounded-xl object-cover" {src} alt="" />
+				<p
+					class="absolute bottom-2 left-2 z-10 w-[calc(100%-1rem)] overflow-hidden text-ellipsis
+					whitespace-nowrap text-sm font-extrabold text-white sm:left-3 sm:text-xl"
+				>
+					{name}
+				</p>
+			</div>
+		{/snippet}
+
 		<div
 			class="relative overflow-visible transition-all duration-300"
 			style="height: {innerSize.height ? `${innerSize.height}px` : 'auto'}"
 		>
-			<div class="inner" bind:this={inner} use:detectTransitions>
+			<div class="inner" bind:this={inner}>
 				{#each tabIds as id}
 					{@const isActive = id === debouncedTab.current}
 					<Transition
@@ -101,36 +84,32 @@
 					>
 						<div {...tabs.getContent(id)} class="top-0 !block">
 							{#if id === "Movies & TV"}
-								{#snippet movie(name: string, src: string)}
-									<div class="movie-media">
-										<img class="h-full w-full rounded-xl object-cover" {src} alt="" />
-										<p class="absolute bottom-2 left-3 z-10 text-2xl font-bold text-white">
-											{name}
-										</p>
-									</div>
-								{/snippet}
-
 								<div class="movie-grid mt-4">
-									{@render movie("Breaking Bad", "/previews/breaking-bad.jpg")}
-									{@render movie("Oldboy", "/previews/oldboy.jpg")}
-									{@render movie("Severance", "/previews/severance.jpg")}
-									{@render movie("The Truman Show", "/previews/truman-show.jpg")}
+									{@render media("Breaking Bad", "/previews/breaking-bad.jpg")}
+									{@render media("Oldboy", "/previews/oldboy.jpg")}
+									{@render media("Severance", "/previews/severance.jpg")}
+									{@render media("The Truman Show", "/previews/truman-show.jpg")}
 								</div>
 							{:else if id === "Anime & Manga"}
-								{#snippet anime(name: string, src: string)}
-									<div class="anime-media">
-										<img class="h-full w-full rounded-xl object-cover" {src} alt="" />
-										<p class="absolute bottom-1 left-3 z-10 text-2xl font-bold text-white">
-											{name}
-										</p>
-									</div>
-								{/snippet}
-
 								<div class="anime-grid mt-4">
-									{@render anime("Attack on Titan", "/previews/aot.jpg")}
-									{@render anime("Jujutsu Kaisen", "/previews/nah-id-win.jpg")}
-									{@render anime("Demon Slayer", "/previews/demon-slayer.webp")}
-									{@render anime("Berserk", "/previews/berserk.avif")}
+									{@render media("Attack on Titan", "/previews/aot.jpg")}
+									{@render media("JJK", "/previews/nah-id-win.jpg")}
+									{@render media("Demon Slayer", "/previews/demon-slayer.webp")}
+									{@render media("Berserk", "/previews/berserk.avif")}
+								</div>
+							{:else if id === "Games"}
+								<div class="game-grid mt-4">
+									{@render media("Elden Ring", "/previews/elden-ring.avif")}
+									{@render media("Outer Wilds", "/previews/outer-wilds.webp")}
+									{@render media("Ultrakill", "/previews/ultrakill.jpg")}
+									{@render media("Animal Well", "/previews/animal-well.jpg")}
+								</div>
+							{:else if id === "Music"}
+								<div class="music-grid mt-4">
+									{@render media("Spiritbox", "/previews/spiritbox.jpg")}
+									{@render media("Nothing but Thieves", "/previews/moral-panic.jpg")}
+									{@render media("Deftones", "/previews/white-pony.jpg")}
+									{@render media("Slipknot", "/previews/iowa.jpg")}
 								</div>
 							{/if}
 						</div>
@@ -143,7 +122,7 @@
 
 <style>
 	[data-melt-tabs-content] {
-		width: 550px;
+		width: min(550px, 80vw);
 	}
 
 	[class*="-grid"] {
@@ -152,12 +131,12 @@
 		gap: 1rem;
 	}
 
-	[class*="-media"] {
+	.media {
 		position: relative;
 		object-fit: cover;
 	}
 
-	[class*="-media"]::after {
+	.media::after {
 		position: absolute;
 		content: "";
 		inset: 0;
@@ -205,5 +184,47 @@
 
 	.anime-grid > :nth-child(4) {
 		grid-column: 6 / 13;
+	}
+
+	/* Games */
+	.game-grid {
+		grid-template-rows: 260px 200px;
+	}
+
+	.game-grid > :nth-child(1) {
+		grid-column: 1 / 13;
+	}
+
+	.game-grid > :nth-child(2) {
+		grid-column: 1 / 5;
+	}
+
+	.game-grid > :nth-child(3) {
+		grid-column: 5 / 9;
+	}
+
+	.game-grid > :nth-child(4) {
+		grid-column: 9 / 13;
+	}
+
+	/* Music */
+	.music-grid {
+		grid-template-rows: repeat(2, 220px);
+	}
+
+	.music-grid > :nth-child(1) {
+		grid-column: 1 / 7;
+	}
+
+	.music-grid > :nth-child(2) {
+		grid-column: 7 / 13;
+	}
+
+	.music-grid > :nth-child(3) {
+		grid-column: 1 / 7;
+	}
+
+	.music-grid > :nth-child(4) {
+		grid-column: 7 / 13;
 	}
 </style>
