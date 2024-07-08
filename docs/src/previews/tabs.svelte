@@ -1,34 +1,71 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
 	import { Tabs } from "@melt-ui/builders";
-	import { Debounced, ElementSize, Previous } from "runed";
+	import { Debounced, ElementSize, Previous, useDebounce, useEventListener, watch } from "runed";
 	import Transition from "@components/transition.svelte";
+	import { Map } from "svelte/reactivity";
 
 	const controls = usePreviewControls({
 		loop: { label: "Loop", defaultValue: true },
 		selectWhenFocused: { label: "Select when focused", defaultValue: true },
 	});
 
-	const tabIds = ["Movies & TV", "Anime", "Music", "Gaming"] as const;
+	const tabIds = ["Movies & TV", "Anime & Manga", "Gaming", "Music"] as const;
 	type TabId = (typeof tabIds)[number];
 	const tabs = new Tabs<TabId>({
+		value: "Anime & Manga",
 		loop: () => controls.loop,
 		selectWhenFocused: () => controls.selectWhenFocused,
-	});
-
-	const previousTab = new Previous(() => tabs.value);
-	const forwards = $derived.by(() => {
-		if (!previousTab.current) return true;
-		return tabIds.indexOf(tabs.value) > tabIds.indexOf(previousTab.current);
 	});
 
 	let inner = $state<HTMLElement>();
 	const innerSize = new ElementSize(() => inner);
 
-	// This is a little hack to ensure the transition classes get updated
-	// before the transition is triggerred.
-	const debouncedTab = new Debounced(() => tabs.value, 1);
-	const activeTab = $derived(debouncedTab.current);
+	const transitioningElements = new Map<Element, boolean>();
+	const transitioning = $derived([...transitioningElements.values()].some(Boolean));
+	$inspect(transitioningElements);
+
+	function detectTransitions(node: HTMLElement) {
+		const children = [...node.children];
+		children.forEach((c) => {
+			useEventListener(
+				() => c,
+				"transitionstart",
+				() => {
+					transitioningElements.set(c, true);
+				},
+			);
+			useEventListener(
+				() => c,
+				"transitionend",
+				() => {
+					transitioningElements.set(c, false);
+				},
+			);
+			useEventListener(
+				() => c,
+				"transitioncancel",
+				() => {
+					transitioningElements.set(c, false);
+				},
+			);
+		});
+	}
+
+	let activeTab = $state<TabId>(tabs.value);
+	// Hack to make sure transitions behave
+	const debouncedTab = new Debounced(() => activeTab, 1);
+
+	$effect(() => {
+		if (transitioning) return;
+		activeTab = tabs.value;
+	});
+
+	const previousTab = new Previous(() => activeTab);
+	const forwards = $derived.by(() => {
+		if (!previousTab.current) return true;
+		return tabIds.indexOf(tabs.value) > tabIds.indexOf(previousTab.current);
+	});
 </script>
 
 <Preview>
@@ -46,30 +83,28 @@
 		</div>
 
 		<div
-			class="relative overflow-visible transition-all duration-500"
-			style="height: {innerSize.height}px"
+			class="relative overflow-visible transition-all duration-300"
+			style="height: {innerSize.height ? `${innerSize.height}px` : 'auto'}"
 		>
-			<div class="inner" bind:this={inner}>
+			<div class="inner" bind:this={inner} use:detectTransitions>
 				{#each tabIds as id}
-					{@const isActive = id === activeTab}
+					{@const isActive = id === debouncedTab.current}
 					<Transition
 						show={isActive}
-						leaveFrom="-translate-x-1/2 duration-0"
-						leaveTo="opacity-0 {forwards ? '-translate-x-full' : 'translate-x-full'}"
-						leave="absolute left-1/2 duration-500"
-						enterFrom="opacity-0 {forwards ? 'translate-x-full' : '-translate-x-full'} "
-						enter="duration-500"
+						leaveFrom="-translate-x-1/2 !duration-0"
+						leaveTo="opacity-0 {forwards
+							? 'translate-x-[calc(-50%-5rem)]'
+							: 'translate-x-[calc(-50%+5rem)]'}"
+						leave="absolute left-1/2 duration-300"
+						enterFrom="opacity-0 {forwards ? 'translate-x-[5rem]' : 'translate-x-[-5rem]'} "
+						enter="duration-300 relative z-10"
 					>
-						<div
-							{...tabs.getContent(id)}
-							class="top-0 !block transition
-						"
-						>
+						<div {...tabs.getContent(id)} class="top-0 !block">
 							{#if id === "Movies & TV"}
 								{#snippet movie(name: string, src: string)}
-									<div class="movie">
+									<div class="movie-media">
 										<img class="h-full w-full rounded-xl object-cover" {src} alt="" />
-										<p class="absolute bottom-3 left-3 z-10 text-2xl font-bold text-white">
+										<p class="absolute bottom-2 left-3 z-10 text-2xl font-bold text-white">
 											{name}
 										</p>
 									</div>
@@ -81,33 +116,21 @@
 									{@render movie("Severance", "/previews/severance.jpg")}
 									{@render movie("The Truman Show", "/previews/truman-show.jpg")}
 								</div>
-							{:else if id === "Anime"}
-								{#snippet movie(name: string, src: string)}
-									<div class="movie">
+							{:else if id === "Anime & Manga"}
+								{#snippet anime(name: string, src: string)}
+									<div class="anime-media">
 										<img class="h-full w-full rounded-xl object-cover" {src} alt="" />
-										<p class="absolute bottom-3 left-3 z-10 text-2xl font-bold text-white">
+										<p class="absolute bottom-1 left-3 z-10 text-2xl font-bold text-white">
 											{name}
 										</p>
 									</div>
 								{/snippet}
 
-								<div class="movie-grid mt-4">
-									{@render movie("Oldboy", "/previews/oldboy.jpg")}
-									{@render movie("Breaking Bad", "/previews/breaking-bad.jpg")}
-								</div>
-							{:else if id === "Music"}
-								{#snippet movie(name: string, src: string)}
-									<div class="movie">
-										<img class="h-full w-full rounded-xl object-cover" {src} alt="" />
-										<p class="absolute bottom-3 left-3 z-10 text-2xl font-bold text-white">
-											{name}
-										</p>
-									</div>
-								{/snippet}
-
-								<div class="movie-grid mt-4">
-									{@render movie("Oldboy", "/previews/severance.jpg")}
-									{@render movie("Breaking Bad", "/previews/breaking-bad.jpg")}
+								<div class="anime-grid mt-4">
+									{@render anime("Attack on Titan", "/previews/aot.jpg")}
+									{@render anime("Jujutsu Kaisen", "/previews/nah-id-win.jpg")}
+									{@render anime("Demon Slayer", "/previews/demon-slayer.webp")}
+									{@render anime("Berserk", "/previews/berserk.avif")}
 								</div>
 							{/if}
 						</div>
@@ -123,23 +146,28 @@
 		width: 550px;
 	}
 
-	.movie-grid {
+	[class*="-grid"] {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);
 		gap: 1rem;
 	}
 
-	.movie {
+	[class*="-media"] {
 		position: relative;
-		height: 250px;
+		object-fit: cover;
 	}
 
-	.movie::after {
+	[class*="-media"]::after {
 		position: absolute;
 		content: "";
 		inset: 0;
 		z-index: 1;
 		background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+	}
+
+	/* Movies */
+	.movie-grid {
+		grid-template-rows: repeat(auto-fill, 250px);
 	}
 
 	.movie-grid > :nth-child(1) {
@@ -155,6 +183,27 @@
 	}
 
 	.movie-grid > :nth-child(4) {
+		grid-column: 6 / 13;
+	}
+
+	/* Anime */
+	.anime-grid {
+		grid-template-rows: repeat(auto-fill, 200px);
+	}
+
+	.anime-grid > :nth-child(1) {
+		grid-column: 1 / 9;
+	}
+
+	.anime-grid > :nth-child(2) {
+		grid-column: 9 / 13;
+	}
+
+	.anime-grid > :nth-child(3) {
+		grid-column: 1 / 6;
+	}
+
+	.anime-grid > :nth-child(4) {
 		grid-column: 6 / 13;
 	}
 </style>

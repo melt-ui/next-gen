@@ -13,18 +13,54 @@
 	class Context {
 		// Observable state for child transitions
 		show = $state<boolean | null>(null);
-		appear: boolean;
+		applyImmediately: boolean;
 		// number of child transitions that need to be waited before completed
 		count: number;
 		// method to communicate child transition completion
 		completed: (() => Promise<void>) | (() => void) = () => {};
 
-		constructor(config: { appear?: boolean; count: number; completed: () => void }) {
-			this.appear = config.appear ?? false;
+		constructor(config: { applyImmediately?: boolean; count: number; completed: () => void }) {
+			this.applyImmediately = config.applyImmediately ?? false;
 			this.count = config.count ?? 0;
 			this.completed = config.completed ?? (() => {});
 		}
 	}
+
+	export interface TransitionProps {
+		/** state of element (shown or hidden), if null this we are treated as a child
+		 * transition and will get the state from our parent, coordinating with it */
+		show?: boolean | null;
+
+		/** apply transition when element is first rendered (i.e. animate in) */
+		applyImmediately?: boolean;
+
+		/** whether the element should be removed from the DOM (vs hidden) */
+		unmount?: boolean;
+
+		/** classes to apply when entering (showing) */
+		enter?: string;
+		enterFrom?: string;
+		enterTo?: string;
+
+		/** classes to apply when leaving (hiding) */
+		leave?: string;
+		leaveFrom?: string;
+		leaveTo?: string;
+
+		/** children */
+		children: Snippet;
+
+		/** events */
+		beforeEnter?: () => void;
+		afterEnter?: () => void;
+		beforeLeave?: () => void;
+		afterLeave?: () => void;
+	}
+</script>
+
+<script lang="ts">
+	import { getContext, setContext, tick, type Snippet } from "svelte";
+	import { watch } from "runed";
 
 	// convert a string of class names into an array, for use with DOM methods
 	function classes(classes: string) {
@@ -37,31 +73,6 @@
 		return new Promise((resolve) => raf(() => raf(resolve)));
 	}
 
-	export interface TransitionProps {
-		/** state of element (shown or hidden), if null this we are treated as a child
-		 * transition and will get the state from our parent, coordinating with it */
-		show?: boolean | null;
-		/** apply transition when element is first rendered (i.e. animate in) */
-		applyImmediately?: boolean;
-		/** whether the element should be removed from the DOM (vs hidden) */
-		unmount?: boolean;
-		/** classes to apply when entering (showing) */
-		enter?: string;
-		enterFrom?: string;
-		enterTo?: string;
-		/** classes to apply when leaving (hiding) */
-		leave?: string;
-		leaveFrom?: string;
-		leaveTo?: string;
-		/** children */
-		children: Snippet;
-	}
-</script>
-
-<script lang="ts">
-	import { getContext, setContext,  tick, type Snippet } from "svelte";
-	import { watch } from "runed";
-
 	const {
 		show = null,
 		applyImmediately,
@@ -73,6 +84,7 @@
 		leaveFrom = "",
 		leaveTo = "",
 		children,
+		...rest
 	}: TransitionProps = $props();
 
 	// convert class strings to arrays, for easier use with DOM elements
@@ -91,7 +103,7 @@
 
 	// create our own context (which will also become parent for any children)
 	const context = new Context({
-		appear: parent ? parent.appear : applyImmediately,
+		applyImmediately: parent ? parent.applyImmediately : applyImmediately,
 		count: 0,
 		completed: () => {},
 	});
@@ -100,7 +112,7 @@
 	setContext(CTX_KEY, context);
 
 	// set initial state
-	let display = $state(show && !context.appear ? "contents" : "none");
+	let display = $state(show && !context.applyImmediately ? "contents" : "none");
 	let mounted = $state(!unmount || show === true);
 
 	// use action that hooks into our wrapper div and manages everything
@@ -149,6 +161,14 @@
 				: Promise.resolve();
 		}
 
+		async function ensureMountedElement() {
+			if (unmount && !mounted) {
+				mounted = true;
+				await tick(); // give slot chance to render
+			}
+			return node.firstElementChild as HTMLElement;
+		}
+
 		async function apply(show: boolean, base: string[], from: string[], to: string[]) {
 			el = await ensureMountedElement();
 
@@ -182,26 +202,18 @@
 			resolveCompleted();
 		}
 
-		async function ensureMountedElement() {
-			if (unmount && !mounted) {
-				mounted = true;
-				await tick(); // give slot chance to render
-			}
-			return node.firstElementChild as HTMLElement;
-		}
-
 		async function enter() {
-			// dispatch("before-enter");
+			rest.beforeEnter?.();
 
 			display = "contents";
 
 			await apply(true, enterClasses, enterFromClasses, enterToClasses);
 
-			// dispatch("after-enter");
+			rest.afterEnter?.();
 		}
 
 		async function leave() {
-			// dispatch("before-leave");
+			rest.beforeLeave?.();
 
 			await apply(false, leaveClasses, leaveFromClasses, leaveToClasses);
 
@@ -211,12 +223,12 @@
 				mounted = false;
 			}
 
-			// dispatch("after-leave");
+			rest.afterLeave?.();
 		}
 
 		// execute is always called, even for the initial render, so we use a flag
-		// to prevent a transition running unless appear is set for animating in
-		let run = context.appear;
+		// to prevent a transition running unless applyImmediately is set for animating in
+		let shouldRun = context.applyImmediately;
 
 		// temp fix for Svelte 5 issue #11448
 		let showPrev: boolean | null;
@@ -230,10 +242,16 @@
 			showPrev = show;
 
 			// run appropriate transition, set promise for completion
-			executing = run ? (show ? executing.then(enter) : executing.then(leave)) : Promise.resolve();
+			function getExecuting() {
+				if (shouldRun) {
+					return show ? executing.then(enter) : executing.then(leave);
+				}
+				return Promise.resolve();
+			}
+			executing = getExecuting();
 
 			// play transitions on all subsequent calls ...
-			run = true;
+			shouldRun = true;
 		}
 
 		// to wait for in-progress transitions to complete
@@ -245,7 +263,7 @@
 			// child updates happen here, as show propery is updated by the parent, which triggers the transition
 			watch(() => parent.show, execute);
 		} else {
-			// otherwise, first run through to set initial state (and possibly, 'appear' transition)
+			// otherwise, first run through to set initial state (and possibly, 'applyImmediately' transition)
 			execute(show);
 		}
 

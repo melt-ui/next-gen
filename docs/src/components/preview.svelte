@@ -167,13 +167,13 @@
 		transition:
 			opacity 0.15s var(--ease-out-quad),
 			scale 0.15s var(--ease-out-quad),
-			translate 0.15s var(--ease-out-quad);
+			translate 0.15s var(--ease-out-quad) 0.15s;
 	}
 
 	[data-preview][data-open="true"] {
 		transition:
-			opacity 0.15s var(--ease-out-quad),
-			scale 0.15s var(--ease-out-quad),
+			opacity 0.15s var(--ease-out-quad) 0.15s,
+			scale 0.15s var(--ease-out-quad) 0.15s,
 			translate 0.15s var(--ease-out-quad);
 	}
 </style>
