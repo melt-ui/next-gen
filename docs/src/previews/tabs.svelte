@@ -34,8 +34,11 @@
 
 	const previousTab = new Previous(() => activeTab);
 	const forwards = $derived.by(() => {
-		if (!previousTab.current) return true;
-		return tabIds.indexOf(tabs.value) > tabIds.indexOf(previousTab.current);
+		const prevIndex = tabIds.indexOf(previousTab.current ?? tabIds[0]);
+		const currIndex = tabIds.indexOf(activeTab);
+
+		const isLooping = [prevIndex, currIndex].every((i) => i === 0 || i === tabIds.length - 1);
+		return isLooping ? prevIndex > currIndex : prevIndex < currIndex;
 	});
 </script>
 
