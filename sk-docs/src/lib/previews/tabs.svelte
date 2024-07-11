@@ -2,7 +2,7 @@
 	import Preview, { usePreviewControls } from "$lib/components/preview.svelte";
 	import { Tabs } from "@melt-ui/builders";
 	import { Debounced, ElementSize, Previous } from "runed";
-	import Transition from "@components/transition.svelte";
+	import Transition from "$lib/components/transition.svelte";
 
 	const controls = usePreviewControls({
 		loop: { label: "Loop", defaultValue: true },
