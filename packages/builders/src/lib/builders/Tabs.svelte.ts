@@ -1,10 +1,11 @@
 import { extract } from "$lib/utils/extract.svelte";
+import { nanoid } from "nanoid";
 import { Synced } from "../Synced.svelte";
 import type { MaybeGetter } from "../types";
 import { createIdentifiers } from "../utils/identifiers.svelte";
 import { isHtmlElement } from "../utils/is";
 
-const TRIGGER_KEYS = ["ArrowLeft", "ArrowRight", "Home", "End"];
+const TRIGGER_KEYS = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
 
 const identifiers = createIdentifiers("tabs", ["trigger", "content", "trigger-list"]);
 
@@ -21,6 +22,12 @@ export type TabsProps<T extends string = string> = {
 	 * @default true
 	 */
 	loop?: MaybeGetter<boolean | undefined>;
+	/**
+	 * The orientation of the tabs.
+	 *
+	 * @default "horizontal"
+	 */
+	orientation?: MaybeGetter<"horizontal" | "vertical">;
 	/**
 	 * The default value for `tabs.value`
 	 *
@@ -40,13 +47,24 @@ export type TabsProps<T extends string = string> = {
 
 export class Tabs<T extends string = string> {
 	#value: Synced<T>;
+	#id = nanoid();
+	/* Props */
 	#props!: TabsProps<T>;
-	#selectWhenFocused = $derived(extract(this.#props.selectWhenFocused, true));
-	#loop = $derived(extract(this.#props.loop, true));
+	readonly selectWhenFocused = $derived(extract(this.#props.selectWhenFocused, true));
+	readonly loop = $derived(extract(this.#props.loop, true));
+	readonly orientation = $derived(extract(this.#props.orientation, "horizontal"));
 
 	constructor(props: TabsProps<T> = {}) {
-		this.#props = props
+		this.#props = props;
 		this.#value = new Synced<T>(props.value as T, props.onValueChange);
+	}
+
+	#getTriggerId(value: T) {
+		return `${this.#id}-trigger-${value.replace(/\s/g, "_")}`;
+	}
+
+	#getContentId(value: T) {
+		return `${this.#id}-content-${value.replace(/\s/g, "_")}`;
 	}
 
 	/** The current selected tab. */
@@ -63,6 +81,8 @@ export class Tabs<T extends string = string> {
 		return {
 			[identifiers["trigger-list"]]: "",
 			role: "tablist",
+			"aria-orientation": this.orientation,
+			"data-orientation": this.orientation,
 		} as const;
 	}
 
@@ -78,6 +98,8 @@ export class Tabs<T extends string = string> {
 			tabindex: this.value === value ? 0 : -1,
 			role: "tab",
 			"aria-selected": this.value === value,
+			"aria-controls": this.#getContentId(value),
+			"data-orientation": this.orientation,
 			onclick: () => (this.value = value),
 			onkeydown: (e: KeyboardEvent) => {
 				const el = e.target;
@@ -93,15 +115,19 @@ export class Tabs<T extends string = string> {
 
 				const currIndex = triggers.indexOf(el);
 				let next = el as Element | undefined;
+
+				const prevKey = this.orientation === "horizontal" ? "ArrowLeft" : "ArrowUp";
+				const nextKey = this.orientation === "horizontal" ? "ArrowRight" : "ArrowDown";
+				console.log(currIndex, prevKey, nextKey);
 				switch (e.key) {
-					case "ArrowLeft": {
-						next = this.#loop
+					case prevKey: {
+						next = this.loop
 							? triggers.at(currIndex - 1)
 							: triggers.at(Math.max(currIndex - 1, 0));
 						break;
 					}
-					case "ArrowRight": {
-						next = this.#loop
+					case nextKey: {
+						next = this.loop
 							? triggers.at((currIndex + 1) % triggers.length)
 							: triggers.at(currIndex + 1);
 						break;
@@ -119,10 +145,11 @@ export class Tabs<T extends string = string> {
 				if (!isHtmlElement(next)) return;
 				next.focus();
 
-				if (this.#selectWhenFocused) {
+				if (this.selectWhenFocused) {
 					this.value = next.getAttribute(identifiers.trigger) as T;
 				}
 			},
+			id: this.#getTriggerId(value),
 		} as const;
 	}
 
@@ -132,6 +159,10 @@ export class Tabs<T extends string = string> {
 			[identifiers.content]: "",
 			hidden: this.value !== value,
 			"data-active": this.value === value ? "" : undefined,
+			role: "tabpanel",
+			id: this.#getContentId(value),
+			"aria-labelledby": this.#getTriggerId(value),
+			"data-orientation": this.orientation,
 		} as const;
 	}
 }

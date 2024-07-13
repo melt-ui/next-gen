@@ -5,8 +5,14 @@
 	import Transition from "@components/transition.svelte";
 
 	const controls = usePreviewControls({
-		loop: { label: "Loop", defaultValue: true },
-		selectWhenFocused: { label: "Select when focused", defaultValue: true },
+		loop: { label: "Loop", defaultValue: true, type: "boolean" },
+		selectWhenFocused: { label: "Select when focused", defaultValue: true, type: "boolean" },
+		orientation: {
+			label: "Orientation",
+			defaultValue: "vertical",
+			type: "select",
+			options: ["horizontal", "vertical"],
+		},
 	});
 
 	const tabIds = ["Movies & TV", "Anime & Manga", "Games", "Music"] as const;
@@ -15,6 +21,7 @@
 		value: "Movies & TV",
 		loop: () => controls.loop,
 		selectWhenFocused: () => controls.selectWhenFocused,
+		orientation: () => controls.orientation,
 	});
 
 	let inner = $state<HTMLElement>();
@@ -40,14 +47,46 @@
 		const isLooping = [prevIndex, currIndex].every((i) => i === 0 || i === tabIds.length - 1);
 		return isLooping ? prevIndex > currIndex : prevIndex < currIndex;
 	});
+
+	const transitionConfigs = $derived({
+		horizontal: {
+			leaveFrom: "-translate-x-1/2 !duration-0",
+			leaveTo: `opacity-0 ${forwards ? "translate-x-[calc(-50%-5rem)]" : "translate-x-[calc(-50%+5rem)]"}`,
+			leave: "absolute left-1/2 duration-300",
+			enterFrom: `opacity-0 ${forwards ? "translate-x-[5rem]" : "translate-x-[-5rem]"}`,
+			enter: "duration-300 relative z-10",
+		},
+		vertical: {
+			leaveFrom: "-translate-y-1/2 !duration-0",
+			leaveTo: `opacity-0 ${forwards ? "translate-y-[calc(-50%-5rem)]" : "translate-y-[calc(-50%+5rem)]"}`,
+			leave: "absolute top-1/2 duration-300",
+			enterFrom: `opacity-0 ${forwards ? "translate-y-[10rem]" : "translate-y-[-10rem]"}`,
+			enter: "duration-300 relative z-10",
+			enterTo: "translate-y-0",
+		},
+	});
+	const transitionConfig = $derived(transitionConfigs[tabs.orientation]);
 </script>
 
 <Preview>
-	<div class="flex h-[700px] flex-col items-center justify-center">
-		<div class="flex w-full flex-wrap items-center justify-center gap-2" {...tabs.triggerList}>
+	<div
+		class="h-[700px] items-center gap-4
+		{tabs.orientation === 'horizontal'
+			? 'flex flex-col items-center justify-center'
+			: 'grid grid-cols-12'}
+		"
+	>
+		<div
+			class="flex w-full flex-wrap overflow-clip
+			{tabs.orientation === 'horizontal'
+				? 'items-center justify-center gap-2'
+				: 'flex-col justify-center col-span-3'}
+			"
+			{...tabs.triggerList}
+		>
 			{#each tabIds as id}
 				<button
-					class="focus-visible:ring-accent-600 min-w-0 shrink-0 cursor-pointer whitespace-nowrap rounded-full bg-transparent px-4 py-1 font-medium
+					class="focus-visible:ring-accent-600 text-ellipsis overflow-clip min-w-0 max-w-full cursor-pointer whitespace-nowrap rounded-full bg-transparent px-4 py-1 text-start font-medium
 					outline-none transition focus-visible:ring-4 data-[active]:bg-white data-[active]:text-black [&:not([data-active])]:hover:bg-white/10"
 					{...tabs.getTrigger(id)}
 				>
@@ -69,7 +108,8 @@
 		{/snippet}
 
 		<div
-			class="relative overflow-visible transition-all duration-300"
+			class="relative overflow-visible transition-all duration-300
+			{tabs.orientation === 'horizontal' ? '' : 'col-span-9'}"
 			style="height: {innerSize.height ? `${innerSize.height}px` : 'auto'}"
 		>
 			<div class="inner" bind:this={inner}>
@@ -77,38 +117,36 @@
 					{@const isActive = id === debouncedTab.current}
 					<Transition
 						show={isActive}
-						leaveFrom="-translate-x-1/2 !duration-0"
-						leaveTo="opacity-0 {forwards
-							? 'translate-x-[calc(-50%-5rem)]'
-							: 'translate-x-[calc(-50%+5rem)]'}"
-						leave="absolute left-1/2 duration-300"
-						enterFrom="opacity-0 {forwards ? 'translate-x-[5rem]' : 'translate-x-[-5rem]'} "
-						enter="duration-300 relative z-10"
+						leaveFrom={transitionConfig.leaveFrom}
+						leaveTo={transitionConfig.leaveTo}
+						leave={transitionConfig.leave}
+						enterFrom={transitionConfig.enterFrom}
+						enter={transitionConfig.enter}
 					>
 						<div {...tabs.getContent(id)} class="top-0 !block">
 							{#if id === "Movies & TV"}
-								<div class="movie-grid mt-4">
+								<div class="movie-grid">
 									{@render media("Breaking Bad", "/previews/breaking-bad.jpg")}
 									{@render media("Oldboy", "/previews/oldboy.jpg")}
 									{@render media("Severance", "/previews/severance.jpg")}
 									{@render media("The Truman Show", "/previews/truman-show.jpg")}
 								</div>
 							{:else if id === "Anime & Manga"}
-								<div class="anime-grid mt-4">
+								<div class="anime-grid">
 									{@render media("Attack on Titan", "/previews/aot.jpg")}
 									{@render media("JJK", "/previews/nah-id-win.jpg")}
 									{@render media("Demon Slayer", "/previews/demon-slayer.webp")}
 									{@render media("Berserk", "/previews/berserk.avif")}
 								</div>
 							{:else if id === "Games"}
-								<div class="game-grid mt-4">
+								<div class="game-grid">
 									{@render media("Elden Ring", "/previews/elden-ring.avif")}
 									{@render media("Outer Wilds", "/previews/outer-wilds.webp")}
 									{@render media("Ultrakill", "/previews/ultrakill.jpg")}
 									{@render media("Animal Well", "/previews/animal-well.jpg")}
 								</div>
 							{:else if id === "Music"}
-								<div class="music-grid mt-4">
+								<div class="music-grid">
 									{@render media("Spiritbox", "/previews/spiritbox.jpg")}
 									{@render media("Nothing but Thieves", "/previews/moral-panic.jpg")}
 									{@render media("Deftones", "/previews/white-pony.jpg")}
@@ -124,8 +162,8 @@
 </Preview>
 
 <style>
-	[data-melt-tabs-content] {
-		width: min(550px, 80vw);
+	[data-melt-tabs-content][data-orientation="horizontal"] {
+		width: min(550px, 50vw);
 	}
 
 	[class*="-grid"] {

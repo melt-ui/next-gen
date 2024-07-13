@@ -2,53 +2,63 @@
 	type BooleanControl = {
 		label: string;
 		defaultValue: boolean;
+		type: "boolean";
 	};
 
+	type SelectControl = {
+		label: string;
+		defaultValue: string;
+		options: string[];
+		type: "select";
+	};
+
+	type Control = BooleanControl | SelectControl;
+
 	type NormalizeType<T> = T extends string
-		? string
+		? T
 		: T extends number
-			? number
+			? T
 			: T extends boolean
 				? boolean
-				: T extends Record<string, any>
+				: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+					T extends Record<string, any>
 					? T
 					: never;
 
-	type Context<Schema extends Record<string, BooleanControl>> = {
-		controls: {
-			[K in keyof Schema]: NormalizeType<Schema[K]["defaultValue"]>;
+	type SchemaExtends = Record<string, Control>;
+
+	type Context<Schema extends SchemaExtends> = {
+		values: {
+			[K in keyof Schema]: NormalizeType<
+				Schema[K] extends SelectControl ? Schema[K]["options"][number] : Schema[K]["defaultValue"]
+			>;
 		};
-		labels: {
-			[K in keyof Schema]: Schema[K]["label"];
-		};
+		schema: Schema;
 	};
 
 	const ctx = {
-		set<Schema extends Record<string, BooleanControl>>(ctx: Context<Schema>) {
+		set<Schema extends SchemaExtends>(ctx: Context<Schema>) {
 			return setContext(CTX_KEY, ctx);
 		},
-		get<Schema extends Record<string, BooleanControl>>() {
+		get<Schema extends SchemaExtends>() {
 			return getContext<Context<Schema>>(CTX_KEY) ?? {};
 		},
 	};
 
 	const CTX_KEY = Symbol();
 
-	export function usePreviewControls<Schema extends Record<string, BooleanControl>>(
+	export function usePreviewControls<const Schema extends SchemaExtends>(
 		schema: Schema,
-	): Context<Schema>["controls"] {
-		const controls = $state(
+	): Context<Schema>["values"] {
+		const values = $state(
 			objectMap(schema, (key, { defaultValue }) => {
 				return [key, defaultValue];
 			}),
-		) as Context<Schema>["controls"];
-		const labels = objectMap(schema, (key, { label }) => {
-			return [key, label];
-		}) as Context<Schema>["labels"];
+		) as Context<Schema>["values"];
 
-		ctx.set<Schema>({ controls, labels });
+		ctx.set<Schema>({ values, schema });
 
-		return controls;
+		return values;
 	}
 </script>
 
@@ -56,9 +66,9 @@
 	import { objectMap } from "@antfu/utils";
 	import { getContext, setContext, type Snippet } from "svelte";
 	import { linear } from "svelte/easing";
-	import { fade, fly, type TransitionConfig } from "svelte/transition";
+	import { fade, type TransitionConfig } from "svelte/transition";
 
-	const { controls, labels } = ctx.get();
+	const { values, schema } = ctx.get();
 
 	interface Props {
 		children: Snippet;
@@ -149,10 +159,19 @@
 		<hr class="mt-2 block h-[2px] rounded-full bg-gray-300/50 dark:bg-gray-600" />
 
 		<div class="mt-2 flex flex-col gap-2">
-			{#each Object.keys(controls ?? {}) as key}
-				<label class="flex items-center gap-1 text-sm font-medium">
-					<input type="checkbox" bind:checked={controls[key]} />
-					{labels[key]}
+			{#each Object.keys(values ?? {}) as key}
+				{@const control = schema[key]}
+				<label class="flex items-center justify-between gap-1 text-sm font-medium">
+					{control.label}
+					{#if control.type === "boolean"}
+						<input type="checkbox" bind:checked={values[key] as boolean} />
+					{:else if control.type === "select"}
+						<select bind:value={values[key] as string}>
+							{#each control.options as option}
+								<option value={option}>{option}</option>
+							{/each}
+						</select>
+					{/if}
 				</label>
 			{/each}
 		</div>
