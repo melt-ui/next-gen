@@ -9,7 +9,7 @@
 		selectWhenFocused: { label: "Select when focused", defaultValue: true, type: "boolean" },
 		orientation: {
 			label: "Orientation",
-			defaultValue: "vertical",
+			defaultValue: "horizontal",
 			type: "select",
 			options: ["horizontal", "vertical"],
 		},
