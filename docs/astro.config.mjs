@@ -1,8 +1,9 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import tailwind from "@astrojs/tailwind";
-
 import svelte from "@astrojs/svelte";
+import icons from "unplugin-icons/vite";
+import mdx from "@astrojs/mdx";
 
 // https://astro.build/config
 export default defineConfig({
@@ -62,5 +63,7 @@ export default defineConfig({
 			applyBaseStyles: false,
 		}),
 		svelte(),
+		icons({ compiler: "astro" }),
+		mdx(),
 	],
 });

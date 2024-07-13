@@ -20,6 +20,7 @@
 		"stripInternal": true,
 		"ignoreDeprecations": "5.0",
 		"suppressImplicitAnyIndexErrors": true,
-		"verbatimModuleSyntax": true
+		"verbatimModuleSyntax": true,
+		"types": ["unplugin-icons/types/astro"]
 	}
 }

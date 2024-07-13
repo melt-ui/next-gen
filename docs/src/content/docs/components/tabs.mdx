@@ -4,10 +4,12 @@ description: Organizes content into conditionally rendered sections, controlled 
 ---
 import ApiTable from "@components/api-table.astro";
 import TabsPreview from "@previews/tabs.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
 
 {/*
 Things I want:
-- Preview with props
+- Preview with props DONE
 - Show builder syntax
 - Show component syntax
 - Features
@@ -17,7 +19,55 @@ Things I want:
 
 ## Features
 
-## Anatomy
+<Features>
+- 🎹 Keyboard navigation
+- 🌐 RTL support
+- 🧠 Smart focus management
+- 🔄 Horizontal and vertical orientation
+</Features>
+
+## Usage
+
+<ThemedCode code={`
+<script lang="ts">
+import { TabsRoot, TabsTriggerList, TabsTrigger, TabsContent } from "melt";
+</script>
+
+<TabsRoot>
+	<TabsTriggerList>
+		{#each tabs as tab}
+			<TabsTrigger value={tab} />
+		{/each}
+	</TabsTriggerList>
+
+	{#each tabs as tab}
+		<TabsContent value={tab} />
+	{/each}
+</TabsRoot>
+`.trim()}
+lang="svelte" />
+
+<ThemedCode code={`
+<script lang="ts">
+	import { Tabs } from "melt";
+	const tabs = new Tabs()
+</script>
+
+<div {...tabs.triggerList}>
+	{#each tabIds as id}
+		<button {...tabs.getTrigger(id)}>
+			{id}
+		</button>
+	{/each}
+</div>
+
+{#each tabIds as id}
+	<div {...tabs.getContent(id)}>
+		{id}
+	</div>
+{/each}
+`.trim()}
+lang="svelte" />
 
 ## API Reference
 
