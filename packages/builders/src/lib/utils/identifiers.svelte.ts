@@ -6,6 +6,6 @@ export function createIdentifiers<const Parts extends string[]>(name: string, pa
 		},
 		{} as {
 			[P in Parts[number]]: `data-melt-${P}`;
-		}
+		},
 	);
 }

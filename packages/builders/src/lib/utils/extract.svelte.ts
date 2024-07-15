@@ -13,10 +13,9 @@ export function extract<T, D extends T>(
 		const getter = value as () => T;
 		const gotten = getter();
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		return (gotten ?? defaultValue ?? gotten) as any
+		return (gotten ?? defaultValue ?? gotten) as any;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return (value ?? defaultValue ?? value) as any
+	return (value ?? defaultValue ?? value) as any;
 }
-

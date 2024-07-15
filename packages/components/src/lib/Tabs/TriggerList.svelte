@@ -14,7 +14,7 @@
 	};
 	type Props = WithChildren | WithAsChild;
 
-	const {...rest }: Props = $props();
+	const { ...rest }: Props = $props();
 
 	const tabs = TabsCtx.get();
 </script>

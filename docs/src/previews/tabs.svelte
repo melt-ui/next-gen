@@ -80,13 +80,13 @@
 			class="flex w-full flex-wrap overflow-clip
 			{tabs.orientation === 'horizontal'
 				? 'items-center justify-center gap-2'
-				: 'flex-col justify-center col-span-3'}
+				: 'col-span-3 flex-col justify-center'}
 			"
 			{...tabs.triggerList}
 		>
 			{#each tabIds as id}
 				<button
-					class="focus-visible:ring-accent-600 text-ellipsis overflow-clip min-w-0 max-w-full cursor-pointer whitespace-nowrap rounded-full bg-transparent px-4 py-1 text-start font-medium
+					class="focus-visible:ring-accent-600 min-w-0 max-w-full cursor-pointer overflow-clip text-ellipsis whitespace-nowrap rounded-full bg-transparent px-4 py-1 text-start font-medium
 					outline-none transition focus-visible:ring-4 data-[active]:bg-white data-[active]:text-black [&:not([data-active])]:hover:bg-white/10"
 					{...tabs.getTrigger(id)}
 				>

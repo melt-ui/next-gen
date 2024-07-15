@@ -71,7 +71,7 @@ const sections: Section[] = [
 ];
 ---
 
-<div class="flex flex-col gap-4 !mt-8">
+<div class="!mt-8 flex flex-col gap-4">
 	{
 		sections.map((section) => (
 			<div>
@@ -83,13 +83,13 @@ const sections: Section[] = [
 				</div>
 				<ul class="ml-0 pl-0">
 					{section.stuff.map((entry) => (
-						<li class="list-none relative pl-6 py-0 !mt-8 ">
-							<div class="absolute left-0 top-0 h-full w-1.5 rounded-full overflow-hidden dark:bg-gray-700/50 bg-gray-200" />
-							<h4 class="!text-lg flex items-baseline gap-2">
-								<span class="font-mono bg-accent-200/50 dark:bg-accent-950 px-2 dark:text-accent-200 py-0.5 font-normal rounded-lg">
+						<li class="relative !mt-8 list-none py-0 pl-6">
+							<div class="absolute left-0 top-0 h-full w-1.5 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700/50" />
+							<h4 class="flex items-baseline gap-2 !text-lg">
+								<span class="bg-accent-200/50 dark:bg-accent-950 dark:text-accent-200 rounded-lg px-2 py-0.5 font-mono font-normal">
 									{entry.name}
 								</span>
-								<span class="italic font-light text-gray-400">
+								<span class="font-light italic text-gray-400">
 									{"optional" in entry && entry.optional ? "(optional)" : ""}
 								</span>
 							</h4>

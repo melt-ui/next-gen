@@ -17,5 +17,3 @@ export function omit<T extends Record<string, unknown>, K extends keyof T>(
 	}
 	return result;
 }
-
-

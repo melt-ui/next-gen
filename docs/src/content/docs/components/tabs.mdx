@@ -2,28 +2,28 @@
 title: Tabs
 description: Organizes content into conditionally rendered sections, controlled by a group of triggers.
 ---
+
 import ApiTable from "@components/api-table.astro";
 import TabsPreview from "@previews/tabs.svelte";
 import Features from "@components/features.astro";
 import ThemedCode from "@components/themed-code.astro";
 
-{/*
+{/\*
 Things I want:
+
 - Preview with props DONE
 - Show builder syntax
 - Show component syntax
 - Features
-*/}
+  \*/}
 
 <TabsPreview client:load />
 
 ## Features
 
 <Features>
-- 🎹 Keyboard navigation
-- 🧠 Smart focus management
-- 🔄 Horizontal and vertical orientation
-- 🌐 RTL support
+	- 🎹 Keyboard navigation - 🧠 Smart focus management - 🔄 Horizontal and vertical orientation - 🌐
+	RTL support
 </Features>
 
 ## Usage
@@ -40,9 +40,10 @@ import { TabsRoot, TabsTriggerList, TabsTrigger, TabsContent } from "melt";
 		{/each}
 	</TabsTriggerList>
 
-	{#each tabs as tab}
-		<TabsContent value={tab} />
-	{/each}
+    {#each tabs as tab}
+    	<TabsContent value={tab} />
+    {/each}
+
 </TabsRoot>
 `.trim()}
 lang="svelte" />
@@ -62,9 +63,10 @@ lang="svelte" />
 </div>
 
 {#each tabIds as id}
-	<div {...tabs.getContent(id)}>
-		{id}
-	</div>
+
+<div {...tabs.getContent(id)}>
+{id}
+</div>
 {/each}
 `.trim()}
 lang="svelte" />

@@ -121,9 +121,7 @@ export class Tabs<T extends string = string> {
 				console.log(currIndex, prevKey, nextKey);
 				switch (e.key) {
 					case prevKey: {
-						next = this.loop
-							? triggers.at(currIndex - 1)
-							: triggers.at(Math.max(currIndex - 1, 0));
+						next = this.loop ? triggers.at(currIndex - 1) : triggers.at(Math.max(currIndex - 1, 0));
 						break;
 					}
 					case nextKey: {
