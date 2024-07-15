@@ -4,6 +4,14 @@ import { Synced } from "../Synced.svelte";
 import type { MaybeGetter } from "../types";
 import { createIdentifiers } from "../utils/identifiers.svelte";
 import { isHtmlElement } from "../utils/is";
+import { attributes } from "$lib/utils/attributes/attribute";
+import { melt } from "$lib/utils/attributes/melt";
+import { role } from "$lib/utils/attributes/role";
+import { aria } from "$lib/utils/attributes/aria";
+import { data } from "$lib/utils/attributes/data";
+import { tabindex } from "$lib/utils/attributes/tabindex";
+import { on } from "$lib/utils/attributes/on";
+import { id } from "$lib/utils/attributes/id";
 
 const TRIGGER_KEYS = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
 
@@ -78,12 +86,12 @@ export class Tabs<T extends string = string> {
 
 	/** The attributes for the list that contains the tab triggers. */
 	get triggerList() {
-		return {
-			[identifiers["trigger-list"]]: "",
-			role: "tablist",
-			"aria-orientation": this.orientation,
-			"data-orientation": this.orientation,
-		} as const;
+		return attributes(
+			melt("part", "trigger-list"),
+			role("tablist"),
+			aria("orientation", this.orientation),
+			data("orientation", this.orientation),
+		);
 	}
 
 	/** Gets the attributes and listeners for a tab trigger. Requires an identifying tab value. */
@@ -92,26 +100,28 @@ export class Tabs<T extends string = string> {
 			this.value = value;
 		}
 
-		return {
-			[identifiers.trigger]: value,
-			"data-active": this.value === value ? "" : undefined,
-			tabindex: this.value === value ? 0 : -1,
-			role: "tab",
-			"aria-selected": this.value === value,
-			"aria-controls": this.#getContentId(value),
-			"data-orientation": this.orientation,
-			onclick: () => (this.value = value),
-			onkeydown: (e: KeyboardEvent) => {
+		return attributes(
+			melt("part", "trigger"),
+			id(this.#getTriggerId(value)),
+			tabindex(this.value === value ? 0 : -1),
+			role("tab"),
+			aria("selected", this.value === value),
+			aria("controls", this.#getContentId(value)),
+			data("orientation", this.orientation),
+			on("click", () => (this.value = value)),
+			on("click", () => {
+				this.value = value;
+			}),
+			on("keydown", (e) => {
 				const el = e.target;
 				if (!TRIGGER_KEYS.includes(e.key) || !isHtmlElement(el)) {
 					return;
 				}
-
 				e.preventDefault();
-				const triggerList = el.closest(`[${identifiers["trigger-list"]}]`);
+				const triggerList = el.closest(`[data-melt-part="trigger-list"]`);
 				if (!triggerList) return;
 
-				const triggers = [...triggerList.querySelectorAll(`[${identifiers.trigger}]`)];
+				const triggers = [...triggerList.querySelectorAll(`[data-melt-part="trigger"]`)];
 
 				const currIndex = triggers.indexOf(el);
 				let next = el as Element | undefined;
@@ -146,9 +156,8 @@ export class Tabs<T extends string = string> {
 				if (this.selectWhenFocused) {
 					this.value = next.getAttribute(identifiers.trigger) as T;
 				}
-			},
-			id: this.#getTriggerId(value),
-		} as const;
+			}),
+		);
 	}
 
 	/** Gets the attributes and listeners for the tabs contents. Requires an identifying tab value. */
