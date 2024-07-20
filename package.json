@@ -4,11 +4,12 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"dev": "pnpm --parallel dev",
+		"dev": "concurrently --kill-others \"pnpm --parallel dev\" \"pnpm watch-and-type\"",
 		"test": "vitest",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
-		"generate:api": "jiti scripts/typedocs.ts"
+		"generate:api": "jiti scripts/typedocs.ts",
+		"watch-and-type": "jiti scripts/watch-and-type.ts"
 	},
 	"keywords": [],
 	"author": "",
@@ -17,6 +18,8 @@
 	"devDependencies": {
 		"@types/eslint": "8.56.10",
 		"@types/glob": "^8.1.0",
+		"chokidar": "^3.6.0",
+		"concurrently": "^8.2.2",
 		"eslint": "^9.0.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-astro": "^1.2.3",
