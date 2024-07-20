@@ -77,7 +77,7 @@
 		"
 	>
 		<div
-			class="flex w-full flex-wrap overflow-clip
+			class="flex w-full flex-wrap overflow-x-clip
 			{tabs.orientation === 'horizontal'
 				? 'items-center justify-center gap-2'
 				: 'flex-col justify-center col-span-3'}

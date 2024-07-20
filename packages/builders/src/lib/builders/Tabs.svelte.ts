@@ -4,6 +4,7 @@ import { Synced } from "../Synced.svelte";
 import type { MaybeGetter } from "../types";
 import { createIdentifiers } from "../utils/identifiers.svelte";
 import { isHtmlElement } from "../utils/is";
+import { dataAttr } from "$lib/utils/attribute";
 
 const TRIGGER_KEYS = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
 
@@ -94,7 +95,7 @@ export class Tabs<T extends string = string> {
 
 		return {
 			[identifiers.trigger]: value,
-			"data-active": this.value === value ? "" : undefined,
+			"data-active": dataAttr(this.value === value),
 			tabindex: this.value === value ? 0 : -1,
 			role: "tab",
 			"aria-selected": this.value === value,
@@ -121,9 +122,7 @@ export class Tabs<T extends string = string> {
 				console.log(currIndex, prevKey, nextKey);
 				switch (e.key) {
 					case prevKey: {
-						next = this.loop
-							? triggers.at(currIndex - 1)
-							: triggers.at(Math.max(currIndex - 1, 0));
+						next = this.loop ? triggers.at(currIndex - 1) : triggers.at(Math.max(currIndex - 1, 0));
 						break;
 					}
 					case nextKey: {
@@ -158,7 +157,7 @@ export class Tabs<T extends string = string> {
 		return {
 			[identifiers.content]: "",
 			hidden: this.value !== value,
-			"data-active": this.value === value ? "" : undefined,
+			"data-active": dataAttr(this.value === value),
 			role: "tabpanel",
 			id: this.#getContentId(value),
 			"aria-labelledby": this.#getTriggerId(value),
