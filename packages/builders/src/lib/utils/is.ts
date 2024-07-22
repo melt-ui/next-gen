@@ -9,3 +9,7 @@ export function isFunction(value: unknown): value is (...args: unknown[]) => unk
 export function isObject(value: unknown): value is Record<PropertyKey, unknown> {
 	return value !== null && typeof value === "object";
 }
+
+export function isHtmlInputElement(element: unknown): element is HTMLInputElement {
+	return element instanceof HTMLInputElement;
+}

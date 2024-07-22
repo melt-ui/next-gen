@@ -75,5 +75,40 @@
         "description": "The attributes for the list that contains the tab triggers."
       }
     ]
+  },
+  "PinInput": {
+    "constructorProps": [
+      {
+        "name": "value",
+        "type": "MaybeGetter<string>\n",
+        "description": "The value for the Pin Input.\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that the value only changes when the getter returns a new value.\n\nOtherwise, if passing a static value, it'll serve as the default value.",
+        "defaultValue": "''",
+        "optional": true
+      },
+      {
+        "name": "onValueChange",
+        "type": "(value: string) => void\n",
+        "description": "Called when the `PinInput` instance tries to change the value.",
+        "optional": true
+      }
+    ],
+    "methods": [],
+    "properties": [
+      {
+        "name": "value",
+        "type": "string\n",
+        "description": ""
+      },
+      {
+        "name": "root",
+        "type": "{ readonly [x: number]: \"\"; readonly id: string }\n",
+        "description": ""
+      },
+      {
+        "name": "input",
+        "type": "{\n  readonly [x: number]: \"\"\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly oninput: (e: InputEvent) => void\n}\n",
+        "description": ""
+      }
+    ]
   }
 }
