@@ -113,6 +113,7 @@ const project = new Project({
 	compilerOptions: {
 		moduleResolution: ModuleResolutionKind.NodeNext,
 	},
+	tsConfigFilePath: "packages/builders/tsconfig.json",
 });
 const typeChecker = project.getTypeChecker();
 

@@ -12,7 +12,15 @@
 		type: "select";
 	};
 
-	type Control = BooleanControl | SelectControl;
+	type NumberControl = {
+		label: string;
+		defaultValue: number;
+		type: "number";
+		min?: number;
+		max?: number;
+	};
+
+	type Control = BooleanControl | SelectControl | NumberControl;
 
 	type NormalizeType<T> = T extends string
 		? T
@@ -171,6 +179,8 @@
 								<option value={option}>{option}</option>
 							{/each}
 						</select>
+					{:else if control.type === "number"}
+						<input type="number" bind:value={values[key] as number} min={control.min} max={control.max} />
 					{/if}
 				</label>
 			{/each}
