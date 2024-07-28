@@ -9,9 +9,18 @@
 			type: "number",
 			min: 1,
 			max: 8,
-		}
+		},
+		type: {
+			label: "Type",
+			type: "select",
+			options: ["alphanumeric", "numeric", "text"],
+			defaultValue: "text",
+		},
 	});
-	const pinInput = new PinInput({ maxLength: () => controls.maxLength });
+	const pinInput = new PinInput({
+		maxLength: () => controls.maxLength,
+		type: () => controls.type,
+	});
 </script>
 
 <Preview>
@@ -24,5 +33,4 @@
 			/>
 		{/each}
 	</div>
-	<pre class="mx-auto text-center">{pinInput.value}</pre>
 </Preview>

@@ -1,5 +1,5 @@
 import { Synced } from "$lib/Synced.svelte";
-import type { MaybeGetter } from "$lib/types";
+import type { Extracted, MaybeGetter } from "$lib/types";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { inBrowser } from "$lib/utils/browser";
 import { extract } from "$lib/utils/extract.svelte";
@@ -57,10 +57,21 @@ export type PinInputProps = {
 	/**
 	 * What characters the input accepts.
 	 *
-	 * @default 'alphanumeric'
+	 * @default 'text'
 	 */
 	type?: MaybeGetter<"alphanumeric" | "numeric" | "text">;
 };
+
+function validateInput(char: string, type: Extracted<PinInputProps["type"]>) {
+	switch (type) {
+		case "alphanumeric":
+			return /^[a-zA-Z0-9]$/.test(char);
+		case "numeric":
+			return /^[0-9]$/.test(char);
+		case "text":
+			return true;
+	}
+}
 
 export class PinInput {
 	#id = nanoid();
@@ -71,7 +82,7 @@ export class PinInput {
 	readonly placeholder = $derived(extract(this.#props.placeholder, "○"));
 	readonly disabled = $derived(extract(this.#props.disabled, false));
 	readonly mask = $derived(extract(this.#props.mask, false));
-	readonly type = $derived(extract(this.#props.type, "alphanumeric"));
+	readonly type = $derived(extract(this.#props.type, "text"));
 
 	/* State */
 	#value!: Synced<string>;
@@ -210,6 +221,10 @@ export class PinInput {
 				}
 				e.preventDefault();
 				const char = el.value.slice(el.value.length - 1);
+				if (!validateInput(char, this.type)) {
+					el.value = el.value.slice(0, -1);
+					return;
+				}
 				el.value = char;
 				this.#addCharAtIndex(char, index);
 

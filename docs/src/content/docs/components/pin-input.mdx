@@ -29,7 +29,16 @@ Things I want:
 ## Usage
 
 <ThemedCode code={`
+<script lang="ts">
+	import { PinInput } from "@melt-ui/builders";
+	const pinInput = new PinInput();
+</script>
 
+<div {...pinInput.root}>
+	{#each pinInput.inputs as input}
+		<input {...input} />
+	{/each}
+</div>
 `.trim()}
 lang="svelte" />
 
