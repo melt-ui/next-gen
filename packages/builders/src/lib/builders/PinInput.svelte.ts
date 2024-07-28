@@ -103,6 +103,7 @@ export class PinInput {
 		});
 	}
 
+	/** The root element's props. */
 	get root() {
 		return {
 			[identifiers.root]: "",
@@ -111,6 +112,7 @@ export class PinInput {
 		} as const;
 	}
 
+	/** An array of props that should be spread to the input elements. */
 	get inputs() {
 		return Array(this.maxLength)
 			.fill(0)
@@ -157,6 +159,17 @@ export class PinInput {
 						if (!this.value[index]) return;
 						e.preventDefault();
 						inputs.at(index + 1)?.focus();
+						break;
+					}
+					case "Home": {
+						e.preventDefault();
+						inputs[0]?.focus();
+						break;
+					}
+					case "End": {
+						e.preventDefault();
+						const lastFocusableIndex = Math.min(this.value.length, inputs.length - 1);
+						inputs[lastFocusableIndex]?.focus();
 						break;
 					}
 					case "Backspace": {

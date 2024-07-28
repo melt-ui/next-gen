@@ -167,12 +167,12 @@
       {
         "name": "root",
         "type": "{\n  readonly \"data-melt-root\": \"\"\n  readonly id: string\n  readonly \"data-complete\": \"\" | undefined\n}\n",
-        "description": ""
+        "description": "The root element's props."
       },
       {
         "name": "inputs",
         "type": "{\n  readonly \"data-melt-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"alphanumeric\" | \"numeric\" | \"text\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}[]\n",
-        "description": ""
+        "description": "An array of props that should be spread to the input elements."
       }
     ]
   }
