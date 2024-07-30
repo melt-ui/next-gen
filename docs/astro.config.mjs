@@ -64,4 +64,7 @@ export default defineConfig({
 		svelte(),
 		icons({ compiler: "astro" }),
 	],
+	vite: {
+		plugins: [icons({ compiler: "svelte" })],
+	},
 });

@@ -1,0 +1,43 @@
+---
+title: Toggle
+description: A trigger that can be toggled on and off.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/toggle.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+
+{/*
+Things I want:
+- Preview with props DONE
+- Show builder syntax
+- Show component syntax
+- Features
+*/}
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 💪 It works
+</Features>
+
+## Usage
+
+<ThemedCode code={`
+<script lang="ts">
+	import { Toggle } from "@melt-ui/builders";
+	const toggle = new Toggle();
+</script>
+
+<button {...toggle.trigger}>
+	{toggle.value ? "✅" : "❌"}
+</button>
+`.trim()}
+lang="svelte" />
+
+
+## API Reference
+
+<ApiTable entry="Toggle" />

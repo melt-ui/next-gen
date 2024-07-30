@@ -1,4 +1,51 @@
 {
+  "Toggle": {
+    "constructorProps": [
+      {
+        "name": "value",
+        "type": "MaybeGetter<boolean> | undefined\n",
+        "description": "The value for the Toggle.\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that the value only changes when the getter returns a new value.\n\nOtherwise, if passing a static value, it'll serve as the default value.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "onValueChange",
+        "type": "((value: boolean) => void) | undefined\n",
+        "description": "Called when the value is supposed to change.",
+        "optional": true
+      },
+      {
+        "name": "disabled",
+        "type": "MaybeGetter<boolean> | undefined\n",
+        "description": "If `true`, prevents the user from interacting with the input.",
+        "defaultValue": "false",
+        "optional": true
+      }
+    ],
+    "methods": [],
+    "properties": [
+      {
+        "name": "disabled",
+        "type": "boolean\n",
+        "description": ""
+      },
+      {
+        "name": "value",
+        "type": "boolean\n",
+        "description": ""
+      },
+      {
+        "name": "trigger",
+        "type": "{\n  readonly \"data-melt-trigger\": \"\"\n  readonly \"data-checked\": \"\" | undefined\n  readonly disabled: true | undefined\n  readonly onclick: () => void\n}\n",
+        "description": "The trigger that toggles the value."
+      },
+      {
+        "name": "hiddenInput",
+        "type": "{\n  readonly \"data-melt-hidden-input\": \"\"\n  readonly type: \"hidden\"\n  readonly value: \"on\" | \"off\"\n}\n",
+        "description": "A hidden input field to use within forms."
+      }
+    ]
+  },
   "Tabs": {
     "constructorProps": [
       {
@@ -171,7 +218,7 @@
       },
       {
         "name": "inputs",
-        "type": "{\n  readonly \"data-melt-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"alphanumeric\" | \"numeric\" | \"text\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}[]\n",
+        "type": "{\n  readonly \"data-melt-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"text\" | \"password\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}[]\n",
         "description": "An array of props that should be spread to the input elements."
       }
     ]

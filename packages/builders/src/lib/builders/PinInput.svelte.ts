@@ -149,7 +149,7 @@ export class PinInput {
 			[identifiers.input]: "",
 			placeholder: isFocused ? undefined : this.placeholder,
 			disabled: disabledAttr(this.disabled),
-			type: this.type,
+			type: this.mask ? "password" : "text",
 			"data-filled": dataAttr(isFilled),
 			tabindex: canFocus ? 0 : -1,
 			style: canFocus && isFocused && !isFilled ? undefined : "caret-color: transparent;",
