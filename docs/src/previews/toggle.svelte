@@ -17,11 +17,11 @@
 		disabled: () => controls.disabled,
 	});
 
-	const scale = spring(0, {damping: 0.105, stiffness: 0.07, precision: 0.03});
+	const scale = spring(0, { damping: 0.105, stiffness: 0.07, precision: 0.03 });
 	$effect(() => {
 		scale.set(toggle.value ? 1 : 0);
 	});
-	const absScale = $derived(Math.max(0, $scale))
+	const absScale = $derived(Math.max(0, $scale));
 </script>
 
 <Preview>
@@ -33,11 +33,11 @@
 			{...toggle.trigger}
 		>
 			<PhHeartFill
-				class="text-accent-200 absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 origin-center"
+				class="text-accent-200 absolute left-1/2 top-1/2 z-10 origin-center -translate-x-1/2 -translate-y-1/2"
 				style="--tw-scale-x: {absScale}; --tw-scale-y: {absScale}; "
 			/>
 			<PhHeartBold
-				class="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 opacity-30"
+				class="absolute left-1/2 top-1/2  -translate-x-1/2 -translate-y-1/2 opacity-30"
 			/>
 		</button>
 	</div>
