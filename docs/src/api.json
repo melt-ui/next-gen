@@ -123,6 +123,65 @@
       }
     ]
   },
+  "Popover": {
+    "constructorProps": [
+      {
+        "name": "open",
+        "type": "MaybeGetter<boolean> | undefined\n",
+        "description": "If the Popover is open.\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that the value only changes when the getter returns a new value.\n\nOtherwise, if passing a static value, it'll serve as the default value.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "onOpenChange",
+        "type": "((value: boolean) => void) | undefined\n",
+        "description": "Called when the value is supposed to change.",
+        "optional": true
+      },
+      {
+        "name": "mode",
+        "type": "MaybeGetter<\"auto\" | \"manual\"> | undefined\n",
+        "description": "The popover mode to use.",
+        "defaultValue": "\"auto\"",
+        "optional": true
+      },
+      {
+        "name": "forceVisible",
+        "type": "MaybeGetter<boolean> | undefined\n",
+        "description": "If the popover visibility should be controlled by the user.",
+        "defaultValue": "false",
+        "optional": true
+      }
+    ],
+    "methods": [],
+    "properties": [
+      {
+        "name": "mode",
+        "type": "\"auto\" | \"manual\"\n",
+        "description": ""
+      },
+      {
+        "name": "forceVisible",
+        "type": "boolean\n",
+        "description": ""
+      },
+      {
+        "name": "open",
+        "type": "boolean\n",
+        "description": ""
+      },
+      {
+        "name": "trigger",
+        "type": "{\n  readonly \"data-melt-trigger\": \"\"\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n}\n",
+        "description": "The trigger that toggles the value."
+      },
+      {
+        "name": "content",
+        "type": "{\n  id: string\n  \"data-melt-content\": string\n  popover: \"auto\" | \"manual\"\n  onbeforetoggle: (e: ToggleEvent) => void\n}\n",
+        "description": ""
+      }
+    ]
+  },
   "PinInput": {
     "constructorProps": [
       {

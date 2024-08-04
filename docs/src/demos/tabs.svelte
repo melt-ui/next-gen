@@ -30,7 +30,7 @@
 	});
 </script>
 
-<div class="flex gap-2 items-center" {...tabs.triggerList}>
+<div class="flex items-center gap-2" {...tabs.triggerList}>
 	{#each tabIds as id}
 		<button class="!m-0 hover:opacity-75 data-[active]:font-bold" {...tabs.getTrigger(id)}>
 			{id}
@@ -46,7 +46,7 @@
 
 <h2>With default</h2>
 
-<div class="flex gap-2 items-center" {...withDefault.triggerList}>
+<div class="flex items-center gap-2" {...withDefault.triggerList}>
 	{#each tabIds as id}
 		<button class="!m-0 hover:opacity-75 data-[active]:font-bold" {...withDefault.getTrigger(id)}>
 			{id}
@@ -62,7 +62,7 @@
 
 <h2>Controlled</h2>
 
-<div class="flex gap-2 items-center" {...controlledTabs.triggerList}>
+<div class="flex items-center gap-2" {...controlledTabs.triggerList}>
 	{#each tabIds as id}
 		<button
 			class="!m-0 hover:opacity-75 data-[active]:font-bold"
@@ -82,7 +82,7 @@ Active: {value}
 
 <h2>Readonly</h2>
 
-<div class="flex gap-2 items-center" {...readonlyTabs.triggerList}>
+<div class="flex items-center gap-2" {...readonlyTabs.triggerList}>
 	{#each tabIds as id}
 		<button class="!m-0 hover:opacity-75 data-[active]:font-bold" {...readonlyTabs.getTrigger(id)}>
 			{id}
@@ -99,7 +99,7 @@ Active: {value}
 <h2>Component</h2>
 
 <Tabs.Root>
-	<Tabs.TriggerList class="flex gap-2 items-center">
+	<Tabs.TriggerList class="flex items-center gap-2">
 		{#each tabIds as id}
 			<Tabs.Trigger class="!m-0 hover:opacity-75 data-[active]:font-bold" value={id}>
 				{id}
@@ -117,7 +117,7 @@ Active: {value}
 <h2>Component with default</h2>
 
 <Tabs.Root value="Tab 2">
-	<Tabs.TriggerList class="flex gap-2 items-center">
+	<Tabs.TriggerList class="flex items-center gap-2">
 		{#each tabIds as id}
 			<Tabs.Trigger class="!m-0 hover:opacity-75 data-[active]:font-bold" value={id}>
 				{id}
@@ -135,7 +135,7 @@ Active: {value}
 <h2>Controlled Component (syncs with controlled)</h2>
 
 <Tabs.Root bind:value>
-	<Tabs.TriggerList class="flex gap-2 items-center">
+	<Tabs.TriggerList class="flex items-center gap-2">
 		{#each tabIds as id}
 			<Tabs.Trigger class="!m-0 hover:opacity-75 data-[active]:font-bold" value={id}>
 				{id}
@@ -153,30 +153,29 @@ Active: {value}
 <h2>AsChild</h2>
 
 <Tabs.Root>
-	<Tabs.TriggerList class="flex gap-2 items-center">
-		{#each tabIds as id}
-			<Tabs.Trigger value={id}>
-				{#snippet asChild(props)}
-					<button class="!m-0 hover:opacity-75 data-[active]:font-bold" {...props}>
-						{id}
-					</button>
-				{/snippet}
-			</Tabs.Trigger>
-		{/each}
-	</Tabs.TriggerList>
+	{#snippet children(tabs)}
+		<Tabs.TriggerList class="flex items-center gap-2">
+			{#each tabIds as id}
+				<button class="!m-0 hover:opacity-75 data-[active]:font-bold" {...tabs.getTrigger(id)}>
+					{id}
+				</button>
+			{/each}
+		</Tabs.TriggerList>
 
-	{#each tabIds as id}
-		<Tabs.Content class="[hidden]:hidden" value={id}>
-			{id}
-		</Tabs.Content>
-	{/each}
+		{#each tabIds as id}
+			<Tabs.Content class="[hidden]:hidden" value={id}>
+				{id}
+			</Tabs.Content>
+		{/each}
+	{/snippet}
 </Tabs.Root>
 
 <h2>Only use the root, builder instance for the rest</h2>
 
 <Tabs.Root value="Tab 2">
 	{#snippet children(tabs)}
-		<div class="flex gap-2 items-center" {...tabs.triggerList}>
+		{tabs.value}
+		<div class="flex items-center gap-2" {...tabs.triggerList}>
 			{#each tabIds as id}
 				<button class="!m-0 hover:opacity-75 data-[active]:font-bold" {...tabs.getTrigger(id)}>
 					{id}
@@ -206,7 +205,7 @@ Active: {value}
 
 <Tabs.Root value="Tab 2" {selectWhenFocused} {loop}>
 	{#snippet children(tabs)}
-		<div class="flex gap-2 items-center" {...tabs.triggerList}>
+		<div class="flex items-center gap-2" {...tabs.triggerList}>
 			{#each tabIds as id}
 				<button class="!m-0 hover:opacity-75 data-[active]:font-bold" {...tabs.getTrigger(id)}>
 					{id}
@@ -224,7 +223,7 @@ Active: {value}
 
 <h2>Builder with options (syncs with above)</h2>
 
-<div class="flex gap-2 items-center" {...withOptions.triggerList}>
+<div class="flex items-center gap-2" {...withOptions.triggerList}>
 	{#each tabIds as id}
 		<button class="!m-0 hover:opacity-75 data-[active]:font-bold" {...withOptions.getTrigger(id)}>
 			{id}

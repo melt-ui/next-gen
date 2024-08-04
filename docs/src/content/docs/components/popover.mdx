@@ -1,0 +1,38 @@
+---
+title: Popover
+description: n/a
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/popover.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+
+{/*
+Things I want:
+- Preview with props DONE
+- Show builder syntax
+- Show component syntax
+- Features
+*/}
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 💪 It works
+</Features>
+
+## Usage
+
+<ThemedCode code={`
+<script lang="ts">
+</script>
+
+`.trim()}
+lang="svelte" />
+
+
+## API Reference
+
+<ApiTable entry="Popover" />
