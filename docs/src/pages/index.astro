@@ -1,0 +1,50 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import Logo from "../assets/logo-dark.svg";
+console.log(Logo);
+---
+
+<StarlightPage
+	frontmatter={{
+		title: "Homepage",
+		template: "splash",
+		head: [{ tag: "title", content: "Melt UI" }],
+	}}
+>
+	<div class="not-content absolute inset-0 flex h-full flex-col items-center justify-center">
+		<img src={Logo.src} alt="Melt UI Logo" class="w-80" />
+		<p class="mt-4 text-center">The next generation of Melt UI.<br> Built for Svelte 5.</p>
+		<div class="flex">
+			<a
+				href="/guides/example"
+				class="bg-accent-300 !text-accent-900 mt-4 rounded-xl px-4 py-2 font-semibold no-underline transition hover:opacity-75 active:translate-y-0.5"
+				data-svelte-h="svelte-8r9cjf">Get started</a
+			>
+		</div>
+	</div>
+</StarlightPage>
+
+<style is:global>
+	.main-frame,
+	.main-frame > *,
+	.main-pane,
+	main {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		padding-bottom: 0 !important;
+	}
+
+	main {
+		background: black;
+		position: relative;
+	}
+
+	main > .content-panel:first-child {
+		display: none !important;
+	}
+
+	main > .content-panel:last-child {
+		flex-grow: 1;
+	}
+</style>

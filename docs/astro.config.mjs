@@ -6,6 +6,7 @@ import icons from "unplugin-icons/vite";
 
 // https://astro.build/config
 export default defineConfig({
+	site: "https://next.melt-ui.com",
 	integrations: [
 		starlight({
 			title: "Melt UI",

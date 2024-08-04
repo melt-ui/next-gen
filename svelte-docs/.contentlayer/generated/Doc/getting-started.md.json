@@ -1,0 +1,21 @@
+{
+  "title": "Getting Started",
+  "description": "Learn how to install and use Runed in your projects.",
+  "body": {
+    "raw": "\n## Installation\n\nInstall Runed using your favorite package manager:\n\n```bash\nnpm install runed\n```\n\n## Usage\n\nImport one of the utilities you need to either a `.svelte` or `.svelte.js|ts` file and start using\nit:\n\n```svelte title=\"component.svelte\"\n<script lang=\"ts\">\n\timport { activeElement } from \"runed\";\n\n\tlet inputElement = $state<HTMLInputElement | undefined>();\n</script>\n\n<input bind:this={inputElement} />\n\n{#if activeElement.current}\n\tThe input element is active!\n{/if}\n```\n\nor\n\n```ts title=\"some-module.svelte.ts\"\nimport { activeElement } from \"runed\";\n\nfunction logActiveElement() {\n\t$effect(() => {\n\t\tconsole.log(\"Active element is \", activeElement.current);\n\t});\n}\n\nlogActiveElement();\n```\n",
+    "html": "<h2>Installation</h2>\n<p>Install Runed using your favorite package manager:</p>\n<pre><code class=\"language-bash\">npm install runed\n</code></pre>\n<h2>Usage</h2>\n<p>Import one of the utilities you need to either a <code>.svelte</code> or <code>.svelte.js|ts</code> file and start using\nit:</p>\n<pre><code class=\"language-svelte\">&#x3C;script lang=\"ts\">\n\timport { activeElement } from \"runed\";\n\n\tlet inputElement = $state&#x3C;HTMLInputElement | undefined>();\n&#x3C;/script>\n\n&#x3C;input bind:this={inputElement} />\n\n{#if activeElement.current}\n\tThe input element is active!\n{/if}\n</code></pre>\n<p>or</p>\n<pre><code class=\"language-ts\">import { activeElement } from \"runed\";\n\nfunction logActiveElement() {\n\t$effect(() => {\n\t\tconsole.log(\"Active element is \", activeElement.current);\n\t});\n}\n\nlogActiveElement();\n</code></pre>"
+  },
+  "_id": "getting-started.md",
+  "_raw": {
+    "sourceFilePath": "getting-started.md",
+    "sourceFileName": "getting-started.md",
+    "sourceFileDir": ".",
+    "contentType": "markdown",
+    "flattenedPath": "getting-started"
+  },
+  "type": "Doc",
+  "slug": "",
+  "slugFull": "/getting-started",
+  "fileName": "getting-started",
+  "suffix": ".md"
+}
