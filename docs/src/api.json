@@ -139,13 +139,6 @@
         "optional": true
       },
       {
-        "name": "mode",
-        "type": "MaybeGetter<\"auto\" | \"manual\"> | undefined\n",
-        "description": "The popover mode to use.",
-        "defaultValue": "\"auto\"",
-        "optional": true
-      },
-      {
         "name": "forceVisible",
         "type": "MaybeGetter<boolean> | undefined\n",
         "description": "If the popover visibility should be controlled by the user.",
@@ -155,11 +148,6 @@
     ],
     "methods": [],
     "properties": [
-      {
-        "name": "mode",
-        "type": "\"auto\" | \"manual\"\n",
-        "description": ""
-      },
       {
         "name": "forceVisible",
         "type": "boolean\n",
@@ -177,7 +165,7 @@
       },
       {
         "name": "content",
-        "type": "{\n  id: string\n  \"data-melt-content\": string\n  popover: \"auto\" | \"manual\"\n  onbeforetoggle: (e: ToggleEvent) => void\n}\n",
+        "type": "{ id: string; \"data-melt-content\": string; popover: string }\n",
         "description": ""
       }
     ]

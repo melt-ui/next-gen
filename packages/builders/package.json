@@ -44,6 +44,7 @@
 	},
 	"svelte": "./dist/index.js",
 	"dependencies": {
-		"nanoid": "^5.0.7"
+		"nanoid": "^5.0.7",
+		"runed": "^0.15.0"
 	}
 }

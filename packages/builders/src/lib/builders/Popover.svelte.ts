@@ -4,6 +4,7 @@ import { extract } from "$lib/utils/extract.svelte";
 import { createIdentifiers } from "$lib/utils/identifiers.svelte";
 import { isHtmlElement } from "$lib/utils/is";
 import { nanoid } from "nanoid";
+import { useEventListener } from "runed";
 
 const identifiers = createIdentifiers("popover", ["trigger", "content"]);
 
@@ -26,16 +27,6 @@ export type PopoverProps = {
 	 */
 	onOpenChange?: (value: boolean) => void;
 
-
-	/**
-	 * The popover mode to use.
-	 *
-	 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover
-	 *
-	 * @default "auto"
-	 */
-	mode?: MaybeGetter<"auto" | "manual">;
-
 	/**
 	 * If the popover visibility should be controlled by the user.
 	 *
@@ -49,7 +40,6 @@ export class Popover {
 
 	/* Props */
 	#props!: PopoverProps;
-	mode = $derived(extract(this.#props.mode, "auto"));
 	forceVisible = $derived(extract(this.#props.forceVisible, false));
 
 	/* State */
@@ -74,8 +64,8 @@ export class Popover {
 			[identifiers.trigger]: "",
 			popovertarget: this.#id,
 			onclick: (e: Event) => {
-				e.preventDefault()
-				this.open = !this.open
+				e.preventDefault();
+				this.open = !this.open;
 			},
 		} as const;
 	}
@@ -84,25 +74,22 @@ export class Popover {
 		$effect(() => {
 			const el = document.getElementById(this.#id);
 			if (!isHtmlElement(el)) {
-				return
+				return;
 			}
 
 			if (this.open || this.forceVisible) {
-				console.log("showing")
-				el.showPopover()
+				el.showPopover();
 			} else {
-				el.hidePopover()
+				el.hidePopover();
 			}
-		})
+		});
+
+		useEventListener
 
 		return {
 			id: this.#id,
 			[identifiers.content]: "",
-			popover: this.mode,
-			onbeforetoggle: (e: ToggleEvent) => {
-				console.log(e)
-				this.open = e.newState === "open"
-			}
+			popover: "manual",
 		};
 	}
 }
