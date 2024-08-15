@@ -8,7 +8,8 @@
 		"test": "vitest",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
-		"generate:api": "jiti scripts/typedocs.ts",
+		"gen:api": "jiti scripts/generate-api.ts",
+		"gen:components": "jiti scripts/generate-components.ts",
 		"watch-and-type": "jiti scripts/watch-and-type.ts"
 	},
 	"keywords": [],

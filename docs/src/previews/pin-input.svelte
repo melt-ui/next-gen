@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
-	import { PinInput } from "@melt-ui/builders";
+	import { PinInput } from "melt";
 
 	const controls = usePreviewControls({
 		maxLength: {

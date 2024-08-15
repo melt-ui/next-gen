@@ -50,12 +50,6 @@ export default defineConfig({
 						directory: "components",
 					},
 				},
-				{
-					label: "Examples",
-					autogenerate: {
-						directory: "examples",
-					},
-				},
 			],
 		}),
 		tailwind({

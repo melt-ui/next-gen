@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
-	import { Popover } from "@melt-ui/builders";
+	import { Popover } from "melt";
 	import { spring } from "svelte/motion";
 	import { fade } from "svelte/transition";
 	import PhHeartBold from "~icons/ph/heart-bold";

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
-	import { Toggle } from "@melt-ui/builders";
+	import { Toggle } from "melt";
 	import { spring, tweened } from "svelte/motion";
 	import PhHeartBold from "~icons/ph/heart-bold";
 	import PhHeartFill from "~icons/ph/heart-fill";
