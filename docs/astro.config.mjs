@@ -10,6 +10,17 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: "Melt UI",
+			expressiveCode: {
+				themes: ["vesper", "material-theme-lighter"],
+				styleOverrides: {
+					borderWidth: "1px",
+					borderRadius: "0.5rem",
+					borderColor: "var(--sl-color-gray-5)",
+					frames: {
+						shadowColor: "transparent",
+					},
+				},
+			},
 			components: {
 				PageTitle: "./src/components/page-title.astro",
 			},
@@ -25,24 +36,42 @@ export default defineConfig({
 				replacesTitle: true,
 			},
 			social: {
-				github: "https://github.com/withastro/starlight",
+				github: "https://github.com/melt-ui/melt-ui",
 			},
 			sidebar: [
 				{
-					label: "Guides",
+					label: "Overview",
 					items: [
-						// Each item here is one entry in the navigation menu.
 						{
-							label: "Example Guide",
+							label: "Installation",
+							link: "/guides/example/",
+						},
+						{
+							label: "Getting Started",
+							link: "/guides/example/",
+						},
+						{
+							label: "Builders vs Components",
 							link: "/guides/example/",
 						},
 					],
 				},
 				{
-					label: "Reference",
-					autogenerate: {
-						directory: "reference",
-					},
+					label: "Core concepts",
+					items: [
+						{
+							label: "Simplicity",
+							link: "/guides/example/",
+						},
+						{
+							label: "Flexibility",
+							link: "/guides/example/",
+						},
+						{
+							label: "Full control",
+							link: "/guides/example/",
+						},
+					],
 				},
 				{
 					label: "Components",

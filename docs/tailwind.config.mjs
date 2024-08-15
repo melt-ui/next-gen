@@ -23,6 +23,7 @@ const gray = {
 	700: "#3c3733",
 	800: "#2a2622",
 	900: "#1a1816",
+	950: "#0e0d0b", // New 950 shade added
 };
 
 /** @type {import('tailwindcss').Config} */

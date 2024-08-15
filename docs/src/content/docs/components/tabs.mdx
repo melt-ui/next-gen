@@ -6,6 +6,7 @@ import ApiTable from "@components/api-table.astro";
 import TabsPreview from "@previews/tabs.svelte";
 import Features from "@components/features.astro";
 import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
 
 {/*
 Things I want:
@@ -28,29 +29,14 @@ Things I want:
 
 ## Usage
 
-<ThemedCode code={`
+<Tabs>
+	<TabItem label="Builder">
+```svelte
 <script lang="ts">
-import { TabsRoot, TabsTriggerList, TabsTrigger, TabsContent } from "melt";
-</script>
+	import { Tabs } from "melt/builders";
 
-<TabsRoot>
-	<TabsTriggerList>
-		{#each tabs as tab}
-			<TabsTrigger value={tab} />
-		{/each}
-	</TabsTriggerList>
-
-	{#each tabs as tab}
-		<TabsContent value={tab} />
-	{/each}
-</TabsRoot>
-`.trim()}
-lang="svelte" />
-
-<ThemedCode code={`
-<script lang="ts">
-	import { Tabs } from "melt";
 	const tabs = new Tabs()
+	const tabIds = ["Tab 1", "Tab 2", "Tab 3"];
 </script>
 
 <div {...tabs.triggerList}>
@@ -66,8 +52,65 @@ lang="svelte" />
 		{id}
 	</div>
 {/each}
-`.trim()}
-lang="svelte" />
+	```
+	</TabItem>
+
+	<TabItem label="Component">
+
+```svelte
+<script lang="ts">
+	import { Tabs } from "melt/components";
+
+	const tabIds = ["Tab 1", "Tab 2", "Tab 3"];
+</script>
+
+<Tabs>
+	{#snippet children(tabs)}
+		<div {...tabs.triggerList}>
+			{#each tabIds as id}
+				<button {...tabs.getTrigger(id)}>
+					{id}
+				</button>
+			{/each}
+		</div>
+
+		{#each tabIds as id}
+			<div {...tabs.getContent(id)}>
+				{id}
+			</div>
+		{/each}
+	{/snippet}
+</Tabs>
+	```
+	</TabItem>
+
+	<TabItem label="ComponentAlt">
+
+```svelte
+<script lang="ts">
+	import { TabsRoot, TabsTriggerList, TabsTrigger, TabsContent } from "melt/components";
+
+	const tabs = ["Tab 1", "Tab 2", "Tab 3"];
+</script>
+
+<Tabs>
+	<TabsTriggerList>
+		{#each tabs as value}
+			<TabsTrigger {value}>
+				{id}
+			</TabsTrigger>
+		{/each}
+	</div>
+
+	{#each tabs as value}
+		<TabsContent {value}>
+			{id}
+		</TabsContent>
+	{/each}
+</Tabs>
+	```
+	</TabItem>
+</Tabs>
 
 ## API Reference
 
