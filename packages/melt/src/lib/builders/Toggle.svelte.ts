@@ -29,7 +29,7 @@ export type ToggleProps = {
 	 *
 	 * @default false
 	 */
-	disabled?: MaybeGetter<boolean>;
+	disabled?: MaybeGetter<boolean | undefined>;
 };
 
 export class Toggle {

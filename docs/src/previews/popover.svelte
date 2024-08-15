@@ -1,10 +1,7 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
-	import { Popover } from "melt";
-	import { spring } from "svelte/motion";
+	import { Popover } from "melt/builders";
 	import { fade } from "svelte/transition";
-	import PhHeartBold from "~icons/ph/heart-bold";
-	import PhHeartFill from "~icons/ph/heart-fill";
 
 	const controls = usePreviewControls({});
 

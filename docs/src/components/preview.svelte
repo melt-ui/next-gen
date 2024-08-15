@@ -137,7 +137,7 @@
 
 	{#if !open}
 		<button
-			class="absolute bottom-4 left-4 z-10 cursor-pointer rounded-lg bg-gray-600 px-2 py-1
+			class="absolute bottom-4 left-4 z-10 cursor-pointer rounded-lg bg-gray-500 px-2 py-1
 		text-sm text-white transition hover:bg-gray-700 active:bg-gray-800"
 			onclick={() => (open = !open)}
 			in:fix={(el) => fade(el, { delay: 300, duration: 200 })}

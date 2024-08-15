@@ -32,34 +32,34 @@ export type PinInputProps = {
 	 *
 	 * @default 4
 	 */
-	maxLength?: MaybeGetter<number>;
+	maxLength?: MaybeGetter<number | undefined>;
 	/**
 	 * An optional placeholder to display when the input is empty.
 	 *
 	 * @default '○'
 	 */
-	placeholder?: MaybeGetter<string>;
+	placeholder?: MaybeGetter<string | undefined>;
 
 	/**
 	 * If `true`, prevents the user from interacting with the input.
 	 *
 	 * @default false
 	 */
-	disabled?: MaybeGetter<boolean>;
+	disabled?: MaybeGetter<boolean | undefined>;
 
 	/**
 	 * If the input should be masked like a password.
 	 *
 	 * @default false
 	 */
-	mask?: MaybeGetter<boolean>;
+	mask?: MaybeGetter<boolean | undefined>;
 
 	/**
 	 * What characters the input accepts.
 	 *
 	 * @default 'text'
 	 */
-	type?: MaybeGetter<"alphanumeric" | "numeric" | "text">;
+	type?: MaybeGetter<"alphanumeric" | "numeric" | "text" | undefined>;
 };
 
 function validateInput(char: string, type: Extracted<PinInputProps["type"]>) {

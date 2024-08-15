@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
-	import { Toggle } from "melt";
-	import { spring, tweened } from "svelte/motion";
+	import { Toggle } from "melt/builders";
+	import { spring } from "svelte/motion";
 	import PhHeartBold from "~icons/ph/heart-bold";
 	import PhHeartFill from "~icons/ph/heart-fill";
 
@@ -27,13 +27,13 @@
 <Preview>
 	<div class="flex justify-center">
 		<button
-			class="relative size-16 rounded-xl bg-transparent text-xl
-				transition-all hover:cursor-pointer hover:bg-gray-500/50 active:bg-gray-600/50
-			  disabled:cursor-not-allowed disabled:bg-gray-500 disabled:opacity-50"
+			class="focus-visible:ring-accent-300 relative size-16 rounded-xl bg-transparent
+				text-xl outline-none transition-all hover:cursor-pointer
+			  hover:bg-gray-300/25 focus-visible:ring active:bg-gray-300/40 disabled:cursor-not-allowed dark:hover:bg-gray-700 dark:active:bg-gray-600 dark:disabled:bg-gray-900"
 			{...toggle.trigger}
 		>
 			<PhHeartFill
-				class="text-accent-200 absolute left-1/2 top-1/2 z-10 origin-center -translate-x-1/2 -translate-y-1/2"
+				class="text-accent-500 dark:text-accent-200 absolute left-1/2 top-1/2 z-10 origin-center -translate-x-1/2 -translate-y-1/2"
 				style="--tw-scale-x: {absScale}; --tw-scale-y: {absScale}; "
 			/>
 			<PhHeartBold
