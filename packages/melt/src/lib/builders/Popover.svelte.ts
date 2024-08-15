@@ -35,6 +35,8 @@ export type PopoverProps = {
 	forceVisible?: MaybeGetter<boolean>;
 };
 
+let popoverCount = 0;
+
 export class Popover {
 	#id = nanoid();
 	#triggerId = `${this.#id}-trigger`;
@@ -46,12 +48,12 @@ export class Popover {
 
 	/* State */
 	#open!: Synced<boolean>;
+	#count = popoverCount++;
 
 	constructor(props: PopoverProps = {}) {
 		this.#open = new Synced(props.open ?? false, props.onOpenChange);
 		this.#props = props;
 	}
-
 
 	get open() {
 		return this.#open.current;
@@ -66,7 +68,7 @@ export class Popover {
 		return {
 			id: this.#triggerId,
 			[identifiers.trigger]: "",
-			popovertarget: this.#id,
+			popovertarget: this.#contentId,
 			onclick: (e: Event) => {
 				e.preventDefault();
 				this.open = !this.open;
@@ -88,23 +90,34 @@ export class Popover {
 			}
 		});
 
-		useEventListener(() => document, "keydown", (e) => {
-			if (e.key === "Escape" && this.open) {
-				e.preventDefault();
-				this.open = false;
-			}
-		})
+		useEventListener(
+			() => document,
+			"keydown",
+			(e) => {
+				if (e.key === "Escape" && this.open) {
+					e.preventDefault();
+					this.open = false;
+				}
+			},
+		);
 
-		useEventListener(() => document, "click", (e) => {
-			const contentEl = document.getElementById(this.#contentId);
-			const triggerEl = document.getElementById(this.#triggerId);
-			console.log(this.open)
+		useEventListener(
+			() => document,
+			"click",
+			(e) => {
+				const contentEl = document.getElementById(this.#contentId);
+				const triggerEl = document.getElementById(this.#triggerId);
+				console.log(this.#count, this.open);
 
-			if (this.open && !contentEl?.contains(e.target as Node) && !triggerEl?.contains(e.target as Node) ) {
-				this.open = false;
-			}
-		})
-
+				if (
+					this.open &&
+					!contentEl?.contains(e.target as Node) &&
+					!triggerEl?.contains(e.target as Node)
+				) {
+					this.open = false;
+				}
+			},
+		);
 
 		return {
 			id: this.#contentId,
