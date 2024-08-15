@@ -52,6 +52,7 @@
 	},
 	"svelte": "./dist/index.js",
 	"dependencies": {
+		"@floating-ui/dom": "^1.6.10",
 		"nanoid": "^5.0.7",
 		"runed": "^0.15.1"
 	}

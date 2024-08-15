@@ -37,6 +37,8 @@ export type PopoverProps = {
 
 export class Popover {
 	#id = nanoid();
+	#triggerId = `${this.#id}-trigger`;
+	#contentId = `${this.#id}-content`;
 
 	/* Props */
 	#props!: PopoverProps;
@@ -50,6 +52,7 @@ export class Popover {
 		this.#props = props;
 	}
 
+
 	get open() {
 		return this.#open.current;
 	}
@@ -61,6 +64,7 @@ export class Popover {
 	/** The trigger that toggles the value. */
 	get trigger() {
 		return {
+			id: this.#triggerId,
 			[identifiers.trigger]: "",
 			popovertarget: this.#id,
 			onclick: (e: Event) => {
@@ -72,7 +76,7 @@ export class Popover {
 
 	get content() {
 		$effect(() => {
-			const el = document.getElementById(this.#id);
+			const el = document.getElementById(this.#contentId);
 			if (!isHtmlElement(el)) {
 				return;
 			}
@@ -84,10 +88,26 @@ export class Popover {
 			}
 		});
 
-		useEventListener
+		useEventListener(() => document, "keydown", (e) => {
+			if (e.key === "Escape" && this.open) {
+				e.preventDefault();
+				this.open = false;
+			}
+		})
+
+		useEventListener(() => document, "click", (e) => {
+			const contentEl = document.getElementById(this.#contentId);
+			const triggerEl = document.getElementById(this.#triggerId);
+			console.log(this.open)
+
+			if (this.open && !contentEl?.contains(e.target as Node) && !triggerEl?.contains(e.target as Node) ) {
+				this.open = false;
+			}
+		})
+
 
 		return {
-			id: this.#id,
+			id: this.#contentId,
 			[identifiers.content]: "",
 			popover: "manual",
 		};
