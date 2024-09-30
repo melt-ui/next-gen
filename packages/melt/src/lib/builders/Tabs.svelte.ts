@@ -57,7 +57,13 @@ export class Tabs<T extends string = string> {
 
 	constructor(props: TabsProps<T> = {}) {
 		this.#props = props;
-		this.#value = new Synced<T>(props.value as T, props.onValueChange);
+		this.#value = new Synced<T>({
+			// We automatically set the value when it initializes.
+			// This is a bit of a lie though, as it can be undefined
+			// if no tabs were given.
+			value: props.value as T,
+			onChange: props.onValueChange,
+		});
 	}
 
 	#getTriggerId(value: T) {

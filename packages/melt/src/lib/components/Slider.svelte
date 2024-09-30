@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { PinInput, type PinInputProps } from "../builders/PinInput.svelte";
+	import { Slider, type SliderProps } from "../builders/Slider.svelte";
 	import { type Snippet } from "svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "$lib/builders/utils.svelte";
+	import { getters } from "../builders/utils.svelte";
 
-	type Props = ComponentProps<PinInputProps> & {
-		children: Snippet<[PinInput]>;
+	type Props = ComponentProps<SliderProps> & {
+		children: Snippet<[Slider]>;
 	};
 
 	let { value = $bindable(), children, ...rest }: Props = $props();
 
-	const tabs = new PinInput({
+	const slider = new Slider({
 		value: () => value,
 		onValueChange: (v) => (value = v),
 		...getters(rest),
 	});
 </script>
 
-{@render children(tabs)}
+{@render children(slider)}

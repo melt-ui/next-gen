@@ -41,7 +41,11 @@ export class Toggle {
 	#value!: Synced<boolean>;
 
 	constructor(props: ToggleProps = {}) {
-		this.#value = new Synced(props.value ?? false, props.onValueChange);
+		this.#value = new Synced({
+			value: props.value,
+			onChange: props.onValueChange,
+			defaultValue: false,
+		});
 		this.#props = props;
 	}
 

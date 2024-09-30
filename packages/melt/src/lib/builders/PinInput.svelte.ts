@@ -21,7 +21,7 @@ export type PinInputProps = {
 	 *
 	 * @default ''
 	 */
-	value?: MaybeGetter<string>;
+	value?: MaybeGetter<string | undefined>;
 	/**
 	 * Called when the `PinInput` instance tries to change the value.
 	 */
@@ -90,7 +90,11 @@ export class PinInput {
 	readonly isFilled = $derived(this.value.length === this.maxLength);
 
 	constructor(props: PinInputProps = {}) {
-		this.#value = new Synced(props.value ?? "", props.onValueChange);
+		this.#value = new Synced({
+			value: props.value,
+			onChange: props.onValueChange,
+			defaultValue: "",
+		});
 		this.#props = props;
 	}
 

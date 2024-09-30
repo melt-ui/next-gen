@@ -2,6 +2,17 @@ import type { MaybeGetter } from "./types";
 import { extract } from "./utils/extract.svelte";
 import { isFunction } from "./utils/is";
 
+type SyncedArgs<T> =
+	| {
+			value: MaybeGetter<T>;
+			onChange?: (value: T) => void;
+	  }
+	| {
+			value: MaybeGetter<T | undefined>;
+			onChange?: (value: T) => void;
+			defaultValue: T;
+	  };
+
 /**
  * Setting `current` calls the `onChange` callback with the new value.
  *
@@ -14,17 +25,21 @@ import { isFunction } from "./utils/is";
 export class Synced<T> {
 	#internalValue = $state<T>() as T;
 
-	#valueArg: MaybeGetter<T>;
-	#onChange?: (value: T) => void;
+	#valueArg: SyncedArgs<T>["value"];
+	#onChange?: SyncedArgs<T>["onChange"];
+	#defaultValue?: T;
 
-	constructor(value: MaybeGetter<T>, onChange?: (value: T) => void) {
+	constructor({ value, onChange, ...args }: SyncedArgs<T>) {
 		this.#valueArg = value;
 		this.#onChange = onChange;
-		this.#internalValue = extract(value);
+		this.#defaultValue = "defaultValue" in args ? args?.defaultValue : undefined;
+		this.#internalValue = extract(value, this.#defaultValue) as T;
 	}
 
 	get current() {
-		return isFunction(this.#valueArg) ? this.#valueArg() : this.#internalValue;
+		return isFunction(this.#valueArg)
+			? this.#valueArg() ?? this.#defaultValue ?? this.#internalValue
+			: this.#internalValue;
 	}
 
 	set current(value: T) {
