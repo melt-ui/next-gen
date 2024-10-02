@@ -5,6 +5,8 @@ import { Synced } from "../Synced.svelte";
 import type { MaybeGetter } from "../types";
 import { createIdentifiers } from "../utils/identifiers.svelte";
 import { isHtmlElement } from "../utils/is";
+import { clamp } from "$lib/utils/number";
+import { useEventListener } from "runed";
 
 const identifiers = createIdentifiers("slider", ["root", "track", "thumb", "range"]);
 
@@ -84,17 +86,23 @@ export class Slider {
 	 * Any cursor interaction along this element will change the slider's values.
 	 **/
 	get root() {
-		return {
-			[identifiers.root]: "",
-			id: this.#id,
-			onmousemove: (e: MouseEvent) => {
+		useEventListener(
+			() => document.getElementById(this.#id),
+			"mousedown",
+			(e) => {
 				const el = e.target;
 				if (!isHtmlElement(el)) return;
 
 				// Get mouse pos relative to the root
-				const percentage = (e.offsetX / el.clientWidth) * 100;
+				const percentage = clamp(0, e.offsetX / el.clientWidth, 1);
 				console.log(percentage);
+				this.value = this.min + (percentage * (this.max - this.min)) / 100;
 			},
+		);
+
+		return {
+			[identifiers.root]: "",
+			id: this.#id,
 		} as const;
 	}
 

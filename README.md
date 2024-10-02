@@ -20,7 +20,11 @@ The future comes afterwards.
 - [ ] Auto changelog (?)
 - [ ] Tests for utilities
 - [ ] Tests for components
-- [ ] Good docs structure
+- [x] Good docs structure
 - [ ] Automatically check if returned types are valid HTML attributes
-- [ ] Component JSDoc with @component
 - [ ] Use inert for focus trapping, also solves scrollbar issues
+- [ ] Deal with things like:
+
+```html
+<div {...tabs.trigger}>{@render trigger()}</div>
+```
