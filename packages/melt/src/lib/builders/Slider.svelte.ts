@@ -1,4 +1,4 @@
-import { dataAttr } from "$lib/utils/attribute";
+import { dataAttr, styleAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract.svelte";
 import { nanoid } from "nanoid";
 import { Synced } from "../Synced.svelte";
@@ -56,6 +56,8 @@ export type SliderProps = {
 export class Slider {
 	#value: Synced<number>;
 	#id = nanoid();
+
+	#dragging = false;
 	/* Props */
 	#props!: SliderProps;
 	readonly min = $derived(extract(this.#props.min, 0));
@@ -81,28 +83,46 @@ export class Slider {
 		this.#value.current = value;
 	}
 
+	#commit(e: MouseEvent) {
+		const el = document.getElementById(this.#id);
+		if (!isHtmlElement(el)) return;
+
+		const elRect = el.getBoundingClientRect();
+		const percentage = clamp(0, e.clientX - elRect.left, elRect.width) / elRect.width;
+		this.value = this.min + percentage * (this.max - this.min);
+	}
+
 	/**
 	 * The root of the slider.
 	 * Any cursor interaction along this element will change the slider's values.
 	 **/
 	get root() {
 		useEventListener(
-			() => document.getElementById(this.#id),
-			"mousedown",
-			(e) => {
-				const el = e.target;
-				if (!isHtmlElement(el)) return;
+			() => window,
+			"mousemove",
+			(e: MouseEvent) => {
+				if (!this.#dragging) return;
+				this.#commit(e);
+			},
+		);
 
-				// Get mouse pos relative to the root
-				const percentage = clamp(0, e.offsetX / el.clientWidth, 1);
-				console.log(percentage);
-				this.value = this.min + (percentage * (this.max - this.min)) / 100;
+		useEventListener(
+			() => window,
+			"mouseup",
+			() => {
+				this.#dragging = false;
 			},
 		);
 
 		return {
 			[identifiers.root]: "",
 			id: this.#id,
+			onmousedown: () => {
+				this.#dragging = true;
+			},
+			style: styleAttr({
+				"--percentage": `${((this.value - this.min) / (this.max - this.min)) * 100}%`,
+			}),
 		} as const;
 	}
 

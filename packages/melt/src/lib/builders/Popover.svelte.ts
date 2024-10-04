@@ -47,7 +47,11 @@ export class Popover {
 	#open!: Synced<boolean>;
 
 	constructor(props: PopoverProps = {}) {
-		this.#open = new Synced(props.open ?? false, props.onOpenChange);
+		this.#open = new Synced({
+			value: props.open,
+			onChange: props.onOpenChange,
+			defaultValue: false,
+		});
 		this.#props = props;
 	}
 
@@ -79,7 +83,7 @@ export class Popover {
 
 		return {
 			[identifiers.trigger]: "",
-			...attributes
+			...attributes,
 		} as const;
 	}
 

@@ -13,7 +13,10 @@
 				>
 					<div class="absolute inset-0 right-16 bg-orange-300" {...slider.range}></div>
 				</div>
-				<div class="relative size-6 rounded-full bg-white" {...slider.thumb}></div>
+				<div
+					class="relative left-[var(--percentage)] size-6 -translate-x-1/2 rounded-full bg-white"
+					{...slider.thumb}
+				></div>
 			</div>
 		{/snippet}
 	</Slider>
