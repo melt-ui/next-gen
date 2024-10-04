@@ -2,9 +2,8 @@ import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { extract } from "$lib/utils/extract.svelte";
 import { createIdentifiers } from "$lib/utils/identifiers.svelte";
-import { isHtmlElement } from "$lib/utils/is";
+import { getPopoverAttributes, getPopoverTriggerAttributes } from "$lib/utils/popover.svelte";
 import { nanoid } from "nanoid";
-import { useEventListener } from "runed";
 
 const identifiers = createIdentifiers("popover", ["trigger", "content"]);
 
@@ -32,10 +31,8 @@ export type PopoverProps = {
 	 *
 	 * @default false
 	 */
-	forceVisible?: MaybeGetter<boolean>;
+	forceVisible?: MaybeGetter<boolean | undefined>;
 };
-
-let popoverCount = 0;
 
 export class Popover {
 	#id = nanoid();
@@ -48,7 +45,6 @@ export class Popover {
 
 	/* State */
 	#open!: Synced<boolean>;
-	#count = popoverCount++;
 
 	constructor(props: PopoverProps = {}) {
 		this.#open = new Synced(props.open ?? false, props.onOpenChange);
@@ -65,64 +61,51 @@ export class Popover {
 
 	/** The trigger that toggles the value. */
 	get trigger() {
-		return {
-			id: this.#triggerId,
-			[identifiers.trigger]: "",
-			popovertarget: this.#contentId,
-			onclick: (e: Event) => {
-				e.preventDefault();
-				this.open = !this.open;
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		const instance = this;
+		const attributes = getPopoverTriggerAttributes({
+			contentId: instance.#contentId,
+			triggerId: instance.#triggerId,
+			get open() {
+				return instance.open;
 			},
+			set open(value) {
+				instance.open = value;
+			},
+			get forceVisible() {
+				return instance.forceVisible;
+			},
+		});
+
+		return {
+			[identifiers.trigger]: "",
+			...attributes
 		} as const;
 	}
 
 	get content() {
-		$effect(() => {
-			const el = document.getElementById(this.#contentId);
-			if (!isHtmlElement(el)) {
-				return;
-			}
-
-			if (this.open || this.forceVisible) {
-				el.showPopover();
-			} else {
-				el.hidePopover();
-			}
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		const instance = this;
+		const attributes = getPopoverAttributes({
+			contentId: instance.#contentId,
+			triggerId: instance.#triggerId,
+			get open() {
+				return instance.open;
+			},
+			set open(value) {
+				instance.open = value;
+			},
+			get forceVisible() {
+				return instance.forceVisible;
+			},
 		});
 
-		useEventListener(
-			() => document,
-			"keydown",
-			(e) => {
-				if (e.key === "Escape" && this.open) {
-					e.preventDefault();
-					this.open = false;
-				}
-			},
-		);
-
-		useEventListener(
-			() => document,
-			"click",
-			(e) => {
-				const contentEl = document.getElementById(this.#contentId);
-				const triggerEl = document.getElementById(this.#triggerId);
-				console.log(this.#count, this.open);
-
-				if (
-					this.open &&
-					!contentEl?.contains(e.target as Node) &&
-					!triggerEl?.contains(e.target as Node)
-				) {
-					this.open = false;
-				}
-			},
-		);
-
 		return {
-			id: this.#contentId,
 			[identifiers.content]: "",
-			popover: "manual",
-		};
+			...attributes,
+		} as const;
 	}
+
+	// IDEA: separate content and floating ui to achieve transitions without requiring
+	// force visible or custom esc and click outside handlers!
 }
