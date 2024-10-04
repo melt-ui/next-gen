@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Toggle, type ToggleProps } from "../builders/Toggle.svelte";
-	import {  type Snippet } from "svelte";
+	import { type Snippet } from "svelte";
 	import type { ComponentProps } from "../types";
 
 	type Props = ComponentProps<ToggleProps> & {
