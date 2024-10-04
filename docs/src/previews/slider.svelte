@@ -6,15 +6,18 @@
 <Preview>
 	<Slider>
 		{#snippet children(slider)}
-			<div class="relative w-[350px]" {...slider.root}>
+			<div class="relative mx-auto w-[350px]" {...slider.root}>
 				<div
 					class="absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 bg-gray-500"
 					{...slider.track}
 				>
-					<div class="absolute inset-0 right-16 bg-orange-300" {...slider.range}></div>
+					<div
+						class="absolute inset-0 right-[var(--percentage-inv)] bg-orange-300 transition-all data-[dragging]:transition-none"
+						{...slider.range}
+					></div>
 				</div>
 				<div
-					class="relative left-[var(--percentage)] size-6 -translate-x-1/2 rounded-full bg-white"
+					class="relative left-[var(--percentage)] size-6 -translate-x-1/2 rounded-full bg-white transition-all data-[dragging]:transition-none"
 					{...slider.thumb}
 				></div>
 			</div>

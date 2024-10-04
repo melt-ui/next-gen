@@ -54,16 +54,20 @@ export type SliderProps = {
 };
 
 export class Slider {
-	#value: Synced<number>;
-	#id = nanoid();
-
-	#dragging = false;
 	/* Props */
 	#props!: SliderProps;
 	readonly min = $derived(extract(this.#props.min, 0));
 	readonly max = $derived(extract(this.#props.max, 100));
 	readonly orientation = $derived(extract(this.#props.orientation, "horizontal"));
 	readonly step = $derived(extract(this.#props.step, 1));
+
+	/* State */
+	#value: Synced<number>;
+	#id = nanoid();
+	#mouseDown = false;
+	#dragging = false;
+	#mouseDownAt: null | number = null;
+	readonly #percentage = $derived((this.value - this.min) / (this.max - this.min));
 
 	constructor(props: SliderProps = {}) {
 		this.#props = props;
@@ -84,12 +88,19 @@ export class Slider {
 	}
 
 	#commit(e: MouseEvent) {
+		this.#dragging = typeof this.#mouseDownAt === "number" && e.timeStamp - this.#mouseDownAt > 50;
 		const el = document.getElementById(this.#id);
 		if (!isHtmlElement(el)) return;
 
 		const elRect = el.getBoundingClientRect();
 		const percentage = clamp(0, e.clientX - elRect.left, elRect.width) / elRect.width;
 		this.value = this.min + percentage * (this.max - this.min);
+	}
+
+	get #sharedProps() {
+		return {
+			"data-dragging": dataAttr(this.#dragging),
+		};
 	}
 
 	/**
@@ -101,7 +112,7 @@ export class Slider {
 			() => window,
 			"mousemove",
 			(e: MouseEvent) => {
-				if (!this.#dragging) return;
+				if (!this.#mouseDown) return;
 				this.#commit(e);
 			},
 		);
@@ -110,6 +121,7 @@ export class Slider {
 			() => window,
 			"mouseup",
 			() => {
+				this.#mouseDown = false;
 				this.#dragging = false;
 			},
 		);
@@ -117,12 +129,17 @@ export class Slider {
 		return {
 			[identifiers.root]: "",
 			id: this.#id,
-			onmousedown: () => {
-				this.#dragging = true;
+			onmousedown: (e: MouseEvent) => {
+				e.preventDefault();
+				this.#mouseDown = true;
+				this.#mouseDownAt = e.timeStamp;
+				this.#commit(e);
 			},
 			style: styleAttr({
-				"--percentage": `${((this.value - this.min) / (this.max - this.min)) * 100}%`,
+				"--percentage": `${this.#percentage * 100}%`,
+				"--percentage-inv": `${(1 - this.#percentage) * 100}%`,
 			}),
+			...this.#sharedProps,
 		} as const;
 	}
 
@@ -131,6 +148,7 @@ export class Slider {
 		return {
 			[identifiers.track]: "",
 			"data-value": dataAttr(this.value),
+			...this.#sharedProps,
 		};
 	}
 
@@ -139,6 +157,7 @@ export class Slider {
 		return {
 			[identifiers.range]: "",
 			"data-value": dataAttr(this.value),
+			...this.#sharedProps,
 		};
 	}
 
@@ -147,6 +166,7 @@ export class Slider {
 		return {
 			[identifiers.thumb]: "",
 			"data-value": dataAttr(this.value),
+			...this.#sharedProps,
 		} as const;
 	}
 }
