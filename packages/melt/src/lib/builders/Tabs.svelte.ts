@@ -3,12 +3,12 @@ import { extract } from "$lib/utils/extract.svelte";
 import { nanoid } from "nanoid";
 import { Synced } from "../Synced.svelte";
 import type { MaybeGetter } from "../types";
-import { createIdentifiers } from "../utils/identifiers.svelte";
+import { createDataIds } from "../utils/identifiers.svelte";
 import { isHtmlElement } from "../utils/is";
 
 const TRIGGER_KEYS = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
 
-const identifiers = createIdentifiers("tabs", ["trigger", "content", "trigger-list"]);
+const identifiers = createDataIds("tabs", ["trigger", "content", "trigger-list"]);
 
 export type TabsProps<T extends string = string> = {
 	/**

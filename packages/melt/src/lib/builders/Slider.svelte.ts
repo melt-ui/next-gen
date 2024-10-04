@@ -1,14 +1,13 @@
 import { dataAttr, styleAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract.svelte";
-import { nanoid } from "nanoid";
-import { Synced } from "../Synced.svelte";
-import type { MaybeGetter } from "../types";
-import { createIdentifiers } from "../utils/identifiers.svelte";
-import { isHtmlElement } from "../utils/is";
 import { clamp } from "$lib/utils/number";
 import { useEventListener } from "runed";
+import { Synced } from "../Synced.svelte";
+import type { MaybeGetter } from "../types";
+import { createDataIds, createIds } from "../utils/identifiers.svelte";
+import { isHtmlElement } from "../utils/is";
 
-const identifiers = createIdentifiers("slider", ["root", "track", "thumb", "range"]);
+const identifiers = createDataIds("slider", ["root", "track", "thumb", "range"]);
 
 export type SliderProps = {
 	/**
@@ -63,7 +62,7 @@ export class Slider {
 
 	/* State */
 	#value: Synced<number>;
-	#id = nanoid();
+	#ids = createIds(identifiers);
 	#mouseDown = false;
 	#dragging = false;
 	#mouseDownAt: null | number = null;
@@ -89,7 +88,7 @@ export class Slider {
 
 	#commit(e: MouseEvent) {
 		this.#dragging = typeof this.#mouseDownAt === "number" && e.timeStamp - this.#mouseDownAt > 50;
-		const el = document.getElementById(this.#id);
+		const el = document.getElementById(this.#ids.root);
 		if (!isHtmlElement(el)) return;
 
 		const elRect = el.getBoundingClientRect();
@@ -128,7 +127,7 @@ export class Slider {
 
 		return {
 			[identifiers.root]: "",
-			id: this.#id,
+			id: this.#ids.root,
 			onmousedown: (e: MouseEvent) => {
 				e.preventDefault();
 				this.#mouseDown = true;
@@ -166,6 +165,7 @@ export class Slider {
 		return {
 			[identifiers.thumb]: "",
 			"data-value": dataAttr(this.value),
+			tabindex: 0,
 			...this.#sharedProps,
 		} as const;
 	}
