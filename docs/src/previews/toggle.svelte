@@ -17,7 +17,7 @@
 		disabled: () => controls.disabled,
 	});
 
-	const scale = spring(0, { damping: 0.105, stiffness: 0.07, precision: 0.03 });
+	const scale = spring(0, { damping: 0.205, stiffness: 0.07, precision: 0.03 });
 	$effect(() => {
 		scale.set(toggle.value ? 1 : 0);
 	});
@@ -29,7 +29,8 @@
 		<button
 			class="focus-visible:ring-accent-300 relative size-16 rounded-xl bg-transparent
 				text-xl outline-none transition-all hover:cursor-pointer
-			  hover:bg-gray-300/25 focus-visible:ring active:bg-gray-300/40 disabled:cursor-not-allowed dark:hover:bg-gray-700 dark:active:bg-gray-600 dark:disabled:bg-gray-900"
+			  hover:bg-gray-300/25 focus-visible:ring active:bg-gray-300/40 disabled:cursor-not-allowed
+				dark:hover:bg-gray-700 dark:active:bg-gray-600 dark:disabled:bg-gray-900"
 			{...toggle.trigger}
 		>
 			<PhHeartFill

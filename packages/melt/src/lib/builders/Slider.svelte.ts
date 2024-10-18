@@ -84,7 +84,7 @@ export class Slider {
 	}
 
 	set value(value: number) {
-		this.#value.current = value;
+		this.#value.current = clamp(this.min, value, this.max);
 	}
 
 	#commit(e: MouseEvent) {
@@ -95,6 +95,9 @@ export class Slider {
 		const elRect = el.getBoundingClientRect();
 		const percentage = clamp(0, e.clientX - elRect.left, elRect.width) / elRect.width;
 		this.value = this.min + percentage * (this.max - this.min);
+
+		// Focus thumb
+		el.querySelector(`[${identifiers.thumb}]`)?.focus();
 	}
 
 	get #sharedProps() {
@@ -166,6 +169,34 @@ export class Slider {
 		return {
 			[identifiers.thumb]: "",
 			"data-value": dataAttr(this.value),
+			tabindex: 0,
+			onkeydown: (e: KeyboardEvent) => {
+				switch (e.key) {
+					case "ArrowLeft": {
+						if (e.metaKey) this.value = this.min;
+						else this.value -= this.step;
+						break;
+					}
+					case "ArrowRight": {
+						if (e.metaKey) this.value = this.max;
+						else this.value += this.step;
+						break;
+					}
+					case "Home": {
+						this.value = this.min;
+						break;
+					}
+					case "End": {
+						this.value = this.max;
+						break;
+					}
+					default: {
+						return;
+					}
+				}
+
+				e.preventDefault();
+			},
 			...this.#sharedProps,
 		} as const;
 	}
