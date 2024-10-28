@@ -20,30 +20,26 @@
 		{#snippet children(slider)}
 			<div class="group relative mx-auto outline-none p-3 {slider.orientation === 'horizontal' ? 'w-[350px]' : 'h-[350px] w-[50px]'}" {...slider.root}>
 				<div
-					class={`bg-gray-500 rounded-full absolute ${
-						slider.orientation === "horizontal"
-							? "left-0 right-0 top-1/2 h-2 -translate-y-1/2"
-							: "bottom-0 left-1/2 top-0 w-2 -translate-x-1/2"
-					}`}
+					class="bg-gray-500 rounded-full absolute {slider.orientation === 'horizontal'
+						? 'left-0 right-0 top-1/2 h-2 -translate-y-1/2'
+						: 'bottom-0 left-1/2 top-0 w-2 -translate-x-1/2'}"
 					{...slider.track}
 				>
 					<div
-						class={`bg-accent-300 absolute inset-0 rounded-full transition-all data-[dragging]:transition-none ${
-							slider.orientation === "horizontal"
-								? "right-[var(--percentage-inv)]"
-								: "top-[var(--percentage)]"
-						}`}
+						class="bg-accent-300 absolute inset-0 rounded-full transition-all data-[dragging]:transition-none {
+							slider.orientation === 'horizontal'
+								? 'right-[var(--percentage-inv)]'
+								: 'top-[var(--percentage)]'}"
 						{...slider.range}
 					></div>
 				</div>
 				<div
-					class={`group-focus-visible:ring-accent-300 size-6 rounded-md bg-white outline-none transition-all
+					class="group-focus-visible:ring-accent-300 size-6 rounded-md bg-white outline-none transition-all
 					group-focus-visible:ring group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-black
-					data-[dragging]:transition-none absolute ${
-						slider.orientation === "horizontal"
-							? "left-[var(--percentage)] top-1/2 -translate-x-1/2 -translate-y-1/2"
-							: "top-[var(--percentage)] left-1/2 -translate-x-1/2 -translate-y-1/2"
-					}`}
+					data-[dragging]:transition-none absolute {
+						slider.orientation === 'horizontal'
+							? 'left-[var(--percentage)] top-1/2 -translate-x-1/2 -translate-y-1/2'
+							: 'top-[var(--percentage)] left-1/2 -translate-x-1/2 -translate-y-1/2'}"
 					{...slider.thumb}
 				></div>
 			</div>
