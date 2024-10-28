@@ -169,18 +169,24 @@
 		<div class="mt-2 flex flex-col gap-2">
 			{#each Object.keys(values ?? {}) as key}
 				{@const control = schema[key]}
-				<label class="flex items-center justify-between gap-1 text-sm font-medium">
+				<label class="flex w-full flex-col gap-1 text-sm font-medium">
 					{control.label}
 					{#if control.type === "boolean"}
 						<input type="checkbox" bind:checked={values[key] as boolean} />
 					{:else if control.type === "select"}
-						<select bind:value={values[key] as string}>
+						<select bind:value={values[key] as string} class="rounded-md bg-gray-900 px-1 py-0.5">
 							{#each control.options as option}
 								<option value={option}>{option}</option>
 							{/each}
 						</select>
 					{:else if control.type === "number"}
-						<input type="number" bind:value={values[key] as number} min={control.min} max={control.max} />
+						<input
+							type="number"
+							bind:value={values[key] as number}
+							min={control.min}
+							max={control.max}
+							class="rounded-md bg-gray-900 px-1 py-0.5"
+						/>
 					{/if}
 				</label>
 			{/each}

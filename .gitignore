@@ -2,3 +2,5 @@ node_modules
 dist
 .svelte-kit
 Zone.Identifier
+.aider*
+.env

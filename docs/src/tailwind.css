@@ -23,4 +23,29 @@
 	--ease-in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
 	--ease-in-out-expo: cubic-bezier(1, 0, 0, 1);
 	--ease-in-out-circ: cubic-bezier(0.785, 0.135, 0.15, 0.86);
+
+	--color-accent-200: #eebf87;
+	--color-accent-300: #d59f6a;
+	--color-accent-400: #bc804d;
+	--color-accent-500: #a46233;
+	--color-accent-600: #945e00;
+	--color-accent-700: #7a4e00;
+	--color-accent-800: #613d00;
+	--color-accent-900: #482b00;
+	--color-accent-950: #341e00;
+
+	--color-gray-100: #f7f6f5;
+	--color-gray-200: #efedeb;
+	--color-gray-300: #c4c1bf;
+	--color-gray-400: #908a85;
+	--color-gray-500: #5c5752;
+	--color-gray-600: #4a4541;
+	--color-gray-700: #3c3733;
+	--color-gray-800: #2a2622;
+	--color-gray-900: #1a1816;
+	--color-gray-950: #0e0d0b;
+}
+
+* {
+	outline-color: var(--color-accent-500);
 }

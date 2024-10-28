@@ -35,7 +35,7 @@ export type SliderProps = {
 	 *
 	 * @default 1
 	 */
-	step?: MaybeGetter<number>;
+	step?: MaybeGetter<number | undefined>;
 	/**
 	 * The default value for `tabs.value`
 	 *
@@ -76,6 +76,11 @@ export class Slider {
 			onChange: props.onValueChange,
 			defaultValue: 0,
 		});
+
+		$effect.pre(() => {
+			const valueFixedToStep = Math.round(this.#value.current / this.step) * this.step;
+			this.#value.current = clamp(this.min, valueFixedToStep, this.max);
+		});
 	}
 
 	/** The value of the slider. */
@@ -84,7 +89,9 @@ export class Slider {
 	}
 
 	set value(value: number) {
-		this.#value.current = clamp(this.min, value, this.max);
+		const valueFixedToStep = Math.round(value / this.step) * this.step;
+		console.log({ value, step: this.step, valueFixedToStep });
+		this.#value.current = clamp(this.min, valueFixedToStep, this.max);
 	}
 
 	#commit(e: MouseEvent) {
@@ -95,14 +102,13 @@ export class Slider {
 		const elRect = el.getBoundingClientRect();
 		const percentage = clamp(0, e.clientX - elRect.left, elRect.width) / elRect.width;
 		this.value = this.min + percentage * (this.max - this.min);
-
-		// Focus thumb
-		el.querySelector(`[${identifiers.thumb}]`)?.focus();
 	}
 
 	get #sharedProps() {
 		return {
 			"data-dragging": dataAttr(this.#dragging),
+			"data-value": dataAttr(this.value),
+			"data-orientation": dataAttr(this.orientation),
 		};
 	}
 
@@ -131,52 +137,31 @@ export class Slider {
 
 		return {
 			[identifiers.root]: "",
+			"aria-valuenow": this.value,
+			"aria-valuemin": this.min,
+			"aria-valuemax": this.max,
+			"aria-orientation": this.orientation,
 			id: this.#id,
-			onmousedown: (e: MouseEvent) => {
-				e.preventDefault();
-				this.#mouseDown = true;
-				this.#mouseDownAt = e.timeStamp;
-				this.#commit(e);
-			},
 			style: styleAttr({
 				"--percentage": `${this.#percentage * 100}%`,
 				"--percentage-inv": `${(1 - this.#percentage) * 100}%`,
 			}),
-			...this.#sharedProps,
-		} as const;
-	}
-
-	/** The track in which the thumb and range sit upon. */
-	get track() {
-		return {
-			[identifiers.track]: "",
-			"data-value": dataAttr(this.value),
-			...this.#sharedProps,
-		};
-	}
-
-	/** The range indicating the slider's value. */
-	get range() {
-		return {
-			[identifiers.range]: "",
-			"data-value": dataAttr(this.value),
-			...this.#sharedProps,
-		};
-	}
-
-	/** The slider's thumb, positioned at the end of the range. */
-	get thumb() {
-		return {
-			[identifiers.thumb]: "",
-			"data-value": dataAttr(this.value),
 			tabindex: 0,
+			role: "slider",
+			onmousedown: (e: MouseEvent) => {
+				this.#mouseDown = true;
+				this.#mouseDownAt = e.timeStamp;
+				this.#commit(e);
+			},
 			onkeydown: (e: KeyboardEvent) => {
 				switch (e.key) {
+					case "ArrowDown":
 					case "ArrowLeft": {
 						if (e.metaKey) this.value = this.min;
 						else this.value -= this.step;
 						break;
 					}
+					case "ArrowUp":
 					case "ArrowRight": {
 						if (e.metaKey) this.value = this.max;
 						else this.value += this.step;
@@ -197,6 +182,30 @@ export class Slider {
 
 				e.preventDefault();
 			},
+			...this.#sharedProps,
+		} as const;
+	}
+
+	/** The track in which the thumb and range sit upon. */
+	get track() {
+		return {
+			[identifiers.track]: "",
+			...this.#sharedProps,
+		};
+	}
+
+	/** The range indicating the slider's value. */
+	get range() {
+		return {
+			[identifiers.range]: "",
+			...this.#sharedProps,
+		};
+	}
+
+	/** The slider's thumb, positioned at the end of the range. */
+	get thumb() {
+		return {
+			[identifiers.thumb]: "",
 			...this.#sharedProps,
 		} as const;
 	}

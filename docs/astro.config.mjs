@@ -48,11 +48,11 @@ export default defineConfig({
 						},
 						{
 							label: "Getting Started",
-							link: "/guides/example/",
+							link: "/guides/example/a",
 						},
 						{
 							label: "Builders vs Components",
-							link: "/guides/example/",
+							link: "/guides/example/a",
 						},
 					],
 				},
@@ -61,15 +61,15 @@ export default defineConfig({
 					items: [
 						{
 							label: "Simplicity",
-							link: "/guides/example/",
+							link: "/guides/example/a",
 						},
 						{
 							label: "Flexibility",
-							link: "/guides/example/",
+							link: "/guides/example/a",
 						},
 						{
 							label: "Full control",
-							link: "/guides/example/",
+							link: "/guides/example/a",
 						},
 					],
 				},
