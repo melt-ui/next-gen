@@ -67,7 +67,6 @@ export class Slider {
 	#mouseDown = false;
 	#dragging = false;
 	#mouseDownAt: null | number = null;
-	readonly #percentage = $derived((this.value - this.min) / (this.max - this.min));
 
 	constructor(props: SliderProps = {}) {
 		this.#props = props;
@@ -94,13 +93,25 @@ export class Slider {
 		this.#value.current = clamp(this.min, valueFixedToStep, this.max);
 	}
 
+	get #percentage() {
+		const v = (this.value - this.min) / (this.max - this.min);
+		return this.orientation === "vertical" ? 1 - v : v;
+	}
+
 	#commit(e: MouseEvent) {
 		this.#dragging = typeof this.#mouseDownAt === "number" && e.timeStamp - this.#mouseDownAt > 50;
 		const el = document.getElementById(this.#id);
 		if (!isHtmlElement(el)) return;
 
 		const elRect = el.getBoundingClientRect();
-		const percentage = clamp(0, e.clientX - elRect.left, elRect.width) / elRect.width;
+		let percentage: number;
+
+		if (this.orientation === "vertical") {
+			percentage = 1 - clamp(0, e.clientY - elRect.top, elRect.height) / elRect.height;
+		} else {
+			percentage = clamp(0, e.clientX - elRect.left, elRect.width) / elRect.width;
+		}
+
 		this.value = this.min + percentage * (this.max - this.min);
 	}
 
