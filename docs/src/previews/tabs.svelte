@@ -77,20 +77,25 @@
 		"
 	>
 		<div
-			class="flex w-full flex-wrap overflow-x-clip
+			class="flex w-full flex-wrap
 			{tabs.orientation === 'horizontal'
-				? 'items-center justify-center gap-2'
-				: 'flex-col justify-center col-span-3'}
+				? 'items-center justify-center  overflow-x-clip'
+				: 'col-span-3 flex-col justify-center overflow-y-clip py-4'}
 			"
 			{...tabs.triggerList}
 		>
 			{#each tabIds as id}
 				<button
-					class="focus-visible:ring-accent-600 text-ellipsis overflow-clip min-w-0 max-w-full cursor-pointer whitespace-nowrap rounded-full bg-transparent px-4 py-1 text-start font-medium
-					outline-none transition focus-visible:ring-4 data-[active]:bg-white data-[active]:text-black [&:not([data-active])]:hover:bg-white/10"
+					class="group min-w-0 max-w-full cursor-pointer text-ellipsis whitespace-nowrap bg-transparent text-start font-medium
+					outline-none transition {tabs.orientation === 'horizontal' ? 'px-2' : 'py-0.5'}"
 					{...tabs.getTrigger(id)}
 				>
-					{id}
+					<div
+						class="group-focus-visible:ring-accent-600 overflow-clip rounded-full px-4 py-1
+						transition group-focus-visible:ring-4 group-[&:not([data-active]):hover]:bg-white/10 group-data-[active]:bg-white group-data-[active]:text-black"
+					>
+						{id}
+					</div>
 				</button>
 			{/each}
 		</div>
