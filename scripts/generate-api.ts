@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import { writeFileSync } from "fs";
 import { globSync } from "glob";
 import { join } from "path";
@@ -15,7 +14,6 @@ import {
 
 async function main() {
 	console.log("Generating API reference...");
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const result: ResultSchema = {};
 
 	const builderPackage = await getBuilderPackage();
@@ -25,6 +23,7 @@ async function main() {
 	project.addSourceFilesAtPaths(glob);
 
 	const builders = globSync(`${dir}/src/**/builders/*.svelte.ts`);
+	console.log(`Found ${builders.length} builders...`);
 
 	for (const builderDir of builders) {
 		const name = builderDir.split("/").pop()!.split(".")[0];
@@ -35,10 +34,10 @@ async function main() {
 		};
 
 		const sourceFile = project.getSourceFile(builderDir);
-		if (!sourceFile) return;
+		if (!sourceFile) continue;
 
 		const builderClass = sourceFile.getClass(name);
-		if (!builderClass) return;
+		if (!builderClass) continue;
 
 		const constructor = builderClass?.getConstructors()?.[0];
 		if (constructor) {
@@ -61,7 +60,9 @@ async function main() {
 		);
 
 		const accessors = builderClass.getGetAccessors();
-		const parsed = await Promise.all(accessors.map(parseAccessor));
+		const parsed = await Promise.all(
+			accessors.filter((a) => !a.getName().startsWith("#")).map(parseAccessor),
+		);
 		parsed.forEach((p) => {
 			result[name].properties.push(p);
 		});

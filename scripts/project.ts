@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import * as prettier from "prettier";
 import {
-    GetAccessorDeclaration,
-    JSDoc,
-    MethodDeclaration,
-    ModuleResolutionKind,
-    Project,
-    PropertyDeclaration,
-    Symbol,
-    Type,
+	GetAccessorDeclaration,
+	JSDoc,
+	MethodDeclaration,
+	ModuleResolutionKind,
+	Project,
+	PropertyDeclaration,
+	Symbol,
+	Type,
 } from "ts-morph";
 
 export type TypeSchema =
@@ -56,9 +56,21 @@ export function getDescription(property: any): string | undefined {
 	return description?.text;
 }
 
-export function getDescriptionFromJsDocs(property: { getJsDocs: () => Array<JSDoc> }): string | undefined {
+export function getDescriptionFromJsDocs(property: {
+	getJsDocs: () => Array<JSDoc>;
+}): string | undefined {
 	const tags = property.getJsDocs();
-	return tags.map((j) => j.getText().replace("/**", "").replace("*/", "").trim()).join("\n");
+	return tags
+		.map((j) =>
+			j
+				.getText()
+				// Remove the /** and */ wrapper
+				.replace(/\/\*\*|\*\//g, "")
+				// Remove any leading asterisks from multiline comments
+				.replace(/^\s*\*\s*/gm, "")
+				.trim(),
+		)
+		.join("\n");
 }
 
 export async function parseMethod(method: MethodDeclaration): Promise<TypeSchema> {

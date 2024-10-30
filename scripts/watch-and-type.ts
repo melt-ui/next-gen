@@ -1,8 +1,6 @@
-import chokidar from 'chokidar';
-import { execSync } from 'child_process';
+import chokidar from "chokidar";
+import { execSync } from "child_process";
 
-chokidar.watch('./packages/builders/src/**/*.ts').on('change', (...args) => {
-	console.log(args)
-	execSync('pnpm run gen:api', { stdio: 'inherit' });
-
+chokidar.watch("./packages/melt/src/lib/builders/**/*.ts").on("change", (...args) => {
+	execSync("pnpm run gen:api", { stdio: "inherit" });
 });

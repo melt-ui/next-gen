@@ -10,7 +10,7 @@
 			type: "select",
 			label: "Orientation",
 			options: ["horizontal", "vertical"],
-			defaultValue: "vertical",
+			defaultValue: "horizontal",
 		},
 	});
 </script>
