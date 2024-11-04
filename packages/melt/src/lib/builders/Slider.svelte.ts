@@ -7,7 +7,7 @@ import type { MaybeGetter } from "../types";
 import { createDataIds, createIds } from "../utils/identifiers.svelte";
 import { isHtmlElement } from "../utils/is";
 
-const identifiers = createDataIds("slider", ["root", "track", "thumb", "range"]);
+const dataIds = createDataIds("slider", ["root", "track", "thumb", "range"]);
 
 export type SliderProps = {
 	/**
@@ -62,7 +62,7 @@ export class Slider {
 
 	/* State */
 	#value: Synced<number>;
-	#ids = createIds(identifiers);
+	#ids = createIds(dataIds);
 	#mouseDown = false;
 	#dragging = false;
 	#mouseDownAt: null | number = null;
@@ -126,7 +126,7 @@ export class Slider {
 		);
 
 		return {
-			[identifiers.root]: "",
+			[dataIds.root]: "",
 			id: this.#ids.root,
 			onmousedown: (e: MouseEvent) => {
 				e.preventDefault();
@@ -145,7 +145,7 @@ export class Slider {
 	/** The track in which the thumb and range sit upon. */
 	get track() {
 		return {
-			[identifiers.track]: "",
+			[dataIds.track]: "",
 			"data-value": dataAttr(this.value),
 			...this.#sharedProps,
 		};
@@ -154,7 +154,7 @@ export class Slider {
 	/** The range indicating the slider's value. */
 	get range() {
 		return {
-			[identifiers.range]: "",
+			[dataIds.range]: "",
 			"data-value": dataAttr(this.value),
 			...this.#sharedProps,
 		};
@@ -163,7 +163,7 @@ export class Slider {
 	/** The slider's thumb, positioned at the end of the range. */
 	get thumb() {
 		return {
-			[identifiers.thumb]: "",
+			[dataIds.thumb]: "",
 			"data-value": dataAttr(this.value),
 			tabindex: 0,
 			...this.#sharedProps,
