@@ -1,14 +1,13 @@
 import { dataAttr, styleAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract.svelte";
-import { nanoid } from "nanoid";
-import { Synced } from "../Synced.svelte";
-import type { MaybeGetter } from "../types";
-import { createIdentifiers } from "../utils/identifiers.svelte";
-import { isHtmlElement } from "../utils/is";
 import { clamp } from "$lib/utils/number";
 import { useEventListener } from "runed";
+import { Synced } from "../Synced.svelte";
+import type { MaybeGetter } from "../types";
+import { createDataIds, createIds } from "../utils/identifiers.svelte";
+import { isHtmlElement } from "../utils/is";
 
-const identifiers = createIdentifiers("slider", ["root", "track", "thumb", "range"]);
+const dataIds = createDataIds("slider", ["root", "track", "thumb", "range"]);
 
 export type SliderProps = {
 	/**
@@ -63,7 +62,7 @@ export class Slider {
 
 	/* State */
 	#value: Synced<number>;
-	#id = nanoid();
+	#ids = createIds(dataIds);
 	#mouseDown = false;
 	#dragging = false;
 	#mouseDownAt: null | number = null;
@@ -100,7 +99,7 @@ export class Slider {
 
 	#commit(e: MouseEvent) {
 		this.#dragging = typeof this.#mouseDownAt === "number" && e.timeStamp - this.#mouseDownAt > 50;
-		const el = document.getElementById(this.#id);
+		const el = document.getElementById(this.#ids.root);
 		if (!isHtmlElement(el)) return;
 
 		const elRect = el.getBoundingClientRect();
@@ -147,18 +146,18 @@ export class Slider {
 		);
 
 		return {
-			[identifiers.root]: "",
 			"aria-valuenow": this.value,
 			"aria-valuemin": this.min,
 			"aria-valuemax": this.max,
 			"aria-orientation": this.orientation,
-			id: this.#id,
 			style: styleAttr({
 				"--percentage": `${this.#percentage * 100}%`,
 				"--percentage-inv": `${(1 - this.#percentage) * 100}%`,
 			}),
 			tabindex: 0,
 			role: "slider",
+			[dataIds.root]: "",
+			id: this.#ids.root,
 			onmousedown: (e: MouseEvent) => {
 				this.#mouseDown = true;
 				this.#mouseDownAt = e.timeStamp;
@@ -200,7 +199,7 @@ export class Slider {
 	/** The track in which the thumb and range sit upon. */
 	get track() {
 		return {
-			[identifiers.track]: "",
+			[dataIds.track]: "",
 			...this.#sharedProps,
 		};
 	}
@@ -208,7 +207,7 @@ export class Slider {
 	/** The range indicating the slider's value. */
 	get range() {
 		return {
-			[identifiers.range]: "",
+			[dataIds.range]: "",
 			...this.#sharedProps,
 		};
 	}
@@ -216,7 +215,8 @@ export class Slider {
 	/** The slider's thumb, positioned at the end of the range. */
 	get thumb() {
 		return {
-			[identifiers.thumb]: "",
+			[dataIds.thumb]: "",
+			tabindex: 0,
 			...this.#sharedProps,
 		} as const;
 	}

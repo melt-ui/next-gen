@@ -2,9 +2,9 @@ import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract.svelte";
-import { createIdentifiers } from "$lib/utils/identifiers.svelte";
+import { createDataIds } from "$lib/utils/identifiers.svelte";
 
-const identifiers = createIdentifiers("toggle", ["trigger", "hidden-input"]);
+const identifiers = createDataIds("toggle", ["trigger", "hidden-input"]);
 
 export type ToggleProps = {
 	/**

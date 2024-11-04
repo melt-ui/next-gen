@@ -1,11 +1,10 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { extract } from "$lib/utils/extract.svelte";
-import { createIdentifiers } from "$lib/utils/identifiers.svelte";
+import { createDataIds, createIds } from "$lib/utils/identifiers.svelte";
 import { getPopoverAttributes, getPopoverTriggerAttributes } from "$lib/utils/popover.svelte";
-import { nanoid } from "nanoid";
 
-const identifiers = createIdentifiers("popover", ["trigger", "content"]);
+const dataIds = createDataIds("popover", ["trigger", "content"]);
 
 export type PopoverProps = {
 	/**
@@ -35,9 +34,7 @@ export type PopoverProps = {
 };
 
 export class Popover {
-	#id = nanoid();
-	#triggerId = `${this.#id}-trigger`;
-	#contentId = `${this.#id}-content`;
+	#ids = createIds(dataIds);
 
 	/* Props */
 	#props!: PopoverProps;
@@ -68,8 +65,8 @@ export class Popover {
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const instance = this;
 		const attributes = getPopoverTriggerAttributes({
-			contentId: instance.#contentId,
-			triggerId: instance.#triggerId,
+			contentId: instance.#ids.content,
+			triggerId: instance.#ids.trigger,
 			get open() {
 				return instance.open;
 			},
@@ -82,7 +79,7 @@ export class Popover {
 		});
 
 		return {
-			[identifiers.trigger]: "",
+			[dataIds.trigger]: "",
 			...attributes,
 		} as const;
 	}
@@ -91,8 +88,8 @@ export class Popover {
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const instance = this;
 		const attributes = getPopoverAttributes({
-			contentId: instance.#contentId,
-			triggerId: instance.#triggerId,
+			contentId: instance.#ids.content,
+			triggerId: instance.#ids.trigger,
 			get open() {
 				return instance.open;
 			},
@@ -105,7 +102,7 @@ export class Popover {
 		});
 
 		return {
-			[identifiers.content]: "",
+			[dataIds.content]: "",
 			...attributes,
 		} as const;
 	}

@@ -3,11 +3,11 @@ import type { Extracted, MaybeGetter } from "$lib/types";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { inBrowser } from "$lib/utils/browser";
 import { extract } from "$lib/utils/extract.svelte";
-import { createIdentifiers } from "$lib/utils/identifiers.svelte";
+import { createDataIds } from "$lib/utils/identifiers.svelte";
 import { isHtmlInputElement } from "$lib/utils/is";
 import { nanoid } from "nanoid";
 
-const identifiers = createIdentifiers("pin-input", ["root", "input"]);
+const identifiers = createDataIds("pin-input", ["root", "input"]);
 
 export type PinInputProps = {
 	/**
