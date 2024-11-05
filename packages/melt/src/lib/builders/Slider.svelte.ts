@@ -88,7 +88,6 @@ export class Slider {
 
 	set value(value: number) {
 		const valueFixedToStep = Math.round(value / this.step) * this.step;
-		console.log({ value, step: this.step, valueFixedToStep });
 		this.#value.current = clamp(this.min, valueFixedToStep, this.max);
 	}
 

@@ -33,84 +33,47 @@ Things I want:
 	<TabItem label="Builder">
 ```svelte
 <script lang="ts">
-	import { Tabs } from "melt/builders";
+	import { Slider } from "melt/builders";
 
-	const tabs = new Tabs()
-	const tabIds = ["Tab 1", "Tab 2", "Tab 3"];
+	const slider = new Slider();
 </script>
 
-<div {...tabs.triggerList}>
-	{#each tabIds as id}
-		<button {...tabs.getTrigger(id)}>
-			{id}
-		</button>
-	{/each}
-</div>
-
-{#each tabIds as id}
-	<div {...tabs.getContent(id)}>
-		{id}
+<div {...slider.root}>
+	<div {...slider.track}>
+		<div {...slider.range}></div>
 	</div>
-{/each}
-	```
+	<div {...slider.thumb}></div>
+</div>
+```
 	</TabItem>
 
 	<TabItem label="Component">
 
 ```svelte
 <script lang="ts">
-	import { Tabs } from "melt/components";
-
-	const tabIds = ["Tab 1", "Tab 2", "Tab 3"];
+	import { Slider } from "melt/components";
 </script>
 
-<Tabs>
-	{#snippet children(tabs)}
-		<div {...tabs.triggerList}>
-			{#each tabIds as id}
-				<button {...tabs.getTrigger(id)}>
-					{id}
-				</button>
-			{/each}
-		</div>
-
-		{#each tabIds as id}
-			<div {...tabs.getContent(id)}>
-				{id}
+<Slider>
+	{#snippet children(slider)}
+		<div {...slider.root}>
+			<div {...slider.track}>
+				<div {...slider.range}></div>
 			</div>
-		{/each}
+			<div {...slider.thumb}></div>
+		</div>
 	{/snippet}
-</Tabs>
-	```
-	</TabItem>
-
-	<TabItem label="ComponentAlt">
-
-```svelte
-<script lang="ts">
-	import { TabsRoot, TabsTriggerList, TabsTrigger, TabsContent } from "melt/components";
-
-	const tabs = ["Tab 1", "Tab 2", "Tab 3"];
-</script>
-
-<Tabs>
-	<TabsTriggerList>
-		{#each tabs as value}
-			<TabsTrigger {value}>
-				{id}
-			</TabsTrigger>
-		{/each}
-	</div>
-
-	{#each tabs as value}
-		<TabsContent {value}>
-			{id}
-		</TabsContent>
-	{/each}
-</Tabs>
+</Slider>
 	```
 	</TabItem>
 </Tabs>
+
+### Positioning
+
+By default, Melt does not provide styles. This means that you'll be responsible for positioning the
+thumb and range of your slider.
+
+To facilitate this, Melt provides some CSS properties.
 
 ## API Reference
 

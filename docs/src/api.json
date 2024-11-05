@@ -201,7 +201,7 @@
       },
       {
         "name": "root",
-        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-melt-root\": \"\"\n  readonly \"aria-valuenow\": number\n  readonly \"aria-valuemin\": number\n  readonly \"aria-valuemax\": number\n  readonly \"aria-orientation\": \"horizontal\" | \"vertical\"\n  readonly id: string\n  readonly style: string\n  readonly tabindex: 0\n  readonly role: \"slider\"\n  readonly onmousedown: (e: MouseEvent) => void\n  readonly onkeydown: (e: KeyboardEvent) => void\n}\n",
+        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"aria-valuenow\": number\n  readonly \"aria-valuemin\": number\n  readonly \"aria-valuemax\": number\n  readonly \"aria-orientation\": \"horizontal\" | \"vertical\"\n  readonly style: string\n  readonly tabindex: 0\n  readonly role: \"slider\"\n  readonly \"data-melt-root\": \"\"\n  readonly id: string\n  readonly onmousedown: (e: MouseEvent) => void\n  readonly onkeydown: (e: KeyboardEvent) => void\n}\n",
         "description": "The root of the slider.\nAny cursor interaction along this element will change the slider's values."
       },
       {
@@ -216,7 +216,7 @@
       },
       {
         "name": "thumb",
-        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-melt-thumb\": \"\"\n}\n",
+        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-melt-thumb\": \"\"\n  readonly tabindex: 0\n}\n",
         "description": "The slider's thumb, positioned at the end of the range."
       }
     ]
