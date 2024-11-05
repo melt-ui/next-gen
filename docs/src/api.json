@@ -41,12 +41,12 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly \"data-melt-trigger\": \"\"\n  readonly \"data-checked\": \"\" | undefined\n  readonly disabled: true | undefined\n  readonly onclick: () => void\n}\n",
+        "type": "{\n  readonly \"data-melt-toggle-trigger\": \"\"\n  readonly \"data-checked\": \"\" | undefined\n  readonly disabled: true | undefined\n  readonly onclick: () => void\n}\n",
         "description": "The trigger that toggles the value."
       },
       {
         "name": "hiddenInput",
-        "type": "{\n  readonly \"data-melt-hidden-input\": \"\"\n  readonly type: \"hidden\"\n  readonly value: \"on\" | \"off\"\n}\n",
+        "type": "{\n  readonly \"data-melt-toggle-hidden-input\": \"\"\n  readonly type: \"hidden\"\n  readonly value: \"on\" | \"off\"\n}\n",
         "description": "A hidden input field to use within forms."
       }
     ]
@@ -91,12 +91,12 @@
     "methods": [
       {
         "name": "getTrigger",
-        "type": "(value: T) => {\n  readonly \"data-melt-trigger\": T\n  readonly \"data-active\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly role: \"tab\"\n  readonly \"aria-selected\": boolean\n  readonly \"aria-controls\": string\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly onclick: () => T\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly id: string\n}\n",
+        "type": "(value: T) => {\n  readonly \"data-melt-tabs-trigger\": T\n  readonly \"data-active\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly role: \"tab\"\n  readonly \"aria-selected\": boolean\n  readonly \"aria-controls\": string\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly onclick: () => T\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly id: string\n}\n",
         "description": "Gets the attributes and listeners for a tab trigger. Requires an identifying tab value."
       },
       {
         "name": "getContent",
-        "type": "(value: T) => {\n  readonly \"data-melt-content\": \"\"\n  readonly hidden: boolean\n  readonly \"data-active\": \"\" | undefined\n  readonly role: \"tabpanel\"\n  readonly id: string\n  readonly \"aria-labelledby\": string\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n}\n",
+        "type": "(value: T) => {\n  readonly \"data-melt-tabs-content\": \"\"\n  readonly hidden: boolean\n  readonly \"data-active\": \"\" | undefined\n  readonly role: \"tabpanel\"\n  readonly id: string\n  readonly \"aria-labelledby\": string\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n}\n",
         "description": "Gets the attributes and listeners for the tabs contents. Requires an identifying tab value."
       }
     ],
@@ -123,7 +123,7 @@
       },
       {
         "name": "triggerList",
-        "type": "{\n  readonly \"data-melt-trigger-list\": \"\"\n  readonly role: \"tablist\"\n  readonly \"aria-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n}\n",
+        "type": "{\n  readonly \"data-melt-tabs-trigger-list\": \"\"\n  readonly role: \"tablist\"\n  readonly \"aria-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n}\n",
         "description": "The attributes for the list that contains the tab triggers."
       }
     ]
@@ -201,22 +201,22 @@
       },
       {
         "name": "root",
-        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"aria-valuenow\": number\n  readonly \"aria-valuemin\": number\n  readonly \"aria-valuemax\": number\n  readonly \"aria-orientation\": \"horizontal\" | \"vertical\"\n  readonly style: string\n  readonly tabindex: 0\n  readonly role: \"slider\"\n  readonly \"data-melt-root\": \"\"\n  readonly id: string\n  readonly onmousedown: (e: MouseEvent) => void\n  readonly onkeydown: (e: KeyboardEvent) => void\n}\n",
+        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"aria-valuenow\": number\n  readonly \"aria-valuemin\": number\n  readonly \"aria-valuemax\": number\n  readonly \"aria-orientation\": \"horizontal\" | \"vertical\"\n  readonly style: `--percentage: ${string}; --percentage-inv: ${string}`\n  readonly tabindex: 0\n  readonly role: \"slider\"\n  readonly \"data-melt-slider-root\": \"\"\n  readonly id: string\n  readonly onmousedown: (e: MouseEvent) => void\n  readonly onkeydown: (e: KeyboardEvent) => void\n}\n",
         "description": "The root of the slider.\nAny cursor interaction along this element will change the slider's values."
       },
       {
         "name": "track",
-        "type": "{\n  \"data-dragging\": \"\" | undefined\n  \"data-value\": number\n  \"data-orientation\": \"horizontal\" | \"vertical\"\n  \"data-melt-track\": string\n}\n",
+        "type": "{\n  \"data-dragging\": \"\" | undefined\n  \"data-value\": number\n  \"data-orientation\": \"horizontal\" | \"vertical\"\n  \"data-melt-slider-track\": string\n}\n",
         "description": "The track in which the thumb and range sit upon."
       },
       {
         "name": "range",
-        "type": "{\n  \"data-dragging\": \"\" | undefined\n  \"data-value\": number\n  \"data-orientation\": \"horizontal\" | \"vertical\"\n  \"data-melt-range\": string\n}\n",
+        "type": "{\n  \"data-dragging\": \"\" | undefined\n  \"data-value\": number\n  \"data-orientation\": \"horizontal\" | \"vertical\"\n  \"data-melt-slider-range\": string\n}\n",
         "description": "The range indicating the slider's value."
       },
       {
         "name": "thumb",
-        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-melt-thumb\": \"\"\n  readonly tabindex: 0\n}\n",
+        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-melt-slider-thumb\": \"\"\n  readonly tabindex: 0\n}\n",
         "description": "The slider's thumb, positioned at the end of the range."
       }
     ]
@@ -258,12 +258,12 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n  readonly \"data-melt-trigger\": \"\"\n}\n",
+        "type": "{\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n  readonly \"data-melt-popover-trigger\": \"\"\n}\n",
         "description": "The trigger that toggles the value."
       },
       {
         "name": "content",
-        "type": "{\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly \"data-melt-content\": \"\"\n}\n",
+        "type": "{\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly \"data-melt-popover-content\": \"\"\n}\n",
         "description": ""
       }
     ]
@@ -358,12 +358,12 @@
       },
       {
         "name": "root",
-        "type": "{\n  readonly \"data-melt-root\": \"\"\n  readonly id: string\n  readonly \"data-complete\": \"\" | undefined\n}\n",
+        "type": "{\n  readonly \"data-melt-pin-input-root\": \"\"\n  readonly id: string\n  readonly \"data-complete\": \"\" | undefined\n}\n",
         "description": "The root element's props."
       },
       {
         "name": "inputs",
-        "type": "{\n  readonly \"data-melt-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"text\" | \"password\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}[]\n",
+        "type": "{\n  readonly \"data-melt-pin-input-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"text\" | \"password\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}[]\n",
         "description": "An array of props that should be spread to the input elements."
       }
     ]
