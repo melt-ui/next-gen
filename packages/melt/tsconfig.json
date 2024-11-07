@@ -1,16 +1,15 @@
 {
 	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
-		// "module": "NodeNext",
-		// "moduleResolution": "NodeNext",
-		"target": "es2022",
-		"resolveJsonModule": true,
 		"allowJs": true,
 		"checkJs": true,
-		"strict": true,
-		"sourceMap": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
-		"skipLibCheck": true
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext"
 	}
 }

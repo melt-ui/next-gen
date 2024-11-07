@@ -1,8 +1,8 @@
-import { Synced } from "$lib/Synced.svelte";
-import type { MaybeGetter } from "$lib/types";
-import { extract } from "$lib/utils/extract.svelte";
-import { createDataIds, createIds } from "$lib/utils/identifiers.svelte";
-import { getPopoverAttributes, getPopoverTriggerAttributes } from "$lib/utils/popover.svelte";
+import { Synced } from "$lib/Synced.svelte.js";
+import type { MaybeGetter } from "$lib/types.js";
+import { extract } from "$lib/utils/extract.svelte.js";
+import { createDataIds, createIds } from "$lib/utils/identifiers.svelte.js";
+import { getPopoverAttributes, getPopoverTriggerAttributes } from "$lib/utils/popover.svelte.js";
 
 const dataIds = createDataIds("popover", ["trigger", "content"]);
 

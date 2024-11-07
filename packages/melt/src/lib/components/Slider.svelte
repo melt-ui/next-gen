@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Slider, type SliderProps } from "../builders/Slider.svelte";
+	import { Slider, type SliderProps } from "../builders/Slider.svelte.js";
 	import { type Snippet } from "svelte";
-	import type { ComponentProps } from "../types";
+	import type { ComponentProps } from "../types.js";
 	import { getters } from "../builders/utils.svelte";
 
 	type Props = ComponentProps<SliderProps> & {

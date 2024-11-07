@@ -5,8 +5,6 @@
 		"paths": {
 			"@*": ["src/*"]
 		},
-		"types": [
-      "unplugin-icons/types/svelte",
-    ]
+		"types": ["unplugin-icons/types/svelte"]
 	}
 }

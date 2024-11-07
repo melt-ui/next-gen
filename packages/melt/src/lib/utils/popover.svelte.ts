@@ -1,5 +1,5 @@
 import type { HTMLAttributes, HTMLButtonAttributes } from "svelte/elements";
-import { isHtmlElement } from "./is";
+import { isHtmlElement } from "./is.js";
 import { useEventListener } from "runed";
 
 export type GetPopoverAttributesArgs = {

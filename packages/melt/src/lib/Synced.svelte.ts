@@ -1,6 +1,6 @@
-import type { MaybeGetter } from "./types";
-import { extract } from "./utils/extract.svelte";
-import { isFunction } from "./utils/is";
+import type { MaybeGetter } from "./types.js";
+import { extract } from "./utils/extract.svelte.js";
+import { isFunction } from "./utils/is.js";
 
 type SyncedArgs<T> =
 	| {

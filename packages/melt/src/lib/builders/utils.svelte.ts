@@ -1,4 +1,4 @@
-import type { Getter } from "$lib/types";
+import type { Getter } from "$lib/types.js";
 
 type Getters<Obj extends Record<string, unknown>> = {
 	[Key in keyof Obj]: Getter<Obj[Key]>;

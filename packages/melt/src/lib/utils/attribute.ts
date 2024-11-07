@@ -1,4 +1,4 @@
-import type { ObjToString } from "./types";
+import type { ObjToString } from "./types.js";
 
 type DataReturn<T> = T extends true ? "" : T extends false ? undefined : T;
 

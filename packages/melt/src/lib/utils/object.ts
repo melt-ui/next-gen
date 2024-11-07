@@ -1,4 +1,4 @@
-import type { ValueOf } from "./types";
+import type { ValueOf } from "./types.js";
 
 /** Strongly typed Object.keys */
 export function keys<T extends object>(obj: T): Array<keyof T> {
@@ -17,5 +17,3 @@ export function omit<T extends Record<string, unknown>, K extends keyof T>(
 	}
 	return result;
 }
-
-

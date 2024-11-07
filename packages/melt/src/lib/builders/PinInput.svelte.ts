@@ -1,10 +1,10 @@
-import { Synced } from "$lib/Synced.svelte";
-import type { Extracted, MaybeGetter } from "$lib/types";
-import { dataAttr, disabledAttr } from "$lib/utils/attribute";
-import { inBrowser } from "$lib/utils/browser";
-import { extract } from "$lib/utils/extract.svelte";
-import { createDataIds } from "$lib/utils/identifiers.svelte";
-import { isHtmlInputElement } from "$lib/utils/is";
+import { Synced } from "$lib/Synced.svelte.js";
+import type { Extracted, MaybeGetter } from "$lib/types.js";
+import { dataAttr, disabledAttr } from "$lib/utils/attribute.js";
+import { inBrowser } from "$lib/utils/browser.js";
+import { extract } from "$lib/utils/extract.svelte.js";
+import { createDataIds } from "$lib/utils/identifiers.svelte.js";
+import { isHtmlInputElement } from "$lib/utils/is.js";
 import { nanoid } from "nanoid";
 
 const identifiers = createDataIds("pin-input", ["root", "input"]);
