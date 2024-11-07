@@ -205,16 +205,6 @@
         "description": "The root of the slider.\nAny cursor interaction along this element will change the slider's values."
       },
       {
-        "name": "track",
-        "type": "{\n  \"data-dragging\": \"\" | undefined\n  \"data-value\": number\n  \"data-orientation\": \"horizontal\" | \"vertical\"\n  \"data-melt-slider-track\": string\n}\n",
-        "description": "The track in which the thumb and range sit upon."
-      },
-      {
-        "name": "range",
-        "type": "{\n  \"data-dragging\": \"\" | undefined\n  \"data-value\": number\n  \"data-orientation\": \"horizontal\" | \"vertical\"\n  \"data-melt-slider-range\": string\n}\n",
-        "description": "The range indicating the slider's value."
-      },
-      {
         "name": "thumb",
         "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-melt-slider-thumb\": \"\"\n  readonly tabindex: 0\n}\n",
         "description": "The slider's thumb, positioned at the end of the range."

@@ -1,6 +1,6 @@
 ---
 title: Slider
-description: N/A
+description: A draggable input to control numeric values.
 ---
 import ApiTable from "@components/api-table.astro";
 import Preview from "@previews/slider.svelte";
@@ -24,6 +24,7 @@ Things I want:
 - 🎹 Keyboard navigation
 - 🧠 Smart focus management
 - 🔄 Horizontal and vertical orientation
+- ~💬 Tooltip value display~
 - ~🌐 RTL support~ (incoming!)
 </Features>
 
@@ -39,9 +40,6 @@ Things I want:
 </script>
 
 <div {...slider.root}>
-	<div {...slider.track}>
-		<div {...slider.range}></div>
-	</div>
 	<div {...slider.thumb}></div>
 </div>
 ```
@@ -57,9 +55,6 @@ Things I want:
 <Slider>
 	{#snippet children(slider)}
 		<div {...slider.root}>
-			<div {...slider.track}>
-				<div {...slider.range}></div>
-			</div>
 			<div {...slider.thumb}></div>
 		</div>
 	{/snippet}
@@ -73,7 +68,56 @@ Things I want:
 By default, Melt does not provide styles. This means that you'll be responsible for positioning the
 thumb and range of your slider.
 
-To facilitate this, Melt provides some CSS properties.
+To facilitate this, Melt provides some CSS properties, `--percentage` and `--percentage-inv`.
+
+```svelte
+<Slider value={30} {...controls}>
+	{#snippet children(slider)}
+		<div class="slider" {...slider.root}>
+			<div class="track">
+				<div class="range"></div>
+				<div {...slider.thumb}></div>
+			</div>
+		</div>
+	{/snippet}
+</Slider>
+
+<style>
+	.slider {
+		width: 300px;
+		height: 40px;
+		margin: 0 auto;
+		padding-block: 16px; /* padding to increase touch area */
+	}
+
+	.slider .track {
+		background: grey;
+		height: 100%;
+		position: relative;
+	}
+
+	.slider .range {
+		position: absolute;
+		background: green;
+		inset: 0;
+		right: var(--percentage-inv);
+	}
+
+	.slider [data-melt-slider-thumb] {
+		position: absolute;
+		background: white;
+		left: var(--percentage);
+		top: 50%;
+		transform: translate(-50%, -50%);
+		width: 20px;
+		height: 20px;
+	}
+</style>
+```
+
+### Transitions
+
+TODO: Write about `data-dragging`
 
 ## API Reference
 

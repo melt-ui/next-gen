@@ -195,22 +195,6 @@ export class Slider {
 		} as const;
 	}
 
-	/** The track in which the thumb and range sit upon. */
-	get track() {
-		return {
-			[dataIds.track]: "",
-			...this.#sharedProps,
-		};
-	}
-
-	/** The range indicating the slider's value. */
-	get range() {
-		return {
-			[dataIds.range]: "",
-			...this.#sharedProps,
-		};
-	}
-
 	/** The slider's thumb, positioned at the end of the range. */
 	get thumb() {
 		return {
