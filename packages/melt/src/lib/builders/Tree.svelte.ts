@@ -65,6 +65,7 @@ class TreeState<Value> {
 
 	#id = nanoid();
 	#tabbable: string | undefined = $state.raw();
+	#previousTabbable?: string;
 
 	constructor(props: TreeProps<Value>) {
 		this.#data = props.data;
@@ -95,6 +96,7 @@ class TreeState<Value> {
 	}
 
 	set tabbable(value: string) {
+		this.#previousTabbable = this.tabbable;
 		this.#tabbable = value;
 	}
 
@@ -108,8 +110,13 @@ class TreeState<Value> {
 		});
 	}
 
-	treeItemElementId(item: TreeItem<Value>): string {
-		return `${this.#id}:${item.id}`;
+	treeItemElementId(id: string): string {
+		return `${this.#id}:${id}`;
+	}
+
+	treeItemElement(id: string): HTMLElement | null {
+		const elementId = this.treeItemElementId(id);
+		return document.getElementById(elementId);
 	}
 
 	last(): TreeItem<Value> | undefined {
@@ -161,7 +168,6 @@ class TreeState<Value> {
 	): boolean {
 		for (let i = items.length - 1; i >= 0; i--) {
 			const item = items[i];
-
 			if (item.expanded) {
 				const found = this.selectFromEndUntil(target, item.children);
 				if (found) {
@@ -176,6 +182,37 @@ class TreeState<Value> {
 			}
 		}
 		return false;
+	}
+
+	batchSelectUntil(target: TreeItem<Value>, clickEvent: MouseEvent): void {
+		if (this.#previousTabbable === undefined) {
+			return;
+		}
+
+		// The click event is fired after the focus event, so the currently
+		// focused element is the target element. We want to select all elements
+		// between the previously focused element and the target element.
+		const previousElement = this.treeItemElement(this.#previousTabbable);
+		if (previousElement === null) {
+			return;
+		}
+		const previousRect = previousElement.getBoundingClientRect();
+		const targetAbove = clickEvent.clientY < previousRect.top;
+
+		let current = target;
+		while (true) {
+			this.selected.add(current.id);
+
+			if (current.id === this.#previousTabbable) {
+				break;
+			}
+
+			const next = targetAbove ? current.next() : current.previous();
+			if (next === undefined) {
+				break;
+			}
+			current = next;
+		}
 	}
 }
 
@@ -280,14 +317,13 @@ export class TreeItem<Value> {
 	}
 
 	element(): HTMLElement | null {
-		const elementId = this.#state.treeItemElementId(this);
-		return document.getElementById(elementId);
+		return this.#state.treeItemElement(this.id);
 	}
 
 	props() {
 		return {
 			[dataIds.item]: "",
-			id: this.#state.treeItemElementId(this),
+			id: this.#state.treeItemElementId(this.id),
 			role: "treeitem",
 			"aria-selected": this.selected,
 			"aria-expanded": this.children.length !== 0 ? this.expanded : undefined,
@@ -417,6 +453,8 @@ export class TreeItem<Value> {
 				const { selectionBehavior, selected } = this.#state;
 				if (selectionBehavior === "toggle" && isControlOrMeta(event)) {
 					toggle(selected, this.id);
+				} else if (selectionBehavior === "toggle" && event.shiftKey) {
+					this.#state.batchSelectUntil(this, event);
 				} else {
 					selected.clear();
 					selected.add(this.id);
