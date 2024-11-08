@@ -2,6 +2,7 @@ import type { MaybeGetter } from "$lib/types.js";
 import { extract } from "$lib/utils/extract.svelte.js";
 import { createDataIds } from "$lib/utils/identifiers.svelte.js";
 import { isControlOrMeta } from "$lib/utils/platform.js";
+import { toggle } from "$lib/utils/set.js";
 import { nanoid } from "nanoid/non-secure";
 import { SvelteSet } from "svelte/reactivity";
 
@@ -25,6 +26,38 @@ export type TreeProps<Value> = {
 };
 
 export class Tree<Value> {
+	#state: TreeState<Value>;
+
+	constructor(props: TreeProps<Value>) {
+		this.#state = new TreeState(props);
+	}
+
+	get roots(): ReadonlyArray<TreeItem<Value>> {
+		return this.#state.roots;
+	}
+
+	get selectionBehavior(): TreeSelectionBehavior {
+		return this.#state.selectionBehavior;
+	}
+
+	get selected(): SvelteSet<string> {
+		return this.#state.selected;
+	}
+
+	get expanded(): SvelteSet<string> {
+		return this.#state.expanded;
+	}
+
+	props() {
+		return {
+			[dataIds.tree]: "",
+			role: "tree",
+			"aria-multiselectable": this.selectionBehavior === "toggle",
+		} as const;
+	}
+}
+
+class TreeState<Value> {
 	#data: MaybeGetter<TreeData<Value>>;
 	#selectionBehavior: MaybeGetter<TreeSelectionBehavior | undefined>;
 	#selected: SvelteSet<string>;
@@ -42,7 +75,7 @@ export class Tree<Value> {
 
 	readonly roots: ReadonlyArray<TreeItem<Value>> = $derived.by(() => {
 		const data = extract(this.#data);
-		return createTreeItems(this, data);
+		return this.createTreeItems(data);
 	});
 
 	readonly selectionBehavior: TreeSelectionBehavior = $derived.by(() =>
@@ -57,7 +90,27 @@ export class Tree<Value> {
 		return this.#expanded;
 	}
 
-	readonly tabbable: string | undefined = $derived.by(() => this.#tabbable ?? this.roots[0]?.id);
+	get tabbable(): string | undefined {
+		return this.#tabbable ?? this.roots[0]?.id;
+	}
+
+	set tabbable(value: string) {
+		this.#tabbable = value;
+	}
+
+	createTreeItems(
+		data: TreeData<Value>,
+		parent?: TreeItem<Value>,
+	): Array<TreeItem<Value>> {
+		return data.map((item, index) => {
+			const { id, value, children = [] } = item;
+			return new TreeItem(this, id, value, index, parent, children);
+		});
+	}
+
+	treeItemElementId(item: TreeItem<Value>): string {
+		return `${this.#id}:${item.id}`;
+	}
 
 	last(): TreeItem<Value> | undefined {
 		let last = this.roots.at(-1);
@@ -71,25 +124,63 @@ export class Tree<Value> {
 		return last;
 	}
 
-	props() {
-		return {
-			[dataIds.tree]: "",
-			role: "tree",
-			"aria-multiselectable": this.selectionBehavior === "toggle",
-		} as const;
+	selectAll(nodes: ReadonlyArray<TreeItem<Value>> = this.roots): void {
+		for (const node of nodes) {
+			this.selected.add(node.id);
+
+			if (node.expanded) {
+				this.selectAll(node.children);
+			}
+		}
 	}
 
-	treeItemElementId(item: TreeItem<Value>): string {
-		return `${this.#id}:${item.id}`;
+	selectFromStartUntil(
+		target: TreeItem<Value>,
+		nodes: ReadonlyArray<TreeItem<Value>> = this.roots,
+	): boolean {
+		for (const node of nodes) {
+			this.selected.add(node.id);
+
+			if (node === target) {
+				return true;
+			}
+
+			if (node.expanded) {
+				const found = this.selectFromStartUntil(target, node.children);
+				if (found) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
-	onFocusTreeItem(item: TreeItem<Value>): void {
-		this.#tabbable = item.id;
+	selectFromEndUntil(
+		target: TreeItem<Value>,
+		nodes: ReadonlyArray<TreeItem<Value>> = this.roots,
+	): boolean {
+		for (let i = nodes.length - 1; i >= 0; i--) {
+			const node = nodes[i];
+
+			if (node.expanded) {
+				const found = this.selectFromEndUntil(target, node.children);
+				if (found) {
+					return true;
+				}
+			}
+
+			this.selected.add(node.id);
+
+			if (node === target) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 
 export class TreeItem<Value> {
-	#tree: Tree<Value>;
+	#state: TreeState<Value>;
 	#id: string;
 	#value: Value;
 	#index: number;
@@ -98,24 +189,20 @@ export class TreeItem<Value> {
 	#children: TreeData<Value>;
 
 	constructor(
-		tree: Tree<Value>,
+		state: TreeState<Value>,
 		id: string,
 		value: Value,
 		index: number,
 		parent: TreeItem<Value> | undefined,
 		children: TreeData<Value>,
 	) {
-		this.#tree = tree;
+		this.#state = state;
 		this.#id = id;
 		this.#value = value;
 		this.#index = index;
 		this.#level = parent !== undefined ? parent.level + 1 : 1;
 		this.#parent = parent;
 		this.#children = children;
-	}
-
-	get tree(): Tree<Value> {
-		return this.#tree;
 	}
 
 	get id(): string {
@@ -139,11 +226,11 @@ export class TreeItem<Value> {
 	}
 
 	readonly children: ReadonlyArray<TreeItem<Value>> = $derived.by(() =>
-		createTreeItems(this.tree, this.#children, this),
+		this.#state.createTreeItems(this.#children, this),
 	);
 
 	readonly siblings: ReadonlyArray<TreeItem<Value>> = $derived.by(
-		() => this.parent?.children ?? this.tree.roots,
+		() => this.parent?.children ?? this.#state.roots,
 	);
 
 	readonly previousSibling: TreeItem<Value> | undefined = $derived.by(
@@ -154,9 +241,13 @@ export class TreeItem<Value> {
 		() => this.siblings[this.index + 1],
 	);
 
-	readonly selected: boolean = $derived.by(() => this.tree.selected.has(this.id));
+	readonly selected: boolean = $derived.by(() =>
+		this.#state.selected.has(this.id),
+	);
 
-	readonly expanded: boolean = $derived.by(() => this.tree.expanded.has(this.id));
+	readonly expanded: boolean = $derived.by(() =>
+		this.#state.expanded.has(this.id),
+	);
 
 	previous(): TreeItem<Value> | undefined {
 		if (this.previousSibling === undefined) {
@@ -189,21 +280,21 @@ export class TreeItem<Value> {
 	}
 
 	element(): HTMLElement | null {
-		const elementId = this.tree.treeItemElementId(this);
+		const elementId = this.#state.treeItemElementId(this);
 		return document.getElementById(elementId);
 	}
 
 	props() {
 		return {
 			[dataIds.item]: "",
-			id: this.tree.treeItemElementId(this),
+			id: this.#state.treeItemElementId(this),
 			role: "treeitem",
 			"aria-selected": this.selected,
 			"aria-expanded": this.children.length !== 0 ? this.expanded : undefined,
 			"aria-level": this.level,
 			"aria-posinset": this.index + 1,
 			"aria-setsize": this.siblings.length,
-			tabindex: this.tree.tabbable === this.id ? 0 : -1,
+			tabindex: this.#state.tabbable === this.id ? 0 : -1,
 			onkeydown: (event: KeyboardEvent) => {
 				if (event.currentTarget !== event.target) {
 					return;
@@ -216,7 +307,7 @@ export class TreeItem<Value> {
 						}
 
 						if (!this.expanded) {
-							this.tree.expanded.add(this.id);
+							this.#state.expanded.add(this.id);
 						} else {
 							this.children[0].element()?.focus();
 						}
@@ -224,7 +315,7 @@ export class TreeItem<Value> {
 					}
 					case "ArrowLeft": {
 						if (this.expanded) {
-							this.tree.expanded.delete(this.id);
+							this.#state.expanded.delete(this.id);
 						} else {
 							this.parent?.element()?.focus();
 						}
@@ -240,13 +331,13 @@ export class TreeItem<Value> {
 
 						next.element()?.focus();
 
-						if (this.tree.selectionBehavior === "toggle" && event.shiftKey) {
-							this.tree.selected.add(this.id).add(next.id);
+						if (this.#state.selectionBehavior === "toggle" && event.shiftKey) {
+							this.#state.selected.add(this.id).add(next.id);
 						}
 						break;
 					}
 					case "Home": {
-						const first = this.tree.roots[0];
+						const first = this.#state.roots[0];
 						if (this === first || first === undefined) {
 							break;
 						}
@@ -254,16 +345,16 @@ export class TreeItem<Value> {
 						first.element()?.focus();
 
 						if (
-							this.tree.selectionBehavior === "toggle" &&
+							this.#state.selectionBehavior === "toggle" &&
 							event.shiftKey &&
 							isControlOrMeta(event)
 						) {
-							selectFromStartUntil(this);
+							this.#state.selectFromStartUntil(this);
 						}
 						break;
 					}
 					case "End": {
-						let last = this.tree.last();
+						let last = this.#state.last();
 						if (this === last || last === undefined) {
 							break;
 						}
@@ -271,16 +362,16 @@ export class TreeItem<Value> {
 						last.element()?.focus();
 
 						if (
-							this.tree.selectionBehavior === "toggle" &&
+							this.#state.selectionBehavior === "toggle" &&
 							event.shiftKey &&
 							isControlOrMeta(event)
 						) {
-							selectFromEndUntil(this);
+							this.#state.selectFromEndUntil(this);
 						}
 						break;
 					}
 					case " ": {
-						const { selectionBehavior, selected } = this.tree;
+						const { selectionBehavior, selected } = this.#state;
 						if (selectionBehavior === "toggle") {
 							toggle(selected, this.id);
 						} else {
@@ -290,13 +381,16 @@ export class TreeItem<Value> {
 						break;
 					}
 					case "a": {
-						if (this.tree.selectionBehavior === "toggle" && isControlOrMeta(event)) {
-							selectAll(this.tree);
+						if (
+							this.#state.selectionBehavior === "toggle" &&
+							isControlOrMeta(event)
+						) {
+							this.#state.selectAll();
 						}
 						break;
 					}
 					case "Escape": {
-						this.tree.selected.clear();
+						this.#state.selected.clear();
 						break;
 					}
 					default: {
@@ -308,7 +402,7 @@ export class TreeItem<Value> {
 				event.stopPropagation();
 			},
 			onclick: (event: MouseEvent) => {
-				const { selectionBehavior, selected } = this.tree;
+				const { selectionBehavior, selected } = this.#state;
 				if (selectionBehavior === "toggle" && isControlOrMeta(event)) {
 					toggle(selected, this.id);
 				} else {
@@ -319,14 +413,14 @@ export class TreeItem<Value> {
 				event.stopPropagation();
 			},
 			onfocusin: (event: FocusEvent) => {
-				this.tree.onFocusTreeItem(this);
+				this.#state.tabbable = this.id;
 				event.stopPropagation();
 			},
 		} as const;
 	}
 
 	select(): void {
-		const { selectionBehavior, selected } = this.tree;
+		const { selectionBehavior, selected } = this.#state;
 		if (selectionBehavior === "replace") {
 			selected.clear();
 		}
@@ -334,89 +428,14 @@ export class TreeItem<Value> {
 	}
 
 	unselect(): void {
-		this.tree.selected.delete(this.id);
+		this.#state.selected.delete(this.id);
 	}
 
 	expand(): void {
-		this.tree.expanded.add(this.id);
+		this.#state.expanded.add(this.id);
 	}
 
 	collapse(): void {
-		this.tree.expanded.delete(this.id);
+		this.#state.expanded.delete(this.id);
 	}
-}
-
-function toggle(ids: Set<string>, id: string): void {
-	const deleted = ids.delete(id);
-	if (!deleted) {
-		ids.add(id);
-	}
-}
-
-function createTreeItems<Value>(
-	tree: Tree<Value>,
-	data: TreeData<Value>,
-	parent?: TreeItem<Value>,
-): TreeItem<Value>[] {
-	return data.map((item, index) => {
-		const { id, value, children = [] } = item;
-		return new TreeItem(tree, id, value, index, parent, children);
-	});
-}
-
-function selectAll<Value>(
-	tree: Tree<Value>,
-	nodes: ReadonlyArray<TreeItem<Value>> = tree.roots,
-): void {
-	for (const node of nodes) {
-		tree.selected.add(node.id);
-
-		if (node.expanded) {
-			selectAll(tree, node.children);
-		}
-	}
-}
-
-function selectFromStartUntil<Value>(
-	target: TreeItem<Value>,
-	nodes: ReadonlyArray<TreeItem<Value>> = target.tree.roots,
-): boolean {
-	for (const node of nodes) {
-		node.tree.selected.add(node.id);
-
-		if (node === target) {
-			return true;
-		}
-
-		if (node.expanded) {
-			const found = selectFromStartUntil(target, node.children);
-			if (found) {
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-function selectFromEndUntil<Value>(
-	target: TreeItem<Value>,
-	nodes: ReadonlyArray<TreeItem<Value>> = target.tree.roots,
-): boolean {
-	for (let i = nodes.length - 1; i >= 0; i--) {
-		const node = nodes[i];
-
-		if (node.expanded) {
-			const found = selectFromEndUntil(target, node.children);
-			if (found) {
-				return true;
-			}
-		}
-
-		node.tree.selected.add(node.id);
-
-		if (node === target) {
-			return true;
-		}
-	}
-	return false;
 }
