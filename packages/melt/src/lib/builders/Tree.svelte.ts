@@ -124,29 +124,29 @@ class TreeState<Value> {
 		return last;
 	}
 
-	selectAll(nodes: ReadonlyArray<TreeItem<Value>> = this.roots): void {
-		for (const node of nodes) {
-			this.selected.add(node.id);
+	selectAll(items: ReadonlyArray<TreeItem<Value>> = this.roots): void {
+		for (const item of items) {
+			this.selected.add(item.id);
 
-			if (node.expanded) {
-				this.selectAll(node.children);
+			if (item.expanded) {
+				this.selectAll(item.children);
 			}
 		}
 	}
 
 	selectFromStartUntil(
 		target: TreeItem<Value>,
-		nodes: ReadonlyArray<TreeItem<Value>> = this.roots,
+		items: ReadonlyArray<TreeItem<Value>> = this.roots,
 	): boolean {
-		for (const node of nodes) {
-			this.selected.add(node.id);
+		for (const item of items) {
+			this.selected.add(item.id);
 
-			if (node === target) {
+			if (item === target) {
 				return true;
 			}
 
-			if (node.expanded) {
-				const found = this.selectFromStartUntil(target, node.children);
+			if (item.expanded) {
+				const found = this.selectFromStartUntil(target, item.children);
 				if (found) {
 					return true;
 				}
@@ -157,21 +157,21 @@ class TreeState<Value> {
 
 	selectFromEndUntil(
 		target: TreeItem<Value>,
-		nodes: ReadonlyArray<TreeItem<Value>> = this.roots,
+		items: ReadonlyArray<TreeItem<Value>> = this.roots,
 	): boolean {
-		for (let i = nodes.length - 1; i >= 0; i--) {
-			const node = nodes[i];
+		for (let i = items.length - 1; i >= 0; i--) {
+			const item = items[i];
 
-			if (node.expanded) {
-				const found = this.selectFromEndUntil(target, node.children);
+			if (item.expanded) {
+				const found = this.selectFromEndUntil(target, item.children);
 				if (found) {
 					return true;
 				}
 			}
 
-			this.selected.add(node.id);
+			this.selected.add(item.id);
 
-			if (node === target) {
+			if (item === target) {
 				return true;
 			}
 		}
