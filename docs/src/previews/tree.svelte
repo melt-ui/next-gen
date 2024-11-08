@@ -143,13 +143,10 @@
 
 {#snippet treeItems(items: ReadonlyArray<TreeItem<TreeItemValue>>)}
 	{#each items as item (item.id)}
-		<li
-			{...item.props()}
-			class="aria-selected:focus-visible:outline-accent-300 rounded-sm focus-visible:outline-offset-4"
-		>
+		<li {...item.props()} class="mt-2 rounded-sm first:mt-0 focus-visible:outline-offset-2">
 			<div
 				data-selected={item.selected ? "" : undefined}
-				class="data-[selected]:bg-accent-300 data-[selected]:text-accent-950 group my-2 flex items-center gap-2 rounded-[inherit] px-2 py-1"
+				class="data-[selected]:bg-accent-200 data-[selected]:text-accent-950 group flex items-center gap-2 rounded-[inherit] px-2 py-1"
 			>
 				{@render treeItemIcon(item)}
 				<span class="select-none group-data-[selected]:font-semibold">
@@ -157,7 +154,7 @@
 				</span>
 			</div>
 			{#if item.expanded && item.children.length !== 0}
-				<ul role="group" class="ms-4 list-none p-0">
+				<ul role="group" class="ms-4 mt-2 list-none p-0">
 					{@render treeItems(item.children)}
 				</ul>
 			{/if}
@@ -168,7 +165,10 @@
 <Preview>
 	<Tree {...controls} {data}>
 		{#snippet children(tree)}
-			<ul {...tree.props()} class="m-0 max-h-96 list-none overflow-y-scroll p-2">
+			<ul
+				{...tree.props()}
+				class="border-accent-200 h-80 list-none overflow-y-scroll rounded-md border p-4"
+			>
 				{@render treeItems(tree.roots)}
 			</ul>
 		{/snippet}
