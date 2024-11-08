@@ -329,7 +329,11 @@ export class TreeItem<Value> {
 							break;
 						}
 
-						next.element()?.focus();
+						const nextElement = next.element();
+						if (nextElement === null) {
+							break;
+						}
+						nextElement.focus();
 
 						if (this.#state.selectionBehavior === "toggle" && event.shiftKey) {
 							this.#state.selected.add(this.id).add(next.id);
@@ -342,7 +346,11 @@ export class TreeItem<Value> {
 							break;
 						}
 
-						first.element()?.focus();
+						const firstElement = first.element();
+						if (firstElement === null) {
+							break;
+						}
+						firstElement.focus();
 
 						if (
 							this.#state.selectionBehavior === "toggle" &&
@@ -354,12 +362,16 @@ export class TreeItem<Value> {
 						break;
 					}
 					case "End": {
-						let last = this.#state.last();
+						const last = this.#state.last();
 						if (this === last || last === undefined) {
 							break;
 						}
 
-						last.element()?.focus();
+						const lastElement = last.element();
+						if (lastElement === null) {
+							break;
+						}
+						lastElement.focus();
 
 						if (
 							this.#state.selectionBehavior === "toggle" &&
