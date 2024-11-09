@@ -8,11 +8,11 @@
 	import Folder from "~icons/material-symbols/folder-outline";
 
 	const controls = usePreviewControls({
-		selectionBehavior: {
-			label: "Selection Behavior",
+		selectionMode: {
+			label: "Selection Mode",
 			type: "select",
-			options: ["replace", "toggle"],
-			defaultValue: "replace",
+			options: ["single", "multiple"],
+			defaultValue: "single",
 		},
 	});
 

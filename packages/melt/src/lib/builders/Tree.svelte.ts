@@ -1,9 +1,11 @@
 import type { MaybeGetter } from "$lib/types.js";
 import { extract } from "$lib/utils/extract.svelte.js";
 import { createDataIds } from "$lib/utils/identifiers.svelte.js";
+import { last } from "$lib/utils/iterator.js";
 import { isControlOrMeta } from "$lib/utils/platform.js";
 import { toggle } from "$lib/utils/set.js";
 import { nanoid } from "nanoid/non-secure";
+import type { HTMLAttributes } from "svelte/elements";
 import { SvelteSet } from "svelte/reactivity";
 
 const dataIds = createDataIds("tree-view", ["tree", "item"]);
@@ -14,11 +16,11 @@ export type TreeData<Value> = Array<{
 	children?: TreeData<Value>;
 }>;
 
-export type TreeSelectionBehavior = "replace" | "toggle";
+export type TreeSelectionMode = "single" | "multiple";
 
 export type TreeProps<Value> = {
 	data: MaybeGetter<TreeData<Value>>;
-	selectionBehavior?: MaybeGetter<TreeSelectionBehavior | undefined>;
+	selectionMode?: MaybeGetter<TreeSelectionMode | undefined>;
 	selected?: SvelteSet<string>;
 	expanded?: SvelteSet<string>;
 	defaultSelected?: Iterable<string>;
@@ -36,8 +38,8 @@ export class Tree<Value> {
 		return this.#state.roots;
 	}
 
-	get selectionBehavior(): TreeSelectionBehavior {
-		return this.#state.selectionBehavior;
+	get selectionMode(): TreeSelectionMode {
+		return this.#state.selectionMode;
 	}
 
 	get selected(): SvelteSet<string> {
@@ -48,28 +50,39 @@ export class Tree<Value> {
 		return this.#state.expanded;
 	}
 
+	last(): TreeItem<Value> | undefined {
+		return this.#state.last();
+	}
+
+	treeItemElementId(id: string): string {
+		return this.#state.treeItemElementId(id);
+	}
+
+	treeItemElement(id: string): HTMLElement | null {
+		return this.#state.treeItemElement(id);
+	}
+
 	props() {
 		return {
 			[dataIds.tree]: "",
 			role: "tree",
-			"aria-multiselectable": this.selectionBehavior === "toggle",
-		} as const;
+			"aria-multiselectable": this.selectionMode === "multiple",
+		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 }
 
 class TreeState<Value> {
 	#data: MaybeGetter<TreeData<Value>>;
-	#selectionBehavior: MaybeGetter<TreeSelectionBehavior | undefined>;
+	#selectionMode: MaybeGetter<TreeSelectionMode | undefined>;
 	#selected: SvelteSet<string>;
 	#expanded: SvelteSet<string>;
 
 	#id = nanoid();
 	#tabbable: string | undefined = $state.raw();
-	#previousTabbable?: string;
 
 	constructor(props: TreeProps<Value>) {
 		this.#data = props.data;
-		this.#selectionBehavior = props.selectionBehavior;
+		this.#selectionMode = props.selectionMode;
 		this.#selected = props.selected ?? new SvelteSet(props.defaultSelected);
 		this.#expanded = props.expanded ?? new SvelteSet(props.defaultExpanded);
 	}
@@ -79,8 +92,8 @@ class TreeState<Value> {
 		return this.createTreeItems(data);
 	});
 
-	readonly selectionBehavior: TreeSelectionBehavior = $derived.by(() =>
-		extract(this.#selectionBehavior, "replace"),
+	readonly selectionMode: TreeSelectionMode = $derived.by(() =>
+		extract(this.#selectionMode, "single"),
 	);
 
 	get selected(): SvelteSet<string> {
@@ -96,7 +109,6 @@ class TreeState<Value> {
 	}
 
 	set tabbable(value: string) {
-		this.#previousTabbable = this.tabbable;
 		this.#tabbable = value;
 	}
 
@@ -108,15 +120,6 @@ class TreeState<Value> {
 			const { id, value, children = [] } = item;
 			return new TreeItem(this, id, value, index, parent, children);
 		});
-	}
-
-	treeItemElementId(id: string): string {
-		return `${this.#id}:${id}`;
-	}
-
-	treeItemElement(id: string): HTMLElement | null {
-		const elementId = this.treeItemElementId(id);
-		return document.getElementById(elementId);
 	}
 
 	last(): TreeItem<Value> | undefined {
@@ -131,88 +134,138 @@ class TreeState<Value> {
 		return last;
 	}
 
-	selectAll(items: ReadonlyArray<TreeItem<Value>> = this.roots): void {
-		for (const item of items) {
-			this.selected.add(item.id);
+	treeItemElementId(id: string): string {
+		return `${this.#id}:${id}`;
+	}
 
-			if (item.expanded) {
-				this.selectAll(item.children);
+	treeItemElement(id: string): HTMLElement | null {
+		const elementId = this.treeItemElementId(id);
+		return document.getElementById(elementId);
+	}
+
+	selectSubtree(item: TreeItem<Value>): void {
+		this.selected.add(item.id);
+
+		if (item.expanded) {
+			for (const child of item.children) {
+				this.selectSubtree(child);
 			}
 		}
 	}
 
-	selectFromStartUntil(
-		target: TreeItem<Value>,
-		items: ReadonlyArray<TreeItem<Value>> = this.roots,
-	): boolean {
-		for (const item of items) {
-			this.selected.add(item.id);
-
-			if (item === target) {
-				return true;
-			}
-
-			if (item.expanded) {
-				const found = this.selectFromStartUntil(target, item.children);
-				if (found) {
-					return true;
-				}
-			}
+	selectAll(): void {
+		for (const root of this.roots) {
+			this.selectSubtree(root);
 		}
-		return false;
 	}
 
-	selectFromEndUntil(
-		target: TreeItem<Value>,
-		items: ReadonlyArray<TreeItem<Value>> = this.roots,
-	): boolean {
-		for (let i = items.length - 1; i >= 0; i--) {
-			const item = items[i];
-			if (item.expanded) {
-				const found = this.selectFromEndUntil(target, item.children);
-				if (found) {
-					return true;
-				}
-			}
-
-			this.selected.add(item.id);
-
-			if (item === target) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	batchSelectUntil(target: TreeItem<Value>, clickEvent: MouseEvent): void {
-		if (this.#previousTabbable === undefined) {
-			return;
-		}
-
-		// The click event is fired after the focus event, so the currently
-		// focused element is the target element. We want to select all elements
-		// between the previously focused element and the target element.
-		const previousElement = this.treeItemElement(this.#previousTabbable);
-		if (previousElement === null) {
-			return;
-		}
-		const previousRect = previousElement.getBoundingClientRect();
-		const targetAbove = clickEvent.clientY < previousRect.top;
-
-		let current = target;
+	selectUntilFirst(start: TreeItem<Value>): void {
+		let current = start;
 		while (true) {
 			this.selected.add(current.id);
 
-			if (current.id === this.#previousTabbable) {
+			const { siblings } = current;
+			for (let i = current.index - 1; i >= 0; i--) {
+				const sibling = siblings[i];
+				this.selectSubtree(sibling);
+			}
+
+			if (current.parent === undefined) {
+				return;
+			}
+
+			current = current.parent;
+		}
+	}
+
+	selectUntilLast(start: TreeItem<Value>): void {
+		let current = start;
+		while (true) {
+			const { siblings } = current;
+			for (let i = current.index; i < siblings.length; i++) {
+				const sibling = siblings[i];
+				this.selectSubtree(sibling);
+			}
+
+			while (true) {
+				if (current.parent === undefined) {
+					return;
+				}
+
+				current = current.parent;
+
+				if (current.nextSibling !== undefined) {
+					current = current.nextSibling;
+					break;
+				}
+			}
+		}
+	}
+
+	selectFromFirstUntil(
+		target: TreeItem<Value>,
+		items: ReadonlyArray<TreeItem<Value>> = this.roots,
+	): boolean {
+		for (const item of items) {
+			this.selected.add(item.id);
+
+			if (item === target) {
+				return true;
+			}
+
+			if (item.expanded) {
+				const found = this.selectFromFirstUntil(target, item.children);
+				if (found) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	batchSelectUntil(target: TreeItem<Value>, targetElement: HTMLElement): void {
+		const lastSelected = last(this.selected);
+		if (lastSelected === undefined) {
+			this.selectFromFirstUntil(target);
+			return;
+		}
+
+		const lastSelectedElement = this.treeItemElement(lastSelected);
+		if (lastSelectedElement === null) {
+			this.selectFromFirstUntil(target);
+			return;
+		}
+
+		const targetRect = targetElement.getBoundingClientRect();
+		const lastSelectedRect = lastSelectedElement.getBoundingClientRect();
+		const down = lastSelectedRect.top > targetRect.top;
+		const items: Array<TreeItem<Value>> = [];
+
+		let current = target;
+		while (true) {
+			items.push(current);
+
+			if (current.id === lastSelected) {
 				break;
 			}
 
-			const next = targetAbove ? current.next() : current.previous();
+			const next = down ? current.next() : current.previous();
 			if (next === undefined) {
 				break;
 			}
+
 			current = next;
 		}
+
+		for (let i = items.length - 1; i >= 0; i--) {
+			const item = items[i];
+			this.selected.add(item.id);
+		}
+	}
+
+	setSelectedItem(item: TreeItem<Value>): void {
+		this.selected.clear();
+		this.selected.add(item.id);
 	}
 }
 
@@ -312,6 +365,7 @@ export class TreeItem<Value> {
 			if (current.parent === undefined) {
 				return;
 			}
+
 			current = current.parent;
 		}
 	}
@@ -331,7 +385,7 @@ export class TreeItem<Value> {
 			"aria-posinset": this.index + 1,
 			"aria-setsize": this.siblings.length,
 			tabindex: this.#state.tabbable === this.id ? 0 : -1,
-			onkeydown: (event: KeyboardEvent) => {
+			onkeydown: (event) => {
 				if (event.currentTarget !== event.target) {
 					return;
 				}
@@ -369,9 +423,10 @@ export class TreeItem<Value> {
 						if (nextElement === null) {
 							break;
 						}
+
 						nextElement.focus();
 
-						if (this.#state.selectionBehavior === "toggle" && event.shiftKey) {
+						if (this.#state.selectionMode === "multiple" && event.shiftKey) {
 							this.#state.selected.add(this.id).add(next.id);
 						}
 						break;
@@ -386,14 +441,15 @@ export class TreeItem<Value> {
 						if (firstElement === null) {
 							break;
 						}
+
 						firstElement.focus();
 
 						if (
-							this.#state.selectionBehavior === "toggle" &&
+							this.#state.selectionMode === "multiple" &&
 							event.shiftKey &&
 							isControlOrMeta(event)
 						) {
-							this.#state.selectFromStartUntil(this);
+							this.#state.selectUntilFirst(this);
 						}
 						break;
 					}
@@ -407,30 +463,34 @@ export class TreeItem<Value> {
 						if (lastElement === null) {
 							break;
 						}
+
 						lastElement.focus();
 
 						if (
-							this.#state.selectionBehavior === "toggle" &&
+							this.#state.selectionMode === "multiple" &&
 							event.shiftKey &&
 							isControlOrMeta(event)
 						) {
-							this.#state.selectFromEndUntil(this);
+							this.#state.selectUntilLast(this);
 						}
 						break;
 					}
 					case " ": {
-						const { selectionBehavior, selected } = this.#state;
-						if (selectionBehavior === "toggle") {
-							toggle(selected, this.id);
+						if (this.#state.selectionMode === "single") {
+							this.#state.setSelectedItem(this);
+							break;
+						}
+
+						if (event.shiftKey) {
+							this.#state.batchSelectUntil(this, event.currentTarget);
 						} else {
-							selected.clear();
-							selected.add(this.id);
+							toggle(this.#state.selected, this.id);
 						}
 						break;
 					}
 					case "a": {
 						if (
-							this.#state.selectionBehavior === "toggle" &&
+							this.#state.selectionMode === "multiple" &&
 							isControlOrMeta(event)
 						) {
 							this.#state.selectAll();
@@ -449,32 +509,31 @@ export class TreeItem<Value> {
 				event.preventDefault();
 				event.stopPropagation();
 			},
-			onclick: (event: MouseEvent) => {
-				const { selectionBehavior, selected } = this.#state;
-				if (selectionBehavior === "toggle" && isControlOrMeta(event)) {
-					toggle(selected, this.id);
-				} else if (selectionBehavior === "toggle" && event.shiftKey) {
-					this.#state.batchSelectUntil(this, event);
+			onclick: (event) => {
+				const { selectionMode } = this.#state;
+				if (selectionMode === "multiple" && isControlOrMeta(event)) {
+					toggle(this.#state.selected, this.id);
+				} else if (selectionMode === "multiple" && event.shiftKey) {
+					this.#state.batchSelectUntil(this, event.currentTarget);
 				} else {
-					selected.clear();
-					selected.add(this.id);
+					this.#state.setSelectedItem(this);
 				}
 
 				event.stopPropagation();
 			},
-			onfocusin: (event: FocusEvent) => {
+			onfocusin: (event) => {
 				this.#state.tabbable = this.id;
 				event.stopPropagation();
 			},
-		} as const;
+		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
 	select(): void {
-		const { selectionBehavior, selected } = this.#state;
-		if (selectionBehavior === "replace") {
-			selected.clear();
+		if (this.#state.selectionMode === "multiple") {
+			this.#state.selected.add(this.id);
+		} else {
+			this.#state.setSelectedItem(this);
 		}
-		selected.add(this.id);
 	}
 
 	unselect(): void {
