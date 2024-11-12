@@ -248,12 +248,12 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n  readonly \"data-melt-popover-trigger\": \"\"\n}\n",
+        "type": "{\n  readonly \"data-melt-popover-trigger\": \"\"\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n}\n",
         "description": "The trigger that toggles the value."
       },
       {
         "name": "content",
-        "type": "{\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly \"data-melt-popover-content\": \"\"\n}\n",
+        "type": "{\n  \"data-melt-popover-content\": string\n  id: string\n  popover: \"manual\"\n  ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  onfocusout: () => Promise<void>\n}\n",
         "description": ""
       }
     ]

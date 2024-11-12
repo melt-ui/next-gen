@@ -2,7 +2,9 @@ import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { extract } from "$lib/utils/extract.svelte";
 import { createDataIds, createIds } from "$lib/utils/identifiers.svelte";
-import { getPopoverAttributes, getPopoverTriggerAttributes } from "$lib/utils/popover.svelte";
+import { isHtmlElement } from "$lib/utils/is";
+import { useEventListener } from "runed";
+import type { HTMLAttributes } from "svelte/elements";
 
 const dataIds = createDataIds("popover", ["trigger", "content"]);
 
@@ -62,49 +64,84 @@ export class Popover {
 
 	/** The trigger that toggles the value. */
 	get trigger() {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const instance = this;
-		const attributes = getPopoverTriggerAttributes({
-			contentId: instance.#ids.content,
-			triggerId: instance.#ids.trigger,
-			get open() {
-				return instance.open;
-			},
-			set open(value) {
-				instance.open = value;
-			},
-			get forceVisible() {
-				return instance.forceVisible;
-			},
-		});
-
 		return {
 			[dataIds.trigger]: "",
-			...attributes,
+			id: this.#ids.trigger,
+			popovertarget: this.#ids.content,
+			onclick: (e: Event) => {
+				e.preventDefault();
+				this.open = !this.open;
+			},
 		} as const;
 	}
 
 	get content() {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const instance = this;
-		const attributes = getPopoverAttributes({
-			contentId: instance.#ids.content,
-			triggerId: instance.#ids.trigger,
-			get open() {
-				return instance.open;
-			},
-			set open(value) {
-				instance.open = value;
-			},
-			get forceVisible() {
-				return instance.forceVisible;
-			},
+		$effect(() => {
+			const el = document.getElementById(this.#ids.content);
+			if (!isHtmlElement(el)) {
+				return;
+			}
+
+			if (this.open || this.forceVisible) {
+				el.showPopover();
+			} else {
+				el.hidePopover();
+			}
 		});
+
+		useEventListener(
+			() => document,
+			"keydown",
+			(e) => {
+				const el = document.getElementById(this.#ids.content);
+				if (e.key !== "Escape" || !this.open || !isHtmlElement(el)) return;
+				e.preventDefault();
+				const openPopovers = [...el.querySelectorAll("[popover]")].filter((child) => {
+					return child.matches(":popover-open");
+				});
+
+				if (openPopovers.length) return;
+				// Set timeout to give time to all event listeners to run
+				setTimeout(() => (this.open = false));
+			},
+		);
+
+		useEventListener(
+			() => document,
+			"click",
+			(e) => {
+				const contentEl = document.getElementById(this.#ids.content);
+				const triggerEl = document.getElementById(this.#ids.trigger);
+
+				if (
+					this.open &&
+					!contentEl?.contains(e.target as Node) &&
+					!triggerEl?.contains(e.target as Node)
+				) {
+					this.open = false;
+				}
+			},
+		);
 
 		return {
 			[dataIds.content]: "",
-			...attributes,
-		} as const;
+			id: this.#ids.content,
+			popover: "manual",
+			ontoggle: (e) => {
+				const newOpen = e.newState === "open";
+				if (this.open !== newOpen) {
+					this.open = newOpen;
+				}
+			},
+			onfocusout: async () => {
+				await new Promise((r) => setTimeout(r));
+				const contentEl = document.getElementById(this.#ids.content);
+
+				if (!contentEl?.contains(document.activeElement)) {
+					this.open = false;
+				}
+			},
+		} satisfies HTMLAttributes<HTMLElement>;
 	}
 
 	// IDEA: separate content and floating ui to achieve transitions without requiring
