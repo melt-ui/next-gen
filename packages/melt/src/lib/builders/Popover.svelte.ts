@@ -3,6 +3,15 @@ import type { MaybeGetter } from "$lib/types";
 import { extract } from "$lib/utils/extract.svelte";
 import { createDataIds, createIds } from "$lib/utils/identifiers.svelte";
 import { isHtmlElement } from "$lib/utils/is";
+import { deepMerge } from "$lib/utils/merge";
+import {
+	autoUpdate,
+	computePosition,
+	flip,
+	shift,
+	type ComputePositionConfig,
+	type Placement,
+} from "@floating-ui/dom";
 import { useEventListener } from "runed";
 import type { HTMLAttributes } from "svelte/elements";
 
@@ -33,6 +42,13 @@ export type PopoverProps = {
 	 * @default false
 	 */
 	forceVisible?: MaybeGetter<boolean | undefined>;
+
+	/**
+	 * Options to be passed to Floating UI's `computePosition`
+	 *
+	 * @see https://floating-ui.com/docs/computePosition
+	 */
+	computePositionOptions?: Partial<ComputePositionConfig>;
 };
 
 export class Popover {
@@ -89,6 +105,60 @@ export class Popover {
 			}
 		});
 
+		// Floating UI
+		const compute = () => {
+			const contentEl = document.getElementById(this.#ids.content);
+			const triggerEl = document.getElementById(this.#ids.trigger);
+			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
+				return;
+			}
+
+			const baseOptions: Partial<ComputePositionConfig> = {
+				middleware: [shift(), flip()],
+			};
+			computePosition(
+				triggerEl,
+				contentEl,
+				deepMerge(baseOptions, this.#props.computePositionOptions || {}),
+			).then(({ x, y, placement }) => {
+				const transformOriginMap: Record<Placement, string> = {
+					top: "top center",
+					"top-start": "top left",
+					"top-end": "top right",
+
+					bottom: "bottom center",
+					"bottom-start": "bottom left",
+					"bottom-end": "bottom right",
+
+					left: "center center",
+					"left-start": "top left",
+					"left-end": "bottom left",
+
+					right: "center center",
+					"right-start": "top right",
+					"right-end": "bottom right",
+				};
+
+				Object.assign(contentEl.style, {
+					left: `${x}px`,
+					top: `${y}px`,
+					"--melt-popover-content-transform-origin": transformOriginMap[placement],
+				});
+
+				contentEl.dataset.side = placement;
+			});
+		};
+
+		$effect(() => {
+			const contentEl = document.getElementById(this.#ids.content);
+			const triggerEl = document.getElementById(this.#ids.trigger);
+			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
+				return;
+			}
+
+			return autoUpdate(triggerEl, contentEl, compute);
+		});
+
 		useEventListener(
 			() => document,
 			"keydown",
@@ -133,14 +203,15 @@ export class Popover {
 					this.open = newOpen;
 				}
 			},
-			onfocusout: async () => {
-				await new Promise((r) => setTimeout(r));
-				const contentEl = document.getElementById(this.#ids.content);
-
-				if (!contentEl?.contains(document.activeElement)) {
-					this.open = false;
-				}
-			},
+			//onfocusout: async () => {
+			//	await new Promise((r) => setTimeout(r));
+			//	console.log("focus out", document.activeElement);
+			//	const contentEl = document.getElementById(this.#ids.content);
+			//
+			//	if (!contentEl?.contains(document.activeElement)) {
+			//		this.open = false;
+			//	}
+			//},
 		} satisfies HTMLAttributes<HTMLElement>;
 	}
 

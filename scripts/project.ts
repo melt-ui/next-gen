@@ -29,10 +29,14 @@ export function toArray<T>(value: T | T[]): T[] {
 
 export async function formatType(type: string): Promise<string> {
 	const prefix = "type TEMP = ";
-	return (await prettier.format(prefix + type, { parser: "typescript", semi: false })).replace(
-		prefix,
-		"",
-	);
+	try {
+		return (await prettier.format(prefix + type, { parser: "typescript", semi: false })).replace(
+			prefix,
+			"",
+		);
+	} catch (_e) {
+		return type;
+	}
 }
 
 export async function trimType(value: string): Promise<string> {

@@ -232,6 +232,12 @@
         "description": "If the popover visibility should be controlled by the user.",
         "defaultValue": "false",
         "optional": true
+      },
+      {
+        "name": "computePositionOptions",
+        "type": "Partial<{ placement?: Elements; }) => Promisable<Platform | undefined; }> | undefined",
+        "description": "Options to be passed to Floating UI's `computePosition`",
+        "optional": true
       }
     ],
     "methods": [],
@@ -253,7 +259,7 @@
       },
       {
         "name": "content",
-        "type": "{\n  \"data-melt-popover-content\": string\n  id: string\n  popover: \"manual\"\n  ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  onfocusout: () => Promise<void>\n}\n",
+        "type": "{\n  \"data-melt-popover-content\": string\n  id: string\n  popover: \"manual\"\n  ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n}\n",
         "description": ""
       }
     ]
