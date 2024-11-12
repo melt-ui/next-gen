@@ -235,7 +235,7 @@
       },
       {
         "name": "computePositionOptions",
-        "type": "Partial<{ placement?: Elements; }) => Promisable<Platform | undefined; }> | undefined",
+        "type": "Elements; }) => Promisable<Platform | undefined; }> | undefined>",
         "description": "Options to be passed to Floating UI's `computePosition`",
         "optional": true
       }
@@ -245,6 +245,11 @@
       {
         "name": "forceVisible",
         "type": "boolean\n",
+        "description": ""
+      },
+      {
+        "name": "computePositionOptions",
+        "type": "{} | Partial<{ placement?: Elements; }) => Promisable<Platform | undefined; }>",
         "description": ""
       },
       {
@@ -259,7 +264,7 @@
       },
       {
         "name": "content",
-        "type": "{\n  \"data-melt-popover-content\": string\n  id: string\n  popover: \"manual\"\n  ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n}\n",
+        "type": "{\n  \"data-melt-popover-content\": string\n  id: string\n  popover: \"manual\"\n  ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  \"data-open\": \"\" | undefined\n}\n",
         "description": ""
       }
     ]

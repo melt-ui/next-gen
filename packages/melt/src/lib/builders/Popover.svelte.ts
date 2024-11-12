@@ -1,5 +1,7 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
+import { dataAttr } from "$lib/utils/attribute";
+import { addEventListener } from "$lib/utils/event";
 import { extract } from "$lib/utils/extract.svelte";
 import { createDataIds, createIds } from "$lib/utils/identifiers.svelte";
 import { isHtmlElement } from "$lib/utils/is";
@@ -8,6 +10,7 @@ import {
 	autoUpdate,
 	computePosition,
 	flip,
+	offset,
 	shift,
 	type ComputePositionConfig,
 	type Placement,
@@ -48,7 +51,7 @@ export type PopoverProps = {
 	 *
 	 * @see https://floating-ui.com/docs/computePosition
 	 */
-	computePositionOptions?: Partial<ComputePositionConfig>;
+	computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;
 };
 
 export class Popover {
@@ -57,6 +60,7 @@ export class Popover {
 	/* Props */
 	#props!: PopoverProps;
 	forceVisible = $derived(extract(this.#props.forceVisible, false));
+	computePositionOptions = $derived(extract(this.#props.computePositionOptions, {}));
 
 	/* State */
 	#open!: Synced<boolean>;
@@ -99,7 +103,30 @@ export class Popover {
 			}
 
 			if (this.open || this.forceVisible) {
-				el.showPopover();
+				// Check if there's a parent popover. If so, only open if the parent's open.
+				// This is to guarantee correct layering
+				const parent = isHtmlElement(el.parentNode)
+					? el.parentNode.closest(`[${dataIds.content}]`)
+					: undefined;
+
+				if (!isHtmlElement(parent)) {
+					el.showPopover();
+					return;
+				}
+
+				if (parent.dataset.open) el.showPopover();
+
+				return addEventListener(parent, "toggle", async (e) => {
+					await new Promise((r) => setTimeout(r));
+					console.log("aaaaaaaaa", e.newState);
+
+					const isOpen = e.newState === "open";
+					if (isOpen) {
+						el.showPopover();
+					} else {
+						el.hidePopover();
+					}
+				});
 			} else {
 				el.hidePopover();
 			}
@@ -114,21 +141,21 @@ export class Popover {
 			}
 
 			const baseOptions: Partial<ComputePositionConfig> = {
-				middleware: [shift(), flip()],
+				middleware: [shift(), flip(), offset({ mainAxis: 8 })],
 			};
 			computePosition(
 				triggerEl,
 				contentEl,
-				deepMerge(baseOptions, this.#props.computePositionOptions || {}),
+				deepMerge(baseOptions, this.computePositionOptions),
 			).then(({ x, y, placement }) => {
 				const transformOriginMap: Record<Placement, string> = {
-					top: "top center",
-					"top-start": "top left",
-					"top-end": "top right",
+					top: "bottom center",
+					"top-start": "bottom left",
+					"top-end": "bottom right",
 
-					bottom: "bottom center",
-					"bottom-start": "bottom left",
-					"bottom-end": "bottom right",
+					bottom: "top center",
+					"bottom-start": "top left",
+					"bottom-end": "top right",
 
 					left: "center center",
 					"left-start": "top left",
@@ -142,8 +169,8 @@ export class Popover {
 				Object.assign(contentEl.style, {
 					left: `${x}px`,
 					top: `${y}px`,
-					"--melt-popover-content-transform-origin": transformOriginMap[placement],
 				});
+				contentEl.style.transformOrigin = transformOriginMap[placement];
 
 				contentEl.dataset.side = placement;
 			});
@@ -167,6 +194,9 @@ export class Popover {
 				if (e.key !== "Escape" || !this.open || !isHtmlElement(el)) return;
 				e.preventDefault();
 				const openPopovers = [...el.querySelectorAll("[popover]")].filter((child) => {
+					if (!isHtmlElement(child)) return false;
+					// If child is a Melt popover, check if it's open
+					if (child.matches(`[${dataIds.content}]`)) return child.dataset.open !== undefined;
 					return child.matches(":popover-open");
 				});
 
@@ -199,7 +229,7 @@ export class Popover {
 			popover: "manual",
 			ontoggle: (e) => {
 				const newOpen = e.newState === "open";
-				if (this.open !== newOpen) {
+				if (this.open !== newOpen && newOpen === false) {
 					this.open = newOpen;
 				}
 			},
@@ -212,6 +242,7 @@ export class Popover {
 			//		this.open = false;
 			//	}
 			//},
+			"data-open": dataAttr(this.open),
 		} satisfies HTMLAttributes<HTMLElement>;
 	}
 

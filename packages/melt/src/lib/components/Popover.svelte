@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Popover, type PopoverProps } from "../builders/Popover.svelte";
-	import {  type Snippet } from "svelte";
+	import { type Snippet } from "svelte";
 	import type { ComponentProps } from "../types";
+	import { getters } from "$lib/builders";
 
 	type Props = ComponentProps<PopoverProps> & {
 		children: Snippet<[Popover]>;
@@ -12,7 +13,7 @@
 	const popover = new Popover({
 		open: () => open,
 		onOpenChange: (v) => (open = v),
-		forceVisible: () => rest.forceVisible,
+		...getters(rest),
 	});
 </script>
 
