@@ -1,3 +1,4 @@
+import { SyncedSet } from "$lib/SyncedSet.svelte.js";
 import type { MaybeGetter } from "$lib/types.js";
 import { extract } from "$lib/utils/extract.svelte.js";
 import { createDataIds } from "$lib/utils/identifiers.svelte.js";
@@ -10,21 +11,53 @@ import { SvelteSet } from "svelte/reactivity";
 
 const dataIds = createDataIds("tree-view", ["tree", "item"]);
 
+/**
+ * A tree's item.
+ * It may have children, in which case it'll be expandable.
+ */
 export type TreeData<Value> = Array<{
 	id: string;
 	value: Value;
 	children?: TreeData<Value>;
 }>;
 
+/**
+ * Defines if an user can select one or multiple items in the tree.
+ */
 export type TreeSelectionMode = "single" | "multiple";
 
 export type TreeProps<Value> = {
+	/**
+	 * The data to be rendered in the tree.
+	 */
 	data: MaybeGetter<TreeData<Value>>;
+
+	/**
+	 * The selection mode of the tree.
+	 *
+	 * @default "single"
+	 */
 	selectionMode?: MaybeGetter<TreeSelectionMode | undefined>;
-	selected?: SvelteSet<string>;
-	expanded?: SvelteSet<string>;
-	defaultSelected?: Iterable<string>;
-	defaultExpanded?: Iterable<string>;
+
+	/**
+	 * An array of ids of the selected items.
+	 *
+	 * @default []
+	 */
+	selected?: MaybeGetter<Iterable<string>> | SvelteSet<string>;
+	/**
+	 * Called when the `Tree` instance tries to change the selected items.
+	 */
+	onSelectedChange?: (selected: SvelteSet<string>) => void;
+
+	/**
+	 * An array of ids of the expanded items.
+	 */
+	expanded?: MaybeGetter<Iterable<string>> | SvelteSet<string>;
+	/**
+	 * Called when the `Tree` instance tries to change the expanded items.
+	 */
+	onExpandedChange?: (expanded: SvelteSet<string>) => void;
 };
 
 export class Tree<Value> {
@@ -74,8 +107,8 @@ export class Tree<Value> {
 class TreeState<Value> {
 	#data: MaybeGetter<TreeData<Value>>;
 	#selectionMode: MaybeGetter<TreeSelectionMode | undefined>;
-	#selected: SvelteSet<string>;
-	#expanded: SvelteSet<string>;
+	#selected: SyncedSet<string>;
+	#expanded: SyncedSet<string>;
 
 	#id = nanoid();
 	#tabbable: string | undefined = $state.raw();
@@ -83,8 +116,14 @@ class TreeState<Value> {
 	constructor(props: TreeProps<Value>) {
 		this.#data = props.data;
 		this.#selectionMode = props.selectionMode;
-		this.#selected = props.selected ?? new SvelteSet(props.defaultSelected);
-		this.#expanded = props.expanded ?? new SvelteSet(props.defaultExpanded);
+		this.#selected = new SyncedSet({
+			value: props.selected,
+			onChange: props.onSelectedChange,
+		});
+		this.#expanded = new SyncedSet({
+			value: props.expanded,
+			onChange: props.onExpandedChange,
+		});
 	}
 
 	readonly roots: ReadonlyArray<TreeItem<Value>> = $derived.by(() => {
@@ -96,11 +135,11 @@ class TreeState<Value> {
 		extract(this.#selectionMode, "single"),
 	);
 
-	get selected(): SvelteSet<string> {
+	get selected() {
 		return this.#selected;
 	}
 
-	get expanded(): SvelteSet<string> {
+	get expanded() {
 		return this.#expanded;
 	}
 
@@ -112,10 +151,7 @@ class TreeState<Value> {
 		this.#tabbable = value;
 	}
 
-	createTreeItems(
-		data: TreeData<Value>,
-		parent?: TreeItem<Value>,
-	): Array<TreeItem<Value>> {
+	createTreeItems(data: TreeData<Value>, parent?: TreeItem<Value>): Array<TreeItem<Value>> {
 		return data.map((item, index) => {
 			const { id, value, children = [] } = item;
 			return new TreeItem(this, id, value, index, parent, children);
@@ -331,13 +367,9 @@ export class TreeItem<Value> {
 		() => this.siblings[this.index + 1],
 	);
 
-	readonly selected: boolean = $derived.by(() =>
-		this.#state.selected.has(this.id),
-	);
+	readonly selected: boolean = $derived.by(() => this.#state.selected.has(this.id));
 
-	readonly expanded: boolean = $derived.by(() =>
-		this.#state.expanded.has(this.id),
-	);
+	readonly expanded: boolean = $derived.by(() => this.#state.expanded.has(this.id));
 
 	previous(): TreeItem<Value> | undefined {
 		if (this.previousSibling === undefined) {
@@ -489,10 +521,7 @@ export class TreeItem<Value> {
 						break;
 					}
 					case "a": {
-						if (
-							this.#state.selectionMode === "multiple" &&
-							isControlOrMeta(event)
-						) {
+						if (this.#state.selectionMode === "multiple" && isControlOrMeta(event)) {
 							this.#state.selectAll();
 						}
 						break;

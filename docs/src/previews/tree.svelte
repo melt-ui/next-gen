@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
-	import type { TreeData, TreeItem } from "melt/builders";
+	import { type TreeData, type TreeItem } from "melt/builders";
 	import { Tree } from "melt/components";
 	import JavaScript from "~icons/devicon/javascript";
 	import Svelte from "~icons/devicon/svelte";

@@ -1,5 +1,6 @@
 <script lang="ts" generics="Value">
 	import { Tree, type TreeData, type TreeSelectionMode } from "$lib/builders/Tree.svelte.js";
+	import { getters } from "$lib/builders/utils.svelte.js";
 	import type { Snippet } from "svelte";
 	import type { SvelteSet } from "svelte/reactivity";
 
@@ -13,19 +14,11 @@
 		defaultExpanded?: Iterable<string>;
 	};
 
-	const {
-		data,
-		children,
-		selectionMode,
-		selected,
-		expanded,
-		defaultSelected,
-		defaultExpanded,
-	}: Props = $props();
+	const { children, selected, expanded, defaultSelected, defaultExpanded, ...rest }: Props =
+		$props();
 
 	const tree = new Tree({
-		data: () => data,
-		selectionMode: () => selectionMode,
+		...getters(rest),
 		selected,
 		expanded,
 		defaultSelected,
