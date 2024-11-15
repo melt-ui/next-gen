@@ -43,6 +43,7 @@
 
 <style>
 	[data-melt-popover-content] {
+		position: absolute;
 		pointer-events: none;
 		opacity: 0;
 
