@@ -17,7 +17,7 @@
 				psst...
 			</button>
 
-			<div class="w-[260px] rounded-xl bg-gray-700 p-4 shadow-xl" {...popover.content}>
+			<div class="w-[260px] rounded-2xl bg-gray-800 p-4 shadow-xl" {...popover.content}>
 				<p class="text-center font-semibold">Can I tell you a secret?</p>
 
 				<div class="mt-4 flex items-center justify-center gap-4">
@@ -30,7 +30,7 @@
 								yes
 							</button>
 
-							<div {...popover2.content} class="rounded-xl bg-gray-600 p-4 shadow-xl">
+							<div {...popover2.content} class="rounded-xl bg-gray-700 p-4 shadow-xl backdrop-blur">
 								you're awesome
 							</div>
 						{/snippet}

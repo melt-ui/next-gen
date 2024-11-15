@@ -34,9 +34,16 @@ Things I want:
 	<TabItem label="Builder">
 ```svelte
 <script lang="ts">
-	import { Slider } from "melt/builders";
+	import { Slider, type SliderProps, getters } from "melt/builders";
+	import type { ComponentProps } from "melt";
 
-	const slider = new Slider();
+  const { value = $bindable(50), ...rest }: ComponentProps<SliderProps> = $props();
+
+	const slider = new Slider({
+		value: () => value,
+		onValueChange: (v) => value = v
+		...getters(rest)
+	});
 </script>
 
 <div {...slider.root}>
@@ -50,9 +57,13 @@ Things I want:
 ```svelte
 <script lang="ts">
 	import { Slider } from "melt/components";
+	import { type SliderProps, getters } from "melt/builders";
+	import type { ComponentProps } from "melt";
+
+  const { value = $bindable(50), ...rest }: ComponentProps<SliderProps> = $props();
 </script>
 
-<Slider>
+<Slider bind:value {...rest}>
 	{#snippet children(slider)}
 		<div {...slider.root}>
 			<div {...slider.thumb}></div>

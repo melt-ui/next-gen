@@ -82,6 +82,24 @@ export class Popover {
 		this.#open.current = value;
 	}
 
+	get #sharedProps() {
+		return {
+			onfocusout: async () => {
+				await new Promise((r) => setTimeout(r));
+				const contentEl = document.getElementById(this.#ids.content);
+				const triggerEl = document.getElementById(this.#ids.trigger);
+
+				if (
+					contentEl?.contains(document.activeElement) ||
+					triggerEl?.contains(document.activeElement)
+				) {
+					return;
+				}
+				this.open = false;
+			},
+		};
+	}
+
 	/** The trigger that toggles the value. */
 	get trigger() {
 		return {
@@ -92,10 +110,12 @@ export class Popover {
 				e.preventDefault();
 				this.open = !this.open;
 			},
+			...this.#sharedProps,
 		} as const;
 	}
 
 	get content() {
+		// Show and hide popover based on open state
 		$effect(() => {
 			const el = document.getElementById(this.#ids.content);
 			if (!isHtmlElement(el)) {
@@ -104,7 +124,7 @@ export class Popover {
 
 			if (this.open || this.forceVisible) {
 				// Check if there's a parent popover. If so, only open if the parent's open.
-				// This is to guarantee correct layering
+				// This is to guarantee correct layering.
 				const parent = isHtmlElement(el.parentNode)
 					? el.parentNode.closest(`[${dataIds.content}]`)
 					: undefined;
@@ -114,11 +134,10 @@ export class Popover {
 					return;
 				}
 
-				if (parent.dataset.open) el.showPopover();
+				if (parent.dataset.open !== undefined) el.showPopover();
 
 				return addEventListener(parent, "toggle", async (e) => {
 					await new Promise((r) => setTimeout(r));
-					console.log("aaaaaaaaa", e.newState);
 
 					const isOpen = e.newState === "open";
 					if (isOpen) {
@@ -233,17 +252,11 @@ export class Popover {
 					this.open = newOpen;
 				}
 			},
-			//onfocusout: async () => {
-			//	await new Promise((r) => setTimeout(r));
-			//	console.log("focus out", document.activeElement);
-			//	const contentEl = document.getElementById(this.#ids.content);
-			//
-			//	if (!contentEl?.contains(document.activeElement)) {
-			//		this.open = false;
-			//	}
-			//},
+			tabindex: -1,
+			inert: !this.open,
 			"data-open": dataAttr(this.open),
-		} satisfies HTMLAttributes<HTMLElement>;
+			...this.#sharedProps,
+		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
 	// IDEA: separate content and floating ui to achieve transitions without requiring
