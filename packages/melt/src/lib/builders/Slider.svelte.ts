@@ -1,10 +1,10 @@
 import { dataAttr, styleAttr } from "$lib/utils/attribute.js";
-import { extract } from "$lib/utils/extract.svelte.js";
+import { extract } from "$lib/utils/extract.js";
 import { clamp } from "$lib/utils/number.js";
 import { useEventListener } from "runed";
 import { Synced } from "../Synced.svelte.js";
 import type { MaybeGetter } from "../types.js";
-import { createDataIds, createIds } from "../utils/identifiers.svelte.js";
+import { createDataIds, createIds } from "../utils/identifiers.js";
 import { isHtmlElement } from "../utils/is.js";
 
 const dataIds = createDataIds("slider", ["root", "track", "thumb", "range"]);

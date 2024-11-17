@@ -1,19 +1,23 @@
 <script lang="ts">
-	import { Toggle, type ToggleProps } from "../builders/Toggle.svelte.js";
+	import { Toggle, type ToggleProps } from "$lib/builders/Toggle.svelte.js";
+	import type { ComponentProps } from "$lib/types.js";
 	import { type Snippet } from "svelte";
-	import type { ComponentProps } from "../types.js";
+	import { builderProps } from "./utils.js";
 
-	type Props = ComponentProps<ToggleProps> & {
+	interface Props extends ComponentProps<ToggleProps> {
 		children: Snippet<[Toggle]>;
-	};
+	}
 
-	let { value = $bindable(false), children, ...rest }: Props = $props();
+	let { value = $bindable(false), onValueChange, children, ...props }: Props = $props();
 
-	const tabs = new Toggle({
+	const toggle = new Toggle({
 		value: () => value,
-		onValueChange: (v) => (value = v),
-		disabled: () => rest.disabled,
+		onValueChange(v) {
+			value = v;
+			onValueChange?.(v);
+		},
+		...builderProps(props),
 	});
 </script>
 
-{@render children(tabs)}
+{@render children(toggle)}

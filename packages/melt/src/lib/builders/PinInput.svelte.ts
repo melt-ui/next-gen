@@ -2,8 +2,8 @@ import { Synced } from "$lib/Synced.svelte.js";
 import type { Extracted, MaybeGetter } from "$lib/types.js";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute.js";
 import { inBrowser } from "$lib/utils/browser.js";
-import { extract } from "$lib/utils/extract.svelte.js";
-import { createDataIds } from "$lib/utils/identifiers.svelte.js";
+import { extract } from "$lib/utils/extract.js";
+import { createDataIds } from "$lib/utils/identifiers.js";
 import { isHtmlInputElement } from "$lib/utils/is.js";
 import { nanoid } from "nanoid";
 

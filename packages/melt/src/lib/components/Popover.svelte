@@ -1,18 +1,22 @@
 <script lang="ts">
-	import { Popover, type PopoverProps } from "../builders/Popover.svelte";
+	import { Popover, type PopoverProps } from "$lib/builders/Popover.svelte";
+	import type { ComponentProps } from "$lib/types.js";
 	import { type Snippet } from "svelte";
-	import type { ComponentProps } from "../types.js";
+	import { builderProps } from "./utils.js";
 
-	type Props = ComponentProps<PopoverProps> & {
+	interface Props extends ComponentProps<PopoverProps> {
 		children: Snippet<[Popover]>;
-	};
+	}
 
-	let { open = $bindable(false), children, ...rest }: Props = $props();
+	let { open = $bindable(false), onOpenChange, children, ...props }: Props = $props();
 
 	const popover = new Popover({
 		open: () => open,
-		onOpenChange: (v) => (open = v),
-		forceVisible: () => rest.forceVisible,
+		onOpenChange(value) {
+			open = value;
+			onOpenChange?.(value);
+		},
+		...builderProps(props),
 	});
 </script>
 

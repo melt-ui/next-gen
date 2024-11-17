@@ -1,20 +1,23 @@
 <script lang="ts">
-	import { PinInput, type PinInputProps } from "../builders/PinInput.svelte.js";
+	import { PinInput, type PinInputProps } from "$lib/builders/PinInput.svelte.js";
+	import type { ComponentProps } from "$lib/types.js";
 	import { type Snippet } from "svelte";
-	import type { ComponentProps } from "../types.js";
-	import { getters } from "$lib/builders/utils.svelte.js";
+	import { builderProps } from "./utils.js";
 
-	type Props = ComponentProps<PinInputProps> & {
+	interface Props extends ComponentProps<PinInputProps> {
 		children: Snippet<[PinInput]>;
-	};
+	}
 
-	let { value = $bindable(), children, ...rest }: Props = $props();
+	let { value = $bindable(), onValueChange, children, ...props }: Props = $props();
 
-	const tabs = new PinInput({
+	const input = new PinInput({
 		value: () => value,
-		onValueChange: (v) => (value = v),
-		...getters(rest),
+		onValueChange(v) {
+			value = v;
+			onValueChange?.(v);
+		},
+		...builderProps(props),
 	});
 </script>
 
-{@render children(tabs)}
+{@render children(input)}

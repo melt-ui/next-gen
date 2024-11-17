@@ -1,6 +1,6 @@
-export function last<T>(iterable: Iterable<T>): T | undefined {
+export function last<T>(values: Iterable<T>) {
 	let result: T | undefined;
-	for (const value of iterable) {
+	for (const value of values) {
 		result = value;
 	}
 	return result;

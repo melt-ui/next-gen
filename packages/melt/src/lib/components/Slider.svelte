@@ -1,19 +1,22 @@
 <script lang="ts">
-	import { Slider, type SliderProps } from "../builders/Slider.svelte.js";
+	import { Slider, type SliderProps } from "$lib/builders/Slider.svelte.js";
+	import type { ComponentProps } from "$lib/types.js";
 	import { type Snippet } from "svelte";
-	import type { ComponentProps } from "../types.js";
-	import { getters } from "../builders/utils.svelte";
+	import { builderProps } from "./utils.js";
 
-	type Props = ComponentProps<SliderProps> & {
+	interface Props extends ComponentProps<SliderProps> {
 		children: Snippet<[Slider]>;
-	};
+	}
 
-	let { value = $bindable(), children, ...rest }: Props = $props();
+	let { value = $bindable(), onValueChange, children, ...props }: Props = $props();
 
 	const slider = new Slider({
 		value: () => value,
-		onValueChange: (v) => (value = v),
-		...getters(rest),
+		onValueChange(v) {
+			value = v;
+			onValueChange?.(v);
+		},
+		...builderProps(props),
 	});
 </script>
 
