@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
-	import type { TreeData, TreeItem } from "melt/builders";
-	import { Tree } from "melt/components";
+	import { SingleSelectTree, type TreeItem, type TreeItemData } from "melt/builders";
 	import JavaScript from "~icons/devicon/javascript";
 	import Svelte from "~icons/devicon/svelte";
 	import FolderOpen from "~icons/material-symbols/folder-open";
@@ -21,7 +20,7 @@
 		icon: "folder" | "svelte" | "js";
 	};
 
-	const data: TreeData<TreeItemValue> = [
+	const data: TreeItemData<any>[] = [
 		{
 			id: "index.svelte",
 			value: {
@@ -124,6 +123,10 @@
 			],
 		},
 	];
+
+	const tree = new SingleSelectTree({
+		items: data,
+	});
 </script>
 
 {#snippet treeItemIcon(item: TreeItem<TreeItemValue>)}
@@ -143,7 +146,7 @@
 
 {#snippet treeItems(items: ReadonlyArray<TreeItem<TreeItemValue>>)}
 	{#each items as item (item.id)}
-		<li {...item.props()} class="mt-2 rounded-sm first:mt-0 focus-visible:outline-offset-2">
+		<li {...item.attributes} class="mt-2 rounded-sm first:mt-0 focus-visible:outline-offset-2">
 			<div
 				data-selected={item.selected ? "" : undefined}
 				class="data-[selected]:bg-accent-200 data-[selected]:text-accent-950 group flex items-center gap-2 rounded-[inherit] px-2 py-1"
@@ -163,14 +166,7 @@
 {/snippet}
 
 <Preview>
-	<Tree {...controls} {data}>
-		{#snippet children(tree)}
-			<ul
-				{...tree.props()}
-				class="border-accent-200 h-80 list-none overflow-y-scroll rounded-md border p-4"
-			>
-				{@render treeItems(tree.roots)}
-			</ul>
-		{/snippet}
-	</Tree>
+	<ul class="border-accent-200 h-80 list-none overflow-y-scroll rounded-md border p-4">
+		{@render treeItems(tree.items)}
+	</ul>
 </Preview>
