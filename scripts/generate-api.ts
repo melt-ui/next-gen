@@ -11,6 +11,7 @@ import {
 	toArray,
 	type ResultSchema,
 } from "./project";
+import { TypeReferenceNode } from "ts-morph";
 
 async function main() {
 	console.log("Generating API reference...");
@@ -38,6 +39,18 @@ async function main() {
 
 		const builderClass = sourceFile.getClass(name);
 		if (!builderClass) continue;
+
+		const props = sourceFile.getTypeAlias(`${name}Props`);
+		if (props) {
+			const typeParams =
+				props
+					.getTypeParameters()[0]
+					?.getChildren()
+					.filter((c): c is TypeReferenceNode => c instanceof TypeReferenceNode)
+					.map((c) => sourceFile.getTypeAlias(c.getType().getText())?.getText()) ?? [];
+
+			result[name].propsAlt = [...typeParams, props.getText()].join("\n\n");
+		}
 
 		const constructor = builderClass?.getConstructors()?.[0];
 		if (constructor) {

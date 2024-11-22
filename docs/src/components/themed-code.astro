@@ -17,21 +17,13 @@ const themes = {
 	dark: "vesper",
 	light: "material-theme-lighter",
 } satisfies Record<string, CodeProps["theme"]>;
+
+const codeClass = `${props.inline ? "" : "rounded-xl !border-1 max-h-[35rem]"} ${props.class}`;
 ---
 
 <div class=`${props.inline ? "inline" : "block"} dark:hidden`>
-	<Code
-		{...props}
-		class={`${props.inline ? "" : "rounded-xl !border-1"} ${props.class}`}
-		lang={lang}
-		theme={themes.light}
-	/>
+	<Code {...props} class={codeClass} lang={lang} theme={themes.light} />
 </div>
 <div class=`hidden ${props.inline ? "dark:inline" : "dark:block"}`>
-	<Code
-		{...props}
-		class={`${props.inline ? "" : "rounded-xl !border-1"} ${props.class}`}
-		theme={themes.dark}
-		lang={lang}
-	/>
+	<Code {...props} class={codeClass} theme={themes.dark} lang={lang} />
 </div>

@@ -37,3 +37,7 @@ type ToTupleRec<Union, Rslt extends unknown[]> =
 type FindWhat<T> = ToTuple<T extends string ? T : FindWhat<T[keyof T]>>[0];
 
 export type ObjToString<T extends Record<string, string | number | boolean>> = FindWhat<What<T>>;
+
+export type Expect<T extends true> = T;
+export type Equal<X, Y> =
+	(<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false;
