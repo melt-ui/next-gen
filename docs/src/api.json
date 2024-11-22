@@ -4,6 +4,94 @@
     "methods": [],
     "properties": []
   },
+  "Tree": {
+    "constructorProps": [
+      {
+        "name": "#items",
+        "type": "TreeItemData<TValue>[]>",
+        "optional": false
+      },
+      {
+        "name": "#expanded",
+        "type": "MultiSelectionState\n",
+        "optional": false
+      },
+      {
+        "name": "#selected",
+        "type": "TSelected\n",
+        "optional": false
+      },
+      {
+        "name": "#id",
+        "type": "`${string}-${string}-${string}-${string}-${string}`\n",
+        "optional": false
+      },
+      {
+        "name": "#tabbable",
+        "type": "string | undefined\n",
+        "optional": false
+      },
+      {
+        "name": "items",
+        "type": "TreeItem<TValue>[]\n",
+        "optional": false
+      },
+      {
+        "name": "expanded",
+        "type": "MultiSelectionState\n",
+        "optional": false
+      },
+      {
+        "name": "selected",
+        "type": "TSelected\n",
+        "optional": false
+      },
+      {
+        "name": "tabbable",
+        "type": "string\n",
+        "optional": false
+      },
+      {
+        "name": "createTreeItems",
+        "type": "(items: TreeItem<TValue> | undefined) => TreeItem<TValue>[]\n",
+        "optional": false
+      },
+      {
+        "name": "last",
+        "type": "() => TreeItem<TValue> | undefined\n",
+        "optional": false
+      },
+      {
+        "name": "treeItemElementId",
+        "type": "(id: string) => string\n",
+        "optional": false
+      }
+    ],
+    "methods": [
+      {
+        "name": "last",
+        "type": "() => TreeItem<TValue> | undefined\n",
+        "description": ""
+      }
+    ],
+    "properties": [
+      {
+        "name": "items",
+        "type": "TreeItem<TValue>[]\n",
+        "description": ""
+      },
+      {
+        "name": "expanded",
+        "type": "MultiSelectionState\n",
+        "description": ""
+      },
+      {
+        "name": "selected",
+        "type": "TSelection\n",
+        "description": ""
+      }
+    ]
+  },
   "Toggle": {
     "constructorProps": [
       {
@@ -211,6 +299,11 @@
       }
     ]
   },
+  "Select": {
+    "constructorProps": [],
+    "methods": [],
+    "properties": []
+  },
   "Popover": {
     "constructorProps": [
       {
@@ -366,6 +459,19 @@
         "name": "inputs",
         "type": "{\n  readonly \"data-melt-pin-input-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"text\" | \"password\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}[]\n",
         "description": "An array of props that should be spread to the input elements."
+      }
+    ]
+  },
+  "AltTree": {
+    "constructorProps": [
+      "AltTreeProps<Props>\n"
+    ],
+    "methods": [],
+    "properties": [
+      {
+        "name": "selected",
+        "type": "type TEMP =\n  | (Props[\"multiple\"] extends true\n      ? Iterable<string> | undefined\n      : string | undefined)\n  | undefined\n",
+        "description": ""
       }
     ]
   }

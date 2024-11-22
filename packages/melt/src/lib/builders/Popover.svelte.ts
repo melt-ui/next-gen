@@ -2,8 +2,8 @@ import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
 import { addEventListener } from "$lib/utils/event";
-import { extract } from "$lib/utils/extract.svelte";
-import { createDataIds, createIds } from "$lib/utils/identifiers.svelte";
+import { extract } from "$lib/utils/extract";
+import { createDataIds, createIds } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 import { deepMerge } from "$lib/utils/merge";
 import {

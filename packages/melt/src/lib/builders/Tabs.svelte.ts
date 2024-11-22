@@ -1,9 +1,9 @@
 import { dataAttr } from "$lib/utils/attribute";
-import { extract } from "$lib/utils/extract.svelte";
+import { extract } from "$lib/utils/extract";
 import { nanoid } from "nanoid";
 import { Synced } from "../Synced.svelte";
 import type { MaybeGetter } from "../types";
-import { createDataIds } from "../utils/identifiers.svelte";
+import { createDataIds } from "../utils/identifiers";
 import { isHtmlElement } from "../utils/is";
 
 const TRIGGER_KEYS = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];

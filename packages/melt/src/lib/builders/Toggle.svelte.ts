@@ -1,8 +1,8 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
-import { extract } from "$lib/utils/extract.svelte";
-import { createDataIds } from "$lib/utils/identifiers.svelte";
+import { extract } from "$lib/utils/extract";
+import { createDataIds } from "$lib/utils/identifiers";
 
 const identifiers = createDataIds("toggle", ["trigger", "hidden-input"]);
 
