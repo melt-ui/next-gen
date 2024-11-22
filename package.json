@@ -24,7 +24,7 @@
 		"eslint": "^9.0.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-astro": "^1.2.3",
-		"eslint-plugin-svelte": "^2.39.3",
+		"eslint-plugin-svelte": "^2.46.0",
 		"find-packages": "^10.0.4",
 		"glob": "^10.4.2",
 		"globals": "^15.0.0",
