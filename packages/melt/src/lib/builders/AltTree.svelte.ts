@@ -1,10 +1,6 @@
 import type { MaybeGetter } from "$lib/types";
+import { AltSelectionState } from "$lib/utils/alt-selection-state.svelte";
 import { extract } from "$lib/utils/extract";
-import {
-	MultiSelectionState,
-	createSelectionState,
-	SingleSelectionState,
-} from "$lib/utils/selection-state.svelte";
 
 export interface AltTreeItem {
 	id: string;
@@ -52,9 +48,9 @@ type AltTreeProps<Props extends _PropsExtends> = Props & {
 	items: Props["items"];
 };
 
-type Selected<Multiple extends boolean | undefined> = Multiple extends true
-	? MultiSelectionState
-	: SingleSelectionState;
+type FalseIfUndefined<T extends boolean | undefined> = T extends undefined ? false : T;
+
+type Selected<Multiple extends boolean | undefined> = AltSelectionState<FalseIfUndefined<Multiple>>;
 
 export class AltTree<Props extends _PropsExtends> {
 	#props!: AltTreeProps<Props>;
@@ -65,28 +61,37 @@ export class AltTree<Props extends _PropsExtends> {
 	) as Props["multiple"] extends true ? true : false;
 
 	#selected: Selected<Props["multiple"]>;
-	#expanded: MultiSelectionState;
+	#expanded: AltSelectionState<true>;
 
 	constructor(props: AltTreeProps<Props>) {
 		this.#props = props;
-		this.#selected = createSelectionState(this.multiple, {
+		this.#selected = new AltSelectionState({
 			value: props.selected,
-			onChange: props.onSelectedChange,
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		} as any) as Selected<Props["multiple"]>;
-		this.#expanded = MultiSelectionState.create({
+			onChange: props.onSelectedChange as any,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			multiple: () => props.multiple as any,
+		}) as Selected<Props["multiple"]>;
+		this.#expanded = new AltSelectionState({
 			value: props.expanded,
 			onChange: props.onExpandedChange,
+			multiple: true,
 		});
 	}
 
 	get selected() {
-		return this.#selected;
+		return this.#selected.current;
 	}
 
-	set selected() {}
+	set selected(v) {
+		this.#selected.current = v;
+	}
 
 	get expanded() {
-		return this.#expanded;
+		return this.#expanded.current;
+	}
+
+	set expanded(v) {
+		this.#expanded.current = v;
 	}
 }

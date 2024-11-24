@@ -22,8 +22,9 @@ type _onChange<Multiple extends _multiple_extends> = Multiple extends true
 type _props<Multiple extends _multiple_extends> = {
 	value?: _propValue<Multiple>;
 	onChange?: _onChange<Multiple>;
-	multiple?: MaybeGetter<Multiple | undefined>;
-};
+} & (Multiple extends true
+	? { multiple: MaybeGetter<Multiple | undefined> }
+	: { multiple?: MaybeGetter<Multiple | undefined> });
 
 function toSet(v: Iterable<string> | string | undefined): SvelteSet<string> {
 	if (isString(v)) return new SvelteSet([v]);

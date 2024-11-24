@@ -87,7 +87,7 @@
       },
       {
         "name": "selected",
-        "type": "string | Set<string> | undefined",
+        "type": "any",
         "description": ""
       }
     ]
@@ -522,12 +522,12 @@
       },
       {
         "name": "selected",
-        "type": "Selected<Props[\"multiple\"]>",
+        "type": "_value<FalseIfUndefined<Props[\"multiple\"]>>",
         "description": ""
       },
       {
         "name": "expanded",
-        "type": "MultiSelectionState",
+        "type": "SvelteSet<string>",
         "description": ""
       }
     ],

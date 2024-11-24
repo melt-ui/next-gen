@@ -117,7 +117,7 @@
 
 	const tree = new AltTree({
 		items: data,
-		multiple: true,
+		multiple: false,
 	});
 </script>
 
