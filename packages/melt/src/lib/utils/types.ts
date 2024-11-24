@@ -1,6 +1,8 @@
 export type ValueOf<T> = T[keyof T];
 
 /* God forgive me */
+export type Expand<T> = T extends infer O ? O : never;
+
 export type ExpandDeep<T> = T extends object
 	? T extends infer O
 		? { [K in keyof O]: ExpandDeep<O[K]> }

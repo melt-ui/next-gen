@@ -235,3 +235,13 @@ class UncontrolledMultiSelectionState extends MultiSelectionState {
 }
 
 export type SelectionState = SingleSelectionState | MultiSelectionState;
+
+export function createSelectionState<Multiple extends boolean>(
+	multiple: Multiple,
+	props: Multiple extends false ? SingleSelectionStateProps : MultiSelectionStateProps,
+) {
+	if (multiple) {
+		return MultiSelectionState.create(props as MultiSelectionStateProps);
+	}
+	return SingleSelectionState.create(props as SingleSelectionStateProps);
+}

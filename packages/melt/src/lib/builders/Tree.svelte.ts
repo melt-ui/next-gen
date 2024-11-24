@@ -47,11 +47,11 @@ export class Tree<TValue, TSelection extends SelectionState = SelectionState> {
 	}
 
 	get expanded() {
-		return this.#context.expanded;
+		return this.#context.expanded.current;
 	}
 
 	get selected() {
-		return this.#context.selected;
+		return this.#context.selected.current;
 	}
 
 	last() {

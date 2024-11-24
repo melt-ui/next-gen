@@ -82,12 +82,12 @@
       },
       {
         "name": "expanded",
-        "type": "MultiSelectionState",
+        "type": "Set<string>",
         "description": ""
       },
       {
         "name": "selected",
-        "type": "TSelection",
+        "type": "string | Set<string> | undefined",
         "description": ""
       }
     ]
@@ -478,23 +478,59 @@
       },
       {
         "name": "selected",
-        "type": "| (Props[\"multiple\"] extends true\n      ? Iterable<string> | undefined\n      : string | undefined)\n  | undefined",
+        "type": "MaybeGetter<\n  (Props[\"multiple\"] extends true ? Iterable<string> : string) | undefined\n>",
+        "description": "The currently selected item(s).\nIf `multiple` is `true`, this should be an `Iterable`.\nOtherwise, it'll be a `string`.",
+        "defaultValue": "undefined",
+        "optional": true
+      },
+      {
+        "name": "onSelectedChange",
+        "type": "| ((\n      value: Props[\"multiple\"] extends true ? Set<string> : string | undefined,\n    ) => void)\n  | undefined",
+        "description": "A function that is called whenever selected changes.",
+        "optional": true
+      },
+      {
+        "name": "expanded",
+        "type": "MaybeGetter<Iterable<string> | undefined>",
+        "description": "The currently expanded items",
+        "optional": true
+      },
+      {
+        "name": "onExpandedChange",
+        "type": "((value: Set<string>) => void) | undefined",
+        "description": "A function that is called whenever expanded changes.",
         "optional": true
       },
       {
         "name": "items",
         "type": "Props[\"items\"]",
+        "description": "The items contained in the tree.",
         "optional": false
       }
     ],
     "methods": [],
     "properties": [
       {
+        "name": "items",
+        "type": "Props[\"items\"]",
+        "description": ""
+      },
+      {
+        "name": "multiple",
+        "type": "Props[\"multiple\"] extends true ? true : false",
+        "description": ""
+      },
+      {
         "name": "selected",
-        "type": "| (Props[\"multiple\"] extends true\n      ? Iterable<string> | undefined\n      : string | undefined)\n  | undefined",
+        "type": "Selected<Props[\"multiple\"]>",
+        "description": ""
+      },
+      {
+        "name": "expanded",
+        "type": "MultiSelectionState",
         "description": ""
       }
     ],
-    "propsAlt": "type _PropsExtends = {\n\tmultiple?: boolean;\n\titems: AltTreeItem[];\n};\n\ntype AltTreeProps<Props extends _PropsExtends> = Props & {\n\t/**\n\t * If `true`, the user can select multiple items.\n\t *\n\t * @default false\n\t */\n\tmultiple?: Props[\"multiple\"];\n\tselected?: Props[\"multiple\"] extends true ? Iterable<string> | undefined : string | undefined;\n\titems: Props[\"items\"];\n};"
+    "propsAlt": "type _PropsExtends = {\n\tmultiple?: boolean;\n\titems: MaybeGetter<AltTreeItem[]>;\n};\n\ntype AltTreeProps<Props extends _PropsExtends> = Props & {\n\t/**\n\t * If `true`, the user can select multiple items.\n\t *\n\t * @default false\n\t */\n\tmultiple?: Props[\"multiple\"];\n\t/**\n\t * The currently selected item(s).\n\t * If `multiple` is `true`, this should be an `Iterable`.\n\t * Otherwise, it'll be a `string`.\n\t *\n\t * @default undefined\n\t */\n\tselected?: MaybeGetter<(Props[\"multiple\"] extends true ? Iterable<string> : string) | undefined>;\n\t/**\n\t * A function that is called whenever selected changes.\n\t */\n\tonSelectedChange?: (\n\t\tvalue: Props[\"multiple\"] extends true ? Set<string> : string | undefined,\n\t) => void;\n\t/**\n\t * The currently expanded items\n\t */\n\texpanded?: MaybeGetter<Iterable<string> | undefined>;\n\t/**\n\t * A function that is called whenever expanded changes.\n\t */\n\tonExpandedChange?: (value: Set<string>) => void;\n\t/**\n\t * The items contained in the tree.\n\t *\n\t * @required\n\t */\n\titems: Props[\"items\"];\n};"
   }
 }
