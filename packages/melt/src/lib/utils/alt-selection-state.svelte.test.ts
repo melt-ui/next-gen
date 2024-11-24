@@ -51,6 +51,7 @@ describe("alt-selection-state", () => {
 			multiple: false,
 			value: () => value,
 			onChange: (v) => {
+				console.log(v);
 				value = v;
 			},
 		});
@@ -88,7 +89,7 @@ describe("alt-selection-state", () => {
 		state.add("2");
 		expect(state.current).toEqual(new SvelteSet(["1", "2"]));
 		multiple = false;
-		expect(state.current).toBe("1");
+		expect(state.current).toBe("2");
 		multiple = true;
 		expect(state.current).toEqual(new SvelteSet(["1", "2"]));
 	});

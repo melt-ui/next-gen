@@ -1,7 +1,7 @@
 import type { MaybeGetter } from "$lib";
 import { SvelteSet } from "svelte/reactivity";
 import { extract } from "./extract";
-import { first, forEach } from "./iterator";
+import { first, forEach, last } from "./iterator";
 import { isFunction, isIterable, isString, isSvelteSet } from "./is";
 
 type _multiple_extends = boolean;
@@ -33,7 +33,7 @@ function toSet(v: Iterable<string> | string | undefined): SvelteSet<string> {
 
 function toSingle(v: Iterable<string> | string | undefined): string | undefined {
 	if (isString(v) || v === undefined) return v;
-	return first(v);
+	return last(v);
 }
 
 export class AltSelectionState<Multiple extends _multiple_extends = _multiple_default> {
@@ -74,23 +74,20 @@ export class AltSelectionState<Multiple extends _multiple_extends = _multiple_de
 		) as _value<Multiple>;
 	}
 
-	get #currentSet() {
-		if (this.isControlled) {
-			return toSet(this.current);
-		}
-		return this.#internal_set;
+	manipulate(cb: (set: SvelteSet<string>) => void) {
+		const set = this.isControlled ? toSet(this.current) : this.#internal_set;
+		const { size } = set;
+		cb(set);
+		if (size === set.size) return;
+		this.onChange(this.isMultiple ? set : toSingle(set));
 	}
 
 	onChange(value: string | SvelteSet<string> | undefined) {
 		if (!this.#props.onChange) return;
+		const nv = this.isMultiple ? toSet(value) : toSingle(value);
 
-		if (this.isMultiple) {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			this.#props.onChange?.(toSet(value) as any);
-		} else {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			this.#props.onChange?.(toSingle(value) as any);
-		}
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		this.#props.onChange?.(nv as any);
 	}
 
 	set current(value: _value<Multiple>) {
@@ -105,12 +102,48 @@ export class AltSelectionState<Multiple extends _multiple_extends = _multiple_de
 		}
 	}
 
+	has(item: string) {
+		return toSet(this.current).has(item);
+	}
+
 	add(value: string) {
-		const set = this.#currentSet;
-		if (!this.isMultiple) {
-			set.clear();
-		}
-		set.add(value);
-		this.onChange(set);
+		this.manipulate((set) => set.add(value));
+	}
+
+	addAll(items: Iterable<string>) {
+		this.manipulate((set) => {
+			if (!this.isMultiple) {
+				set.clear();
+				set.add(first(items)!);
+			} else {
+				forEach(items, set.add);
+			}
+		});
+	}
+
+	delete(value: string) {
+		this.manipulate((set) => set.delete(value));
+	}
+
+	deleteAll(items: Iterable<string>) {
+		this.manipulate((set) => forEach(items, set.delete));
+	}
+
+	clear() {
+		this.manipulate((set) => set.clear());
+	}
+
+	size() {
+		return toSet(this.current).size;
+	}
+
+	toggle(item: string) {
+		this.manipulate((set) => {
+			if (set.has(item)) {
+				set.delete(item);
+			} else {
+				set.add(item);
+			}
+		});
 	}
 }
