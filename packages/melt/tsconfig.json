@@ -3,6 +3,8 @@
 	"compilerOptions": {
 		// "module": "NodeNext",
 		// "moduleResolution": "NodeNext",
+
+		"lib": ["dom", "dom.iterable", "esnext"],
 		"target": "es2022",
 		"resolveJsonModule": true,
 		"allowJs": true,

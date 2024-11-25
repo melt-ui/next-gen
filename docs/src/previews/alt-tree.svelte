@@ -5,6 +5,7 @@
 	import Svelte from "~icons/devicon/svelte";
 	import FolderOpen from "~icons/ph/folder-open-fill";
 	import Folder from "~icons/ph/folder-fill";
+	import Motion from "@components/motion.svelte";
 
 	const controls = usePreviewControls({
 		multiple: {
@@ -109,7 +110,7 @@
 </script>
 
 {#snippet treeItemIcon(item: typeof tree['children'][number])}
-	{@const icon = item.icon}
+	{@const icon = item.item.icon}
 
 	{#if icon === "folder"}
 		<svelte:component this={item.expanded ? FolderOpen : Folder} role="presentation" />
@@ -122,7 +123,7 @@
 
 {#snippet treeItems(items: typeof tree['children'], depth: number = 0)}
 	{#each items as item (item.id)}
-		<li {...item.attrs} class="cursor-pointer rounded-sm outline-none first:mt-0">
+		<li {...item.attrs} class="cursor-pointer rounded-sm py-0.5 first:mt-0">
 			<div
 				data-selected={item.selected ? "" : undefined}
 				class="group px-2"
@@ -134,17 +135,34 @@
 				>
 					{@render treeItemIcon(item)}
 					<span class="select-none">
-						{item.title}
+						{item.item.title}
 					</span>
 				</div>
 			</div>
-			<ul {...tree.group} class="relative list-none p-0">
-				<div
-					class="absolute bottom-2 top-2 w-px bg-gray-700"
-					style="left: {0.5 + depth * 1}rem"
-				></div>
-				{@render treeItems(item.children, depth + 1)}
-			</ul>
+			{#if item.children?.length}
+				<Motion
+					tag="ul"
+					animate={{
+						height: item.expanded ? "auto" : 0,
+						opacity: item.expanded ? 1 : 0,
+						scale: item.expanded ? 1 : 0.75,
+					}}
+					transition={{
+						height: { delay: item.expanded ? 0 : 0.1 },
+						type: "spring",
+						stiffness: 200,
+						damping: 30,
+					}}
+					{...tree.group}
+					class="relative list-none p-0 {!item.expanded ? 'pointer-events-none' : ''} origin-left"
+				>
+					<div
+						class="absolute bottom-2 top-2 w-px bg-gray-700"
+						style="left: {0.5 + depth * 1}rem"
+					></div>
+					{@render treeItems(item.children, depth + 1)}
+				</Motion>
+			{/if}
 		</li>
 	{/each}
 {/snippet}

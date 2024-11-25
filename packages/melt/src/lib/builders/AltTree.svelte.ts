@@ -1,7 +1,6 @@
 import type { Extracted, MaybeGetter } from "$lib/types";
 import { AltSelectionState, type MaybeMultiple } from "$lib/utils/alt-selection-state.svelte";
 import { extract } from "$lib/utils/extract";
-import { omit } from "$lib/utils/object";
 import type { FalseIfUndefined } from "$lib/utils/types";
 
 export type AltTreeItem<Meta extends Record<string, unknown> = Record<never, never>> = {
@@ -59,26 +58,6 @@ type AltTreeProps<Items extends AltTreeItem[], Multiple extends boolean = false>
 type Selected<Multiple extends boolean | undefined> = AltSelectionState<FalseIfUndefined<Multiple>>;
 type Items<I extends AltTreeItem[]> = Extracted<AltTreeProps<I>["items"]>;
 type Item<I extends AltTreeItem[]> = Items<I>[number];
-
-type Child<I extends AltTreeItem[]> = Omit<Item<I>, "children"> & {
-	selected: boolean;
-	expanded: boolean;
-	canExpand: boolean;
-	collapse: () => void;
-	expand: () => void;
-	toggleExpand: () => void;
-	select: () => void;
-	deselect: () => void;
-	toggleSelect: () => void;
-	focus: () => void;
-	children: Child<I>[];
-	parent: Child<I> | undefined;
-	attrs: {
-		onclick: (e: MouseEvent) => void;
-		onkeydown: (e: KeyboardEvent) => void;
-		role: "treeitem";
-	};
-};
 
 export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 	#props!: AltTreeProps<I, M>;
@@ -156,12 +135,12 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 		this.#selected.toggle(id);
 	}
 
-	#getItemId(id: string): string {
+	getItemId(id: string): string {
 		return `melt-tree-${this.#id}-item--${id}`;
 	}
 
-	#getItemEl(id: string): HTMLElement | null {
-		return document.getElementById(this.#getItemId(id));
+	getItemEl(id: string): HTMLElement | null {
+		return document.getElementById(this.getItemId(id));
 	}
 
 	get root() {
@@ -176,101 +155,97 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 		};
 	}
 
-	#getChild(item: Item<I>, parent?: Item<I>): Child<I> {
-		const instance = this;
+	get children() {
+		return this.items.map((i) => new Child({ tree: this, item: i, parent: undefined }));
+	}
+}
+
+type ChildProps<I extends AltTreeItem[]> = {
+	tree: AltTree<I, boolean>;
+	item: Item<I>;
+	parent?: Child<I>;
+};
+class Child<I extends AltTreeItem[]> {
+	#props!: ChildProps<I>;
+	tree = $derived(this.#props.tree);
+	item = $derived(this.#props.item);
+	id = $derived(this.tree.getItemId(this.item.id));
+	parent = $derived(this.#props.parent);
+
+	constructor(props: ChildProps<I>) {
+		this.#props = props;
+	}
+
+	get el() {
+		return this.tree.getItemEl(this.item.id);
+	}
+
+	readonly selected = $derived(this.tree.isSelected(this.id));
+	readonly expanded = $derived(this.tree.isExpanded(this.id));
+	readonly canExpand = $derived(Boolean(this.item.children && this.item.children?.length > 0));
+	collapse = () => this.tree.collapse(this.id);
+	expand = $derived(() => this.tree.expand(this.id));
+	toggleExpand = $derived(() => this.tree.toggleExpand(this.id));
+	select = $derived(() => this.tree.select(this.id));
+	deselect = $derived(() => this.tree.deselect(this.id));
+	toggleSelect = $derived(() => this.tree.toggleSelect(this.id));
+	focus = $derived(() => this.el?.focus());
+
+	get attrs() {
 		return {
-			...omit(item, "children"),
-			get attrs() {
-				return {
-					id: instance.#getItemId(item.id),
-					onclick: (e: MouseEvent) => {
-						e.stopPropagation();
-						instance.select(item.id);
-						if (instance.expandOnClick) instance.toggleExpand(item.id);
-						instance.#getItemEl(item.id)?.focus();
-					},
-					onkeydown: (e: KeyboardEvent) => {
-						let shouldPrevent = true;
-						switch (e.key) {
-							case "ArrowLeft": {
-								if (this.expanded) {
-									this.collapse();
-									break;
-								}
-								instance.#getItemEl(parent?.id ?? "")?.focus();
-
-								break;
-							}
-							case "ArrowRight": {
-								if (!this.canExpand) break;
-								if (this.expanded) {
-									this.children[0].focus();
-									break;
-								}
-								this.expand();
-								break;
-							}
-							case "ArrowDown": {
-								this.next()?.focus();
-								break;
-							}
-							case "ArrowUp": {
-								this.previous()?.focus();
-								break;
-							}
-							default: {
-								shouldPrevent = false;
-							}
+			id: this.id,
+			onclick: (e: MouseEvent) => {
+				e.stopPropagation();
+				this.tree.select(this.id);
+				if (this.tree.expandOnClick) this.tree.toggleExpand(this.id);
+				this.focus();
+			},
+			onkeydown: (e: KeyboardEvent) => {
+				let shouldPrevent = true;
+				switch (e.key) {
+					case "ArrowLeft": {
+						if (this.expanded) {
+							this.collapse();
+							break;
 						}
+						console.log(this.parent, this.parent?.el);
+						this.parent?.focus();
 
-						if (shouldPrevent) {
-							e.preventDefault();
-							e.stopPropagation();
+						break;
+					}
+					case "ArrowRight": {
+						if (!this.canExpand) break;
+						if (this.expanded) {
+							this.children?.[0]?.focus();
+							break;
 						}
-					},
-					tabindex: instance.isSelected(item.id) ? 0 : -1,
-					role: "treeitem",
-				};
+						this.expand();
+						break;
+					}
+					case "ArrowDown": {
+						//	this.next()?.focus();
+						break;
+					}
+					case "ArrowUp": {
+						//	this.previous()?.focus();
+						break;
+					}
+					default: {
+						shouldPrevent = false;
+					}
+				}
+
+				if (shouldPrevent) {
+					e.preventDefault();
+					e.stopPropagation();
+				}
 			},
-			selected: instance.isSelected(item.id),
-			expanded: instance.isExpanded(item.id),
-			canExpand: Boolean(item.children && item.children.length > 0),
-			collapse: () => instance.collapse(item.id),
-			expand: () => instance.expand(item.id),
-			toggleExpand: () => instance.toggleExpand(item.id),
-			select: () => instance.select(item.id),
-			deselect: () => instance.deselect(item.id),
-			toggleSelect: () => instance.toggleSelect(item.id),
-			focus: () => instance.#getItemEl(item.id)?.focus(),
-			next: () => {
-				const index = instance.children.findIndex((c) => c.id === item.id);
-				if (index === -1) return;
-				if (index === instance.children.length - 1) return;
-				return instance.children[index + 1];
-			},
-			previous: () => {
-				const index = instance.children.findIndex((c) => c.id === item.id);
-				if (index === -1) return;
-				if (index === 0) return;
-				return instance.children[index - 1];
-			},
-			get children() {
-				return instance.#getChildren((item.children || []) as Items<I>, item);
-			},
-			get parent() {
-				if (!parent) return;
-				return instance.#getChild(parent);
-			},
+			tabindex: this.tree.isSelected(this.id) ? 0 : -1,
+			role: "treeitem",
 		};
 	}
 
-	#getChildren(items: Items<I>, parent?: Item<I>): Child<I>[] {
-		return items.map((i) => {
-			return this.#getChild(i, parent);
-		});
-	}
-
 	get children() {
-		return this.#getChildren(this.items);
+		return this.item.children?.map((i) => new Child({ tree: this.tree, item: i, parent: this }));
 	}
 }

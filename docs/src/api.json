@@ -555,6 +555,16 @@
         "name": "toggleSelect",
         "type": "(id: string) => void",
         "description": ""
+      },
+      {
+        "name": "getItemId",
+        "type": "(id: string) => string",
+        "description": ""
+      },
+      {
+        "name": "getItemEl",
+        "type": "(id: string) => HTMLElement | null",
+        "description": ""
       }
     ],
     "properties": [
