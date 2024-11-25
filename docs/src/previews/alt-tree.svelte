@@ -145,14 +145,15 @@
 					animate={{
 						height: item.expanded ? "auto" : 0,
 						opacity: item.expanded ? 1 : 0,
-						scale: item.expanded ? 1 : 0.75,
+						scale: item.expanded ? 1 : 0.85,
 					}}
 					transition={{
 						height: { delay: item.expanded ? 0 : 0.1 },
+						opacity: { ease: "easeOut", delay: item.expanded ? 0.1 : 0, duration: 0.2 },
 						type: "spring",
 						stiffness: 200,
 						damping: 20,
-						mass: 0.25,
+						mass: 0.15,
 						bounce: 1,
 					}}
 					{...tree.group}

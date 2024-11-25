@@ -171,7 +171,8 @@ class Child<I extends AltTreeItem[]> {
 	#props!: ChildProps<I>;
 	tree = $derived(this.#props.tree);
 	item = $derived(this.#props.item);
-	id = $derived(this.tree.getItemId(this.item.id));
+	elId = $derived(this.tree.getItemId(this.item.id));
+	id = $derived(this.item.id);
 	parent = $derived(this.#props.parent);
 
 	constructor(props: ChildProps<I>) {
@@ -179,7 +180,7 @@ class Child<I extends AltTreeItem[]> {
 	}
 
 	get el() {
-		return this.tree.getItemEl(this.item.id);
+		return document.getElementById(this.elId);
 	}
 
 	readonly selected = $derived(this.tree.isSelected(this.id));
@@ -227,9 +228,8 @@ class Child<I extends AltTreeItem[]> {
 
 	get attrs() {
 		return {
-			id: this.id,
+			id: this.elId,
 			"data-selected": dataAttr(this.selected),
-
 			onclick: (e: MouseEvent) => {
 				e.stopPropagation();
 				this.tree.select(this.id);
@@ -265,6 +265,12 @@ class Child<I extends AltTreeItem[]> {
 					}
 					case "ArrowDown": {
 						this.next?.focus();
+						break;
+					}
+					case "Enter":
+					case " ": {
+						this.select();
+
 						break;
 					}
 					default: {
