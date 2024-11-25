@@ -584,6 +584,16 @@
         "description": ""
       },
       {
+        "name": "root",
+        "type": "{ role: string }",
+        "description": ""
+      },
+      {
+        "name": "group",
+        "type": "{ role: string }",
+        "description": ""
+      },
+      {
         "name": "children",
         "type": "Child<I>[]",
         "description": ""

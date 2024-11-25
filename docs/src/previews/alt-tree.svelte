@@ -120,32 +120,37 @@
 	{/if}
 {/snippet}
 
-{#snippet treeItems(items: typeof tree['children'])}
+{#snippet treeItems(items: typeof tree['children'], depth: number = 0)}
 	{#each items as item (item.id)}
-		<li
-			{...item.attrs}
-			class=" cursor-pointer rounded-sm first:mt-0 focus-visible:outline-offset-2"
-		>
+		<li {...item.attrs} class="cursor-pointer rounded-sm outline-none first:mt-0">
 			<div
 				data-selected={item.selected ? "" : undefined}
-				class="hover:bg-accent-800/50 data-[selected]:bg-accent-200 data-[selected]:text-accent-950 group flex items-center gap-2 rounded-[inherit] px-2 py-1"
+				class="group px-2"
+				style="padding-left: {depth * 1}rem"
 			>
-				{@render treeItemIcon(item)}
-				<span class="select-none group-data-[selected]:font-semibold">
-					{item.title}
-				</span>
+				<div
+					class="group-data-[selected]:bg-accent-200 group-data-[selected]:text-accent-950 flex h-full w-full items-center gap-2 rounded-xl
+					px-3 py-1 transition group-hover:bg-gray-800"
+				>
+					{@render treeItemIcon(item)}
+					<span class="select-none">
+						{item.title}
+					</span>
+				</div>
 			</div>
-			{#if item.expanded && item.children.length !== 0}
-				<ul role="group" class="ms-4 list-none p-0">
-					{@render treeItems(item.children)}
-				</ul>
-			{/if}
+			<ul {...tree.group} class="relative list-none p-0">
+				<div
+					class="absolute bottom-2 top-2 w-px bg-gray-700"
+					style="left: {0.5 + depth * 1}rem"
+				></div>
+				{@render treeItems(item.children, depth + 1)}
+			</ul>
 		</li>
 	{/each}
 {/snippet}
 
-<Preview class="h-[500px]">
-	<ul class="mx-auto w-[300px] list-none overflow-y-scroll rounded-md p-4">
-		{@render treeItems(tree.children)}
+<Preview class="">
+	<ul class="mx-auto w-[300px] list-none overflow-y-scroll rounded-md p-4" {...tree.root}>
+		{@render treeItems(tree.children, 0)}
 	</ul>
 </Preview>

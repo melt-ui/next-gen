@@ -76,6 +76,7 @@ type Child<I extends AltTreeItem[]> = Omit<Item<I>, "children"> & {
 	attrs: {
 		onclick: (e: MouseEvent) => void;
 		onkeydown: (e: KeyboardEvent) => void;
+		role: "treeitem";
 	};
 };
 
@@ -163,6 +164,18 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 		return document.getElementById(this.#getItemId(id));
 	}
 
+	get root() {
+		return {
+			role: "tree",
+		};
+	}
+
+	get group() {
+		return {
+			role: "group",
+		};
+	}
+
 	#getChild(item: Item<I>, parent?: Item<I>): Child<I> {
 		const instance = this;
 		return {
@@ -216,6 +229,7 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 						}
 					},
 					tabindex: instance.isSelected(item.id) ? 0 : -1,
+					role: "treeitem",
 				};
 			},
 			selected: instance.isSelected(item.id),
