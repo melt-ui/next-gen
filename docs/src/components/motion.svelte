@@ -112,13 +112,11 @@
 		if (!_el) {
 			return;
 		}
-		console.log(_el, keyframes, t);
 		return motionAnimate(_el, keyframes, t);
 	}
 
 	function onExit(node: El) {
 		const duration = transition?.duration ?? 0.3;
-		console.log("Run on exit", exit, { duration, ...transition });
 		if (exit) {
 			runAnimation(exit, transition, node);
 			return {

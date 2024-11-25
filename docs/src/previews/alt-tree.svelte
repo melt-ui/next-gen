@@ -123,15 +123,15 @@
 
 {#snippet treeItems(items: typeof tree['children'], depth: number = 0)}
 	{#each items as item (item.id)}
-		<li {...item.attrs} class="cursor-pointer rounded-sm py-0.5 first:mt-0">
-			<div
-				data-selected={item.selected ? "" : undefined}
-				class="group px-2"
-				style="padding-left: {depth * 1}rem"
-			>
+		<li
+			{...item.attrs}
+			class="cursor-pointer rounded-sm py-0.5 outline-none first:mt-0 [&:focus-visible>:first-child>div]:ring-4"
+		>
+			<div class="group" style="padding-left: {depth * 1}rem">
 				<div
-					class="group-data-[selected]:bg-accent-200 group-data-[selected]:text-accent-950 flex h-full w-full items-center gap-2 rounded-xl
-					px-3 py-1 transition group-hover:bg-gray-800"
+					class="{item.selected ? '!bg-accent-200 text-accent-950' : ''}
+					ring-accent-700 flex h-full w-full items-center gap-2 rounded-xl
+					px-3 py-1 ring-offset-black transition group-hover:bg-gray-800"
 				>
 					{@render treeItemIcon(item)}
 					<span class="select-none">
@@ -151,7 +151,9 @@
 						height: { delay: item.expanded ? 0 : 0.1 },
 						type: "spring",
 						stiffness: 200,
-						damping: 30,
+						damping: 20,
+						mass: 0.25,
+						bounce: 1,
 					}}
 					{...tree.group}
 					class="relative list-none p-0 {!item.expanded ? 'pointer-events-none' : ''} origin-left"
@@ -168,7 +170,7 @@
 {/snippet}
 
 <Preview class="">
-	<ul class="mx-auto w-[300px] list-none overflow-y-scroll rounded-md p-4" {...tree.root}>
+	<ul class="mx-auto w-[300px] list-none rounded-md p-4" {...tree.root}>
 		{@render treeItems(tree.children, 0)}
 	</ul>
 </Preview>

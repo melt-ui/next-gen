@@ -51,7 +51,6 @@ describe("alt-selection-state", () => {
 			multiple: false,
 			value: () => value,
 			onChange: (v) => {
-				console.log(v);
 				value = v;
 			},
 		});

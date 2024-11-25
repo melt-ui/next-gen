@@ -1,6 +1,8 @@
 import type { Extracted, MaybeGetter } from "$lib/types";
 import { AltSelectionState, type MaybeMultiple } from "$lib/utils/alt-selection-state.svelte";
+import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
+import { last } from "$lib/utils/iterator";
 import type { FalseIfUndefined } from "$lib/utils/types";
 
 export type AltTreeItem<Meta extends Record<string, unknown> = Record<never, never>> = {
@@ -156,14 +158,14 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 	}
 
 	get children() {
-		return this.items.map((i) => new Child({ tree: this, item: i, parent: undefined }));
+		return this.items.map((i) => new Child({ tree: this, item: i, parent: this }));
 	}
 }
 
 type ChildProps<I extends AltTreeItem[]> = {
 	tree: AltTree<I, boolean>;
 	item: Item<I>;
-	parent?: Child<I>;
+	parent?: Child<I> | AltTree<I, boolean>;
 };
 class Child<I extends AltTreeItem[]> {
 	#props!: ChildProps<I>;
@@ -184,20 +186,54 @@ class Child<I extends AltTreeItem[]> {
 	readonly expanded = $derived(this.tree.isExpanded(this.id));
 	readonly canExpand = $derived(Boolean(this.item.children && this.item.children?.length > 0));
 	collapse = () => this.tree.collapse(this.id);
-	expand = $derived(() => this.tree.expand(this.id));
-	toggleExpand = $derived(() => this.tree.toggleExpand(this.id));
-	select = $derived(() => this.tree.select(this.id));
-	deselect = $derived(() => this.tree.deselect(this.id));
-	toggleSelect = $derived(() => this.tree.toggleSelect(this.id));
-	focus = $derived(() => this.el?.focus());
+	expand = () => this.tree.expand(this.id);
+	toggleExpand = () => this.tree.toggleExpand(this.id);
+	select = () => this.tree.select(this.id);
+	deselect = () => this.tree.deselect(this.id);
+	toggleSelect = () => this.tree.toggleSelect(this.id);
+	focus = () => this.el?.focus();
+	idx = $derived(this.parent?.children?.findIndex((c) => c.id === this.id) ?? -1);
+
+	get previousSibling() {
+		return this.parent?.children?.[this.idx - 1];
+	}
+
+	get nextSibling() {
+		return this.parent?.children?.[this.idx + 1];
+	}
+
+	get previous(): Child<I> | undefined {
+		let current = this.previousSibling;
+		if (!current) return this.parent instanceof Child ? this.parent : undefined;
+		while (current?.expanded) {
+			current = last(current?.children ?? []);
+		}
+		return current;
+	}
+
+	get next(): Child<I> | undefined {
+		if (this.expanded) {
+			return this.children?.[0];
+		}
+		if (this.nextSibling) {
+			return this.nextSibling;
+		}
+		if (this.parent instanceof Child) {
+			return this.parent.nextSibling;
+		}
+	}
+
+	selectAllChildren = () => {};
 
 	get attrs() {
 		return {
 			id: this.id,
+			"data-selected": dataAttr(this.selected),
+
 			onclick: (e: MouseEvent) => {
 				e.stopPropagation();
 				this.tree.select(this.id);
-				if (this.tree.expandOnClick) this.tree.toggleExpand(this.id);
+				if (this.tree.expandOnClick && this.canExpand) this.toggleExpand();
 				this.focus();
 			},
 			onkeydown: (e: KeyboardEvent) => {
@@ -208,7 +244,8 @@ class Child<I extends AltTreeItem[]> {
 							this.collapse();
 							break;
 						}
-						console.log(this.parent, this.parent?.el);
+
+						if (!(this.parent instanceof Child)) return;
 						this.parent?.focus();
 
 						break;
@@ -222,12 +259,12 @@ class Child<I extends AltTreeItem[]> {
 						this.expand();
 						break;
 					}
-					case "ArrowDown": {
-						//	this.next()?.focus();
+					case "ArrowUp": {
+						this.previous?.focus();
 						break;
 					}
-					case "ArrowUp": {
-						//	this.previous()?.focus();
+					case "ArrowDown": {
+						this.next?.focus();
 						break;
 					}
 					default: {
