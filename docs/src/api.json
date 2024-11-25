@@ -478,7 +478,7 @@
       },
       {
         "name": "selected",
-        "type": "MaybeGetter<\n  (Props[\"multiple\"] extends true ? Iterable<string> : string) | undefined\n>",
+        "type": "FalseIfUndefined<Props[\"multiple\"]>> | undefined",
         "description": "The currently selected item(s).\nIf `multiple` is `true`, this should be an `Iterable`.\nOtherwise, it'll be a `string`.",
         "defaultValue": "undefined",
         "optional": true
@@ -508,11 +508,52 @@
         "optional": false
       }
     ],
-    "methods": [],
+    "methods": [
+      {
+        "name": "isSelected",
+        "type": "(id: string) => boolean",
+        "description": ""
+      },
+      {
+        "name": "isExpanded",
+        "type": "(id: string) => boolean",
+        "description": ""
+      },
+      {
+        "name": "expand",
+        "type": "(id: string) => void",
+        "description": ""
+      },
+      {
+        "name": "collapse",
+        "type": "(id: string) => void",
+        "description": ""
+      },
+      {
+        "name": "toggleExpand",
+        "type": "(id: string) => void",
+        "description": ""
+      },
+      {
+        "name": "select",
+        "type": "(id: string) => void",
+        "description": ""
+      },
+      {
+        "name": "deselect",
+        "type": "(id: string) => void",
+        "description": ""
+      },
+      {
+        "name": "toggleSelect",
+        "type": "(id: string) => void",
+        "description": ""
+      }
+    ],
     "properties": [
       {
         "name": "items",
-        "type": "Props[\"items\"]",
+        "type": "Extracted<Props[\"items\"]>",
         "description": ""
       },
       {
@@ -529,8 +570,13 @@
         "name": "expanded",
         "type": "SvelteSet<string>",
         "description": ""
+      },
+      {
+        "name": "children",
+        "type": "Child<Props>[]",
+        "description": ""
       }
     ],
-    "propsAlt": "type _PropsExtends = {\n\tmultiple?: boolean;\n\titems: MaybeGetter<AltTreeItem[]>;\n};\n\ntype AltTreeProps<Props extends _PropsExtends> = Props & {\n\t/**\n\t * If `true`, the user can select multiple items.\n\t *\n\t * @default false\n\t */\n\tmultiple?: Props[\"multiple\"];\n\t/**\n\t * The currently selected item(s).\n\t * If `multiple` is `true`, this should be an `Iterable`.\n\t * Otherwise, it'll be a `string`.\n\t *\n\t * @default undefined\n\t */\n\tselected?: MaybeGetter<(Props[\"multiple\"] extends true ? Iterable<string> : string) | undefined>;\n\t/**\n\t * A function that is called whenever selected changes.\n\t */\n\tonSelectedChange?: (\n\t\tvalue: Props[\"multiple\"] extends true ? Set<string> : string | undefined,\n\t) => void;\n\t/**\n\t * The currently expanded items\n\t */\n\texpanded?: MaybeGetter<Iterable<string> | undefined>;\n\t/**\n\t * A function that is called whenever expanded changes.\n\t */\n\tonExpandedChange?: (value: Set<string>) => void;\n\t/**\n\t * The items contained in the tree.\n\t *\n\t * @required\n\t */\n\titems: Props[\"items\"];\n};"
+    "propsAlt": "type _PropsExtends = {\n\tmultiple?: boolean;\n\titems: MaybeGetter<AltTreeItem[]>;\n};\n\ntype AltTreeProps<Props extends _PropsExtends> = Props & {\n\t/**\n\t * If `true`, the user can select multiple items.\n\t *\n\t * @default false\n\t */\n\tmultiple?: Props[\"multiple\"];\n\t/**\n\t * The currently selected item(s).\n\t * If `multiple` is `true`, this should be an `Iterable`.\n\t * Otherwise, it'll be a `string`.\n\t *\n\t * @default undefined\n\t */\n\tselected?: MaybeMultiple<FalseIfUndefined<Props[\"multiple\"]>>;\n\t/**\n\t * A function that is called whenever selected changes.\n\t */\n\tonSelectedChange?: (\n\t\tvalue: Props[\"multiple\"] extends true ? Set<string> : string | undefined,\n\t) => void;\n\t/**\n\t * The currently expanded items\n\t */\n\texpanded?: MaybeMultiple<true>;\n\t/**\n\t * A function that is called whenever expanded changes.\n\t */\n\tonExpandedChange?: (value: Set<string>) => void;\n\t/**\n\t * The items contained in the tree.\n\t *\n\t * @required\n\t */\n\titems: Props[\"items\"];\n};"
   }
 }

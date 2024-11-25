@@ -118,7 +118,6 @@
 	const tree = new SingleSelectTree({
 		items: data,
 	});
-	tree.selected;
 </script>
 
 {#snippet treeItemIcon(item: TreeItem<TreeItemValue>)}

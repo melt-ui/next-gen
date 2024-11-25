@@ -11,7 +11,7 @@ type _value<Multiple extends _multiple_extends> = Multiple extends true
 	? SvelteSet<string>
 	: string | undefined;
 
-type _propValue<Multiple extends _multiple_extends> = Multiple extends true
+export type MaybeMultiple<Multiple extends _multiple_extends> = Multiple extends true
 	? SvelteSet<string> | MaybeGetter<Iterable<string> | undefined>
 	: MaybeGetter<string | undefined>;
 
@@ -20,11 +20,12 @@ type _onChange<Multiple extends _multiple_extends> = Multiple extends true
 	: ((value: string | undefined) => void) | undefined;
 
 type _props<Multiple extends _multiple_extends> = {
-	value?: _propValue<Multiple>;
+	value?: MaybeMultiple<Multiple>;
 	onChange?: _onChange<Multiple>;
+	multiple?: MaybeGetter<Multiple | undefined>;
 } & (Multiple extends true
 	? { multiple: MaybeGetter<Multiple | undefined> }
-	: { multiple?: MaybeGetter<Multiple | undefined> });
+	: Record<never, never>);
 
 function toSet(v: Iterable<string> | string | undefined): SvelteSet<string> {
 	if (isString(v)) return new SvelteSet([v]);
@@ -77,9 +78,9 @@ export class AltSelectionState<Multiple extends _multiple_extends = _multiple_de
 
 	manipulate(cb: (set: SvelteSet<string>) => void) {
 		const set = this.isControlled ? toSet(this.current) : this.#internal_set;
-		const { size } = set;
+		//const { size } = set;
 		cb(set);
-		if (size === set.size) return;
+		//if (size === set.size) return;
 		this.onChange(this.isMultiple ? set : toSingle(set));
 	}
 
@@ -108,7 +109,12 @@ export class AltSelectionState<Multiple extends _multiple_extends = _multiple_de
 	}
 
 	add(value: string) {
-		this.manipulate((set) => set.add(value));
+		this.manipulate((set) => {
+			if (!this.isMultiple) {
+				set.clear();
+			}
+			set.add(value);
+		});
 	}
 
 	addAll(items: Iterable<string>) {

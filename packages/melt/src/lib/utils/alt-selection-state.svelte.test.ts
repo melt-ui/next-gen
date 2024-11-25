@@ -63,7 +63,7 @@ describe("alt-selection-state", () => {
 
 	testWithEffect("controlled multiple", () => {
 		let value = $state<string[] | undefined>(["1"]);
-		const state = new AltSelectionState({
+		const state = new AltSelectionState<true>({
 			multiple: true,
 			value: () => value,
 			onChange: (v) => {
@@ -78,7 +78,7 @@ describe("alt-selection-state", () => {
 
 	testWithEffect("uncontrolled alternating between single and multiple", () => {
 		let multiple = $state<boolean>(false);
-		const state = new AltSelectionState({
+		const state = new AltSelectionState<boolean>({
 			multiple: () => multiple,
 			value: "1",
 		});

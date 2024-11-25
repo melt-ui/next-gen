@@ -1,11 +1,14 @@
-import type { MaybeGetter } from "$lib/types";
-import { AltSelectionState } from "$lib/utils/alt-selection-state.svelte";
+import type { Extracted, MaybeGetter } from "$lib/types";
+import { AltSelectionState, type MaybeMultiple } from "$lib/utils/alt-selection-state.svelte";
 import { extract } from "$lib/utils/extract";
+import { omit } from "$lib/utils/object";
+import type { FalseIfUndefined } from "$lib/utils/types";
 
-export interface AltTreeItem {
+export type AltTreeItem<Meta extends Record<string, unknown> = Record<never, never>> = {
 	id: string;
-	children?: AltTreeItem[];
-}
+	children?: AltTreeItem<Meta>[];
+} & Meta;
+
 type _PropsExtends = {
 	multiple?: boolean;
 	items: MaybeGetter<AltTreeItem[]>;
@@ -25,7 +28,7 @@ type AltTreeProps<Props extends _PropsExtends> = Props & {
 	 *
 	 * @default undefined
 	 */
-	selected?: MaybeGetter<(Props["multiple"] extends true ? Iterable<string> : string) | undefined>;
+	selected?: MaybeMultiple<FalseIfUndefined<Props["multiple"]>>;
 	/**
 	 * A function that is called whenever selected changes.
 	 */
@@ -35,7 +38,7 @@ type AltTreeProps<Props extends _PropsExtends> = Props & {
 	/**
 	 * The currently expanded items
 	 */
-	expanded?: MaybeGetter<Iterable<string> | undefined>;
+	expanded?: MaybeMultiple<true>;
 	/**
 	 * A function that is called whenever expanded changes.
 	 */
@@ -48,14 +51,30 @@ type AltTreeProps<Props extends _PropsExtends> = Props & {
 	items: Props["items"];
 };
 
-type FalseIfUndefined<T extends boolean | undefined> = T extends undefined ? false : T;
-
 type Selected<Multiple extends boolean | undefined> = AltSelectionState<FalseIfUndefined<Multiple>>;
+type Items<Props extends _PropsExtends> = Extracted<Props["items"]>;
+type Item<Props extends _PropsExtends> = Items<Props>[number];
+
+type Child<Props extends _PropsExtends> = Omit<Item<Props>, "children"> & {
+	selected: boolean;
+	expanded: boolean;
+	collapse: () => void;
+	expand: () => void;
+	toggleExpand: () => void;
+	select: () => void;
+	deselect: () => void;
+	toggleSelect: () => void;
+	children: Child<Props>[];
+	attrs: {
+		onclickcapture: () => void;
+		onkeydown: () => void;
+	};
+};
 
 export class AltTree<Props extends _PropsExtends> {
 	#props!: AltTreeProps<Props>;
 
-	readonly items: Props["items"] = $derived(extract(this.#props.items));
+	readonly items = $derived(extract(this.#props.items)) as Items<Props>;
 	readonly multiple = $derived(
 		extract(this.#props.multiple, false),
 	) as Props["multiple"] extends true ? true : false;
@@ -93,5 +112,69 @@ export class AltTree<Props extends _PropsExtends> {
 
 	set expanded(v) {
 		this.#expanded.current = v;
+	}
+
+	isSelected(id: string) {
+		return this.#selected.has(id);
+	}
+
+	isExpanded(id: string) {
+		return this.#expanded.has(id);
+	}
+
+	expand(id: string) {
+		this.#expanded.add(id);
+	}
+
+	collapse(id: string) {
+		this.#expanded.delete(id);
+	}
+
+	toggleExpand(id: string) {
+		this.#expanded.toggle(id);
+	}
+
+	select(id: string) {
+		this.#selected.add(id);
+	}
+
+	deselect(id: string) {
+		this.#selected.delete(id);
+	}
+
+	toggleSelect(id: string) {
+		this.#selected.toggle(id);
+	}
+
+	#getChildren(items: Items<Props>): Child<Props>[] {
+		const instance = this;
+		return items.map((i) => {
+			const item = i as Item<Props>;
+			return {
+				...omit(item, "children"),
+				get attrs() {
+					return {
+						onclickcapture: () => {
+							instance.select(item.id);
+						},
+					};
+				},
+				selected: instance.isSelected(item.id),
+				expanded: instance.isExpanded(item.id),
+				collapse: () => instance.collapse(item.id),
+				expand: () => instance.expand(item.id),
+				toggleExpand: () => instance.toggleExpand(item.id),
+				select: () => instance.select(item.id),
+				deselect: () => instance.deselect(item.id),
+				toggleSelect: () => instance.toggleSelect(item.id),
+				get children() {
+					return instance.#getChildren((item.children || []) as Items<Props>);
+				},
+			};
+		});
+	}
+
+	get children() {
+		return this.#getChildren(this.items);
 	}
 }

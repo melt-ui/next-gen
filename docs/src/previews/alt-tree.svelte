@@ -1,113 +1,87 @@
 <script lang="ts">
 	import Preview from "@components/preview.svelte";
-	import { AltTree, SingleSelectTree, type TreeItem, type TreeItemData } from "melt/builders";
+	import { AltTree, type AltTreeItem } from "melt/builders";
 	import JavaScript from "~icons/devicon/javascript";
 	import Svelte from "~icons/devicon/svelte";
 	import FolderOpen from "~icons/material-symbols/folder-open";
 	import Folder from "~icons/material-symbols/folder-outline";
 
-	type TreeItemValue = {
+	type TreeItem = AltTreeItem<{
 		title: string;
 		icon: "folder" | "svelte" | "js";
-	};
+	}>;
 
-	const data: TreeItemData<TreeItemValue>[] = [
+	const data: TreeItem[] = [
 		{
 			id: "index.svelte",
-			value: {
-				title: "index.svelte",
-				icon: "svelte",
-			},
+			title: "index.svelte",
+			icon: "svelte",
 		},
 		{
 			id: "lib",
-			value: {
-				title: "lib",
-				icon: "folder",
-			},
+			title: "lib",
+			icon: "folder",
 			children: [
 				{
 					id: "lib/tree",
-					value: {
-						title: "tree",
-						icon: "folder",
-					},
+					title: "tree",
+					icon: "folder",
 					children: [
 						{
 							id: "lib/tree/Tree.svelte",
-							value: {
-								title: "Tree.svelte",
-								icon: "svelte",
-							},
+							title: "Tree.svelte",
+							icon: "svelte",
 						},
 						{
 							id: "lib/tree/TreeItem.svelte",
-							value: {
-								title: "TreeItem.svelte",
-								icon: "svelte",
-							},
+							title: "TreeItem.svelte",
+							icon: "svelte",
 						},
 					],
 				},
 				{
 					id: "lib/icons",
-					value: {
-						title: "icons",
-						icon: "folder",
-					},
+					title: "icons",
+					icon: "folder",
 					children: [
 						{
 							id: "lib/icons/JavaScript.svelte",
-							value: {
-								title: "JavaScript.svelte",
-								icon: "svelte",
-							},
+							title: "JavaScript.svelte",
+							icon: "svelte",
 						},
 						{
 							id: "lib/icons/Svelte.svelte",
-							value: {
-								title: "Svelte.svelte",
-								icon: "svelte",
-							},
+							title: "Svelte.svelte",
+							icon: "svelte",
 						},
 					],
 				},
 				{
 					id: "lib/index.js",
-					value: {
-						title: "index.js",
-						icon: "js",
-					},
+					title: "index.js",
+					icon: "js",
 				},
 			],
 		},
 		{
 			id: "routes",
-			value: {
-				title: "routes",
-				icon: "folder",
-			},
+			title: "routes",
+			icon: "folder",
 			children: [
 				{
 					id: "routes/contents",
-					value: {
-						title: "contents",
-						icon: "folder",
-					},
+					title: "contents",
+					icon: "folder",
 					children: [
 						{
 							id: "routes/contents/+layout.svelte",
-							value: {
-								title: "+layout.svelte",
-								icon: "svelte",
-							},
+							title: "+layout.svelte",
+							icon: "svelte",
 						},
 						{
 							id: "routes/contents/+page.svelte",
-							value: {
-								title: "+page.svelte",
-								icon: "svelte",
-							},
+							title: "+page.svelte",
+							icon: "svelte",
 						},
 					],
 				},
@@ -117,18 +91,18 @@
 
 	const tree = new AltTree({
 		items: data,
-		multiple: false,
 	});
 </script>
 
-{#snippet treeItemIcon(item: TreeItem<TreeItemValue>)}
-	{@const icon = item.value.icon}
+{#snippet treeItemIcon(item: typeof tree['children'][number])}
+	{@const icon = item.icon}
+
 	{#if icon === "folder"}
-		{#if item.expanded}
-			<FolderOpen role="presentation" onclick={() => item.collapse()} />
-		{:else}
-			<Folder role="presentation" onclick={() => item.expand()} />
-		{/if}
+		<svelte:component
+			this={item.expanded ? FolderOpen : Folder}
+			role="presentation"
+			onclick={() => item.toggleExpand()}
+		/>
 	{:else if icon === "svelte"}
 		<Svelte role="presentation" />
 	{:else if icon === "js"}
@@ -136,16 +110,16 @@
 	{/if}
 {/snippet}
 
-{#snippet treeItems(items: ReadonlyArray<TreeItem<TreeItemValue>>)}
+{#snippet treeItems(items: typeof tree['children'])}
 	{#each items as item (item.id)}
-		<li {...item.attributes} class="mt-2 rounded-sm first:mt-0 focus-visible:outline-offset-2">
+		<li {...item.attrs} class="mt-2 rounded-sm first:mt-0 focus-visible:outline-offset-2">
 			<div
 				data-selected={item.selected ? "" : undefined}
 				class="data-[selected]:bg-accent-200 data-[selected]:text-accent-950 group flex items-center gap-2 rounded-[inherit] px-2 py-1"
 			>
 				{@render treeItemIcon(item)}
 				<span class="select-none group-data-[selected]:font-semibold">
-					{item.value.title}
+					{item.title}
 				</span>
 			</div>
 			{#if item.expanded && item.children.length !== 0}
@@ -159,6 +133,6 @@
 
 <Preview>
 	<ul class="border-accent-200 h-80 list-none overflow-y-scroll rounded-md border p-4">
-		{@render treeItems(tree.items)}
+		{@render treeItems(tree.children)}
 	</ul>
 </Preview>

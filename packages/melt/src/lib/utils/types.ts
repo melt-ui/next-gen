@@ -43,3 +43,5 @@ export type ObjToString<T extends Record<string, string | number | boolean>> = F
 export type Expect<T extends true> = T;
 export type Equal<X, Y> =
 	(<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false;
+
+export type FalseIfUndefined<T extends boolean | undefined> = T extends undefined ? false : T;
