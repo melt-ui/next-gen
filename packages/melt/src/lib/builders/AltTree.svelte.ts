@@ -2,7 +2,7 @@ import type { Extracted, MaybeGetter } from "$lib/types";
 import { AltSelectionState, type MaybeMultiple } from "$lib/utils/alt-selection-state.svelte";
 import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
-import { last } from "$lib/utils/iterator";
+import { first, last } from "$lib/utils/iterator";
 import { isControlOrMeta } from "$lib/utils/platform";
 import type { FalseIfUndefined } from "$lib/utils/types";
 
@@ -145,6 +145,40 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 		return document.getElementById(this.getItemId(id));
 	}
 
+	allChildren() {
+		return this.children.flat();
+	}
+
+	selectUntil(id: string): void {
+		// TODO: Use a direction constant to ensure correct order?
+		if (!this.#selected.size()) return this.select(id);
+
+		const allChildren = getAllChildren(this);
+
+		const to = allChildren.find((c) => c.id === id);
+		if (!to) return;
+
+		const from = allChildren.find((c) => c.id === first(this.#selected.toSet()));
+		if (!from) return this.select(id);
+
+		const fromIdx = allChildren.indexOf(from);
+		const toIdx = allChildren.indexOf(to);
+
+		const [start, end] = fromIdx < toIdx ? [from, to] : [to, from];
+
+		console.log({ from: from.id, to: to.id, start: start.id, end: end.id });
+
+		let current = start;
+		this.clearSelection();
+		// Ensure from remains the same
+		this.select(from.id);
+		this.select(start.id);
+		while (current.id !== end.id && current.next) {
+			current = current.next;
+			this.select(current.id);
+		}
+	}
+
 	get root() {
 		return {
 			role: "tree",
@@ -162,6 +196,22 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 			(i) => new Child({ tree: this, item: i, parent: this, selectedState: this.#selected }),
 		);
 	}
+}
+
+function getAllChildren<I extends AltTreeItem[]>(
+	treeOrChild: AltTree<I, boolean> | Child<I>,
+	onlyVisible = false,
+): Child<I>[] {
+	const children =
+		!onlyVisible || treeOrChild instanceof AltTree || treeOrChild.expanded
+			? treeOrChild.children
+			: [];
+
+	return (
+		children?.reduce((acc, c) => {
+			return [...acc, c, ...getAllChildren(c, onlyVisible)];
+		}, [] as Child<I>[]) || []
+	);
 }
 
 type ChildProps<I extends AltTreeItem[]> = {
@@ -228,8 +278,6 @@ class Child<I extends AltTreeItem[]> {
 		}
 	}
 
-	selectAllChildren = () => {};
-
 	get tabindex() {
 		if (this.selectedState.size()) {
 			return this.tree.isSelected(this.id) ? 0 : -1;
@@ -243,18 +291,22 @@ class Child<I extends AltTreeItem[]> {
 			"data-selected": dataAttr(this.selected),
 			onclick: (e: MouseEvent) => {
 				e.stopPropagation();
-				if (!isControlOrMeta(e)) this.tree.clearSelection();
+				if (!isControlOrMeta(e) && !e.shiftKey) this.tree.clearSelection();
 				if (
 					this.tree.expandOnClick &&
 					this.canExpand &&
-					(!this.tree.multiple || !isControlOrMeta(e))
-				)
+					(!this.tree.multiple || (!isControlOrMeta(e) && !e.shiftKey))
+				) {
 					this.toggleExpand();
-				this.tree.select(this.id);
+				}
+				if (isControlOrMeta(e)) this.toggleSelect();
+				else this.tree.select(this.id);
+				if (e.shiftKey) this.tree.selectUntil(this.id);
 				this.focus();
 			},
 			onkeydown: (e: KeyboardEvent) => {
 				let shouldPrevent = true;
+				// TODO: a-z, *
 				switch (e.key) {
 					case "ArrowLeft": {
 						if (this.expanded) {

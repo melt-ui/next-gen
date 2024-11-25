@@ -153,4 +153,8 @@ export class AltSelectionState<Multiple extends _multiple_extends = _multiple_de
 			}
 		});
 	}
+
+	toSet() {
+		return toSet(this.current);
+	}
 }

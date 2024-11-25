@@ -570,6 +570,16 @@
         "name": "getItemEl",
         "type": "(id: string) => HTMLElement | null",
         "description": ""
+      },
+      {
+        "name": "allChildren",
+        "type": "() => Child<I>[]",
+        "description": ""
+      },
+      {
+        "name": "selectUntil",
+        "type": "(id: string) => void",
+        "description": ""
       }
     ],
     "properties": [
