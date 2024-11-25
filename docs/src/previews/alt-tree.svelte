@@ -10,7 +10,7 @@
 	const controls = usePreviewControls({
 		multiple: {
 			type: "boolean",
-			defaultValue: false,
+			defaultValue: true,
 			label: "Multiple",
 		},
 		expandOnClick: {
@@ -125,9 +125,9 @@
 	{#each items as item (item.id)}
 		<li
 			{...item.attrs}
-			class="cursor-pointer rounded-sm py-0.5 outline-none first:mt-0 [&:focus-visible>:first-child>div]:ring-4"
+			class="cursor-pointer rounded-sm outline-none first:mt-0 [&:focus-visible>:first-child>div]:ring-4"
 		>
-			<div class="group" style="padding-left: {depth * 1}rem">
+			<div class="group py-1" style="padding-left: {depth * 1}rem">
 				<div
 					class="{item.selected ? '!bg-accent-200 text-accent-950' : ''}
 					ring-accent-700 flex h-full w-full items-center gap-2 rounded-xl
@@ -170,7 +170,7 @@
 	{/each}
 {/snippet}
 
-<Preview class="">
+<Preview class="!py-6">
 	<ul class="mx-auto w-[300px] list-none rounded-md p-4" {...tree.root}>
 		{@render treeItems(tree.children, 0)}
 	</ul>

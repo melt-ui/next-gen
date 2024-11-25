@@ -233,3 +233,5 @@ class UncontrolledMultiSelectionState extends MultiSelectionState {
 		return this.#current;
 	}
 }
+
+export type SelectionState = SingleSelectionState | MultiSelectionState;

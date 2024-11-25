@@ -3,17 +3,13 @@ import { AltSelectionState, type MaybeMultiple } from "$lib/utils/alt-selection-
 import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { last } from "$lib/utils/iterator";
+import { isControlOrMeta } from "$lib/utils/platform";
 import type { FalseIfUndefined } from "$lib/utils/types";
 
 export type AltTreeItem<Meta extends Record<string, unknown> = Record<never, never>> = {
 	id: string;
 	children?: AltTreeItem<Meta>[];
 } & Meta;
-
-type _PropsExtends = {
-	multiple?: MaybeGetter<boolean | undefined>;
-	items: MaybeGetter<AltTreeItem[]>;
-};
 
 type AltTreeProps<Items extends AltTreeItem[], Multiple extends boolean = false> = {
 	/**
@@ -133,6 +129,10 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 		this.#selected.delete(id);
 	}
 
+	clearSelection() {
+		this.#selected.clear();
+	}
+
 	toggleSelect(id: string) {
 		this.#selected.toggle(id);
 	}
@@ -158,18 +158,22 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 	}
 
 	get children() {
-		return this.items.map((i) => new Child({ tree: this, item: i, parent: this }));
+		return this.items.map(
+			(i) => new Child({ tree: this, item: i, parent: this, selectedState: this.#selected }),
+		);
 	}
 }
 
 type ChildProps<I extends AltTreeItem[]> = {
 	tree: AltTree<I, boolean>;
+	selectedState: AltSelectionState<boolean>;
 	item: Item<I>;
 	parent?: Child<I> | AltTree<I, boolean>;
 };
 class Child<I extends AltTreeItem[]> {
 	#props!: ChildProps<I>;
 	tree = $derived(this.#props.tree);
+	selectedState = $derived(this.#props.selectedState);
 	item = $derived(this.#props.item);
 	elId = $derived(this.tree.getItemId(this.item.id));
 	id = $derived(this.item.id);
@@ -226,14 +230,27 @@ class Child<I extends AltTreeItem[]> {
 
 	selectAllChildren = () => {};
 
+	get tabindex() {
+		if (this.selectedState.size()) {
+			return this.tree.isSelected(this.id) ? 0 : -1;
+		}
+		return this.parent instanceof AltTree && this.idx === 0 ? 0 : -1;
+	}
+
 	get attrs() {
 		return {
 			id: this.elId,
 			"data-selected": dataAttr(this.selected),
 			onclick: (e: MouseEvent) => {
 				e.stopPropagation();
+				if (!isControlOrMeta(e)) this.tree.clearSelection();
+				if (
+					this.tree.expandOnClick &&
+					this.canExpand &&
+					(!this.tree.multiple || !isControlOrMeta(e))
+				)
+					this.toggleExpand();
 				this.tree.select(this.id);
-				if (this.tree.expandOnClick && this.canExpand) this.toggleExpand();
 				this.focus();
 			},
 			onkeydown: (e: KeyboardEvent) => {
@@ -269,6 +286,7 @@ class Child<I extends AltTreeItem[]> {
 					}
 					case "Enter":
 					case " ": {
+						this.tree.clearSelection();
 						this.select();
 
 						break;
@@ -283,12 +301,12 @@ class Child<I extends AltTreeItem[]> {
 					e.stopPropagation();
 				}
 			},
-			tabindex: this.tree.isSelected(this.id) ? 0 : -1,
+			tabindex: this.tabindex,
 			role: "treeitem",
 		};
 	}
 
 	get children() {
-		return this.item.children?.map((i) => new Child({ tree: this.tree, item: i, parent: this }));
+		return this.item.children?.map((i) => new Child({ ...this.#props, item: i, parent: this }));
 	}
 }

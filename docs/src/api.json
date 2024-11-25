@@ -87,7 +87,7 @@
       },
       {
         "name": "selected",
-        "type": "any",
+        "type": "string | Set<string> | undefined",
         "description": ""
       }
     ]
@@ -549,6 +549,11 @@
       {
         "name": "deselect",
         "type": "(id: string) => void",
+        "description": ""
+      },
+      {
+        "name": "clearSelection",
+        "type": "() => void",
         "description": ""
       },
       {

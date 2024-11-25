@@ -1,6 +1,11 @@
 <script lang="ts">
 	import Preview from "@components/preview.svelte";
-	import { SingleSelectTree, type TreeItem, type TreeItemData } from "melt/builders";
+	import {
+		MultiSelectTree,
+		SingleSelectTree,
+		type TreeItem,
+		type TreeItemData,
+	} from "melt/builders";
 	import JavaScript from "~icons/devicon/javascript";
 	import Svelte from "~icons/devicon/svelte";
 	import FolderOpen from "~icons/material-symbols/folder-open";
@@ -115,7 +120,7 @@
 		},
 	];
 
-	const tree = new SingleSelectTree({
+	const tree = new MultiSelectTree({
 		items: data,
 	});
 </script>
