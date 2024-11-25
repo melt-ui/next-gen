@@ -471,21 +471,21 @@
     "constructorProps": [
       {
         "name": "multiple",
-        "type": "Props[\"multiple\"] | undefined",
+        "type": "MaybeGetter<M | undefined>",
         "description": "If `true`, the user can select multiple items.",
         "defaultValue": "false",
         "optional": true
       },
       {
         "name": "selected",
-        "type": "FalseIfUndefined<Props[\"multiple\"]>> | undefined",
+        "type": "MaybeMultiple<M> | undefined",
         "description": "The currently selected item(s).\nIf `multiple` is `true`, this should be an `Iterable`.\nOtherwise, it'll be a `string`.",
         "defaultValue": "undefined",
         "optional": true
       },
       {
         "name": "onSelectedChange",
-        "type": "| ((\n      value: Props[\"multiple\"] extends true ? Set<string> : string | undefined,\n    ) => void)\n  | undefined",
+        "type": "| ((value: M extends true ? Set<string> : string | undefined) => void)\n  | undefined",
         "description": "A function that is called whenever selected changes.",
         "optional": true
       },
@@ -502,8 +502,15 @@
         "optional": true
       },
       {
+        "name": "expandOnClick",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If `true`, groups (items with children) expand on click.",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
         "name": "items",
-        "type": "Props[\"items\"]",
+        "type": "I",
         "description": "The items contained in the tree.",
         "optional": false
       }
@@ -553,17 +560,22 @@
     "properties": [
       {
         "name": "items",
-        "type": "Extracted<Props[\"items\"]>",
+        "type": "Extracted<I>",
         "description": ""
       },
       {
         "name": "multiple",
-        "type": "Props[\"multiple\"] extends true ? true : false",
+        "type": "M",
+        "description": ""
+      },
+      {
+        "name": "expandOnClick",
+        "type": "boolean",
         "description": ""
       },
       {
         "name": "selected",
-        "type": "_value<FalseIfUndefined<Props[\"multiple\"]>>",
+        "type": "_value<FalseIfUndefined<M>>",
         "description": ""
       },
       {
@@ -573,10 +585,10 @@
       },
       {
         "name": "children",
-        "type": "Child<Props>[]",
+        "type": "Child<I>[]",
         "description": ""
       }
     ],
-    "propsAlt": "type _PropsExtends = {\n\tmultiple?: boolean;\n\titems: MaybeGetter<AltTreeItem[]>;\n};\n\ntype AltTreeProps<Props extends _PropsExtends> = Props & {\n\t/**\n\t * If `true`, the user can select multiple items.\n\t *\n\t * @default false\n\t */\n\tmultiple?: Props[\"multiple\"];\n\t/**\n\t * The currently selected item(s).\n\t * If `multiple` is `true`, this should be an `Iterable`.\n\t * Otherwise, it'll be a `string`.\n\t *\n\t * @default undefined\n\t */\n\tselected?: MaybeMultiple<FalseIfUndefined<Props[\"multiple\"]>>;\n\t/**\n\t * A function that is called whenever selected changes.\n\t */\n\tonSelectedChange?: (\n\t\tvalue: Props[\"multiple\"] extends true ? Set<string> : string | undefined,\n\t) => void;\n\t/**\n\t * The currently expanded items\n\t */\n\texpanded?: MaybeMultiple<true>;\n\t/**\n\t * A function that is called whenever expanded changes.\n\t */\n\tonExpandedChange?: (value: Set<string>) => void;\n\t/**\n\t * The items contained in the tree.\n\t *\n\t * @required\n\t */\n\titems: Props[\"items\"];\n};"
+    "propsAlt": "type AltTreeProps<Items extends AltTreeItem[], Multiple extends boolean = false> = {\n\t/**\n\t * If `true`, the user can select multiple items.\n\t *\n\t * @default false\n\t */\n\tmultiple?: MaybeGetter<Multiple | undefined>;\n\t/**\n\t * The currently selected item(s).\n\t * If `multiple` is `true`, this should be an `Iterable`.\n\t * Otherwise, it'll be a `string`.\n\t *\n\t * @default undefined\n\t */\n\tselected?: MaybeMultiple<Multiple>;\n\t/**\n\t * A function that is called whenever selected changes.\n\t */\n\tonSelectedChange?: (value: Multiple extends true ? Set<string> : string | undefined) => void;\n\t/**\n\t * The currently expanded items\n\t */\n\texpanded?: MaybeMultiple<true>;\n\t/**\n\t * A function that is called whenever expanded changes.\n\t */\n\tonExpandedChange?: (value: Set<string>) => void;\n\n\t/**\n\t * If `true`, groups (items with children) expand on click.\n\t *\n\t * @default true\n\t */\n\texpandOnClick?: MaybeGetter<boolean | undefined>;\n\t/**\n\t * The items contained in the tree.\n\t *\n\t * @required\n\t */\n\titems: Items;\n};"
   }
 }

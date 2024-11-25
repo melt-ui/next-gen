@@ -10,17 +10,17 @@ export type AltTreeItem<Meta extends Record<string, unknown> = Record<never, nev
 } & Meta;
 
 type _PropsExtends = {
-	multiple?: boolean;
+	multiple?: MaybeGetter<boolean | undefined>;
 	items: MaybeGetter<AltTreeItem[]>;
 };
 
-type AltTreeProps<Props extends _PropsExtends> = Props & {
+type AltTreeProps<Items extends AltTreeItem[], Multiple extends boolean = false> = {
 	/**
 	 * If `true`, the user can select multiple items.
 	 *
 	 * @default false
 	 */
-	multiple?: Props["multiple"];
+	multiple?: MaybeGetter<Multiple | undefined>;
 	/**
 	 * The currently selected item(s).
 	 * If `multiple` is `true`, this should be an `Iterable`.
@@ -28,13 +28,11 @@ type AltTreeProps<Props extends _PropsExtends> = Props & {
 	 *
 	 * @default undefined
 	 */
-	selected?: MaybeMultiple<FalseIfUndefined<Props["multiple"]>>;
+	selected?: MaybeMultiple<Multiple>;
 	/**
 	 * A function that is called whenever selected changes.
 	 */
-	onSelectedChange?: (
-		value: Props["multiple"] extends true ? Set<string> : string | undefined,
-	) => void;
+	onSelectedChange?: (value: Multiple extends true ? Set<string> : string | undefined) => void;
 	/**
 	 * The currently expanded items
 	 */
@@ -43,54 +41,65 @@ type AltTreeProps<Props extends _PropsExtends> = Props & {
 	 * A function that is called whenever expanded changes.
 	 */
 	onExpandedChange?: (value: Set<string>) => void;
+
+	/**
+	 * If `true`, groups (items with children) expand on click.
+	 *
+	 * @default true
+	 */
+	expandOnClick?: MaybeGetter<boolean | undefined>;
 	/**
 	 * The items contained in the tree.
 	 *
 	 * @required
 	 */
-	items: Props["items"];
+	items: Items;
 };
 
 type Selected<Multiple extends boolean | undefined> = AltSelectionState<FalseIfUndefined<Multiple>>;
-type Items<Props extends _PropsExtends> = Extracted<Props["items"]>;
-type Item<Props extends _PropsExtends> = Items<Props>[number];
+type Items<I extends AltTreeItem[]> = Extracted<AltTreeProps<I>["items"]>;
+type Item<I extends AltTreeItem[]> = Items<I>[number];
 
-type Child<Props extends _PropsExtends> = Omit<Item<Props>, "children"> & {
+type Child<I extends AltTreeItem[]> = Omit<Item<I>, "children"> & {
 	selected: boolean;
 	expanded: boolean;
+	canExpand: boolean;
 	collapse: () => void;
 	expand: () => void;
 	toggleExpand: () => void;
 	select: () => void;
 	deselect: () => void;
 	toggleSelect: () => void;
-	children: Child<Props>[];
+	focus: () => void;
+	children: Child<I>[];
+	parent: Child<I> | undefined;
 	attrs: {
-		onclickcapture: () => void;
-		onkeydown: () => void;
+		onclick: (e: MouseEvent) => void;
+		onkeydown: (e: KeyboardEvent) => void;
 	};
 };
 
-export class AltTree<Props extends _PropsExtends> {
-	#props!: AltTreeProps<Props>;
+export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
+	#props!: AltTreeProps<I, M>;
 
-	readonly items = $derived(extract(this.#props.items)) as Items<Props>;
-	readonly multiple = $derived(
-		extract(this.#props.multiple, false),
-	) as Props["multiple"] extends true ? true : false;
+	readonly items = $derived(extract(this.#props.items)) as Items<I>;
+	readonly multiple = $derived(extract(this.#props.multiple, false as M)) as M;
 
-	#selected: Selected<Props["multiple"]>;
+	readonly expandOnClick = $derived(extract(this.#props.expandOnClick, true));
+	#selected: Selected<M>;
 	#expanded: AltSelectionState<true>;
 
-	constructor(props: AltTreeProps<Props>) {
+	#id = crypto.randomUUID();
+
+	constructor(props: AltTreeProps<I, M>) {
 		this.#props = props;
 		this.#selected = new AltSelectionState({
 			value: props.selected,
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			onChange: props.onSelectedChange as any,
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			multiple: () => props.multiple as any,
-		}) as Selected<Props["multiple"]>;
+			multiple: props.multiple as any,
+		}) as Selected<M>;
 		this.#expanded = new AltSelectionState({
 			value: props.expanded,
 			onChange: props.onExpandedChange,
@@ -146,31 +155,104 @@ export class AltTree<Props extends _PropsExtends> {
 		this.#selected.toggle(id);
 	}
 
-	#getChildren(items: Items<Props>): Child<Props>[] {
+	#getItemId(id: string): string {
+		return `melt-tree-${this.#id}-item--${id}`;
+	}
+
+	#getItemEl(id: string): HTMLElement | null {
+		return document.getElementById(this.#getItemId(id));
+	}
+
+	#getChild(item: Item<I>, parent?: Item<I>): Child<I> {
 		const instance = this;
+		return {
+			...omit(item, "children"),
+			get attrs() {
+				return {
+					id: instance.#getItemId(item.id),
+					onclick: (e: MouseEvent) => {
+						e.stopPropagation();
+						instance.select(item.id);
+						if (instance.expandOnClick) instance.toggleExpand(item.id);
+						instance.#getItemEl(item.id)?.focus();
+					},
+					onkeydown: (e: KeyboardEvent) => {
+						let shouldPrevent = true;
+						switch (e.key) {
+							case "ArrowLeft": {
+								if (this.expanded) {
+									this.collapse();
+									break;
+								}
+								instance.#getItemEl(parent?.id ?? "")?.focus();
+
+								break;
+							}
+							case "ArrowRight": {
+								if (!this.canExpand) break;
+								if (this.expanded) {
+									this.children[0].focus();
+									break;
+								}
+								this.expand();
+								break;
+							}
+							case "ArrowDown": {
+								this.next()?.focus();
+								break;
+							}
+							case "ArrowUp": {
+								this.previous()?.focus();
+								break;
+							}
+							default: {
+								shouldPrevent = false;
+							}
+						}
+
+						if (shouldPrevent) {
+							e.preventDefault();
+							e.stopPropagation();
+						}
+					},
+					tabindex: instance.isSelected(item.id) ? 0 : -1,
+				};
+			},
+			selected: instance.isSelected(item.id),
+			expanded: instance.isExpanded(item.id),
+			canExpand: Boolean(item.children && item.children.length > 0),
+			collapse: () => instance.collapse(item.id),
+			expand: () => instance.expand(item.id),
+			toggleExpand: () => instance.toggleExpand(item.id),
+			select: () => instance.select(item.id),
+			deselect: () => instance.deselect(item.id),
+			toggleSelect: () => instance.toggleSelect(item.id),
+			focus: () => instance.#getItemEl(item.id)?.focus(),
+			next: () => {
+				const index = instance.children.findIndex((c) => c.id === item.id);
+				if (index === -1) return;
+				if (index === instance.children.length - 1) return;
+				return instance.children[index + 1];
+			},
+			previous: () => {
+				const index = instance.children.findIndex((c) => c.id === item.id);
+				if (index === -1) return;
+				if (index === 0) return;
+				return instance.children[index - 1];
+			},
+			get children() {
+				return instance.#getChildren((item.children || []) as Items<I>, item);
+			},
+			get parent() {
+				if (!parent) return;
+				return instance.#getChild(parent);
+			},
+		};
+	}
+
+	#getChildren(items: Items<I>, parent?: Item<I>): Child<I>[] {
 		return items.map((i) => {
-			const item = i as Item<Props>;
-			return {
-				...omit(item, "children"),
-				get attrs() {
-					return {
-						onclickcapture: () => {
-							instance.select(item.id);
-						},
-					};
-				},
-				selected: instance.isSelected(item.id),
-				expanded: instance.isExpanded(item.id),
-				collapse: () => instance.collapse(item.id),
-				expand: () => instance.expand(item.id),
-				toggleExpand: () => instance.toggleExpand(item.id),
-				select: () => instance.select(item.id),
-				deselect: () => instance.deselect(item.id),
-				toggleSelect: () => instance.toggleSelect(item.id),
-				get children() {
-					return instance.#getChildren((item.children || []) as Items<Props>);
-				},
-			};
+			return this.#getChild(i, parent);
 		});
 	}
 

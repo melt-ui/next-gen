@@ -80,8 +80,9 @@
 
 	interface Props {
 		children: Snippet;
+		class?: string;
 	}
-	const { children }: Props = $props();
+	const { children, class: className }: Props = $props();
 
 	let open = $state(false);
 
@@ -129,7 +130,7 @@
 
 <div
 	class="not-content relative grid min-h-[500px] place-items-center overflow-clip rounded-2xl border
-	bg-gray-100 dark:border-gray-700 dark:bg-gray-950"
+	bg-gray-100 dark:border-gray-700 dark:bg-gray-950 {className}"
 >
 	<div class="w-full min-w-0 overflow-clip p-4">
 		{@render children()}
