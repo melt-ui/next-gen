@@ -105,6 +105,7 @@
 
 	const tree = new AltTree({
 		items: data,
+		expanded: ["lib", "routes"],
 		...getters(controls),
 	});
 </script>
