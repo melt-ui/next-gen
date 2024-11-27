@@ -6,15 +6,25 @@ import { first, last } from "$lib/utils/iterator";
 import { isControlOrMeta } from "$lib/utils/platform";
 import type { FalseIfUndefined } from "$lib/utils/types";
 
+/**
+ * Represents a tree item with optional metadata and children
+ * @template Meta - Type of additional metadata properties for the tree item
+ */
 export type AltTreeItem<Meta extends Record<string, unknown> = Record<never, never>> = {
+	/** Unique identifier for the tree item */
 	id: string;
+	/** Optional array of child tree items */
 	children?: AltTreeItem<Meta>[];
 } & Meta;
 
+/**
+ * Props for configuring the AltTree component
+ * @template Items - Array type extending AltTreeItem
+ * @template Multiple - Boolean indicating if multiple selection is enabled
+ */
 type AltTreeProps<Items extends AltTreeItem[], Multiple extends boolean = false> = {
 	/**
 	 * If `true`, the user can select multiple items.
-	 *
 	 * @default false
 	 */
 	multiple?: MaybeGetter<Multiple | undefined>;
@@ -22,12 +32,12 @@ type AltTreeProps<Items extends AltTreeItem[], Multiple extends boolean = false>
 	 * The currently selected item(s).
 	 * If `multiple` is `true`, this should be an `Iterable`.
 	 * Otherwise, it'll be a `string`.
-	 *
 	 * @default undefined
 	 */
 	selected?: MaybeMultiple<Multiple>;
 	/**
-	 * A function that is called whenever selected changes.
+	 * Callback fired when selection changes
+	 * @param value - For multiple selection, a Set of selected IDs. For single selection, a single ID or undefined
 	 */
 	onSelectedChange?: (value: Multiple extends true ? Set<string> : string | undefined) => void;
 	/**
@@ -35,19 +45,17 @@ type AltTreeProps<Items extends AltTreeItem[], Multiple extends boolean = false>
 	 */
 	expanded?: MaybeMultiple<true>;
 	/**
-	 * A function that is called whenever expanded changes.
+	 * Callback fired when expanded state changes
+	 * @param value - Set of expanded item IDs
 	 */
 	onExpandedChange?: (value: Set<string>) => void;
-
 	/**
 	 * If `true`, groups (items with children) expand on click.
-	 *
 	 * @default true
 	 */
 	expandOnClick?: MaybeGetter<boolean | undefined>;
 	/**
 	 * The items contained in the tree.
-	 *
 	 * @required
 	 */
 	items: Items;
@@ -57,19 +65,31 @@ type Selected<Multiple extends boolean | undefined> = AltSelectionState<FalseIfU
 type Items<I extends AltTreeItem[]> = Extracted<AltTreeProps<I>["items"]>;
 type Item<I extends AltTreeItem[]> = Items<I>[number];
 
-export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
-	#props!: AltTreeProps<I, M>;
+/**
+ * Main tree component class that handles selection, expansion, and keyboard navigation
+ * @template I - Array type extending AltTreeItem
+ * @template Multiple - Boolean indicating if multiple selection is enabled
+ */
+export class AltTree<I extends AltTreeItem[], Multiple extends boolean = false> {
+	#props!: AltTreeProps<I, Multiple>;
 
+	/** The items contained in the tree */
 	readonly items = $derived(extract(this.#props.items)) as Items<I>;
-	readonly multiple = $derived(extract(this.#props.multiple, false as M)) as M;
-
+	/** If `true`, the user can select multiple items holding `Control`/`Meta` or `Shift` */
+	readonly multiple = $derived(extract(this.#props.multiple, false as Multiple)) as Multiple;
+	/** If `true`, groups (items with children) expand on click */
 	readonly expandOnClick = $derived(extract(this.#props.expandOnClick, true));
-	#selected: Selected<M>;
+
+	#selected: Selected<Multiple>;
 	#expanded: AltSelectionState<true>;
 
 	#id = crypto.randomUUID();
 
-	constructor(props: AltTreeProps<I, M>) {
+	/**
+	 * Creates a new AltTree instance
+	 * @param props - Configuration props for the tree
+	 */
+	constructor(props: AltTreeProps<I, Multiple>) {
 		this.#props = props;
 		this.#selected = new AltSelectionState({
 			value: props.selected,
@@ -77,7 +97,7 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 			onChange: props.onSelectedChange as any,
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			multiple: props.multiple as any,
-		}) as Selected<M>;
+		}) as Selected<Multiple>;
 		this.#expanded = new AltSelectionState({
 			value: props.expanded,
 			onChange: props.onExpandedChange,
@@ -85,14 +105,23 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 		});
 	}
 
+	/**
+	 * Currently selected item(s)
+	 * For multiple selection, returns a Set of IDs
+	 * For single selection, returns a single ID or undefined
+	 */
 	get selected() {
-		return this.#selected.current;
+		return this.#selected.current as Multiple extends true ? Set<string> : string | undefined;
 	}
 
 	set selected(v) {
-		this.#selected.current = v;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		this.#selected.current = v as any;
 	}
 
+	/**
+	 * Set of currently expanded item IDs
+	 */
 	get expanded() {
 		return this.#expanded.current;
 	}
@@ -101,54 +130,104 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 		this.#expanded.current = v;
 	}
 
+	/**
+	 * Checks if an item is currently selected
+	 * @param id - ID of the item to check
+	 */
 	isSelected(id: string) {
 		return this.#selected.has(id);
 	}
 
+	/**
+	 * Checks if an item is currently expanded
+	 * @param id - ID of the item to check
+	 */
 	isExpanded(id: string) {
 		return this.#expanded.has(id);
 	}
 
+	/**
+	 * Expands a specific item
+	 * @param id - ID of the item to expand
+	 */
 	expand(id: string) {
 		this.#expanded.add(id);
 	}
 
+	/**
+	 * Collapses a specific item
+	 * @param id - ID of the item to collapse
+	 */
 	collapse(id: string) {
 		this.#expanded.delete(id);
 	}
 
+	/**
+	 * Toggles the expanded state of an item
+	 * @param id - ID of the item to toggle
+	 */
 	toggleExpand(id: string) {
 		this.#expanded.toggle(id);
 	}
 
+	/**
+	 * Selects a specific item
+	 * @param id - ID of the item to select
+	 */
 	select(id: string) {
 		this.#selected.add(id);
 	}
 
+	/**
+	 * Deselects a specific item
+	 * @param id - ID of the item to deselect
+	 */
 	deselect(id: string) {
 		this.#selected.delete(id);
 	}
 
+	/**
+	 * Clears all current selections
+	 */
 	clearSelection() {
 		this.#selected.clear();
 	}
 
+	/**
+	 * Toggles the selected state of an item
+	 * @param id - ID of the item to toggle
+	 */
 	toggleSelect(id: string) {
 		this.#selected.toggle(id);
 	}
 
+	/**
+	 * Gets the DOM ID for a specific tree item
+	 * @param id - ID of the item
+	 */
 	getItemId(id: string): string {
 		return `melt-tree-${this.#id}-item--${id}`;
 	}
 
+	/**
+	 * Gets the DOM element for a specific tree item
+	 * @param id - ID of the item
+	 */
 	getItemEl(id: string): HTMLElement | null {
 		return document.getElementById(this.getItemId(id));
 	}
 
+	/**
+	 * Gets all child items in the tree as a flat array
+	 */
 	allChildren() {
 		return this.children.flat();
 	}
 
+	/**
+	 * Selects all items between the last selected item and the specified item
+	 * @param id - ID of the item to select until
+	 */
 	selectUntil(id: string): void {
 		// TODO: Use a direction constant to ensure correct order?
 		if (!this.#selected.size()) return this.select(id);
@@ -179,18 +258,27 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 		}
 	}
 
+	/**
+	 * Gets ARIA attributes for the root tree element
+	 */
 	get root() {
 		return {
 			role: "tree",
 		};
 	}
 
+	/**
+	 * ARIA attributes for group elements
+	 */
 	get group() {
 		return {
 			role: "group",
 		};
 	}
 
+	/**
+	 * Array of Child instances representing the top-level items
+	 */
 	get children() {
 		return this.items.map(
 			(i) => new Child({ tree: this, item: i, parent: this, selectedState: this.#selected }),
@@ -198,6 +286,11 @@ export class AltTree<I extends AltTreeItem[], M extends boolean = false> {
 	}
 }
 
+/**
+ * Helper function to get all child items in a tree or subtree
+ * @param treeOrChild - Tree or Child instance to get children from
+ * @param onlyVisible - If true, only returns visible (expanded) children
+ */
 function getAllChildren<I extends AltTreeItem[]>(
 	treeOrChild: AltTree<I, boolean> | Child<I>,
 	onlyVisible = false,
@@ -220,6 +313,11 @@ type ChildProps<I extends AltTreeItem[]> = {
 	item: Item<I>;
 	parent?: Child<I> | AltTree<I, boolean>;
 };
+
+/**
+ * Class representing a single item in the tree
+ * @template I - Array type extending AltTreeItem
+ */
 class Child<I extends AltTreeItem[]> {
 	#props!: ChildProps<I>;
 	tree = $derived(this.#props.tree);
@@ -229,34 +327,52 @@ class Child<I extends AltTreeItem[]> {
 	id = $derived(this.item.id);
 	parent = $derived(this.#props.parent);
 
+	/**
+	 * Creates a new Child instance
+	 * @param props - Configuration props for the child
+	 */
 	constructor(props: ChildProps<I>) {
 		this.#props = props;
 	}
 
+	/** The DOM element representing this item */
 	get el() {
 		return document.getElementById(this.elId);
 	}
 
+	/** Whether this item is currently selected */
 	readonly selected = $derived(this.tree.isSelected(this.id));
+	/** Whether this item is currently expanded */
 	readonly expanded = $derived(this.tree.isExpanded(this.id));
+	/** Whether this item can be expanded (has children) */
 	readonly canExpand = $derived(Boolean(this.item.children && this.item.children?.length > 0));
+	/** Collapses this item */
 	collapse = () => this.tree.collapse(this.id);
+	/** Expands this item */
 	expand = () => this.tree.expand(this.id);
+	/** Toggles the expanded state of this item */
 	toggleExpand = () => this.tree.toggleExpand(this.id);
+	/** Selects this item */
 	select = () => this.tree.select(this.id);
+	/** Deselects this item */
 	deselect = () => this.tree.deselect(this.id);
+	/** Toggles the selected state of this item */
 	toggleSelect = () => this.tree.toggleSelect(this.id);
+	/** Focuses this item's DOM element */
 	focus = () => this.el?.focus();
 	idx = $derived(this.parent?.children?.findIndex((c) => c.id === this.id) ?? -1);
 
+	/** Gets the previous sibling item */
 	get previousSibling() {
 		return this.parent?.children?.[this.idx - 1];
 	}
 
+	/** Gets the next sibling item */
 	get nextSibling() {
 		return this.parent?.children?.[this.idx + 1];
 	}
 
+	/** Gets the previous item in the tree (including parent/child relationships) */
 	get previous(): Child<I> | undefined {
 		let current = this.previousSibling;
 		if (!current) return this.parent instanceof Child ? this.parent : undefined;
@@ -266,6 +382,7 @@ class Child<I extends AltTreeItem[]> {
 		return current;
 	}
 
+	/** Gets the next item in the tree (including parent/child relationships) */
 	get next(): Child<I> | undefined {
 		if (this.expanded) {
 			return this.children?.[0];
@@ -278,6 +395,7 @@ class Child<I extends AltTreeItem[]> {
 		}
 	}
 
+	/** Gets the tabindex for this item's DOM element */
 	get tabindex() {
 		if (this.selectedState.size()) {
 			return this.tree.isSelected(this.id) ? 0 : -1;
@@ -285,6 +403,7 @@ class Child<I extends AltTreeItem[]> {
 		return this.parent instanceof AltTree && this.idx === 0 ? 0 : -1;
 	}
 
+	/** Gets DOM and ARIA attributes for this item */
 	get attrs() {
 		return {
 			id: this.elId,
@@ -358,6 +477,7 @@ class Child<I extends AltTreeItem[]> {
 		};
 	}
 
+	/** The item's sub-items, if any */
 	get children() {
 		return this.item.children?.map((i) => new Child({ ...this.#props, item: i, parent: this }));
 	}

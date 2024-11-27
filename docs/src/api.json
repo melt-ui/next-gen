@@ -471,22 +471,22 @@
     "constructorProps": [
       {
         "name": "multiple",
-        "type": "MaybeGetter<M | undefined>",
+        "type": "MaybeGetter<Multiple | undefined>",
         "description": "If `true`, the user can select multiple items.",
         "defaultValue": "false",
         "optional": true
       },
       {
         "name": "selected",
-        "type": "MaybeMultiple<M> | undefined",
+        "type": "MaybeMultiple<Multiple> | undefined",
         "description": "The currently selected item(s).\nIf `multiple` is `true`, this should be an `Iterable`.\nOtherwise, it'll be a `string`.",
         "defaultValue": "undefined",
         "optional": true
       },
       {
         "name": "onSelectedChange",
-        "type": "| ((value: M extends true ? Set<string> : string | undefined) => void)\n  | undefined",
-        "description": "A function that is called whenever selected changes.",
+        "type": "| ((value: Multiple extends true ? Set<string> : string | undefined) => void)\n  | undefined",
+        "description": "Callback fired when selection changes",
         "optional": true
       },
       {
@@ -498,7 +498,7 @@
       {
         "name": "onExpandedChange",
         "type": "((value: Set<string>) => void) | undefined",
-        "description": "A function that is called whenever expanded changes.",
+        "description": "Callback fired when expanded state changes",
         "optional": true
       },
       {
@@ -519,111 +519,111 @@
       {
         "name": "isSelected",
         "type": "(id: string) => boolean",
-        "description": ""
+        "description": "Checks if an item is currently selected\n@param id - ID of the item to check"
       },
       {
         "name": "isExpanded",
         "type": "(id: string) => boolean",
-        "description": ""
+        "description": "Checks if an item is currently expanded\n@param id - ID of the item to check"
       },
       {
         "name": "expand",
         "type": "(id: string) => void",
-        "description": ""
+        "description": "Expands a specific item\n@param id - ID of the item to expand"
       },
       {
         "name": "collapse",
         "type": "(id: string) => void",
-        "description": ""
+        "description": "Collapses a specific item\n@param id - ID of the item to collapse"
       },
       {
         "name": "toggleExpand",
         "type": "(id: string) => void",
-        "description": ""
+        "description": "Toggles the expanded state of an item\n@param id - ID of the item to toggle"
       },
       {
         "name": "select",
         "type": "(id: string) => void",
-        "description": ""
+        "description": "Selects a specific item\n@param id - ID of the item to select"
       },
       {
         "name": "deselect",
         "type": "(id: string) => void",
-        "description": ""
+        "description": "Deselects a specific item\n@param id - ID of the item to deselect"
       },
       {
         "name": "clearSelection",
         "type": "() => void",
-        "description": ""
+        "description": "Clears all current selections"
       },
       {
         "name": "toggleSelect",
         "type": "(id: string) => void",
-        "description": ""
+        "description": "Toggles the selected state of an item\n@param id - ID of the item to toggle"
       },
       {
         "name": "getItemId",
         "type": "(id: string) => string",
-        "description": ""
+        "description": "Gets the DOM ID for a specific tree item\n@param id - ID of the item"
       },
       {
         "name": "getItemEl",
         "type": "(id: string) => HTMLElement | null",
-        "description": ""
+        "description": "Gets the DOM element for a specific tree item\n@param id - ID of the item"
       },
       {
         "name": "allChildren",
         "type": "() => Child<I>[]",
-        "description": ""
+        "description": "Gets all child items in the tree as a flat array"
       },
       {
         "name": "selectUntil",
         "type": "(id: string) => void",
-        "description": ""
+        "description": "Selects all items between the last selected item and the specified item\n@param id - ID of the item to select until"
       }
     ],
     "properties": [
       {
         "name": "items",
         "type": "Extracted<I>",
-        "description": ""
+        "description": "The items contained in the tree"
       },
       {
         "name": "multiple",
-        "type": "M",
-        "description": ""
+        "type": "Multiple",
+        "description": "If `true`, the user can select multiple items holding `Control`/`Meta` or `Shift`"
       },
       {
         "name": "expandOnClick",
         "type": "boolean",
-        "description": ""
+        "description": "If `true`, groups (items with children) expand on click"
       },
       {
         "name": "selected",
-        "type": "_value<FalseIfUndefined<M>>",
-        "description": ""
+        "type": "Multiple extends true ? Set<string> : string | undefined",
+        "description": "Currently selected item(s)\nFor multiple selection, returns a Set of IDs\nFor single selection, returns a single ID or undefined"
       },
       {
         "name": "expanded",
         "type": "SvelteSet<string>",
-        "description": ""
+        "description": "Set of currently expanded item IDs"
       },
       {
         "name": "root",
         "type": "{ role: string }",
-        "description": ""
+        "description": "Gets ARIA attributes for the root tree element"
       },
       {
         "name": "group",
         "type": "{ role: string }",
-        "description": ""
+        "description": "ARIA attributes for group elements"
       },
       {
         "name": "children",
         "type": "Child<I>[]",
-        "description": ""
+        "description": "Array of Child instances representing the top-level items"
       }
     ],
-    "propsAlt": "type AltTreeProps<Items extends AltTreeItem[], Multiple extends boolean = false> = {\n\t/**\n\t * If `true`, the user can select multiple items.\n\t *\n\t * @default false\n\t */\n\tmultiple?: MaybeGetter<Multiple | undefined>;\n\t/**\n\t * The currently selected item(s).\n\t * If `multiple` is `true`, this should be an `Iterable`.\n\t * Otherwise, it'll be a `string`.\n\t *\n\t * @default undefined\n\t */\n\tselected?: MaybeMultiple<Multiple>;\n\t/**\n\t * A function that is called whenever selected changes.\n\t */\n\tonSelectedChange?: (value: Multiple extends true ? Set<string> : string | undefined) => void;\n\t/**\n\t * The currently expanded items\n\t */\n\texpanded?: MaybeMultiple<true>;\n\t/**\n\t * A function that is called whenever expanded changes.\n\t */\n\tonExpandedChange?: (value: Set<string>) => void;\n\n\t/**\n\t * If `true`, groups (items with children) expand on click.\n\t *\n\t * @default true\n\t */\n\texpandOnClick?: MaybeGetter<boolean | undefined>;\n\t/**\n\t * The items contained in the tree.\n\t *\n\t * @required\n\t */\n\titems: Items;\n};"
+    "propsAlt": "type AltTreeProps<Items extends AltTreeItem[], Multiple extends boolean = false> = {\n\t/**\n\t * If `true`, the user can select multiple items.\n\t * @default false\n\t */\n\tmultiple?: MaybeGetter<Multiple | undefined>;\n\t/**\n\t * The currently selected item(s).\n\t * If `multiple` is `true`, this should be an `Iterable`.\n\t * Otherwise, it'll be a `string`.\n\t * @default undefined\n\t */\n\tselected?: MaybeMultiple<Multiple>;\n\t/**\n\t * Callback fired when selection changes\n\t * @param value - For multiple selection, a Set of selected IDs. For single selection, a single ID or undefined\n\t */\n\tonSelectedChange?: (value: Multiple extends true ? Set<string> : string | undefined) => void;\n\t/**\n\t * The currently expanded items\n\t */\n\texpanded?: MaybeMultiple<true>;\n\t/**\n\t * Callback fired when expanded state changes\n\t * @param value - Set of expanded item IDs\n\t */\n\tonExpandedChange?: (value: Set<string>) => void;\n\t/**\n\t * If `true`, groups (items with children) expand on click.\n\t * @default true\n\t */\n\texpandOnClick?: MaybeGetter<boolean | undefined>;\n\t/**\n\t * The items contained in the tree.\n\t * @required\n\t */\n\titems: Items;\n};"
   }
 }
