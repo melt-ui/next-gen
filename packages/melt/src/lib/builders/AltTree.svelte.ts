@@ -462,6 +462,15 @@ class Child<I extends AltTreeItem[]> {
 
 						break;
 					}
+					case "Home": {
+						first(getAllChildren(this.tree))?.focus();
+						break;
+					}
+
+					case "End": {
+						last(getAllChildren(this.tree, true))?.focus();
+						break;
+					}
 					default: {
 						shouldPrevent = false;
 					}
