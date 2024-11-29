@@ -572,14 +572,14 @@
         "description": "Gets the DOM element for a specific tree item\n@param id - ID of the item"
       },
       {
-        "name": "allChildren",
-        "type": "() => Child<I>[]",
-        "description": "Gets all child items in the tree as a flat array"
-      },
-      {
         "name": "selectUntil",
         "type": "(id: string) => void",
         "description": "Selects all items between the last selected item and the specified item\n@param id - ID of the item to select until"
+      },
+      {
+        "name": "typeahead",
+        "type": "(letter: string) => void",
+        "description": ""
       }
     ],
     "properties": [
@@ -610,12 +610,12 @@
       },
       {
         "name": "root",
-        "type": "{ role: string }",
+        "type": "{ role: string; \"data-melt-tree-root\": string }",
         "description": "Gets ARIA attributes for the root tree element"
       },
       {
         "name": "group",
-        "type": "{ role: string }",
+        "type": "{ role: string; \"data-melt-tree-group\": string }",
         "description": "ARIA attributes for group elements"
       },
       {

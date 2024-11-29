@@ -2,9 +2,15 @@ import type { Extracted, MaybeGetter } from "$lib/types";
 import { AltSelectionState, type MaybeMultiple } from "$lib/utils/alt-selection-state.svelte";
 import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
+import { createDataIds } from "$lib/utils/identifiers";
+import { isString } from "$lib/utils/is";
 import { first, last } from "$lib/utils/iterator";
 import { isControlOrMeta } from "$lib/utils/platform";
 import type { FalseIfUndefined } from "$lib/utils/types";
+import { Debounced, useDebounce } from "runed";
+
+const identifiers = createDataIds("tree", ["root", "item", "group"]);
+const letterRegex = /^[a-zA-Z]$/;
 
 /**
  * Represents a tree item with optional metadata and children
@@ -84,6 +90,11 @@ export class AltTree<I extends AltTreeItem[], Multiple extends boolean = false> 
 	#expanded: AltSelectionState<true>;
 
 	#id = crypto.randomUUID();
+
+	#typeaheadString = $state("");
+	#clearTypeahead = useDebounce(() => {
+		this.#typeaheadString = "";
+	}, 250);
 
 	/**
 	 * Creates a new AltTree instance
@@ -218,13 +229,6 @@ export class AltTree<I extends AltTreeItem[], Multiple extends boolean = false> 
 	}
 
 	/**
-	 * Gets all child items in the tree as a flat array
-	 */
-	allChildren() {
-		return this.children.flat();
-	}
-
-	/**
 	 * Selects all items between the last selected item and the specified item
 	 * @param id - ID of the item to select until
 	 */
@@ -245,8 +249,6 @@ export class AltTree<I extends AltTreeItem[], Multiple extends boolean = false> 
 
 		const [start, end] = fromIdx < toIdx ? [from, to] : [to, from];
 
-		console.log({ from: from.id, to: to.id, start: start.id, end: end.id });
-
 		let current = start;
 		this.clearSelection();
 		// Ensure from remains the same
@@ -258,12 +260,33 @@ export class AltTree<I extends AltTreeItem[], Multiple extends boolean = false> 
 		}
 	}
 
+	typeahead(letter: string) {
+		if (!letterRegex.test(letter)) return;
+		this.#typeaheadString += letter;
+		this.#clearTypeahead();
+
+		const activeEl = document.activeElement;
+		if (!isString(activeEl?.getAttribute(identifiers.item))) return;
+		const visibleChildren = getAllChildren(this, true);
+
+		const index = visibleChildren.findIndex((c) => c.elId === activeEl.id);
+		const elementsForTypeahead = visibleChildren
+			.filter((c) => c.id.startsWith(this.#typeaheadString))
+			.map((c) => ({ c, index: visibleChildren.indexOf(c) }));
+		if (!elementsForTypeahead.length) return;
+		// Get element with higher index than index. If no such element exists, get the first one
+		const nextEl = elementsForTypeahead.find((e) => e.index > index) ?? elementsForTypeahead[0];
+
+		nextEl.c.focus();
+	}
+
 	/**
 	 * Gets ARIA attributes for the root tree element
 	 */
 	get root() {
 		return {
 			role: "tree",
+			[identifiers.root]: "",
 		};
 	}
 
@@ -273,6 +296,7 @@ export class AltTree<I extends AltTreeItem[], Multiple extends boolean = false> 
 	get group() {
 		return {
 			role: "group",
+			[identifiers.group]: "",
 		};
 	}
 
@@ -407,7 +431,10 @@ class Child<I extends AltTreeItem[]> {
 	get attrs() {
 		return {
 			id: this.elId,
+			[identifiers.item]: "",
 			"data-selected": dataAttr(this.selected),
+			tabindex: this.tabindex,
+			role: "treeitem",
 			onclick: (e: MouseEvent) => {
 				e.stopPropagation();
 				if (!isControlOrMeta(e) && !e.shiftKey) this.tree.clearSelection();
@@ -472,6 +499,11 @@ class Child<I extends AltTreeItem[]> {
 						break;
 					}
 					default: {
+						if (letterRegex.test(e.key)) {
+							console.log(e.key);
+							this.tree.typeahead(e.key);
+							break;
+						}
 						shouldPrevent = false;
 					}
 				}
@@ -481,8 +513,6 @@ class Child<I extends AltTreeItem[]> {
 					e.stopPropagation();
 				}
 			},
-			tabindex: this.tabindex,
-			role: "treeitem",
 		};
 	}
 
