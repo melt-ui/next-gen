@@ -123,7 +123,8 @@ export class AltSelectionState<Multiple extends _multiple_extends = _multiple_de
 				set.clear();
 				set.add(first(items)!);
 			} else {
-				forEach(items, set.add);
+				console.log(items);
+				forEach(items, (i) => set.add(i));
 			}
 		});
 	}

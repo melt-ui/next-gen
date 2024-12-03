@@ -7,7 +7,7 @@ import { isString } from "$lib/utils/is";
 import { first, last } from "$lib/utils/iterator";
 import { isControlOrMeta } from "$lib/utils/platform";
 import type { FalseIfUndefined } from "$lib/utils/types";
-import { Debounced, useDebounce } from "runed";
+import { useDebounce } from "runed";
 
 const identifiers = createDataIds("tree", ["root", "item", "group"]);
 const letterRegex = /^[a-zA-Z]$/;
@@ -210,6 +210,20 @@ export class AltTree<I extends AltTreeItem[], Multiple extends boolean = false> 
 	 */
 	toggleSelect(id: string) {
 		this.#selected.toggle(id);
+	}
+
+	/**
+	 * Selects all visible items.
+	 * If all items are already selected, clears the selection.
+	 */
+	selectAll() {
+		const ids = getAllChildren(this, true).map((c) => c.id);
+		const alreadySelected = ids.every((id) => this.#selected.has(id));
+		if (alreadySelected) {
+			this.clearSelection();
+		} else {
+			this.#selected.addAll(ids);
+		}
 	}
 
 	/**
@@ -452,7 +466,6 @@ class Child<I extends AltTreeItem[]> {
 			},
 			onkeydown: (e: KeyboardEvent) => {
 				let shouldPrevent = true;
-				// TODO: a-z, *
 				switch (e.key) {
 					case "ArrowLeft": {
 						if (this.expanded) {
@@ -476,14 +489,24 @@ class Child<I extends AltTreeItem[]> {
 					}
 					case "ArrowUp": {
 						this.previous?.focus();
+						if (e.shiftKey) this.previous?.toggleSelect();
 						break;
 					}
 					case "ArrowDown": {
 						this.next?.focus();
+						if (e.shiftKey) this.next?.toggleSelect();
 						break;
 					}
-					case "Enter":
 					case " ": {
+						if (!this.tree.multiple) break;
+						if (e.shiftKey) {
+							this.tree.selectUntil(this.id);
+							break;
+						}
+						this.toggleSelect();
+						break;
+					}
+					case "Enter": {
 						this.tree.clearSelection();
 						this.select();
 
@@ -500,7 +523,13 @@ class Child<I extends AltTreeItem[]> {
 					}
 					default: {
 						if (letterRegex.test(e.key)) {
-							console.log(e.key);
+							if (e.ctrlKey) {
+								console.log(e.key);
+								if (e.key === "a") {
+									this.tree.selectAll();
+								}
+								break;
+							}
 							this.tree.typeahead(e.key);
 							break;
 						}

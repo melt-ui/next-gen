@@ -562,6 +562,11 @@
         "description": "Toggles the selected state of an item\n@param id - ID of the item to toggle"
       },
       {
+        "name": "selectAll",
+        "type": "() => void",
+        "description": "Selects all visible items.\nIf all items are already selected, clears the selection."
+      },
+      {
         "name": "getItemId",
         "type": "(id: string) => string",
         "description": "Gets the DOM ID for a specific tree item\n@param id - ID of the item"
