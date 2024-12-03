@@ -400,19 +400,24 @@ class Child<I extends AltTreeItem[]> {
 	focus = () => this.el?.focus();
 	idx = $derived(this.parent?.children?.findIndex((c) => c.id === this.id) ?? -1);
 
+	/** Gets all sibling items */
+	get siblings() {
+		return this.parent?.children ?? [];
+	}
+
 	/** Gets the previous sibling item */
 	get previousSibling() {
-		return this.parent?.children?.[this.idx - 1];
+		return this.siblings[this.idx - 1];
 	}
 
 	/** Gets the next sibling item */
 	get nextSibling() {
-		return this.parent?.children?.[this.idx + 1];
+		return this.siblings[this.idx + 1];
 	}
 
 	/** Gets the previous item in the tree (including parent/child relationships) */
 	get previous(): Child<I> | undefined {
-		let current = this.previousSibling;
+		let current: Child<I> | undefined = this.previousSibling;
 		if (!current) return this.parent instanceof Child ? this.parent : undefined;
 		while (current?.expanded) {
 			current = last(current?.children ?? []);
@@ -519,6 +524,10 @@ class Child<I extends AltTreeItem[]> {
 
 					case "End": {
 						last(getAllChildren(this.tree, true))?.focus();
+						break;
+					}
+					case "*": {
+						this.siblings.forEach((s) => s.expand());
 						break;
 					}
 					default: {
