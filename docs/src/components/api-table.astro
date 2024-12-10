@@ -59,7 +59,7 @@ const sections: Section[] = [
 	{
 		title: "Constructor Props",
 		description: "The props that are passed when calling `" + `new ${entry}()` + "`",
-		stuff: apiEntry.propsAlt,
+		stuff: apiEntry?.propsAlt ?? {},
 	},
 	{
 		title: "Methods",
