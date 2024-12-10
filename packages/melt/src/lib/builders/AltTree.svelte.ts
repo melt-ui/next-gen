@@ -277,6 +277,7 @@ export class AltTree<I extends AltTreeItem[], Multiple extends boolean = false> 
 	typeahead(letter: string) {
 		if (!letterRegex.test(letter)) return;
 		this.#typeaheadString += letter;
+		const isStartingTypeahead = this.#typeaheadString.length === 1;
 		this.#clearTypeahead();
 
 		const activeEl = document.activeElement;
@@ -285,11 +286,17 @@ export class AltTree<I extends AltTreeItem[], Multiple extends boolean = false> 
 
 		const index = visibleChildren.findIndex((c) => c.elId === activeEl.id);
 		const elementsForTypeahead = visibleChildren
-			.filter((c) => c.id.startsWith(this.#typeaheadString))
+			.filter((c) => c.el?.innerText.startsWith(this.#typeaheadString))
 			.map((c) => ({ c, index: visibleChildren.indexOf(c) }));
 		if (!elementsForTypeahead.length) return;
-		// Get element with higher index than index. If no such element exists, get the first one
-		const nextEl = elementsForTypeahead.find((e) => e.index > index) ?? elementsForTypeahead[0];
+
+		// In case you're starting the typeahead, a different element than the first one should be focused.
+		// Otherwise, if the current element matches the typed string
+		const nextEl =
+			elementsForTypeahead.find((e) => {
+				if (isStartingTypeahead) return e.index > index;
+				return e.index >= index;
+			}) ?? elementsForTypeahead[0];
 
 		nextEl.c.focus();
 	}
