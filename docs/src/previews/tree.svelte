@@ -1,118 +1,101 @@
 <script lang="ts">
-	import Preview from "@components/preview.svelte";
-	import {
-		MultiSelectTree,
-		SingleSelectTree,
-		type TreeItem,
-		type TreeItemData,
-	} from "melt/builders";
+	import Preview, { usePreviewControls } from "@components/preview.svelte";
+	import { Tree, getters, type TreeItem } from "melt/builders";
 	import JavaScript from "~icons/devicon/javascript";
 	import Svelte from "~icons/devicon/svelte";
-	import FolderOpen from "~icons/material-symbols/folder-open";
-	import Folder from "~icons/material-symbols/folder-outline";
+	import FolderOpen from "~icons/ph/folder-open-fill";
+	import Folder from "~icons/ph/folder-fill";
+	import Motion from "@components/motion.svelte";
 
-	type TreeItemValue = {
+	const controls = usePreviewControls({
+		multiple: {
+			type: "boolean",
+			defaultValue: true,
+			label: "Multiple",
+		},
+		expandOnClick: {
+			type: "boolean",
+			defaultValue: true,
+			label: "Expand on click",
+		},
+	});
+
+	type Item = TreeItem<{
 		title: string;
 		icon: "folder" | "svelte" | "js";
-	};
+	}>;
 
-	const data: TreeItemData<TreeItemValue>[] = [
+	const data: Item[] = [
 		{
 			id: "index.svelte",
-			value: {
-				title: "index.svelte",
-				icon: "svelte",
-			},
+			title: "index.svelte",
+			icon: "svelte",
 		},
 		{
 			id: "lib",
-			value: {
-				title: "lib",
-				icon: "folder",
-			},
+			title: "lib",
+			icon: "folder",
 			children: [
 				{
 					id: "lib/tree",
-					value: {
-						title: "tree",
-						icon: "folder",
-					},
+					title: "tree",
+					icon: "folder",
 					children: [
 						{
 							id: "lib/tree/Tree.svelte",
-							value: {
-								title: "Tree.svelte",
-								icon: "svelte",
-							},
+							title: "Tree.svelte",
+							icon: "svelte",
 						},
 						{
 							id: "lib/tree/TreeItem.svelte",
-							value: {
-								title: "TreeItem.svelte",
-								icon: "svelte",
-							},
+							title: "TreeItem.svelte",
+							icon: "svelte",
 						},
 					],
 				},
 				{
 					id: "lib/icons",
-					value: {
-						title: "icons",
-						icon: "folder",
-					},
+					title: "icons",
+					icon: "folder",
 					children: [
 						{
 							id: "lib/icons/JavaScript.svelte",
-							value: {
-								title: "JavaScript.svelte",
-								icon: "svelte",
-							},
+							title: "JavaScript.svelte",
+							icon: "svelte",
 						},
 						{
 							id: "lib/icons/Svelte.svelte",
-							value: {
-								title: "Svelte.svelte",
-								icon: "svelte",
-							},
+							title: "Svelte.svelte",
+							icon: "svelte",
 						},
 					],
 				},
 				{
 					id: "lib/index.js",
-					value: {
-						title: "index.js",
-						icon: "js",
-					},
+					title: "index.js",
+					icon: "js",
 				},
 			],
 		},
 		{
 			id: "routes",
-			value: {
-				title: "routes",
-				icon: "folder",
-			},
+			title: "routes",
+			icon: "folder",
 			children: [
 				{
 					id: "routes/contents",
-					value: {
-						title: "contents",
-						icon: "folder",
-					},
+					title: "contents",
+					icon: "folder",
 					children: [
 						{
 							id: "routes/contents/+layout.svelte",
-							value: {
-								title: "+layout.svelte",
-								icon: "svelte",
-							},
+							title: "+layout.svelte",
+							icon: "svelte",
 						},
 						{
 							id: "routes/contents/+page.svelte",
-							value: {
-								title: "+page.svelte",
-								icon: "svelte",
-							},
+							title: "+page.svelte",
+							icon: "svelte",
 						},
 					],
 				},
@@ -120,19 +103,18 @@
 		},
 	];
 
-	const tree = new MultiSelectTree({
+	const tree = new Tree({
 		items: data,
+		expanded: ["lib", "routes"],
+		...getters(controls),
 	});
 </script>
 
-{#snippet treeItemIcon(item: TreeItem<TreeItemValue>)}
-	{@const icon = item.value.icon}
+{#snippet treeItemIcon(item: typeof tree['children'][number])}
+	{@const icon = item.item.icon}
+
 	{#if icon === "folder"}
-		{#if item.expanded}
-			<FolderOpen role="presentation" onclick={() => item.collapse()} />
-		{:else}
-			<Folder role="presentation" onclick={() => item.expand()} />
-		{/if}
+		<svelte:component this={item.expanded ? FolderOpen : Folder} role="presentation" />
 	{:else if icon === "svelte"}
 		<Svelte role="presentation" />
 	{:else if icon === "js"}
@@ -140,29 +122,57 @@
 	{/if}
 {/snippet}
 
-{#snippet treeItems(items: ReadonlyArray<TreeItem<TreeItemValue>>)}
+{#snippet treeItems(items: typeof tree['children'], depth: number = 0)}
 	{#each items as item (item.id)}
-		<li {...item.attributes} class="mt-2 rounded-sm first:mt-0 focus-visible:outline-offset-2">
-			<div
-				data-selected={item.selected ? "" : undefined}
-				class="data-[selected]:bg-accent-200 data-[selected]:text-accent-950 group flex items-center gap-2 rounded-[inherit] px-2 py-1"
-			>
-				{@render treeItemIcon(item)}
-				<span class="select-none group-data-[selected]:font-semibold">
-					{item.value.title}
-				</span>
+		<li
+			{...item.attrs}
+			class="cursor-pointer rounded-sm outline-none first:mt-0 [&:focus-visible>:first-child>div]:ring-4"
+		>
+			<div class="group py-1" style="padding-left: {depth * 1}rem">
+				<div
+					class="{item.selected ? '!bg-accent-200 text-accent-950' : ''}
+					ring-accent-700 flex h-full w-full items-center gap-2 rounded-xl
+					px-3 py-1 ring-offset-black transition group-hover:bg-gray-800"
+				>
+					{@render treeItemIcon(item)}
+					<span class="select-none">
+						{item.item.title}
+					</span>
+				</div>
 			</div>
-			{#if item.expanded && item.children.length !== 0}
-				<ul role="group" class="ms-4 mt-2 list-none p-0">
-					{@render treeItems(item.children)}
-				</ul>
+			{#if item.children?.length}
+				<Motion
+					tag="ul"
+					animate={{
+						height: item.expanded ? "auto" : 0,
+						opacity: item.expanded ? 1 : 0,
+						scale: item.expanded ? 1 : 0.85,
+					}}
+					transition={{
+						height: { delay: item.expanded ? 0 : 0.1 },
+						opacity: { ease: "easeOut", delay: item.expanded ? 0.1 : 0, duration: 0.2 },
+						type: "spring",
+						stiffness: 200,
+						damping: 20,
+						mass: 0.15,
+						bounce: 1,
+					}}
+					{...tree.group}
+					class="relative list-none p-0 {!item.expanded ? 'pointer-events-none' : ''} origin-left"
+				>
+					<div
+						class="absolute bottom-2 top-2 w-px bg-gray-700"
+						style="left: {0.5 + depth * 1}rem"
+					></div>
+					{@render treeItems(item.children, depth + 1)}
+				</Motion>
 			{/if}
 		</li>
 	{/each}
 {/snippet}
 
-<Preview>
-	<ul class="border-accent-200 h-80 list-none overflow-y-scroll rounded-md border p-4">
-		{@render treeItems(tree.items)}
+<Preview class="!py-6">
+	<ul class="mx-auto w-[300px] list-none rounded-md p-4" {...tree.root}>
+		{@render treeItems(tree.children, 0)}
 	</ul>
 </Preview>
