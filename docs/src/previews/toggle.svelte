@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
-	import { createToggle, receive, init, toComputed } from "melt/a";
+	import { createToggle, initMuramasa, SvelteContext } from "melt/a";
 	import { spring } from "svelte/motion";
 	import PhHeartBold from "~icons/ph/heart-bold";
 	import PhHeartFill from "~icons/ph/heart-fill";
@@ -13,10 +13,10 @@
 		},
 	});
 
-	init(toComputed);
+	initMuramasa(new SvelteContext());
 
 	let outside = $state(true);
-	const created = createToggle({
+	const toggle = createToggle({
 		disabled: () => controls.disabled,
 		value: () => outside,
 		onValueChange(value) {
@@ -24,8 +24,6 @@
 			outside = value;
 		},
 	});
-
-	const toggle = receive(created);
 
 	console.log(Object.keys(toggle));
 

@@ -2,8 +2,8 @@ import type { MaybeGetter } from "$lib/types";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createDataIds } from "$lib/utils/identifiers";
-import { isFunction, signal } from "@maverick-js/signals";
-import { toComputed } from "./context";
+import { computed, state } from "muramasa";
+import { isFunction } from "$lib/utils/is";
 
 type SyncedArgs<T> =
 	| {
@@ -26,7 +26,7 @@ type SyncedArgs<T> =
  * and no internal state is used.
  */
 export class Synced<T> {
-	#internalValue = signal<T>(undefined as T);
+	#internalValue = state<T>(undefined as T);
 
 	#valueArg: SyncedArgs<T>["value"];
 	#onChange?: SyncedArgs<T>["onChange"];
@@ -36,19 +36,19 @@ export class Synced<T> {
 		this.#valueArg = value;
 		this.#onChange = onChange;
 		this.#defaultValue = "defaultValue" in args ? args?.defaultValue : undefined;
-		this.#internalValue.set(extract(value, this.#defaultValue) as T);
+		this.#internalValue.value = extract(value, this.#defaultValue) as T;
 	}
 
 	get current() {
 		return isFunction(this.#valueArg)
-			? this.#valueArg() ?? this.#defaultValue ?? this.#internalValue()
-			: this.#internalValue();
+			? this.#valueArg() ?? this.#defaultValue ?? this.#internalValue.value
+			: this.#internalValue.value;
 	}
 
 	set current(value: T) {
 		this.#onChange?.(value);
 		if (isFunction(this.#valueArg)) return;
-		this.#internalValue.set(value);
+		this.#internalValue.value = value;
 	}
 }
 
@@ -81,9 +81,9 @@ export type ToggleProps = {
 };
 
 export function createToggle(props: ToggleProps = {}) {
-	const disabled = toComputed(props.disabled, false);
+	const disabled = computed(() => extract(props.disabled ?? false));
 	const value = new Synced({
-		value: toComputed(props.value),
+		value: props.value,
 		onChange: props.onValueChange,
 		defaultValue: false,
 	});
@@ -99,9 +99,9 @@ export function createToggle(props: ToggleProps = {}) {
 			return {
 				[identifiers.trigger]: "",
 				"data-checked": dataAttr(value.current),
-				disabled: disabledAttr(disabled()),
+				disabled: disabledAttr(disabled.current),
 				onclick: () => {
-					if (disabled()) return;
+					if (disabled.current) return;
 					value.current = !value.current;
 					console.log(value.current);
 				},
