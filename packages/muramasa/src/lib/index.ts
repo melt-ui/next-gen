@@ -35,14 +35,7 @@ export function state<T>(initial: T): State<T> {
 	const o = context.state(initial);
 	return Object.assign(o, { [Symbols.state]: '' });
 }
-"devDependencies": {
-    "@zag-js/utils": "workspace:*",
-    "vue": "3.5.13",
-    "clean-package": "2.2.0"
-  },
-  "peerDependencies": {
-    "vue": ">=3.0.0"
-  },
+
 export function isState<T>(v: unknown): v is State<T> {
 	return typeof v === 'object' && v !== null && Symbols.state in v;
 }
