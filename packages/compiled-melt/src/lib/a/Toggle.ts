@@ -1,8 +1,9 @@
+import type { Toggle } from "$lib/components";
 import type { MaybeGetter } from "$lib/types";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createDataIds } from "$lib/utils/identifiers";
-import { isFunction, signal } from "@maverick-js/signals";
+import { computed, isFunction, signal } from "@maverick-js/signals";
 import { toComputed } from "./context";
 
 type SyncedArgs<T> =

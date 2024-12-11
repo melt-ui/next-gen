@@ -1,5 +1,5 @@
 {
-	"name": "melt",
+	"name": "@melt-ui/compiled",
 	"type": "module",
 	"version": "0.0.1",
 	"exports": {
@@ -26,31 +26,13 @@
 		"!dist/**/*.test.*",
 		"dist"
 	],
-	"scripts": {
-		"dev": "pnpm sync && pnpm watch",
-		"test": "vitest",
-		"sync": "svelte-kit sync",
-		"build": "vite build && npm run package",
-		"preview": "vite preview",
-		"package": "svelte-kit sync && svelte-package && publint",
-		"prepublishOnly": "npm run package",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"watch": "svelte-kit sync && svelte-package --watch"
-	},
-	"peerDependencies": {
-		"svelte": "^5.0.0-next.260"
-	},
 	"devDependencies": {
-		"chokidar": "^3.6.0",
-		"concurrently": "^8.2.2",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/kit": "^2.8.1",
 		"@sveltejs/package": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.1",
 		"jsdom": "^24.1.0",
 		"publint": "^0.1.9",
-		"svelte": "5.1.4",
 		"svelte-check": "^3.6.0",
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
@@ -62,6 +44,6 @@
 		"@maverick-js/signals": "^6.0.0",
 		"nanoid": "^5.0.7",
 		"runed": "^0.15.1",
-		"muramasa": "workspace:^"
+		"svelte": "5.1.4"
 	}
 }

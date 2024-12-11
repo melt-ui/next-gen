@@ -1,23 +1,11 @@
 {
-	"name": "melt",
+	"name": "@melt-ui/hexgate",
 	"type": "module",
 	"version": "0.0.1",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
 			"svelte": "./dist/index.js"
-		},
-		"./builders": {
-			"types": "./dist/builders/index.d.ts",
-			"svelte": "./dist/builders/index.js"
-		},
-		"./components": {
-			"types": "./dist/components/index.d.ts",
-			"svelte": "./dist/components/index.js"
-		},
-		"./a": {
-			"types": "./dist/a/index.d.ts",
-			"svelte": "./dist/a/index.js"
 		}
 	},
 	"types": "./dist/index.d.ts",
@@ -39,11 +27,9 @@
 		"watch": "svelte-kit sync && svelte-package --watch"
 	},
 	"peerDependencies": {
-		"svelte": "^5.0.0-next.260"
+		"svelte": "^5.0.0"
 	},
 	"devDependencies": {
-		"chokidar": "^3.6.0",
-		"concurrently": "^8.2.2",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/kit": "^2.8.1",
 		"@sveltejs/package": "^2.0.0",
@@ -61,7 +47,6 @@
 		"@floating-ui/dom": "^1.6.10",
 		"@maverick-js/signals": "^6.0.0",
 		"nanoid": "^5.0.7",
-		"runed": "^0.15.1",
-		"muramasa": "workspace:^"
+		"runed": "^0.15.1"
 	}
 }

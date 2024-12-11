@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
-	import { createToggle, receive, toComputed } from "melt/a";
+	import { createToggle, receive, init, toComputed } from "melt/a";
 	import { spring } from "svelte/motion";
 	import PhHeartBold from "~icons/ph/heart-bold";
 	import PhHeartFill from "~icons/ph/heart-fill";
@@ -13,24 +13,23 @@
 		},
 	});
 
+	init(toComputed);
+
 	let outside = $state(true);
-	const created = createToggle(
-		{
-			disabled: () => controls.disabled,
-			value: () => outside,
-			onValueChange(value) {
-				console.log("onChange", value);
-				outside = value;
-			},
+	const created = createToggle({
+		disabled: () => controls.disabled,
+		value: () => outside,
+		onValueChange(value) {
+			console.log("onChange", value);
+			outside = value;
 		},
-		toComputed,
-	);
+	});
 
 	const toggle = receive(created);
 
 	console.log(Object.keys(toggle));
 
-	const scale = spring(0, { damping: 0.205, stiffness: 0.07, precision: 0.03 });
+	const scale = spring(toggle.value ? 1 : 0, { damping: 0.205, stiffness: 0.07, precision: 0.03 });
 	$effect(() => {
 		scale.set(toggle.value ? 1 : 0);
 	});
