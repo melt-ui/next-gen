@@ -144,6 +144,9 @@ importers:
       '@floating-ui/dom':
         specifier: ^1.6.10
         version: 1.6.10
+      '@maverick-js/signals':
+        specifier: ^6.0.0
+        version: 6.0.0
       nanoid:
         specifier: ^5.0.7
         version: 5.0.7
@@ -1049,6 +1052,9 @@ packages:
   '@jsdevtools/ez-spawn@3.0.4':
     resolution: {integrity: sha512-f5DRIOZf7wxogefH03RjMPMdBF7ADTWUMoOs9kaJo06EfwF+aFhMZMDZxHg/Xe12hptN9xoZjGso2fdjapBRIA==}
     engines: {node: '>=10'}
+
+  '@maverick-js/signals@6.0.0':
+    resolution: {integrity: sha512-aPAxQOjxcGaLpjMcfE0mRuMgnCVLfdPSGINYmKDjTbTfY37lZdz9CGnVDrkr+svNSADZbUVk7oPVjXA2+vtxYg==}
 
   '@mdx-js/mdx@3.0.1':
     resolution: {integrity: sha512-eIQ4QTrOWyL3LWEe/bu6Taqzq2HQvHcyTMaOrI95P2/LmJE7AsfPfgJGuFLPVqBUE1BC1rik3VIhU+s9u72arA==}
@@ -5322,6 +5328,8 @@ snapshots:
       cross-spawn: 7.0.3
       string-argv: 0.3.2
       type-detect: 4.0.8
+
+  '@maverick-js/signals@6.0.0': {}
 
   '@mdx-js/mdx@3.0.1':
     dependencies:

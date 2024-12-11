@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
-	import { Toggle } from "melt/builders";
+	import { createToggle, receive, toComputed } from "melt/a";
 	import { spring } from "svelte/motion";
 	import PhHeartBold from "~icons/ph/heart-bold";
 	import PhHeartFill from "~icons/ph/heart-fill";
@@ -13,9 +13,22 @@
 		},
 	});
 
-	const toggle = new Toggle({
-		disabled: () => controls.disabled,
-	});
+	let outside = $state(true);
+	const created = createToggle(
+		{
+			disabled: () => controls.disabled,
+			value: () => outside,
+			onValueChange(value) {
+				console.log("onChange", value);
+				outside = value;
+			},
+		},
+		toComputed,
+	);
+
+	const toggle = receive(created);
+
+	console.log(Object.keys(toggle));
 
 	const scale = spring(0, { damping: 0.205, stiffness: 0.07, precision: 0.03 });
 	$effect(() => {
@@ -41,5 +54,7 @@
 				class="absolute left-1/2 top-1/2  -translate-x-1/2 -translate-y-1/2 opacity-30"
 			/>
 		</button>
+		{outside}
+		{toggle.value}
 	</div>
 </Preview>

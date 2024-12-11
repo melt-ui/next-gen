@@ -14,6 +14,10 @@
 		"./components": {
 			"types": "./dist/components/index.d.ts",
 			"svelte": "./dist/components/index.js"
+		},
+		"./a": {
+			"types": "./dist/a/index.d.ts",
+			"svelte": "./dist/a/index.js"
 		}
 	},
 	"types": "./dist/index.d.ts",
@@ -53,6 +57,7 @@
 	"svelte": "./dist/index.js",
 	"dependencies": {
 		"@floating-ui/dom": "^1.6.10",
+		"@maverick-js/signals": "^6.0.0",
 		"nanoid": "^5.0.7",
 		"runed": "^0.15.1"
 	}
