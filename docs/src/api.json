@@ -211,6 +211,11 @@
       }
     ]
   },
+  "Select": {
+    "constructorProps": [],
+    "methods": [],
+    "properties": []
+  },
   "Popover": {
     "constructorProps": [
       {
