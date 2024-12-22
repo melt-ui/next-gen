@@ -1,0 +1,34 @@
+---
+title: Tree
+description: A hierarchical list of items
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/tree.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+
+{/*
+Things I want:
+- Preview with props DONE
+- Show builder syntax
+- Show component syntax
+- Features
+*/}
+
+<Preview client:load />
+
+
+## Features
+
+<Features>
+	- 🎹 Keyboard navigation
+	- 🍃 Multi-selection mode
+	- 🧠 Smart focus management
+	- 🌳 Optional expand on click
+</Features>
+
+## Usage
+
+## API Reference
+
+<ApiTable entry="Tree" />

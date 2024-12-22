@@ -4,24 +4,200 @@
     "methods": [],
     "properties": []
   },
+  "Tree": {
+    "constructorProps": [
+      {
+        "name": "multiple",
+        "type": "MaybeGetter<Multiple | undefined>",
+        "description": "If `true`, the user can select multiple items.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "selected",
+        "type": "MaybeMultiple<Multiple> | undefined",
+        "description": "The currently selected item(s).\nIf `multiple` is `true`, this should be an `Iterable`.\nOtherwise, it'll be a `string`.",
+        "defaultValue": "undefined",
+        "optional": true
+      },
+      {
+        "name": "onSelectedChange",
+        "type": "| ((value: Multiple extends true ? Set<string> : string | undefined) => void)\n  | undefined",
+        "description": "Callback fired when selection changes",
+        "optional": true
+      },
+      {
+        "name": "expanded",
+        "type": "MaybeGetter<Iterable<string> | undefined>",
+        "description": "The currently expanded items",
+        "optional": true
+      },
+      {
+        "name": "onExpandedChange",
+        "type": "((value: Set<string>) => void) | undefined",
+        "description": "Callback fired when expanded state changes",
+        "optional": true
+      },
+      {
+        "name": "expandOnClick",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If `true`, groups (items with children) expand on click.",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
+        "name": "items",
+        "type": "I",
+        "description": "The items contained in the tree.",
+        "optional": false
+      },
+      {
+        "name": "typeaheadTimeout",
+        "type": "MaybeGetter<number> | undefined",
+        "description": "How many time (in ms) the typeahead string is held before it is cleared",
+        "defaultValue": "500",
+        "optional": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "isSelected",
+        "type": "(id: string) => boolean",
+        "description": "Checks if an item is currently selected\n@param id - ID of the item to check"
+      },
+      {
+        "name": "isExpanded",
+        "type": "(id: string) => boolean",
+        "description": "Checks if an item is currently expanded\n@param id - ID of the item to check"
+      },
+      {
+        "name": "expand",
+        "type": "(id: string) => void",
+        "description": "Expands a specific item\n@param id - ID of the item to expand"
+      },
+      {
+        "name": "collapse",
+        "type": "(id: string) => void",
+        "description": "Collapses a specific item\n@param id - ID of the item to collapse"
+      },
+      {
+        "name": "toggleExpand",
+        "type": "(id: string) => void",
+        "description": "Toggles the expanded state of an item\n@param id - ID of the item to toggle"
+      },
+      {
+        "name": "select",
+        "type": "(id: string) => void",
+        "description": "Selects a specific item\n@param id - ID of the item to select"
+      },
+      {
+        "name": "deselect",
+        "type": "(id: string) => void",
+        "description": "Deselects a specific item\n@param id - ID of the item to deselect"
+      },
+      {
+        "name": "clearSelection",
+        "type": "() => void",
+        "description": "Clears all current selections"
+      },
+      {
+        "name": "toggleSelect",
+        "type": "(id: string) => void",
+        "description": "Toggles the selected state of an item\n@param id - ID of the item to toggle"
+      },
+      {
+        "name": "selectAll",
+        "type": "() => void",
+        "description": "Selects all visible items.\nIf all items are already selected, clears the selection."
+      },
+      {
+        "name": "getItemId",
+        "type": "(id: string) => string",
+        "description": "Gets the DOM ID for a specific tree item\n@param id - ID of the item"
+      },
+      {
+        "name": "getItemEl",
+        "type": "(id: string) => HTMLElement | null",
+        "description": "Gets the DOM element for a specific tree item\n@param id - ID of the item"
+      },
+      {
+        "name": "selectUntil",
+        "type": "(id: string) => void",
+        "description": "Selects all items between the last selected item and the specified item\n@param id - ID of the item to select until"
+      },
+      {
+        "name": "typeahead",
+        "type": "(letter: string) => void",
+        "description": ""
+      }
+    ],
+    "properties": [
+      {
+        "name": "items",
+        "type": "Extracted<I>",
+        "description": "The items contained in the tree"
+      },
+      {
+        "name": "multiple",
+        "type": "Multiple",
+        "description": "If `true`, the user can select multiple items holding `Control`/`Meta` or `Shift`"
+      },
+      {
+        "name": "expandOnClick",
+        "type": "boolean",
+        "description": "If `true`, groups (items with children) expand on click"
+      },
+      {
+        "name": "typeaheadTimeout",
+        "type": "number",
+        "description": ""
+      },
+      {
+        "name": "selected",
+        "type": "Multiple extends true ? Set<string> : string | undefined",
+        "description": "Currently selected item(s)\nFor multiple selection, returns a Set of IDs\nFor single selection, returns a single ID or undefined"
+      },
+      {
+        "name": "expanded",
+        "type": "SvelteSet<string>",
+        "description": "Set of currently expanded item IDs"
+      },
+      {
+        "name": "root",
+        "type": "{ role: string; \"data-melt-tree-root\": string }",
+        "description": "Gets ARIA attributes for the root tree element"
+      },
+      {
+        "name": "group",
+        "type": "{ role: string; \"data-melt-tree-group\": string }",
+        "description": "ARIA attributes for group elements"
+      },
+      {
+        "name": "children",
+        "type": "Child<I>[]",
+        "description": "Array of Child instances representing the top-level items"
+      }
+    ],
+    "propsAlt": "type TreeProps<Items extends TreeItem[], Multiple extends boolean = false> = {\n\t/**\n\t * If `true`, the user can select multiple items.\n\t * @default false\n\t */\n\tmultiple?: MaybeGetter<Multiple | undefined>;\n\t/**\n\t * The currently selected item(s).\n\t * If `multiple` is `true`, this should be an `Iterable`.\n\t * Otherwise, it'll be a `string`.\n\t * @default undefined\n\t */\n\tselected?: MaybeMultiple<Multiple>;\n\t/**\n\t * Callback fired when selection changes\n\t * @param value - For multiple selection, a Set of selected IDs. For single selection, a single ID or undefined\n\t */\n\tonSelectedChange?: (value: Multiple extends true ? Set<string> : string | undefined) => void;\n\t/**\n\t * The currently expanded items\n\t */\n\texpanded?: MaybeMultiple<true>;\n\t/**\n\t * Callback fired when expanded state changes\n\t * @param value - Set of expanded item IDs\n\t */\n\tonExpandedChange?: (value: Set<string>) => void;\n\t/**\n\t * If `true`, groups (items with children) expand on click.\n\t * @default true\n\t */\n\texpandOnClick?: MaybeGetter<boolean | undefined>;\n\t/**\n\t * The items contained in the tree.\n\t * @required\n\t */\n\titems: Items;\n\t/**\n\t * How many time (in ms) the typeahead string is held before it is cleared\n\t * @default 500\n\t */\n\ttypeaheadTimeout?: MaybeGetter<number>;\n};"
+  },
   "Toggle": {
     "constructorProps": [
       {
         "name": "value",
-        "type": "MaybeGetter<boolean> | undefined\n",
+        "type": "MaybeGetter<boolean> | undefined",
         "description": "The value for the Toggle.\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that the value only changes when the getter returns a new value.\n\nOtherwise, if passing a static value, it'll serve as the default value.",
         "defaultValue": "false",
         "optional": true
       },
       {
         "name": "onValueChange",
-        "type": "((value: boolean) => void) | undefined\n",
+        "type": "((value: boolean) => void) | undefined",
         "description": "Called when the value is supposed to change.",
         "optional": true
       },
       {
         "name": "disabled",
-        "type": "MaybeGetter<boolean | undefined>\n",
+        "type": "MaybeGetter<boolean | undefined>",
         "description": "If `true`, prevents the user from interacting with the input.",
         "defaultValue": "false",
         "optional": true
@@ -31,59 +207,60 @@
     "properties": [
       {
         "name": "disabled",
-        "type": "boolean\n",
+        "type": "boolean",
         "description": ""
       },
       {
         "name": "value",
-        "type": "boolean\n",
+        "type": "boolean",
         "description": ""
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly \"data-melt-toggle-trigger\": \"\"\n  readonly \"data-checked\": \"\" | undefined\n  readonly disabled: true | undefined\n  readonly onclick: () => void\n}\n",
+        "type": "{\n  readonly \"data-melt-toggle-trigger\": \"\"\n  readonly \"data-checked\": \"\" | undefined\n  readonly disabled: true | undefined\n  readonly onclick: () => void\n}",
         "description": "The trigger that toggles the value."
       },
       {
         "name": "hiddenInput",
-        "type": "{\n  readonly \"data-melt-toggle-hidden-input\": \"\"\n  readonly type: \"hidden\"\n  readonly value: \"on\" | \"off\"\n}\n",
+        "type": "{\n  readonly \"data-melt-toggle-hidden-input\": \"\"\n  readonly type: \"hidden\"\n  readonly value: \"on\" | \"off\"\n}",
         "description": "A hidden input field to use within forms."
       }
-    ]
+    ],
+    "propsAlt": "export type ToggleProps = {\n\t/**\n\t * The value for the Toggle.\n\t *\n\t * When passing a getter, it will be used as source of truth,\n\t * meaning that the value only changes when the getter returns a new value.\n\t *\n\t * Otherwise, if passing a static value, it'll serve as the default value.\n\t *\n\t *\n\t * @default false\n\t */\n\tvalue?: MaybeGetter<boolean>;\n\t/**\n\t * Called when the value is supposed to change.\n\t */\n\tonValueChange?: (value: boolean) => void;\n\n\t/**\n\t * If `true`, prevents the user from interacting with the input.\n\t *\n\t * @default false\n\t */\n\tdisabled?: MaybeGetter<boolean | undefined>;\n};"
   },
   "Tabs": {
     "constructorProps": [
       {
         "name": "selectWhenFocused",
-        "type": "MaybeGetter<boolean | undefined>\n",
+        "type": "MaybeGetter<boolean | undefined>",
         "description": "If `true`, the value will be changed whenever a trigger is focused.",
         "defaultValue": "true",
         "optional": true
       },
       {
         "name": "loop",
-        "type": "MaybeGetter<boolean | undefined>\n",
+        "type": "MaybeGetter<boolean | undefined>",
         "description": "If the the trigger selection should loop when navigating with the arrow keys.",
         "defaultValue": "true",
         "optional": true
       },
       {
         "name": "orientation",
-        "type": "MaybeGetter<\"horizontal\" | \"vertical\"> | undefined\n",
+        "type": "MaybeGetter<\"horizontal\" | \"vertical\"> | undefined",
         "description": "The orientation of the tabs.",
         "defaultValue": "\"horizontal\"",
         "optional": true
       },
       {
         "name": "value",
-        "type": "MaybeGetter<T> | undefined\n",
+        "type": "MaybeGetter<T> | undefined",
         "description": "The default value for `tabs.value`\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that `tabs.value` only changes when the getter returns a new value.\n\nIf omitted, it will use the first tab as default.",
         "defaultValue": "undefined",
         "optional": true
       },
       {
         "name": "onValueChange",
-        "type": "((active: T) => void) | undefined\n",
+        "type": "((active: T) => void) | undefined",
         "description": "Called when the `Tabs` instance tries to change the active tab.",
         "optional": true
       }
@@ -91,83 +268,84 @@
     "methods": [
       {
         "name": "getTrigger",
-        "type": "(value: T) => {\n  readonly \"data-melt-tabs-trigger\": T\n  readonly \"data-active\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly role: \"tab\"\n  readonly \"aria-selected\": boolean\n  readonly \"aria-controls\": string\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly onclick: () => T\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly id: string\n}\n",
+        "type": "(value: T) => {\n  readonly \"data-melt-tabs-trigger\": T\n  readonly \"data-active\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly role: \"tab\"\n  readonly \"aria-selected\": boolean\n  readonly \"aria-controls\": string\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly onclick: () => T\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly id: string\n}",
         "description": "Gets the attributes and listeners for a tab trigger. Requires an identifying tab value."
       },
       {
         "name": "getContent",
-        "type": "(value: T) => {\n  readonly \"data-melt-tabs-content\": \"\"\n  readonly hidden: boolean\n  readonly \"data-active\": \"\" | undefined\n  readonly role: \"tabpanel\"\n  readonly id: string\n  readonly \"aria-labelledby\": string\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n}\n",
+        "type": "(value: T) => {\n  readonly \"data-melt-tabs-content\": \"\"\n  readonly hidden: boolean\n  readonly \"data-active\": \"\" | undefined\n  readonly role: \"tabpanel\"\n  readonly id: string\n  readonly \"aria-labelledby\": string\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n}",
         "description": "Gets the attributes and listeners for the tabs contents. Requires an identifying tab value."
       }
     ],
     "properties": [
       {
         "name": "selectWhenFocused",
-        "type": "boolean\n",
+        "type": "boolean",
         "description": ""
       },
       {
         "name": "loop",
-        "type": "boolean\n",
+        "type": "boolean",
         "description": ""
       },
       {
         "name": "orientation",
-        "type": "\"horizontal\" | \"vertical\"\n",
+        "type": "\"horizontal\" | \"vertical\"",
         "description": ""
       },
       {
         "name": "value",
-        "type": "T\n",
+        "type": "T",
         "description": "The current selected tab."
       },
       {
         "name": "triggerList",
-        "type": "{\n  readonly \"data-melt-tabs-trigger-list\": \"\"\n  readonly role: \"tablist\"\n  readonly \"aria-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n}\n",
+        "type": "{\n  readonly \"data-melt-tabs-trigger-list\": \"\"\n  readonly role: \"tablist\"\n  readonly \"aria-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n}",
         "description": "The attributes for the list that contains the tab triggers."
       }
-    ]
+    ],
+    "propsAlt": "export type TabsProps<T extends string = string> = {\n\t/**\n\t * If `true`, the value will be changed whenever a trigger is focused.\n\t *\n\t * @default true\n\t */\n\tselectWhenFocused?: MaybeGetter<boolean | undefined>;\n\t/**\n\t * If the the trigger selection should loop when navigating with the arrow keys.\n\t *\n\t * @default true\n\t */\n\tloop?: MaybeGetter<boolean | undefined>;\n\t/**\n\t * The orientation of the tabs.\n\t *\n\t * @default \"horizontal\"\n\t */\n\torientation?: MaybeGetter<\"horizontal\" | \"vertical\">;\n\t/**\n\t * The default value for `tabs.value`\n\t *\n\t * When passing a getter, it will be used as source of truth,\n\t * meaning that `tabs.value` only changes when the getter returns a new value.\n\t *\n\t * If omitted, it will use the first tab as default.\n\t *\n\t * @default undefined\n\t */\n\tvalue?: MaybeGetter<T>;\n\t/**\n\t * Called when the `Tabs` instance tries to change the active tab.\n\t */\n\tonValueChange?: (active: T) => void;\n};"
   },
   "Slider": {
     "constructorProps": [
       {
         "name": "min",
-        "type": "MaybeGetter<number | undefined>\n",
+        "type": "MaybeGetter<number | undefined>",
         "description": "The minimum value of the slider.",
         "defaultValue": "0",
         "optional": true
       },
       {
         "name": "max",
-        "type": "MaybeGetter<number | undefined>\n",
+        "type": "MaybeGetter<number | undefined>",
         "description": "The maximum value of the slider.",
         "defaultValue": "100",
         "optional": true
       },
       {
         "name": "orientation",
-        "type": "MaybeGetter<\"horizontal\" | \"vertical\" | undefined>\n",
+        "type": "MaybeGetter<\"horizontal\" | \"vertical\" | undefined>",
         "description": "The orientation of the slider.",
         "defaultValue": "\"horizontal\"",
         "optional": true
       },
       {
         "name": "step",
-        "type": "MaybeGetter<number | undefined>\n",
+        "type": "MaybeGetter<number | undefined>",
         "description": "The step size of the slider.",
         "defaultValue": "1",
         "optional": true
       },
       {
         "name": "value",
-        "type": "MaybeGetter<number | undefined>\n",
+        "type": "MaybeGetter<number | undefined>",
         "description": "The default value for `tabs.value`\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that `tabs.value` only changes when the getter returns a new value.\n\nIf omitted, it will use the first tab as default.",
         "defaultValue": "undefined",
         "optional": true
       },
       {
         "name": "onValueChange",
-        "type": "((active: number) => void) | undefined\n",
+        "type": "((active: number) => void) | undefined",
         "description": "Called when the `Slider` instance tries to change the active tab.",
         "optional": true
       }
@@ -176,40 +354,46 @@
     "properties": [
       {
         "name": "min",
-        "type": "number\n",
+        "type": "number",
         "description": ""
       },
       {
         "name": "max",
-        "type": "number\n",
+        "type": "number",
         "description": ""
       },
       {
         "name": "orientation",
-        "type": "\"horizontal\" | \"vertical\"\n",
+        "type": "\"horizontal\" | \"vertical\"",
         "description": ""
       },
       {
         "name": "step",
-        "type": "number\n",
+        "type": "number",
         "description": ""
       },
       {
         "name": "value",
-        "type": "number\n",
+        "type": "number",
         "description": "The value of the slider."
       },
       {
         "name": "root",
-        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"aria-valuenow\": number\n  readonly \"aria-valuemin\": number\n  readonly \"aria-valuemax\": number\n  readonly \"aria-orientation\": \"horizontal\" | \"vertical\"\n  readonly style: `--percentage: ${string}; --percentage-inv: ${string}`\n  readonly tabindex: 0\n  readonly role: \"slider\"\n  readonly \"data-melt-slider-root\": \"\"\n  readonly id: string\n  readonly onmousedown: (e: MouseEvent) => void\n  readonly onkeydown: (e: KeyboardEvent) => void\n}\n",
+        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"aria-valuenow\": number\n  readonly \"aria-valuemin\": number\n  readonly \"aria-valuemax\": number\n  readonly \"aria-orientation\": \"horizontal\" | \"vertical\"\n  readonly style: `--percentage: ${string}; --percentage-inv: ${string}`\n  readonly tabindex: 0\n  readonly role: \"slider\"\n  readonly \"data-melt-slider-root\": \"\"\n  readonly id: string\n  readonly onmousedown: (e: MouseEvent) => void\n  readonly onkeydown: (e: KeyboardEvent) => void\n}",
         "description": "The root of the slider.\nAny cursor interaction along this element will change the slider's values."
       },
       {
         "name": "thumb",
-        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-melt-slider-thumb\": \"\"\n  readonly tabindex: 0\n}\n",
+        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-melt-slider-thumb\": \"\"\n  readonly tabindex: 0\n}",
         "description": "The slider's thumb, positioned at the end of the range."
       }
-    ]
+    ],
+    "propsAlt": "export type SliderProps = {\n\t/**\n\t * The minimum value of the slider.\n\t *\n\t * @default 0\n\t */\n\tmin?: MaybeGetter<number | undefined>;\n\t/**\n\t * The maximum value of the slider.\n\t *\n\t * @default 100\n\t */\n\tmax?: MaybeGetter<number | undefined>;\n\t/**\n\t * The orientation of the slider.\n\t *\n\t * @default \"horizontal\"\n\t */\n\torientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\n\n\t/**\n\t * The step size of the slider.\n\t *\n\t * @default 1\n\t */\n\tstep?: MaybeGetter<number | undefined>;\n\t/**\n\t * The default value for `tabs.value`\n\t *\n\t * When passing a getter, it will be used as source of truth,\n\t * meaning that `tabs.value` only changes when the getter returns a new value.\n\t *\n\t * If omitted, it will use the first tab as default.\n\t *\n\t * @default undefined\n\t */\n\tvalue?: MaybeGetter<number | undefined>;\n\t/**\n\t * Called when the `Slider` instance tries to change the active tab.\n\t */\n\tonValueChange?: (active: number) => void;\n};"
+  },
+  "Select": {
+    "constructorProps": [],
+    "methods": [],
+    "properties": []
   },
   "Select": {
     "constructorProps": [],
@@ -220,20 +404,20 @@
     "constructorProps": [
       {
         "name": "open",
-        "type": "MaybeGetter<boolean> | undefined\n",
+        "type": "MaybeGetter<boolean> | undefined",
         "description": "If the Popover is open.\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that the value only changes when the getter returns a new value.\n\nOtherwise, if passing a static value, it'll serve as the default value.",
         "defaultValue": "false",
         "optional": true
       },
       {
         "name": "onOpenChange",
-        "type": "((value: boolean) => void) | undefined\n",
+        "type": "((value: boolean) => void) | undefined",
         "description": "Called when the value is supposed to change.",
         "optional": true
       },
       {
         "name": "forceVisible",
-        "type": "MaybeGetter<boolean | undefined>\n",
+        "type": "MaybeGetter<boolean | undefined>",
         "description": "If the popover visibility should be controlled by the user.",
         "defaultValue": "false",
         "optional": true
@@ -249,7 +433,7 @@
     "properties": [
       {
         "name": "forceVisible",
-        "type": "boolean\n",
+        "type": "boolean",
         "description": ""
       },
       {
@@ -259,67 +443,68 @@
       },
       {
         "name": "open",
-        "type": "boolean\n",
+        "type": "boolean",
         "description": ""
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-popover-trigger\": \"\"\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n}\n",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-popover-trigger\": \"\"\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n}",
         "description": "The trigger that toggles the value."
       },
       {
         "name": "content",
-        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-popover-content\": \"\"\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly tabindex: -1\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n}\n",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-popover-content\": \"\"\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly tabindex: -1\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n}",
         "description": ""
       }
-    ]
+    ],
+    "propsAlt": "export type PopoverProps = {\n\t/**\n\t * If the Popover is open.\n\t *\n\t * When passing a getter, it will be used as source of truth,\n\t * meaning that the value only changes when the getter returns a new value.\n\t *\n\t * Otherwise, if passing a static value, it'll serve as the default value.\n\t *\n\t *\n\t * @default false\n\t */\n\topen?: MaybeGetter<boolean>;\n\n\t/**\n\t * Called when the value is supposed to change.\n\t */\n\tonOpenChange?: (value: boolean) => void;\n\n\t/**\n\t * If the popover visibility should be controlled by the user.\n\t *\n\t * @default false\n\t */\n\tforceVisible?: MaybeGetter<boolean | undefined>;\n\n\t/**\n\t * Options to be passed to Floating UI's `computePosition`\n\t *\n\t * @see https://floating-ui.com/docs/computePosition\n\t */\n\tcomputePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;\n};"
   },
   "PinInput": {
     "constructorProps": [
       {
         "name": "value",
-        "type": "MaybeGetter<string | undefined>\n",
+        "type": "MaybeGetter<string | undefined>",
         "description": "The value for the Pin Input.\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that the value only changes when the getter returns a new value.\n\nOtherwise, if passing a static value, it'll serve as the default value.",
         "defaultValue": "''",
         "optional": true
       },
       {
         "name": "onValueChange",
-        "type": "((value: string) => void) | undefined\n",
+        "type": "((value: string) => void) | undefined",
         "description": "Called when the `PinInput` instance tries to change the value.",
         "optional": true
       },
       {
         "name": "maxLength",
-        "type": "MaybeGetter<number | undefined>\n",
+        "type": "MaybeGetter<number | undefined>",
         "description": "The amount of digits in the Pin Input.",
         "defaultValue": "4",
         "optional": true
       },
       {
         "name": "placeholder",
-        "type": "MaybeGetter<string | undefined>\n",
+        "type": "MaybeGetter<string | undefined>",
         "description": "An optional placeholder to display when the input is empty.",
         "defaultValue": "'○'",
         "optional": true
       },
       {
         "name": "disabled",
-        "type": "MaybeGetter<boolean | undefined>\n",
+        "type": "MaybeGetter<boolean | undefined>",
         "description": "If `true`, prevents the user from interacting with the input.",
         "defaultValue": "false",
         "optional": true
       },
       {
         "name": "mask",
-        "type": "MaybeGetter<boolean | undefined>\n",
+        "type": "MaybeGetter<boolean | undefined>",
         "description": "If the input should be masked like a password.",
         "defaultValue": "false",
         "optional": true
       },
       {
         "name": "type",
-        "type": "MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>\n",
+        "type": "MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>",
         "description": "What characters the input accepts.",
         "defaultValue": "'text'",
         "optional": true
@@ -329,49 +514,50 @@
     "properties": [
       {
         "name": "maxLength",
-        "type": "number\n",
+        "type": "number",
         "description": ""
       },
       {
         "name": "placeholder",
-        "type": "string\n",
+        "type": "string",
         "description": ""
       },
       {
         "name": "disabled",
-        "type": "boolean\n",
+        "type": "boolean",
         "description": ""
       },
       {
         "name": "mask",
-        "type": "boolean\n",
+        "type": "boolean",
         "description": ""
       },
       {
         "name": "type",
-        "type": "\"alphanumeric\" | \"numeric\" | \"text\"\n",
+        "type": "\"alphanumeric\" | \"numeric\" | \"text\"",
         "description": ""
       },
       {
         "name": "isFilled",
-        "type": "boolean\n",
+        "type": "boolean",
         "description": ""
       },
       {
         "name": "value",
-        "type": "string\n",
+        "type": "string",
         "description": ""
       },
       {
         "name": "root",
-        "type": "{\n  readonly \"data-melt-pin-input-root\": \"\"\n  readonly id: string\n  readonly \"data-complete\": \"\" | undefined\n}\n",
+        "type": "{\n  readonly \"data-melt-pin-input-root\": \"\"\n  readonly id: string\n  readonly \"data-complete\": \"\" | undefined\n}",
         "description": "The root element's props."
       },
       {
         "name": "inputs",
-        "type": "{\n  readonly \"data-melt-pin-input-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"text\" | \"password\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}[]\n",
+        "type": "{\n  readonly \"data-melt-pin-input-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"text\" | \"password\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}[]",
         "description": "An array of props that should be spread to the input elements."
       }
-    ]
+    ],
+    "propsAlt": "export type PinInputProps = {\n\t/**\n\t * The value for the Pin Input.\n\t *\n\t * When passing a getter, it will be used as source of truth,\n\t * meaning that the value only changes when the getter returns a new value.\n\t *\n\t * Otherwise, if passing a static value, it'll serve as the default value.\n\t *\n\t *\n\t * @default ''\n\t */\n\tvalue?: MaybeGetter<string | undefined>;\n\t/**\n\t * Called when the `PinInput` instance tries to change the value.\n\t */\n\tonValueChange?: (value: string) => void;\n\n\t/**\n\t * The amount of digits in the Pin Input.\n\t *\n\t * @default 4\n\t */\n\tmaxLength?: MaybeGetter<number | undefined>;\n\t/**\n\t * An optional placeholder to display when the input is empty.\n\t *\n\t * @default '○'\n\t */\n\tplaceholder?: MaybeGetter<string | undefined>;\n\n\t/**\n\t * If `true`, prevents the user from interacting with the input.\n\t *\n\t * @default false\n\t */\n\tdisabled?: MaybeGetter<boolean | undefined>;\n\n\t/**\n\t * If the input should be masked like a password.\n\t *\n\t * @default false\n\t */\n\tmask?: MaybeGetter<boolean | undefined>;\n\n\t/**\n\t * What characters the input accepts.\n\t *\n\t * @default 'text'\n\t */\n\ttype?: MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>;\n};"
   }
 }

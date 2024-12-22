@@ -9,6 +9,7 @@ import {
 	PropertyDeclaration,
 	Symbol,
 	Type,
+	ts,
 } from "ts-morph";
 
 export type TypeSchema =
@@ -21,19 +22,18 @@ export type TypeSchema =
 	  }
 	| string;
 
-export type ResultSchema = Record<string, Record<string, Array<TypeSchema>>>;
+export type ResultSchema = Record<string, Record<string, Array<TypeSchema> | string>>;
 
 export function toArray<T>(value: T | T[]): T[] {
 	return Array.isArray(value) ? value : [value];
 }
 
 export async function formatType(type: string): Promise<string> {
-	const prefix = "type TEMP = ";
+	const prefix = "type TEMP =";
 	try {
-		return (await prettier.format(prefix + type, { parser: "typescript", semi: false })).replace(
-			prefix,
-			"",
-		);
+		return (await prettier.format(prefix + type, { parser: "typescript", semi: false }))
+			.replace(prefix, "")
+			.trim();
 	} catch (_e) {
 		return type;
 	}
@@ -103,7 +103,9 @@ export async function parseAccessor(accessor: GetAccessorDeclaration): Promise<T
 
 export async function parseSymbol(symbol: Symbol): Promise<TypeSchema> {
 	const valueDeclaration = symbol.getValueDeclaration();
-	const declaredType = valueDeclaration?.getType() ?? symbol.getDeclaredType();
+	const declaredType = valueDeclaration
+		? symbol.getTypeAtLocation(valueDeclaration)
+		: symbol.getDeclaredType();
 
 	return {
 		name: symbol.getName(),
@@ -117,6 +119,12 @@ export async function parseSymbol(symbol: Symbol): Promise<TypeSchema> {
 export async function parseType(t: Type): Promise<TypeSchema | Array<TypeSchema>> {
 	if (t.isObject()) {
 		return await Promise.all(t.getProperties().map((p) => parseSymbol(p)));
+	}
+
+	if (t.isIntersection()) {
+		const objects = t.getIntersectionTypes().filter((t): t is Type<ts.ObjectType> => t.isObject());
+		const allProperties = objects.flatMap((o) => o.getProperties());
+		return await Promise.all(allProperties.map((p) => parseSymbol(p)));
 	}
 
 	return trimType(t.getText());

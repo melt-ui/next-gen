@@ -3,6 +3,8 @@
 	"compilerOptions": {
 		// "module": "NodeNext",
 		// "moduleResolution": "NodeNext",
+
+		"lib": ["dom", "dom.iterable", "esnext"],
 		"target": "es2022",
 		"resolveJsonModule": true,
 		"allowJs": true,
@@ -11,6 +13,7 @@
 		"sourceMap": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"strictNullChecks": true,
 	}
 }

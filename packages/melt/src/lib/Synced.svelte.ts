@@ -1,5 +1,5 @@
 import type { MaybeGetter } from "./types";
-import { extract } from "./utils/extract.svelte";
+import { extract } from "./utils/extract";
 import { isFunction } from "./utils/is";
 
 type SyncedArgs<T> =

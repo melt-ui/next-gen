@@ -1,9 +1,9 @@
 import { dataAttr } from "$lib/utils/attribute";
-import { extract } from "$lib/utils/extract.svelte";
+import { extract } from "$lib/utils/extract";
 import { nanoid } from "nanoid";
 import { Synced } from "../Synced.svelte";
 import type { MaybeGetter } from "../types";
-import { createDataIds } from "../utils/identifiers.svelte";
+import { createDataIds } from "../utils/identifiers";
 import { isHtmlElement } from "../utils/is";
 
 const TRIGGER_KEYS = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
@@ -125,7 +125,6 @@ export class Tabs<T extends string = string> {
 
 				const prevKey = this.orientation === "horizontal" ? "ArrowLeft" : "ArrowUp";
 				const nextKey = this.orientation === "horizontal" ? "ArrowRight" : "ArrowDown";
-				console.log(currIndex, prevKey, nextKey);
 				switch (e.key) {
 					case prevKey: {
 						next = this.loop ? triggers.at(currIndex - 1) : triggers.at(Math.max(currIndex - 1, 0));

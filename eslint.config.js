@@ -22,6 +22,7 @@ export default [
 					ignoreRestSiblings: true,
 				},
 			],
+			"@typescript-eslint/no-this-alias": "off",
 		},
 	}),
 	...svelte.configs["flat/recommended"],
