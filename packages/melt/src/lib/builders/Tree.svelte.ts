@@ -28,7 +28,7 @@ export type TreeItem<Meta extends Record<string, unknown> = Record<never, never>
  * @template Items - Array type extending TreeItem
  * @template Multiple - Boolean indicating if multiple selection is enabled
  */
-type TreeProps<Items extends TreeItem[], Multiple extends boolean = false> = {
+export type TreeProps<Items extends TreeItem[], Multiple extends boolean = false> = {
 	/**
 	 * If `true`, the user can select multiple items.
 	 * @default false
@@ -48,6 +48,8 @@ type TreeProps<Items extends TreeItem[], Multiple extends boolean = false> = {
 	onSelectedChange?: (value: Multiple extends true ? Set<string> : string | undefined) => void;
 	/**
 	 * The currently expanded items
+	 *
+	 * @default undefined
 	 */
 	expanded?: MaybeMultiple<true>;
 	/**

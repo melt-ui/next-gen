@@ -31,32 +31,31 @@ Things I want:
 
 <Tabs>
 	<TabItem label="Builder">
-```svelte
-<script lang="ts">
-	import { Tabs } from "melt/builders";
+		```svelte
+		<script lang="ts">
+			import { Tabs } from "melt/builders";
 
-	const tabs = new Tabs()
-	const tabIds = ["Tab 1", "Tab 2", "Tab 3"];
-</script>
+			const tabs = new Tabs()
+			const tabIds = ["Tab 1", "Tab 2", "Tab 3"];
+		</script>
 
-<div {...tabs.triggerList}>
-	{#each tabIds as id}
-		<button {...tabs.getTrigger(id)}>
-			{id}
-		</button>
-	{/each}
-</div>
+		<div {...tabs.triggerList}>
+			{#each tabIds as id}
+				<button {...tabs.getTrigger(id)}>
+					{id}
+				</button>
+			{/each}
+		</div>
 
-{#each tabIds as id}
-	<div {...tabs.getContent(id)}>
-		{id}
-	</div>
-{/each}
-	```
+		{#each tabIds as id}
+			<div {...tabs.getContent(id)}>
+				{id}
+			</div>
+		{/each}
+			```
 	</TabItem>
 
 	<TabItem label="Component">
-
 ```svelte
 <script lang="ts">
 	import { Tabs } from "melt/components";
@@ -81,34 +80,7 @@ Things I want:
 		{/each}
 	{/snippet}
 </Tabs>
-	```
-	</TabItem>
-
-	<TabItem label="ComponentAlt">
-
-```svelte
-<script lang="ts">
-	import { TabsRoot, TabsTriggerList, TabsTrigger, TabsContent } from "melt/components";
-
-	const tabs = ["Tab 1", "Tab 2", "Tab 3"];
-</script>
-
-<Tabs>
-	<TabsTriggerList>
-		{#each tabs as value}
-			<TabsTrigger {value}>
-				{id}
-			</TabsTrigger>
-		{/each}
-	</div>
-
-	{#each tabs as value}
-		<TabsContent {value}>
-			{id}
-		</TabsContent>
-	{/each}
-</Tabs>
-	```
+			```
 	</TabItem>
 </Tabs>
 

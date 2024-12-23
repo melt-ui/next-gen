@@ -20,6 +20,7 @@ export default defineConfig({
 						shadowColor: "transparent",
 					},
 				},
+				minSyntaxHighlightingColorContrast: 10,
 			},
 			components: {
 				PageTitle: "./src/components/page-title.astro",
