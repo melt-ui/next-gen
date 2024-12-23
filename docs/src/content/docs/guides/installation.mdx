@@ -1,0 +1,84 @@
+---
+title: Installation
+description: Get started with Melt UI by installing it in your Svelte project.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) version 18 or higher
+- A Svelte project using version 5.0.0 or higher
+
+## Installation
+
+<Tabs>
+  <TabItem label="pnpm">
+```bash
+pnpm add melt
+```
+  </TabItem>
+  <TabItem label="npm">
+```bash
+npm install melt
+```
+  </TabItem>
+  <TabItem label="yarn">
+```bash
+yarn add melt
+```
+  </TabItem>
+</Tabs>
+
+## Basic Usage
+
+Melt UI provides two ways to use components.
+
+### Using Builders
+
+Builders can be called from a Svelte component, or `svelte.js|ts` files.
+Uses getters and setters for reactive properties.
+
+```svelte
+<script lang="ts">
+	import { Toggle } from "melt/builders";
+
+	let value = $state(false)
+	const toggle = new Toggle({
+		value: () => value,
+		onValueChange: (v) => (value = v),
+	});
+</script>
+
+<button {...toggle.trigger}>
+	{toggle.value ? "On" : "Off"}
+</button>
+```
+
+### Using Components
+
+The component pattern provides a more traditional Svelte experience. It provides no elements
+or styling, and instead provides you with a instance from the builder. The difference lies in being
+able to use the `bind:` directive.
+
+```svelte
+<script lang="ts">
+	import { Toggle } from "melt/components";
+
+	let value = $state(false)
+</script>
+
+<Toggle bind:value>
+	{#snippet children(toggle)}
+		<button {...toggle.trigger}>
+			{toggle.value ? "On" : "Off"}
+		</button>
+	{/snippet}
+</Toggle>
+```
+
+## Next Steps
+
+- Check out our [components](/components/pin-input) and preview how they work
+- Learn about [styling](/guides/styling) to customize the look and feel
+- Read our [Best Practices](/guides/best-practices) guide for tips on using Melt UI effectively

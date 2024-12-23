@@ -19,6 +19,10 @@ export default defineConfig({
 					frames: {
 						shadowColor: "transparent",
 					},
+					textMarkers: {
+						markBackground: "#a4623333",
+						markBorderColor: "#a46233",
+					},
 				},
 				minSyntaxHighlightingColorContrast: 10,
 			},
@@ -41,36 +45,19 @@ export default defineConfig({
 			},
 			sidebar: [
 				{
-					label: "Overview",
+					label: "Getting Started",
 					items: [
 						{
 							label: "Installation",
-							link: "/guides/example/",
+							link: "/guides/installation",
 						},
 						{
-							label: "Getting Started",
-							link: "/guides/example/a",
+							label: "Styling",
+							link: "/guides/styling",
 						},
 						{
-							label: "Builders vs Components",
-							link: "/guides/example/a",
-						},
-					],
-				},
-				{
-					label: "Core concepts",
-					items: [
-						{
-							label: "Simplicity",
-							link: "/guides/example/a",
-						},
-						{
-							label: "Flexibility",
-							link: "/guides/example/a",
-						},
-						{
-							label: "Full control",
-							link: "/guides/example/a",
+							label: "Best Practices",
+							link: "/guides/best-practices",
 						},
 					],
 				},
@@ -79,6 +66,15 @@ export default defineConfig({
 					autogenerate: {
 						directory: "components",
 					},
+				},
+				{
+					label: "Reference",
+					items: [
+						{
+							label: "API Reference",
+							link: "/reference/api",
+						},
+					],
 				},
 			],
 		}),
