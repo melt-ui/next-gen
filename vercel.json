@@ -2,6 +2,5 @@
   "installCommand": "pnpm install",
   "buildCommand": "pnpm build:docs",
   "outputDirectory": "docs/dist",
-  "framework": null,
   "nodeVersion": "20.x"
 }
