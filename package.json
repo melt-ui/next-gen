@@ -10,7 +10,8 @@
 		"format": "prettier --write .",
 		"gen:api": "jiti scripts/generate-api.ts",
 		"gen:components": "jiti scripts/generate-components.ts",
-		"watch-and-type": "jiti scripts/watch-and-type.ts"
+		"watch-and-type": "jiti scripts/watch-and-type.ts",
+		"build:docs": "pnpm --filter @melt-ui/docs build"
 	},
 	"keywords": [],
 	"author": "",

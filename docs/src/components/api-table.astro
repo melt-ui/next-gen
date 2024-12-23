@@ -1,16 +1,17 @@
 ---
 import api from "@api.json";
 import ThemedCode from "./themed-code.astro";
-import { Code } from "@astrojs/starlight/components";
 
 interface Props {
 	//	entry: keyof typeof api;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	entry: any;
 }
 
 const { entry }: Props = Astro.props;
 
-const apiEntry = api[entry];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const apiEntry = api[entry as keyof typeof api] as any;
 
 type TextContent = {
 	type: "text";
@@ -92,6 +93,8 @@ const sections: Section[] = [
 						{typeof section.stuff === "string" ? (
 							<ThemedCode code={section.stuff} />
 						) : (
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
 							section.stuff.map((entry) => (
 								<li class="relative !mt-8 list-none py-0 pl-6">
 									<div class="absolute left-0 top-0 h-full w-1.5 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700/50" />
