@@ -36,8 +36,8 @@
 				</div>
 				<div
 					class="focus-visible:ring-accent-300 border-accent-300 absolute size-6 rounded-md border-2 bg-white outline-none transition-all
-					focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-offset-black
-					data-[dragging]:transition-none dark:border-none
+					focus-visible:ring focus-visible:ring-offset-black data-[dragging]:transition-none
+					dark:border-none dark:focus-visible:ring-offset-2
 					{slider.orientation === 'horizontal'
 						? 'left-[var(--percentage)] top-1/2 -translate-x-1/2 -translate-y-1/2'
 						: 'left-1/2 top-[var(--percentage)] -translate-x-1/2 -translate-y-1/2'}"

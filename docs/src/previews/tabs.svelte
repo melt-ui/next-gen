@@ -92,7 +92,9 @@
 				>
 					<div
 						class="group-focus-visible:ring-accent-600 overflow-clip rounded-full px-4 py-1
-						transition group-focus-visible:ring-4 group-[&:not([data-active]):hover]:bg-white/10 group-data-[active]:bg-white group-data-[active]:text-black"
+						transition group-focus-visible:ring-4 
+						group-[&:not([data-active]):hover]:bg-gray-200 dark:group-[&:not([data-active]):hover]:bg-white/10 
+						group-data-[active]:bg-accent-500 group-data-[active]:text-white dark:group-data-[active]:bg-white dark:group-data-[active]:text-black"
 					>
 						{id}
 					</div>

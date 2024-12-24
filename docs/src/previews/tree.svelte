@@ -130,9 +130,10 @@
 		>
 			<div class="group py-1" style="padding-left: {depth * 1}rem">
 				<div
-					class="{item.selected ? '!bg-accent-200 text-accent-950' : ''}
-					ring-accent-700 flex h-full w-full items-center gap-2 rounded-xl
-					px-3 py-1 ring-offset-black transition group-hover:bg-gray-800"
+					class="{item.selected ? '!bg-accent-500 !text-white dark:!bg-accent-200 dark:!text-accent-950' : ''}
+					ring-accent-500 dark:ring-accent-700 flex h-full w-full items-center gap-2 rounded-xl
+					px-3 py-1 ring-offset-white dark:ring-offset-black transition 
+					group-hover:bg-gray-200 dark:group-hover:bg-gray-800"
 				>
 					{@render treeItemIcon(item)}
 					<span class="select-none">
@@ -161,7 +162,7 @@
 					class="relative list-none p-0 {!item.expanded ? 'pointer-events-none' : ''} origin-left"
 				>
 					<div
-						class="absolute bottom-2 top-2 w-px bg-gray-700"
+						class="absolute bottom-2 top-2 w-px bg-gray-200 dark:bg-gray-700"
 						style="left: {0.5 + depth * 1}rem"
 					></div>
 					{@render treeItems(item.children, depth + 1)}
