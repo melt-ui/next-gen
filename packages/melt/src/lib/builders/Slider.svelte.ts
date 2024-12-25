@@ -96,10 +96,11 @@ export class Slider {
 		return this.orientation === "vertical" ? 1 - v : v;
 	}
 
-	#commit(e: MouseEvent) {
+	#commit(e: PointerEvent) {
 		this.#dragging = typeof this.#mouseDownAt === "number" && e.timeStamp - this.#mouseDownAt > 50;
 		const el = document.getElementById(this.#ids.root);
 		if (!isHtmlElement(el)) return;
+		e.preventDefault();
 
 		const elRect = el.getBoundingClientRect();
 		let percentage: number;
@@ -128,8 +129,8 @@ export class Slider {
 	get root() {
 		useEventListener(
 			() => window,
-			"mousemove",
-			(e: MouseEvent) => {
+			"pointermove",
+			(e: PointerEvent) => {
 				if (!this.#mouseDown) return;
 				this.#commit(e);
 			},
@@ -137,7 +138,7 @@ export class Slider {
 
 		useEventListener(
 			() => window,
-			"mouseup",
+			"pointerup",
 			() => {
 				this.#mouseDown = false;
 				this.#dragging = false;
@@ -152,12 +153,13 @@ export class Slider {
 			style: styleAttr({
 				"--percentage": `${this.#percentage * 100}%`,
 				"--percentage-inv": `${(1 - this.#percentage) * 100}%`,
+				"touch-action": this.orientation === "vertical" ? "pan-x" : "pan-y",
 			}),
 			tabindex: 0,
 			role: "slider",
 			[dataIds.root]: "",
 			id: this.#ids.root,
-			onmousedown: (e: MouseEvent) => {
+			onpointerdown: (e: PointerEvent) => {
 				this.#mouseDown = true;
 				this.#mouseDownAt = e.timeStamp;
 				this.#commit(e);

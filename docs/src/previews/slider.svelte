@@ -20,7 +20,7 @@
 		{#snippet children(slider)}
 			<div
 				class="group relative mx-auto p-3 outline-none
-				{slider.orientation === 'horizontal' ? 'w-[350px]' : 'h-[350px] w-[50px]'}"
+				{slider.orientation === 'horizontal' ? 'w-[350px] max-w-[90%]' : 'h-[350px] w-[50px]'}"
 				{...slider.root}
 			>
 				<div

@@ -380,7 +380,7 @@
       },
       {
         "name": "root",
-        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"aria-valuenow\": number\n  readonly \"aria-valuemin\": number\n  readonly \"aria-valuemax\": number\n  readonly \"aria-orientation\": \"horizontal\" | \"vertical\"\n  readonly style: `--percentage: ${string}; --percentage-inv: ${string}`\n  readonly tabindex: 0\n  readonly role: \"slider\"\n  readonly \"data-melt-slider-root\": \"\"\n  readonly id: string\n  readonly onmousedown: (e: MouseEvent) => void\n  readonly onkeydown: (e: KeyboardEvent) => void\n}",
+        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"aria-valuenow\": number\n  readonly \"aria-valuemin\": number\n  readonly \"aria-valuemax\": number\n  readonly \"aria-orientation\": \"horizontal\" | \"vertical\"\n  readonly style: `--percentage: ${string}; --percentage-inv: ${string}; touch-action: ${string}`\n  readonly tabindex: 0\n  readonly role: \"slider\"\n  readonly \"data-melt-slider-root\": \"\"\n  readonly id: string\n  readonly onpointerdown: (e: PointerEvent) => void\n  readonly onkeydown: (e: KeyboardEvent) => void\n}",
         "description": "The root of the slider.\nAny cursor interaction along this element will change the slider's values."
       },
       {
