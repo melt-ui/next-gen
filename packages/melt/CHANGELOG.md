@@ -1,5 +1,11 @@
 # melt
 
+## 0.2.1
+
+### Patch Changes
+
+- 920e387: fix slider on mobile
+
 ## 0.2.0
 
 ### Minor Changes
