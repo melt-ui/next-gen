@@ -34,7 +34,7 @@ Things I want:
 	<TabItem label="Builder">
 ```svelte
 <script lang="ts">
-	import { Popover } from "melt";
+	import { Popover } from "melt/builders";
 
 	const popover = new Popover();
 </script>
@@ -53,7 +53,7 @@ Things I want:
 </script>
 
 <Popover>
-	{#snippet children(pinInput)}
+	{#snippet children(popover)}
 		<button {...popover.trigger}>
 			Click me to open the Popover
 		</button>
