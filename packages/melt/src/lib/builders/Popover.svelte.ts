@@ -15,6 +15,7 @@ import {
 	type ComputePositionConfig,
 	type Placement,
 } from "@floating-ui/dom";
+import type { Middleware } from "@floating-ui/core";
 import { useEventListener } from "runed";
 import type { HTMLAttributes } from "svelte/elements";
 
