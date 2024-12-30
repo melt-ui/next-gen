@@ -1,6 +1,6 @@
 import { writeFileSync } from "fs";
 import { globSync } from "glob";
-import { join } from "path";
+import { join, sep } from "path";
 import { getBuilderPackage } from "./get-packages";
 import {
 	parseAccessor,
@@ -27,7 +27,7 @@ async function main() {
 	console.log(`Found ${builders.length} builders...`);
 
 	for (const builderDir of builders) {
-		const name = builderDir.split("/").pop()!.split(".")[0];
+		const name = builderDir.split(sep).pop()!.split(".")[0];
 		result[name] = {
 			constructorProps: [],
 			methods: [],
