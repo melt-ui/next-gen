@@ -6,7 +6,7 @@ import { clamp } from "$lib/utils/number";
 import { Synced } from "../Synced.svelte";
 import { createDataIds, createIds } from "../utils/identifiers";
 import { isHtmlElement } from "../utils/is";
-import type { Getter, MaybeGetter } from "../types";
+import type { MaybeGetter } from "../types";
 
 const dataIds = createDataIds("slider", ["root", "track", "thumb", "range"]);
 
@@ -68,7 +68,7 @@ export class SliderMultiThumb {
 	#dragging = false;
 	#mouseDownAt: null | number = null;
 	#activeIndex: null | number = null;
-	#numThumbs = $derived(this.#value ? this.#value.current.length : 1);
+	#numThumbs = $derived(this.#value.current.length);
 
     constructor(props: SliderMultiThumbProps = {}) {
         this.#props = props;
@@ -94,10 +94,10 @@ export class SliderMultiThumb {
 	}
 
 	#commit(e: PointerEvent) {
-		if (!this.#activeIndex) return;
-
+		if (this.#activeIndex === null) return;
+		
 		this.#dragging = typeof this.#mouseDownAt === "number" && e.timeStamp - this.#mouseDownAt > 50;
-
+		
 		const el = document.getElementById(this.ids.root);
 		if (!isHtmlElement(el)) return;
 
@@ -127,7 +127,7 @@ export class SliderMultiThumb {
 			() => window,
 			"pointermove",
 			(e: PointerEvent) => {
-				if (!this.#mouseDown || !this.#activeIndex) return;
+				if (!this.#mouseDown || this.#activeIndex === null) return;
 				this.#commit(e);
 			},
 		);
@@ -150,27 +150,17 @@ export class SliderMultiThumb {
     }
 
 	get thumbs() {
-		// return this.value.map((v, i) => new Thumb({ 
-		// 	slider: this, value: () => v, 
-		// 	index: i,
-		// 	onpointerdown: (e: PointerEvent) => {
-		// 		this.#mouseDown = true;
-		// 		this.#mouseDownAt = e.timeStamp;
-		// 		this.#activeIndex = i;
-		// 		this.#commit(e);
-		// 	}
-		// }));
 		console.log('re-running');
+
 		return Array(this.#numThumbs)
 			.fill(null)
 			.map((_, i) => new Thumb({
 				slider: this,
-				value: () => this.value[i],
 				index: i,
 				onpointerdown: (e) => {
+					this.#activeIndex = i;
 					this.#mouseDown = true;
 					this.#mouseDownAt = e.timeStamp;
-					this.#activeIndex = i;
 					this.#commit(e);
 				}
 			}));
@@ -179,7 +169,6 @@ export class SliderMultiThumb {
 
 type ThumbProps = {
 	slider: SliderMultiThumb;
-	value: Getter<number>;
 	index: number;
 	onpointerdown: (e: PointerEvent) => void;
 }
@@ -190,20 +179,13 @@ class Thumb {
 	slider = $derived(this.#props.slider);
 	index = $derived(this.#props.index);
 	onpointerdown = $derived(this.#props.onpointerdown);
-	
-	/* State */
-	#value: Synced<number>;
 
 	constructor(props: ThumbProps) {
 		this.#props = props;
-		this.#value = new Synced({
-			value: props.value,
-			defaultValue: 0
-		});
 	}
 
 	get value() {
-		return this.#value.current;
+		return this.slider.value[this.index];
 	}
 
 	set value(value: number) {
