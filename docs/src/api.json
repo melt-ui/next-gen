@@ -374,13 +374,18 @@
         "description": ""
       },
       {
+        "name": "ids",
+        "type": "Ids<DataIds<\"slider\", [\"root\", \"track\", \"thumb\", \"range\"]>>",
+        "description": ""
+      },
+      {
         "name": "value",
         "type": "number[]",
         "description": "The value of the slider."
       },
       {
         "name": "root",
-        "type": "{ \"aria-orientation\": \"horizontal\" | \"vertical\" }",
+        "type": "{\n  \"aria-orientation\": \"horizontal\" | \"vertical\"\n  \"data-melt-slider-root\": string\n  id: string\n}",
         "description": "The root of the slider.\rAny cursor interaction along this element will change the slider's values."
       },
       {
