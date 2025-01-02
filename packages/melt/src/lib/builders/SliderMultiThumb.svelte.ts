@@ -63,12 +63,13 @@ export class SliderMultiThumb {
 
     /* State */
     #value!: Synced<number[]>;
-	readonly ids = createIds(dataIds);
+	#ids = createIds(dataIds);
 	#mouseDown = false;
 	#dragging = false;
 	#mouseDownAt: null | number = null;
 	#activeIndex: null | number = null;
 	#numThumbs = $derived(this.#value.current.length);
+	#elRoot: HTMLElement | null = null;
 
     constructor(props: SliderMultiThumbProps = {}) {
         this.#props = props;
@@ -85,25 +86,30 @@ export class SliderMultiThumb {
 	}
 
 	set value(value: number[]) {
-		// TODO
+		value.forEach((v, i) => this.updateValueAtIndex({ value: v, index: i}));
 	}
 
-	set valueAtIndex(v: { value: number, index: number }) {
+	updateValueAtIndex(v: { value: number, index: number }) {
 		const valueFixedToStep = Math.round(v.value / this.step) * this.step;
 		this.#value.current[v.index] = clamp(this.min, valueFixedToStep, this.max);
 	}
 
 	#commit(e: PointerEvent) {
+		console.log('commit');
 		if (this.#activeIndex === null) return;
 		
 		this.#dragging = typeof this.#mouseDownAt === "number" && e.timeStamp - this.#mouseDownAt > 50;
 		
-		const el = document.getElementById(this.ids.root);
-		if (!isHtmlElement(el)) return;
+		if (!this.#elRoot) {
+			this.#elRoot = document.getElementById(this.#ids.root);
+			
+			if (!isHtmlElement(this.#elRoot)) return;
+		}
 
 		e.preventDefault();
 
-		const elRect = el.getBoundingClientRect();
+		const elRect = this.#elRoot.getBoundingClientRect();
+		// console.log('elRect:', elRect);
 		let percentage: number;
 
 		if (this.orientation === "vertical") {
@@ -112,10 +118,10 @@ export class SliderMultiThumb {
 			percentage = clamp(0, e.clientX - elRect.left, elRect.width) / elRect.width;
 		}
 
-		this.valueAtIndex = { 
+		this.updateValueAtIndex({ 
 			value: this.min + percentage * (this.max - this.min),
 			index: this.#activeIndex
-		};
+		});
 	}
 
     /**
@@ -145,7 +151,7 @@ export class SliderMultiThumb {
         return {
             "aria-orientation": this.orientation,
 			[dataIds.root]: "",
-			id: this.ids.root,
+			id: this.#ids.root,
         };
     }
 
@@ -176,62 +182,62 @@ type ThumbProps = {
 class Thumb {
 	/* Props */
 	#props!: ThumbProps;
-	slider = $derived(this.#props.slider);
-	index = $derived(this.#props.index);
-	onpointerdown = $derived(this.#props.onpointerdown);
+	#slider = $derived(this.#props.slider);
+	#index = $derived(this.#props.index);
+	#onpointerdown = $derived(this.#props.onpointerdown);
 
 	constructor(props: ThumbProps) {
 		this.#props = props;
 	}
 
 	get value() {
-		return this.slider.value[this.index];
+		return this.#slider.value[this.#index];
 	}
 
 	set value(value: number) {
-		this.slider.valueAtIndex = { value, index: this.index };
+		this.#slider.updateValueAtIndex({ value, index: this.#index });
 	}
 
 	get #percentage() {
-		const v = (this.value - this.slider.min) / (this.slider.max - this.slider.min);
-		return this.slider.orientation === "vertical" ? 1 - v : v;
+		const v = (this.value - this.#slider.min) / (this.#slider.max - this.#slider.min);
+		return this.#slider.orientation === "vertical" ? 1 - v : v;
 	}
 
 	get trigger() {
 		return {
 			"aria-valuenow": this.value,
-			"aria-valuemin": this.slider.min,
-			"aria-valuemax": this.slider.max,
-			"aria-orientation": this.slider.orientation,
+			"aria-valuemin": this.#slider.min,
+			"aria-valuemax": this.#slider.max,
+			"aria-orientation": this.#slider.orientation,
 			role: "slider",
 			tabindex: 0,
 			id: null,
 			style: styleAttr({
 				[`--percentage`]: `${this.#percentage * 100}%`,
 				[`--percentage-inv`]: `${(1 - this.#percentage) * 100}%`,
-				"touch-action": this.slider.orientation === "vertical" ? "pan-x" : "pan-y"
+				"touch-action": this.#slider.orientation === "vertical" ? "pan-x" : "pan-y"
 			}),
-			onpointerdown: this.onpointerdown,
+			onpointerdown: this.#onpointerdown,
 			onkeydown: (e: KeyboardEvent) => {
 				switch (e.key) {
 					case "ArrowDown":
 					case "ArrowLeft": {
-						if (e.metaKey) this.value = this.slider.min;
-						else this.value -= this.slider.step;
+						if (e.metaKey) this.value = this.#slider.min;
+						else this.value -= this.#slider.step;
 						break;
 					}
 					case "ArrowUp":
 					case "ArrowRight": {
-						if (e.metaKey) this.value = this.slider.max;
-						else this.value += this.slider.step;
+						if (e.metaKey) this.value = this.#slider.max;
+						else this.value += this.#slider.step;
 						break;
 					}
 					case "Home": {
-						this.value = this.slider.min;
+						this.value = this.#slider.min;
 						break;
 					}
 					case "End": {
-						this.value = this.slider.max;
+						this.value = this.#slider.max;
 						break;
 					}
 					default: {

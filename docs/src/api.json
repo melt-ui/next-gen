@@ -351,7 +351,13 @@
         "optional": true
       }
     ],
-    "methods": [],
+    "methods": [
+      {
+        "name": "updateValueAtIndex",
+        "type": "(v: { value: number; index: number }) => void",
+        "description": ""
+      }
+    ],
     "properties": [
       {
         "name": "min",
@@ -371,11 +377,6 @@
       {
         "name": "step",
         "type": "number",
-        "description": ""
-      },
-      {
-        "name": "ids",
-        "type": "Ids<DataIds<\"slider\", [\"root\", \"track\", \"thumb\", \"range\"]>>",
         "description": ""
       },
       {

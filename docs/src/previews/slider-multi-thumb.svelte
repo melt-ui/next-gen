@@ -20,7 +20,7 @@
 <Preview>
 	<div class="flex flex-col gap-8">
 		<button onclick={() => value.push(20)}>push</button>
-		<button onclick={() => (value[0] += 10)}>add</button>
+		<button onclick={() => (value[0] += 15)}>add</button>
 		<div class="text-center">[{value}]</div>
 
 		<SliderMultiThumb bind:value {...controls}>
