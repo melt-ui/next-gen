@@ -98,6 +98,14 @@ export class SliderMultiThumb {
 		// this.#value.current[v.index] = clamp(this.min, valueFixedToStep, this.max);
 	}
 
+	#getAllThumbs() {
+		const root = document.getElementById(this.#ids.root);
+		if (!root) return [];
+
+		const thumbs = root.querySelectorAll(`[${dataIds.thumb}]`);
+		return Array.from(thumbs).filter(isHtmlElement);
+	}
+
 	#commit(e: PointerEvent) {
 		console.log('commit');
 		if (this.#activeIndex === null) return;
@@ -253,7 +261,7 @@ class Thumb {
 			"aria-orientation": this.#slider.orientation,
 			role: "slider",
 			tabindex: 0,
-			id: null,
+			[dataIds.thumb]: "",
 			style: styleAttr({
 				[`--percentage`]: `${this.#percentage * 100}%`,
 				[`--percentage-inv`]: `${(1 - this.#percentage) * 100}%`,
