@@ -59,6 +59,7 @@ export class SliderMultiThumb {
     readonly min = $derived(extract(this.#props.min, 0));
     readonly max = $derived(extract(this.#props.max, 100));
     readonly orientation = $derived(extract(this.#props.orientation, 'horizontal'));
+	readonly horizontal = $derived(this.orientation === 'horizontal');
     readonly step = $derived(extract(this.#props.step, 1));
 
     /* State */
@@ -91,14 +92,17 @@ export class SliderMultiThumb {
 
 	updateValueAtIndex(v: { value: number, index: number }) {
 		const valueFixedToStep = Math.round(v.value / this.step) * this.step;
-		this.#value.current[v.index] = clamp(this.min, valueFixedToStep, this.max);
+		const newValue = this.#value.current;
+		newValue[v.index] = clamp(this.min, valueFixedToStep, this.max);
+		this.#value.current = newValue;
+		// this.#value.current[v.index] = clamp(this.min, valueFixedToStep, this.max);
 	}
 
 	#commit(e: PointerEvent) {
 		console.log('commit');
 		if (this.#activeIndex === null) return;
 		
-		this.#dragging = typeof this.#mouseDownAt === "number" && e.timeStamp - this.#mouseDownAt > 50;
+		// this.#dragging = typeof this.#mouseDownAt === "number" && e.timeStamp - this.#mouseDownAt > 50;
 		
 		if (!this.#elRoot) {
 			this.#elRoot = document.getElementById(this.#ids.root);
@@ -108,20 +112,58 @@ export class SliderMultiThumb {
 
 		e.preventDefault();
 
-		const elRect = this.#elRoot.getBoundingClientRect();
+		const { left, right, top, bottom } = this.#elRoot.getBoundingClientRect();
 		// console.log('elRect:', elRect);
-		let percentage: number;
 
-		if (this.orientation === "vertical") {
-			percentage = 1 - clamp(0, e.clientY - elRect.top, elRect.height) / elRect.height;
+		// if (this.orientation === "vertical") {
+		// 	percentage = 1 - clamp(0, e.clientY - elRect.top, elRect.height) / elRect.height;
+		// } else {
+		// 	percentage = clamp(0, e.clientX - elRect.left, elRect.width) / elRect.width;
+		// }
+		let start: number;
+		let end: number;
+		const clientXY = this.horizontal ? e.clientX : e.clientY;
+
+		if (this.horizontal) {
+			start = left;
+			end = right;
 		} else {
-			percentage = clamp(0, e.clientX - elRect.left, elRect.width) / elRect.width;
+			start = bottom;
+			end = top;
 		}
 
-		this.updateValueAtIndex({ 
-			value: this.min + percentage * (this.max - this.min),
-			index: this.#activeIndex
-		});
+		const percent = (clientXY - start) / (end - start);
+		const value = percent * (this.max - this.min) + this.min;
+
+		if (value < this.min) {
+			// this.#updatePosition(this.min, activeThumbIndex);
+			this.#value.current[this.#activeIndex] = this.min;
+		} else if (value > this.max) {
+			// this.#updatePosition(this.max, activeThumbIndex);
+			this.#value.current[this.#activeIndex] = this.max;
+		} else {
+			const currentStep = Math.floor((value - this.min) / this.step);
+			const midpointOfCurrentStep = this.min + currentStep * this.step + this.step / 2;
+			const midpointOfNextStep = this.min + (currentStep + 1) * this.step + this.step / 2;
+			const newValue
+				= value >= midpointOfCurrentStep && value < midpointOfNextStep
+					? (currentStep + 1) * this.step + this.min
+					: currentStep * this.step + this.min;
+
+			if (newValue <= this.max) {
+				// this.#updatePosition(newValue, activeThumbIndex);
+				// this.#value.current[this.#activeIndex] = newValue;
+				this.updateValueAtIndex({ 
+					value,
+					index: this.#activeIndex
+				});
+			}
+		}
+
+		// this.updateValueAtIndex({ 
+		// 	value: this.min + percentage * (this.max - this.min),
+		// 	index: this.#activeIndex
+		// });
 	}
 
     /**
@@ -215,7 +257,7 @@ class Thumb {
 			style: styleAttr({
 				[`--percentage`]: `${this.#percentage * 100}%`,
 				[`--percentage-inv`]: `${(1 - this.#percentage) * 100}%`,
-				"touch-action": this.#slider.orientation === "vertical" ? "pan-x" : "pan-y"
+				"touch-action": this.#slider.horizontal ? "pan-y" : "pan-x"
 			}),
 			onpointerdown: this.#onpointerdown,
 			onkeydown: (e: KeyboardEvent) => {

@@ -375,6 +375,11 @@
         "description": ""
       },
       {
+        "name": "horizontal",
+        "type": "boolean",
+        "description": ""
+      },
+      {
         "name": "step",
         "type": "number",
         "description": ""
