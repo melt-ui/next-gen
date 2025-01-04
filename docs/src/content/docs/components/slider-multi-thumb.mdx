@@ -16,13 +16,49 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 - 🎹 Keyboard navigation
 - 🧠 Smart focus management
 - 🔄 Horizontal and vertical orientation
+- 🌐 RTL support
 - ~💬 Tooltip value display~
-- ~🌐 RTL support~ (incoming!)
 </Features>
 
 ## Usage
 
-TODO
+
+<Tabs>
+	<TabItem label="Builder">
+```svelte
+<script lang="ts">
+	import { SliderMultiThumb, type SliderMultiThumbProps } from "melt/builders";
+
+	const slider = new SliderMultiThumb();
+</script>
+
+<div {...slider.root}>
+    {#each slider.thumbs as thumb}
+	    <div {...thumb.trigger}></div>
+    {/each}
+</div>
+```
+	</TabItem>
+
+	<TabItem label="Component">
+
+```svelte
+<script lang="ts">
+	import { SliderMultiThumb } from "melt/components";
+</script>
+
+<SliderMultiThumb>
+	{#snippet children(slider)}
+		<div {...slider.root}>
+            {#each slider.thumbs as thumb}
+			    <div {...thumb.trigger}></div>
+            {/each}
+		</div>
+	{/snippet}
+</SliderMultiThumb>
+	```
+	</TabItem>
+</Tabs>
 
 ## API Reference
 

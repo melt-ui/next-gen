@@ -12,6 +12,12 @@
 			options: ["horizontal", "vertical"],
 			defaultValue: "horizontal",
 		},
+		dir: {
+			type: "select",
+			label: "Direction",
+			options: ["ltr", "rtl"],
+			defaultValue: "ltr",
+		},
 	});
 
 	let value = $state([0, 25, 50, 75, 100]);
