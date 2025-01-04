@@ -673,5 +673,47 @@
       }
     ],
     "propsAlt": "export type PinInputProps = {\n  /**\n   * The value for the Pin Input.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default ''\n   */\n  value?: MaybeGetter<string | undefined>;\n  /**\n   * Called when the `PinInput` instance tries to change the value.\n   */\n  onValueChange?: (value: string) => void;\n\n  /**\n   * The amount of digits in the Pin Input.\n   *\n   * @default 4\n   */\n  maxLength?: MaybeGetter<number | undefined>;\n  /**\n   * An optional placeholder to display when the input is empty.\n   *\n   * @default '○'\n   */\n  placeholder?: MaybeGetter<string | undefined>;\n\n  /**\n   * If `true`, prevents the user from interacting with the input.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the input should be masked like a password.\n   *\n   * @default false\n   */\n  mask?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * What characters the input accepts.\n   *\n   * @default 'text'\n   */\n  type?: MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>;\n};"
+  },
+  "Avatar": {
+    "constructorProps": [
+      {
+        "name": "src",
+        "type": "MaybeGetter<string | undefined>",
+        "description": "Source for the avatar image",
+        "defaultValue": "undefined",
+        "optional": true
+      },
+      {
+        "name": "delayMs",
+        "type": "MaybeGetter<number | undefined>",
+        "description": "Delay in milliseconds before the fallback is loaded, to prevent flickering",
+        "defaultValue": "undefined",
+        "optional": true
+      },
+      {
+        "name": "onLoadingStatusChange",
+        "type": "((value: 'loading' | 'loaded' | 'error') => void) | undefined",
+        "description": "Callback fired when the loading status changes",
+        "defaultValue": "undefined",
+        "optional": true
+      }
+    ],
+    "methods": [],
+    "properties": [
+      {
+        "name": "loadingStatus",
+        "type": "'loading' | 'loaded' | 'error'",
+        "description": "The current loading status of the image"
+      },
+      {
+        "name": "image",
+        "type": "{\n  readonly \"data-melt-avatar-image\": \"\"\n  readonly src: string | undefined\n  readonly style: string\n  readonly onload: () => void\n  readonly onerror: () => void\n}"
+      },
+      {
+        "name": "fallback",
+        "type": "{\n  readonly \"data-melt-avatar-fallback\": \"\"\n  readonly style: string | undefined\n  readonly hidden: boolean | undefined\n}"
+      }
+    ],
+    "propsAlt": "export type AvatarProps = {\n  /**\n   * The source of the image to display.\n   */\n  src?: string;\n\n  /**\n   * The amount of time in milliseconds to wait before displaying the image.\n   *\n   * @default 0\n   */\n  delayMs?: number;\n\n  /**\n   * A callback invoked when the loading status store of the avatar changes.\n   */\n  onLoadingStatusChange?: (value: ImageLoadingStatus) => void;\n};"
   }
 }
