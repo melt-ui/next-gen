@@ -3,6 +3,7 @@ import { Synced } from "$lib/Synced.svelte";
 import { createDataIds } from "$lib/utils/identifiers";
 import { styleAttr } from "$lib/utils/attribute";
 import { inBrowser } from "$lib/utils/browser";
+import { MaybeGetter } from "$lib/types";
 
 const identifiers = createDataIds("avatar", ["image", "fallback"]);
 
@@ -12,19 +13,19 @@ export type AvatarProps = {
 	/**
 	 * The source of the image to display.
 	 */
-	src?: string;
+	src?: MaybeGetter<string | undefined>;
 
 	/**
 	 * The amount of time in milliseconds to wait before displaying the image.
 	 *
 	 * @default 0
 	 */
-	delayMs?: number;
+	delayMs?: MaybeGetter<number | undefined>;
 
 	/**
 	 * A callback invoked when the loading status store of the avatar changes.
 	 */
-	onLoadingStatusChange?: (value: ImageLoadingStatus) => void;
+	onLoadingStatusChange?: MaybeGetter<(value: ImageLoadingStatus) => void | undefined>;
 };
 
 export class Avatar {
