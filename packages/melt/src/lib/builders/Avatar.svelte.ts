@@ -55,7 +55,7 @@ export class Avatar {
 			src: this.src,
 			style: styleAttr({ display: this.#loadingStatus.current === "loaded" ? "block" : "none" }),
 			onload: () => {
-				if (inBrowser) {
+				if (inBrowser()) {
 					if (this.delayMs !== undefined) {
 						const timerId = window.setTimeout(() => {
 							this.#loadingStatus.current = "loaded";
