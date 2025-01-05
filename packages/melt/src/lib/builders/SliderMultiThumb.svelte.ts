@@ -1,8 +1,7 @@
 import { useEventListener } from "runed";
 
-import { styleAttr } from "$lib/utils/attribute";
+import { dataAttr, styleAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
-import { clamp } from "$lib/utils/number";
 import { Synced } from "../Synced.svelte";
 import { createDataIds, createIds } from "../utils/identifiers";
 import { isHtmlElement } from "../utils/is";
@@ -53,15 +52,18 @@ export type SliderMultiThumbProps = {
 	 * @default "ltr"
 	 */
 	dir?: MaybeGetter<"ltr" | "rtl" | undefined>;
+	/**
+	 * Determines if the values array should be automatically sorted.
+	 * 
+	 * @default true
+	 */
+	autoSort?: MaybeGetter<boolean | undefined>;
     /**
 	 * Called when the `Slider` instance value changes.
 	 */
 	onValueChange?: (active: number[]) => void;
 };
 
-/**
- * TODO: description
- */
 export class SliderMultiThumb {
     /* Props */
     #props!: SliderMultiThumbProps;
@@ -72,16 +74,16 @@ export class SliderMultiThumb {
     readonly step = $derived(extract(this.#props.step, 1));
 	readonly dir = $derived(extract(this.#props.dir, "ltr"));
 	readonly ltr = $derived(this.dir === 'ltr');
+	readonly autoSort = $derived(extract(this.#props.autoSort, true));
 
     /* State */
     #value!: Synced<number[]>;
 	#ids = createIds(dataIds);
-	#mouseDown = false;
-	#dragging = false;
-	#mouseDownAt: null | number = null;
-	#isActive = false;
-	#activeThumb: { el: HTMLElement; index: number } | null = null;
+	#dragging = $state(false);
+	#activeThumb = $state<{ el: HTMLElement; index: number } | null>(null);
+	#pointerdown = false;
 	#numThumbs = $derived(this.#value.current.length);
+	#pointerMoveTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(props: SliderMultiThumbProps = {}) {
         this.#props = props;
@@ -97,16 +99,15 @@ export class SliderMultiThumb {
 		return this.#value.current;
 	}
 
-	// set value(value: number[]) {
-	// 	value.forEach((v, i) => this.updateValueAtIndex({ value: v, index: i}));
-	// }
+	get activeThumb() {
+		return this.#activeThumb;
+	}
+
+	get isDragging() {
+		return this.#dragging;
+	}
 
 	updateValueAtIndex(v: { value: number, index: number }) {
-		// const valueFixedToStep = Math.round(v.value / this.step) * this.step;
-		// const newValue = this.#value.current;
-		// newValue[v.index] = clamp(this.min, valueFixedToStep, this.max);
-		// this.#value.current = newValue;
-		// // this.#value.current[v.index] = clamp(this.min, valueFixedToStep, this.max);
 		this.#updatePosition(v.value, v.index);
 	}
 
@@ -151,24 +152,21 @@ export class SliderMultiThumb {
 	}
 
 	#updatePosition(value: number, index: number) {
-		if (this.value.length === 0) {
-			this.value[index] = value;
-			return;
-		}
-
-		const current = this.value[index];
-		if (current === undefined || current === value) return;
-
-		const previous = this.value[index - 1];
-		if (previous !== undefined && value < current && value < previous) {
-			this.#swap(value, index, previous, index - 1);
-			return;
-		}
-
-		const next = this.value[index + 1];
-		if (next !== undefined && value > current && value > next) {
-			this.#swap(value, index, next, index + 1);
-			return;
+		if (this.autoSort) {
+			const current = this.value[index];
+			if (current === undefined || current === value) return;
+	
+			const previous = this.value[index - 1];
+			if (previous !== undefined && value < current && value < previous) {
+				this.#swap(value, index, previous, index - 1);
+				return;
+			}
+	
+			const next = this.value[index + 1];
+			if (next !== undefined && value > current && value > next) {
+				this.#swap(value, index, next, index + 1);
+				return;
+			}
 		}
 
 		this.value[index] = snapValueToStep(value, this.min, this.max, this.step);
@@ -210,13 +208,13 @@ export class SliderMultiThumb {
 	}
 
 	#handleDocumentPointerMove(e: PointerEvent, sliderElement: HTMLElement | null = null) {
-		if (!this.#isActive) return;
+		if (!this.#activeThumb) return;
 
 		e.preventDefault();
 		e.stopPropagation();
 
 		const sliderEl = sliderElement ?? document.getElementById(this.#ids.root);
-		if (this.#activeThumb === null || sliderEl === null) return;
+		if (sliderEl === null) return;
 
 		this.#activeThumb.el.focus();
 
@@ -240,12 +238,21 @@ export class SliderMultiThumb {
 		useEventListener(
 			() => document,
 			"pointermove",
-			(e: PointerEvent) => this.#handleDocumentPointerMove(e)
-			// this.#handleDocumentPointerMove.bind(this)
-			// (e: PointerEvent) => {
-			// 	if (this.#activeIndex === null || !this.#mouseDownAt) return;
-			// 	this.#commit(e);
-			// }
+			(e: PointerEvent) => {
+				// Set the dragging value.
+				if (this.#pointerMoveTimer) {
+					clearTimeout(this.#pointerMoveTimer);
+				}
+
+				this.#pointerMoveTimer = setTimeout(() => (this.#dragging = false), 100);
+
+				if (this.#pointerdown && this.#activeThumb) {
+					this.#dragging = true;
+				}
+
+				// Handle the pointer move.
+				this.#handleDocumentPointerMove(e);
+			}
 		);
 
 		useEventListener(
@@ -264,8 +271,8 @@ export class SliderMultiThumb {
 				e.preventDefault();
 
 				this.#activeThumb = closestThumb;
+				this.#pointerdown = true;
 				closestThumb.el.focus();
-				this.#isActive = true;
 
 				this.#handleDocumentPointerMove(e, sliderEl);
 			}
@@ -275,10 +282,8 @@ export class SliderMultiThumb {
 			() => document,
 			"pointerup",
 			() => {
-				this.#mouseDown = false;
 				this.#dragging = false;
-				this.#isActive = false;
-				// this.#activeIndex = null;
+				this.#pointerdown = false;
 				this.#activeThumb = null;
 			},
 		);
@@ -297,18 +302,7 @@ export class SliderMultiThumb {
 			.fill(null)
 			.map((_, i) => new Thumb({
 				slider: this,
-				index: i,
-				onpointerdown: (e) => {
-					// TODO: probably don't need this here since we can use
-					// an event listener on the document
-					
-					// this.#activeIndex = i;
-					// // this.#activeThumb = e.target;
-					// // e.target.focus();
-					// this.#mouseDown = true;
-					// this.#mouseDownAt = e.timeStamp;
-					// this.#commit(e);
-				}
+				index: i
 			}));
 	}
 }
@@ -316,7 +310,6 @@ export class SliderMultiThumb {
 type ThumbProps = {
 	slider: SliderMultiThumb;
 	index: number;
-	onpointerdown: (e: PointerEvent) => void;
 }
 
 class Thumb {
@@ -324,7 +317,6 @@ class Thumb {
 	#props!: ThumbProps;
 	#slider = $derived(this.#props.slider);
 	#index = $derived(this.#props.index);
-	#onpointerdown = $derived(this.#props.onpointerdown);
 
 	constructor(props: ThumbProps) {
 		this.#props = props;
@@ -336,12 +328,15 @@ class Thumb {
 
 	set value(value: number) {
 		this.#slider.updateValueAtIndex({ value, index: this.#index });
-		// this.#slider.value[this.#index] = value;
 	}
 
 	get #percentage() {
 		const v = (this.value - this.#slider.min) / (this.#slider.max - this.#slider.min);
 		return this.#slider.horizontal ? v :  1 - v;
+	}
+
+	get #dragging() {
+		return this.#slider.isDragging && this.#slider.activeThumb && this.#slider.activeThumb.index === this.#index;
 	}
 
 	get trigger() {
@@ -353,15 +348,15 @@ class Thumb {
 			"aria-valuemin": this.#slider.min,
 			"aria-valuemax": this.#slider.max,
 			"aria-orientation": this.#slider.orientation,
+			"data-dragging": dataAttr(this.#dragging),
 			role: "slider",
 			tabindex: 0,
 			[dataIds.thumb]: "",
 			style: styleAttr({
-				[`--percentage`]: this.#slider.ltr ? percentage : percentageInverse,
-				[`--percentage-inv`]: this.#slider.ltr ? percentageInverse : percentage,
+				'--percentage': this.#slider.ltr ? percentage : percentageInverse,
+				'--percentage-inv': this.#slider.ltr ? percentageInverse : percentage,
 				"touch-action": this.#slider.horizontal ? "pan-y" : "pan-x"
 			}),
-			onpointerdown: this.#onpointerdown,
 			onkeydown: (e: KeyboardEvent) => {
 				switch (e.key) {
 					case "ArrowDown":

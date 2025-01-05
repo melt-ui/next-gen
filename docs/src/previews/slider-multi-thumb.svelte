@@ -18,6 +18,11 @@
 			options: ["ltr", "rtl"],
 			defaultValue: "ltr",
 		},
+		autoSort: {
+			type: "boolean",
+			defaultValue: true,
+			label: "Auto Sort",
+		},
 	});
 
 	let value = $state([0, 25, 50, 75, 100]);
@@ -42,15 +47,17 @@
 							? 'left-0 right-0 top-1/2 h-2 -translate-y-1/2'
 							: 'bottom-0 left-1/2 top-0 w-2 -translate-x-1/2'}"
 					>
-						<div
+						<!-- <div
 							class="bg-accent-300 absolute inset-0 rounded-full transition-all group-data-[dragging]:transition-none
 							{slider.orientation === 'horizontal' ? 'right-[var(--percentage-inv)]' : 'top-[var(--percentage)]'}"
-						></div>
+						></div> -->
 					</div>
 					{#each slider.thumbs as thumb}
 						<div
-							class="focus-visible:ring-accent-300 border-accent-300 absolute size-6 rounded-md border-2 bg-white outline-none transition-all
-							focus-visible:ring focus-visible:ring-offset-black data-[dragging]:transition-none
+							class="focus-visible:ring-accent-300 border-accent-300 absolute size-6 rounded-md border-2 bg-white outline-none
+							transition-all duration-200
+							focus-visible:ring focus-visible:ring-offset-black
+							data-[dragging]:transition-none
 							dark:border-none dark:focus-visible:ring-offset-2
 							{slider.orientation === 'horizontal'
 								? 'left-[var(--percentage)] top-1/2 -translate-x-1/2 -translate-y-1/2'
