@@ -11,7 +11,7 @@
 		delayMs: {
 			label: "Delay (ms)",
 			type: "number",
-			defaultValue: "650",
+			defaultValue: 650,
 		},
 	});
 </script>
