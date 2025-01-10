@@ -602,7 +602,7 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  disabled: boolean\n  onclick: () => void\n}",
+        "type": "{\n  disabled: boolean\n  onclick: () => void\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n}",
         "description": ""
       },
       {
@@ -611,6 +611,6 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type CollapsibleProps = {\r\n    /**\r\n   * Whether the collapsible is disabled which prevents it from being opened.\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n\r\n    /**\r\n     * Whether the collapsible is open.\r\n     */\r\n    open?: MaybeGetter<boolean>;\r\n\r\n    /**\r\n     * Whether the collapsible is open by default.\r\n     */\r\n    defaultOpen?: MaybeGetter<boolean | undefined>;\r\n\r\n    /**\r\n   * A callback called when the value of `open` changes.\r\n   */\r\n  onOpenChange?: (value: boolean) => void;\r\n};"
+    "propsAlt": "export type CollapsibleProps = {\r\n  /**\r\n   * Whether the collapsible is disabled which prevents it from being opened.\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * Whether the collapsible is open.\r\n   */\r\n  open?: MaybeGetter<boolean>;\r\n\r\n  /**\r\n   * Whether the collapsible is open by default.\r\n   */\r\n  defaultOpen?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * A callback called when the value of `open` changes.\r\n   */\r\n  onOpenChange?: (value: boolean) => void;\r\n};"
   }
 }

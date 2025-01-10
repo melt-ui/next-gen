@@ -5,22 +5,22 @@ import { Synced } from "$lib/Synced.svelte";
 import { dataAttr } from "$lib/utils/attribute";
 
 export type CollapsibleProps = {
-    /**
+	/**
 	 * Whether the collapsible is disabled which prevents it from being opened.
 	 */
 	disabled?: MaybeGetter<boolean | undefined>;
 
-    /**
-     * Whether the collapsible is open.
-     */
-    open?: MaybeGetter<boolean>;
+	/**
+	 * Whether the collapsible is open.
+	 */
+	open?: MaybeGetter<boolean>;
 
-    /**
-     * Whether the collapsible is open by default.
-     */
-    defaultOpen?: MaybeGetter<boolean | undefined>;
+	/**
+	 * Whether the collapsible is open by default.
+	 */
+	defaultOpen?: MaybeGetter<boolean | undefined>;
 
-    /**
+	/**
 	 * A callback called when the value of `open` changes.
 	 */
 	onOpenChange?: (value: boolean) => void;
@@ -47,17 +47,20 @@ export class Collapsible {
         return this.#open.current;
     }
 
-    get root() {
-        return {
-            'data-state': this.open ? 'open' : 'closed',
+	get #sharedAttrs() {
+		return {
+			'data-state': this.open ? 'open' : 'closed',
             'data-disabled': dataAttr(this.disabled)
-        };
+		};
+	}
+
+    get root() {
+        return this.#sharedAttrs;
     }
 
     get trigger() {
         return {
-            'data-state': this.open ? 'open' : 'closed',
-            'data-disabled': dataAttr(this.disabled),
+            ...this.#sharedAttrs,
             disabled: this.disabled,
             onclick: () => {
                 if (this.disabled) return;
@@ -68,9 +71,6 @@ export class Collapsible {
     }
 
     get content() {
-        return {
-            'data-state': this.open ? 'open' : 'closed',
-            'data-disabled': dataAttr(this.disabled),
-        };
+        return this.#sharedAttrs;
     }
 }
