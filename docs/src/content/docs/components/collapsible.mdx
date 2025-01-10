@@ -1,0 +1,63 @@
+---
+title: Collapsible
+description: An interactive component which expands/collapses a panel.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/collapsible.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 🎹 Keyboard navigation
+</Features>
+
+## Usage
+
+<Tabs>
+	<TabItem label="Builder">
+```svelte
+<script lang="ts">
+	import { Collapsible } from "melt";
+
+	const collapsible = new Collapsible();
+</script>
+
+<div {...collapsible.root}>
+    <button {...collapsible.trigger}>Open/Close content</button>
+
+    <div {...collapsible.content}>
+        Content
+    </div>
+</div>
+```
+	</TabItem>
+
+	<TabItem label="Component">
+```svelte
+<script lang="ts">
+	import { Collapsible } from "melt/components";
+</script>
+
+<Collapsible>
+	{#snippet children(collapsible)}
+		<div {...collapsible.root}>
+            <button {...collapsible.trigger}>Open/Close content</button>
+
+            <div {...collapsible.content}>
+                Content
+            </div>
+		</div>
+	{/snippet}
+</Collapsible>
+```
+	</TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="Collapsible" />
