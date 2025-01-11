@@ -1,0 +1,39 @@
+---
+title: Progress
+description: Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/progress.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 💬 Assistive reading technology support for progress bar
+</Features>
+
+## Usage
+
+<Tabs>
+	<TabItem label="Builder">
+```svelte
+<script lang="ts">
+	import { Progress } from "melt";
+
+	const progress = new Progress();
+</script>
+
+<div {...progress.root}>
+	<div {...progress.progress} />
+</div>
+```
+	</TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="Progress" />
