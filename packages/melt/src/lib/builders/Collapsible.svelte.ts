@@ -27,50 +27,62 @@ export type CollapsibleProps = {
 };
 
 export class Collapsible {
-    // Props
-    #props!: CollapsibleProps;
-    readonly disabled = $derived(extract(this.#props.disabled, false));
+	// Props
+	#props!: CollapsibleProps;
+	readonly disabled = $derived(extract(this.#props.disabled, false));
 
-    // State
-    #open: Synced<boolean>;
+	// State
+	#open: Synced<boolean>;
 
-    constructor(props: CollapsibleProps) {
-        this.#props = props;
-        this.#open = new Synced({
-            value: props.open,
-            onChange: props.onOpenChange,
-            defaultValue: extract(props.disabled, false)
-        });
-    }
+	constructor(props: CollapsibleProps) {
+		this.#props = props;
+		this.#open = new Synced({
+			value: props.open,
+			onChange: props.onOpenChange,
+			defaultValue: extract(props.disabled, false)
+		});
+	}
 
-    get open() {
-        return this.#open.current;
-    }
+	/**
+	 * The open state of the collapsible.
+	 */
+	get open() {
+		return this.#open.current;
+	}
 
 	get #sharedAttrs() {
 		return {
 			'data-state': this.open ? 'open' : 'closed',
-            'data-disabled': dataAttr(this.disabled)
+			'data-disabled': dataAttr(this.disabled)
 		};
 	}
 
-    get root() {
-        return this.#sharedAttrs;
-    }
+	/**
+	 * The attributes for the root.
+	 */
+	get root() {
+		return this.#sharedAttrs;
+	}
 
-    get trigger() {
-        return {
-            ...this.#sharedAttrs,
-            disabled: this.disabled,
-            onclick: () => {
-                if (this.disabled) return;
+	/**
+	 * The attributes for the trigger button.
+	 */
+	get trigger() {
+		return {
+			...this.#sharedAttrs,
+			disabled: this.disabled,
+			onclick: () => {
+				if (this.disabled) return;
 
-                this.#open.current = !this.#open.current;
-            }
-        };
-    }
+				this.#open.current = !this.#open.current;
+			}
+		};
+	}
 
-    get content() {
-        return this.#sharedAttrs;
-    }
+	/**
+	 * The attributes for the content.
+	 */
+	get content() {
+		return this.#sharedAttrs;
+	}
 }
