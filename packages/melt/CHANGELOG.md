@@ -1,5 +1,11 @@
 # melt
 
+## 0.2.2
+
+### Patch Changes
+
+- 3860900: fix tree nav
+
 ## 0.2.1
 
 ### Patch Changes
