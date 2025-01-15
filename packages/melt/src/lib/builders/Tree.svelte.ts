@@ -450,7 +450,12 @@ class Child<I extends TreeItem[]> {
 			return this.nextSibling;
 		}
 		if (this.parent instanceof Child) {
-			return this.parent.nextSibling;
+			let p: Child<any> | undefined = this.parent;
+			while (p && !p.nextSibling) {
+				if (p.parent instanceof Tree) break;
+				p = p.parent;
+			}
+			return p?.nextSibling;
 		}
 	}
 
