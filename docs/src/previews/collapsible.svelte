@@ -15,37 +15,37 @@
 </script>
 
 <Preview>
-	<Collapsible {...controls}>
+	<Collapsible {...controls} open>
 		{#snippet children(collapsible)}
-			<div {...collapsible.root} class="mx-auto mb-28 w-[18rem] max-w-full sm:w-[25rem]">
-				<div class="flex items-center justify-between">
-					<span class="text-base font-semibold"> @thomasglopes starred 3 repositories </span>
-					<button
-						{...collapsible.trigger}
-						class="inline-flex aspect-square items-center justify-center rounded-md bg-white text-lg text-black shadow hover:opacity-75 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-75"
-						aria-label="Toggle"
-					>
-						{#if collapsible.open}
-							<Close />
-						{:else}
-							<ChevronUpDown />
-						{/if}
-					</button>
-				</div>
+			<div {...collapsible.root} class="mx-auto w-[18rem] max-w-full sm:w-[25rem]">
+				<button
+					{...collapsible.trigger}
+					class="relative z-10 mx-auto flex w-full items-center justify-between rounded-xl bg-gray-200
+				px-4 py-2 text-gray-800 transition-all hover:cursor-pointer hover:bg-gray-300
+				active:bg-gray-400 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
+				dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
+					class:shadow-md={collapsible.open}
+					aria-label="Toggle"
+				>
+					<span> @thomasglopes starred 3 repositories </span>
+					{#if collapsible.open}
+						<Close />
+					{:else}
+						<ChevronUpDown />
+					{/if}
+				</button>
 
 				{#if collapsible.open}
-					<div {...collapsible.content} class="mt-6" transition:slide>
-						<div class="flex flex-col gap-2">
-							<div class="rounded-lg bg-white p-3 shadow">
-								<span class="text-base text-black">melt-ui/melt-ui</span>
-							</div>
-							<div class="rounded-lg bg-white p-3 shadow">
-								<span class="text-base text-black">sveltejs/svelte</span>
-							</div>
-							<div class="rounded-lg bg-white p-3 shadow">
-								<span class="text-base text-black">sveltejs/kit</span>
-							</div>
-						</div>
+					<div
+						{...collapsible.content}
+						class="mx-auto flex w-[calc(100%-32px)] flex-col gap-2 rounded-b-xl bg-white p-4 dark:bg-gray-900 dark:text-white/80"
+						transition:slide
+					>
+						<span>melt-ui/melt-ui</span>
+						<hr class="border-b border-gray-700" />
+						<span>sveltejs/svelte</span>
+						<hr class="border-b border-gray-700" />
+						<span>sveltejs/kit</span>
 					</div>
 				{/if}
 			</div>
