@@ -692,7 +692,7 @@
       },
       {
         "name": "onLoadingStatusChange",
-        "type": "MaybeGetter<((value: 'loading' | 'loaded' | 'error') => void) | undefined>",
+        "type": "((value: 'loading' | 'loaded' | 'error') => void) | undefined",
         "description": "Callback fired when the loading status changes",
         "defaultValue": "undefined",
         "optional": true
@@ -714,6 +714,6 @@
         "type": "{\n  readonly \"data-melt-avatar-fallback\": \"\"\n  readonly style: string | undefined\n  readonly hidden: boolean | undefined\n}"
       }
     ],
-    "propsAlt": "export type AvatarProps = {\n  /**\n   * The source of the image to display.\n   */\n  src?: MaybeGetter<string | undefined>;\n\n  /**\n   * The amount of time in milliseconds to wait before displaying the image.\n   *\n   * @default 0\n   */\n  delayMs?: MaybeGetter<number | undefined>;\n\n  /**\n   * A callback invoked when the loading status store of the avatar changes.\n   */\n  onLoadingStatusChange?: MaybeGetter<(value: ImageLoadingStatus) => void | undefined>;\n};"
+    "propsAlt": "export type AvatarProps = {\n  /**\n   * The source of the image to display.\n   */\n  src?: MaybeGetter<string | undefined>;\n\n  /**\n   * The amount of time in milliseconds to wait before displaying the image.\n   *\n   * @default 0\n   */\n  delayMs?: MaybeGetter<number | undefined>;\n\n  /**\n   * A callback invoked when the loading status store of the avatar changes.\n   */\n  onLoadingStatusChange?: (value: ImageLoadingStatus) => void | undefined;\n};"
   }
 }

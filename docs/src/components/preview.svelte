@@ -188,7 +188,7 @@
 					{:else if control.type === "select"}
 						<select
 							bind:value={values[key] as string}
-							class="self-stretch rounded-md bg-gray-900 px-1 py-0.5 text-gray-100"
+							class="self-stretch rounded-md px-1 py-0.5 dark:bg-gray-900"
 						>
 							{#each control.options as option}
 								<option value={option}>{option}</option>
@@ -200,13 +200,13 @@
 							bind:value={values[key] as number}
 							min={control.min}
 							max={control.max}
-							class="self-stretch rounded-md bg-gray-900 px-1 py-0.5 text-gray-100"
+							class="self-stretch rounded-md px-1 py-0.5 dark:bg-gray-900"
 						/>
 					{:else if control.type === "string"}
 						<input
 							type="text"
 							bind:value={values[key] as string}
-							class="self-stretch rounded-md bg-gray-900 px-1 py-0.5 text-gray-100"
+							class="self-stretch rounded-md px-1 py-0.5 dark:bg-gray-900"
 						/>
 					{/if}
 				</label>

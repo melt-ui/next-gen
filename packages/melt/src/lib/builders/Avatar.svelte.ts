@@ -1,9 +1,8 @@
 import { extract } from "$lib/utils/extract";
-import { Synced } from "$lib/Synced.svelte";
 import { createDataIds } from "$lib/utils/identifiers";
 import { styleAttr } from "$lib/utils/attribute";
 import { inBrowser } from "$lib/utils/browser";
-import { MaybeGetter } from "$lib/types";
+import type { MaybeGetter } from "$lib/types";
 
 const identifiers = createDataIds("avatar", ["image", "fallback"]);
 
@@ -25,7 +24,7 @@ export type AvatarProps = {
 	/**
 	 * A callback invoked when the loading status store of the avatar changes.
 	 */
-	onLoadingStatusChange?: MaybeGetter<(value: ImageLoadingStatus) => void | undefined>;
+	onLoadingStatusChange?: (value: ImageLoadingStatus) => void | undefined;
 };
 
 export class Avatar {
@@ -35,40 +34,38 @@ export class Avatar {
 	readonly delayMs = $derived(extract(this.#props.delayMs, 0));
 
 	/* State */
-	#loadingStatus!: Synced<ImageLoadingStatus>;
+	#loadingStatus: ImageLoadingStatus = $state("loading");
 
 	constructor(props: AvatarProps = {}) {
-		this.#loadingStatus = new Synced({
-			value: "loading",
-			onChange: props.onLoadingStatusChange,
-			defaultValue: "loading",
+		$effect(() => {
+			this.#props.onLoadingStatusChange?.(this.#loadingStatus);
 		});
 		this.#props = props;
 	}
 
 	get loadingStatus() {
-		return this.#loadingStatus.current;
+		return this.#loadingStatus;
 	}
 
 	get image() {
 		return {
 			[identifiers.image]: "",
 			src: this.src,
-			style: styleAttr({ display: this.#loadingStatus.current === "loaded" ? "block" : "none" }),
+			style: styleAttr({ display: this.#loadingStatus === "loaded" ? "block" : "none" }),
 			onload: () => {
 				if (inBrowser()) {
 					if (this.delayMs !== undefined) {
 						const timerId = window.setTimeout(() => {
-							this.#loadingStatus.current = "loaded";
+							this.#loadingStatus = "loaded";
 						}, this.delayMs);
 						return () => window.clearTimeout(timerId);
 					} else {
-						this.#loadingStatus.current = "loaded";
+						this.#loadingStatus = "loaded";
 					}
 				}
 			},
 			onerror: () => {
-				this.#loadingStatus.current = "error";
+				this.#loadingStatus = "error";
 			},
 		} as const;
 	}
@@ -76,8 +73,8 @@ export class Avatar {
 	get fallback() {
 		return {
 			[identifiers.fallback]: "",
-			style: styleAttr({ display: this.#loadingStatus.current === "loaded" ? "none" : undefined }),
-			hidden: this.#loadingStatus.current === "loaded" ? true : undefined,
+			style: this.#loadingStatus === "loaded" ? styleAttr({ display: "none" }) : undefined,
+			hidden: this.#loadingStatus === "loaded" ? true : undefined,
 		} as const;
 	}
 }
