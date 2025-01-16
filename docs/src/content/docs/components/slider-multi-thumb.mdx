@@ -1,0 +1,65 @@
+---
+title: Slider Multi Thumb
+description: A draggable input with multiple thumbs to control numeric values.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/slider-multi-thumb.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 🎹 Keyboard navigation
+- 🧠 Smart focus management
+- 🔄 Horizontal and vertical orientation
+- 🌐 RTL support
+- ~💬 Tooltip value display~
+</Features>
+
+## Usage
+
+
+<Tabs>
+	<TabItem label="Builder">
+```svelte
+<script lang="ts">
+	import { SliderMultiThumb, type SliderMultiThumbProps } from "melt/builders";
+
+	const slider = new SliderMultiThumb();
+</script>
+
+<div {...slider.root}>
+    {#each slider.thumbs as thumb}
+	    <div {...thumb.trigger}></div>
+    {/each}
+</div>
+```
+	</TabItem>
+
+	<TabItem label="Component">
+
+```svelte
+<script lang="ts">
+	import { SliderMultiThumb } from "melt/components";
+</script>
+
+<SliderMultiThumb>
+	{#snippet children(slider)}
+		<div {...slider.root}>
+            {#each slider.thumbs as thumb}
+			    <div {...thumb.trigger}></div>
+            {/each}
+		</div>
+	{/snippet}
+</SliderMultiThumb>
+	```
+	</TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="SliderMultiThumb" />
