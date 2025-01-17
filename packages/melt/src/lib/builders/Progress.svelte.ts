@@ -28,16 +28,16 @@ export type ProgressProps = {
 export class Progress {
 	// Props
 	#props!: ProgressProps;
-	readonly max = $derived(extract(this.#props?.max, 100));
+	readonly max = $derived(extract(this.#props.max, 100));
 
 	// States
 	#value: Synced<number>;
 
-	constructor(props: ProgressProps) {
+	constructor(props: ProgressProps = {}) {
 		this.#props = props;
 		this.#value = new Synced({
-			value: props?.value,
-			onChange: props?.onValueChange,
+			value: props.value,
+			onChange: props.onValueChange,
 			defaultValue: 0
 		});
 	}
