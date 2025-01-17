@@ -24,16 +24,16 @@ export type CollapsibleProps = {
 export class Collapsible {
 	// Props
 	#props!: CollapsibleProps;
-	readonly disabled = $derived(extract(this.#props?.disabled, false));
+	readonly disabled = $derived(extract(this.#props.disabled, false));
 
 	// State
 	#open: Synced<boolean>;
 
-	constructor(props: CollapsibleProps) {
+	constructor(props: CollapsibleProps = {}) {
 		this.#props = props;
 		this.#open = new Synced({
-			value: props?.open,
-			onChange: props?.onOpenChange,
+			value: props.open,
+			onChange: props.onOpenChange,
 			defaultValue: false
 		});
 	}
