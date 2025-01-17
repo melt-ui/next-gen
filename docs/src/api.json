@@ -412,13 +412,6 @@
         "optional": true
       },
       {
-        "name": "defaultValue",
-        "type": "MaybeGetter<number | undefined>",
-        "description": "The default value of the progress.",
-        "defaultValue": "0",
-        "optional": true
-      },
-      {
         "name": "onValueChange",
         "type": "((value: number) => void) | undefined",
         "description": "The callback invoked when the value of the progress changes.",
@@ -448,7 +441,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type ProgressProps = {\r\n  /**\r\n   * The value for the progress.\r\n   * \r\n   * @default undefined\r\n   */\r\n  value?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The maximum value of the progress.\r\n   * \r\n   * @deafult 100\r\n   */\r\n  max?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The default value of the progress.\r\n   * \r\n   * @default 0\r\n   */\r\n  defaultValue?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The callback invoked when the value of the progress changes.\r\n   */\r\n  onValueChange?: (value: number) => void;\r\n};"
+    "propsAlt": "export type ProgressProps = {\r\n  /**\r\n   * The value for the progress.\r\n   * \r\n   * @default undefined\r\n   */\r\n  value?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The maximum value of the progress.\r\n   * \r\n   * @deafult 100\r\n   */\r\n  max?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The callback invoked when the value of the progress changes.\r\n   */\r\n  onValueChange?: (value: number) => void;\r\n};"
   },
   "Popover": {
     "constructorProps": [

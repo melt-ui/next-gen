@@ -20,13 +20,6 @@ export type ProgressProps = {
 	max?: MaybeGetter<number | undefined>;
 
 	/**
-	 * The default value of the progress.
-	 * 
-	 * @default 0
-	 */
-	defaultValue?: MaybeGetter<number | undefined>;
-
-	/**
 	 * The callback invoked when the value of the progress changes.
 	 */
 	onValueChange?: (value: number) => void;
@@ -35,7 +28,7 @@ export type ProgressProps = {
 export class Progress {
 	// Props
 	#props!: ProgressProps;
-	readonly max = $derived(extract(this.#props.max, 100));
+	readonly max = $derived(extract(this.#props?.max, 100));
 
 	// States
 	#value: Synced<number>;
@@ -43,14 +36,18 @@ export class Progress {
 	constructor(props: ProgressProps) {
 		this.#props = props;
 		this.#value = new Synced({
-			value: props.value,
-			onChange: props.onValueChange,
-			defaultValue: extract(props.defaultValue, 0)
+			value: props?.value,
+			onChange: props?.onValueChange,
+			defaultValue: 0
 		});
 	}
 
 	get value() {
 		return this.#value.current;
+	}
+
+	set value(value: number) {
+		this.#value.current = value;
 	}
 
 	get root() {

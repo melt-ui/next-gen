@@ -2,16 +2,14 @@
 	import Preview from "@components/preview.svelte";
 	import { Progress } from "melt/builders";
 
-	let value = $state(0);
-	const progress = new Progress({
-		value: () => value,
-	});
+	const progress = new Progress();
 
 	const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 	sleep(1000).then(() => {
 		setInterval(() => {
-			if (value === 80) clearInterval(this);
-			else value++;
+			if (progress.value === 80) clearInterval(this);
+			else progress.value++;
 		}, 100);
 	});
 </script>
