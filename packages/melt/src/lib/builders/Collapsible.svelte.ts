@@ -16,11 +16,6 @@ export type CollapsibleProps = {
 	open?: MaybeGetter<boolean>;
 
 	/**
-	 * Whether the collapsible is open by default.
-	 */
-	defaultOpen?: MaybeGetter<boolean | undefined>;
-
-	/**
 	 * A callback called when the value of `open` changes.
 	 */
 	onOpenChange?: (value: boolean) => void;
@@ -29,7 +24,7 @@ export type CollapsibleProps = {
 export class Collapsible {
 	// Props
 	#props!: CollapsibleProps;
-	readonly disabled = $derived(extract(this.#props.disabled, false));
+	readonly disabled = $derived(extract(this.#props?.disabled, false));
 
 	// State
 	#open: Synced<boolean>;
@@ -37,9 +32,9 @@ export class Collapsible {
 	constructor(props: CollapsibleProps) {
 		this.#props = props;
 		this.#open = new Synced({
-			value: props.open,
-			onChange: props.onOpenChange,
-			defaultValue: extract(props.disabled, false)
+			value: props?.open,
+			onChange: props?.onOpenChange,
+			defaultValue: false
 		});
 	}
 
@@ -48,6 +43,10 @@ export class Collapsible {
 	 */
 	get open() {
 		return this.#open.current;
+	}
+
+	set open(open: boolean) {
+		this.#open.current = open;
 	}
 
 	get #sharedAttrs() {
