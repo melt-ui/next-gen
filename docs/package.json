@@ -30,6 +30,7 @@
 	},
 	"devDependencies": {
 		"@iconify/json": "^2.2.227",
+		"@number-flow/svelte": "^0.3.3",
 		"unplugin-icons": "^0.19.0"
 	}
 }

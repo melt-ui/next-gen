@@ -1,4 +1,5 @@
 <script lang="ts">
+	import NumberFlow from "@number-flow/svelte";
 	import Preview from "@components/preview.svelte";
 	import { Progress } from "melt/builders";
 
@@ -9,7 +10,7 @@
 	sleep(1000).then(() => {
 		setInterval(() => {
 			if (progress.value === 80) clearInterval(this);
-			else progress.value++;
+			else progress.value += 1;
 		}, 100);
 	});
 </script>
@@ -23,7 +24,7 @@
 		<span
 			class="text-accent-500 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-semibold"
 		>
-			{progress.value}%
+			<NumberFlow value={progress.value} suffix="%" />
 		</span>
 	</div>
 </Preview>

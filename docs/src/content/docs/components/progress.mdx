@@ -27,9 +27,20 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 	const progress = new Progress();
 </script>
 
-<div {...progress.root}>
-	<div {...progress.progress} />
+<div id="root" {...progress.root}>
+	<div id="progress-bar" {...progress.progress} />
 </div>
+
+<style>
+	#root {
+		height: 1.5rem;
+		width: 300px;
+	}
+
+	#progress-bar {
+		transform: translateX(calc(var(--progress) * -1));
+	}
+</style>
 ```
 	</TabItem>
 </Tabs>
