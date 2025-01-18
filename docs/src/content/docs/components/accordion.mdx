@@ -1,0 +1,42 @@
+---
+title: Accordion
+description: An interactive component that enables the organization and navigation of content by allowing users to expand and collapse sections.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/accordion.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 🎹 Keyboard navigation
+- 🍃 Can expand one or multiple items
+</Features>
+
+## Usage
+
+<Tabs>
+	<TabItem label="Builder">
+```svelte
+<script lang="ts">
+	import { Accordion } from "melt/builders";
+
+	const accordion = new Accordion();
+</script>
+```
+	</TabItem>
+
+	<TabItem label="Component">
+```svelte
+
+```
+	</TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="Accordion" />

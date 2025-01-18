@@ -27,6 +27,8 @@ type _props<Multiple extends _multiple_extends> = {
 	? { multiple: MaybeGetter<Multiple | undefined> }
 	: Record<never, never>);
 
+export type OnSelectChange<Multiple extends _multiple_extends> = _onChange<Multiple>;
+
 function toSet(v: Iterable<string> | string | undefined): SvelteSet<string> {
 	if (isString(v)) return new SvelteSet([v]);
 	if (isSvelteSet(v)) return v as SvelteSet<string>;
