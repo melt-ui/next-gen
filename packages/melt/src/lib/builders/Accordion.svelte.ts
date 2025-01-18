@@ -21,6 +21,8 @@ export type AccordionItem<Meta extends Record<string, unknown> = Record<never, n
 	id: string;
 	/** Disables the accordion item. */
 	disabled?: boolean;
+	/** If the item has a header, this represents the level of the header. */
+	headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
 } & Meta;
 
 /**
@@ -190,25 +192,55 @@ class Item<Items extends AccordionItem[], Multiple extends boolean = false> {
 					this.toggleExpand();
 				}
 
+				const el = e.target;
 				const rootEl = document.getElementById(this.#rootId);
-				if (!rootEl || !isHtmlElement(rootEl)) return;
+				if (!rootEl || !isHtmlElement(el)) return;
 
 				const items = Array.from(rootEl.querySelectorAll(`[${identifiers.trigger}]`));
 
-				console.log('items:', items);
+				const candidateItems = items.filter((item): item is HTMLElement => {
+					if (!isHtmlElement(item)) return false;
+					return !('disabled' in item.dataset);
+				});
 
-				// const candidateItems = items.filter((item): item is HTMLElement => {
-				// 	if (!isHTMLElement(item)) return false;
-				// 	return item.dataset.disabled !== 'true';
-				// });
+				if (!candidateItems.length) return;
+				const elIdx = candidateItems.indexOf(el);
 
-
+				if (e.key === kbd.ARROW_DOWN) {
+					candidateItems[(elIdx + 1) % candidateItems.length].focus();
+				}
+				if (e.key === kbd.ARROW_UP) {
+					candidateItems[(elIdx - 1 + candidateItems.length) % candidateItems.length].focus();
+				}
+				if (e.key === kbd.HOME) {
+					candidateItems[0].focus();
+				}
+				if (e.key === kbd.END) {
+					candidateItems[candidateItems.length - 1].focus();
+				}
 			}
 		};
 	}
 
-	// TODO
+	/**
+	 * Spread attributes for an accordion content element.
+	 */
 	get content() {
-		return {};
+		return {
+			'data-state': this.isExpanded() ? 'open': 'closed',
+			'data-disabled': disabledAttr(this.isDisabled()),
+			'data-value': this.item.id,
+		};
+	}
+
+	/**
+	 * Spread attributes for an accordion heading element.
+	 */
+	get heading() {
+		return {
+			role: 'heading',
+			'aria-level': this.item.headingLevel,
+			'data-heading-level': this.item.headingLevel 
+		};
 	}
 }

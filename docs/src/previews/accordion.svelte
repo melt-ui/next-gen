@@ -50,10 +50,10 @@
 	<div {...accordion.root} class="mx-auto w-[18rem] max-w-full rounded-xl shadow-lg sm:w-[25rem]">
 		{#each accordion.items as item}
 			<div class="overflow-hidden first:rounded-t-xl last:rounded-b-xl">
-				<h2 class="flex">
+				<h2 class="flex" {...item.heading}>
 					<button
 						{...item.trigger}
-						class="flex flex-1 cursor-pointer items-center justify-between bg-gray-200 px-5 py-5 text-base font-medium leading-none text-gray-800 transition-colors hover:bg-gray-300 focus:!ring-0 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50"
+						class="focus-visible:text-accent-500 flex flex-1 cursor-pointer items-center justify-between bg-gray-200 px-5 py-5 text-base font-medium leading-none text-gray-800 transition-colors hover:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
 					>
 						{item.item.title}
 					</button>
