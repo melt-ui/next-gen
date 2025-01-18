@@ -134,7 +134,16 @@ export class Accordion<Items extends AccordionItem[], Multiple extends boolean =
 	 * @param id - ID of the item to toggle.
 	 */
 	toggleExpanded(id: string) {
-		this.#value.toggle(id);
+		if (this.#value.has(id)) {
+			this.collapse(id);
+		} else {
+			if (this.multiple) {
+				this.expand(id);
+			} else {
+				this.#value.clear();
+				this.expand(id);
+			}
+		}
 	}
 }
 
