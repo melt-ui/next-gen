@@ -4,14 +4,15 @@
 	import { Progress } from "melt/builders";
 
 	const progress = new Progress();
+	let value = $derived(Math.round(progress.value));
 
 	const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 	sleep(1000).then(() => {
-		setInterval(() => {
-			if (progress.value === 80) clearInterval(this);
-			else progress.value += 1;
-		}, 100);
+		const intervalId = setInterval(() => {
+			if (progress.value >= 80) clearInterval(intervalId);
+			else progress.value += 0.1;
+		}, 10);
 	});
 </script>
 
@@ -24,7 +25,7 @@
 		<span
 			class="text-accent-500 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-semibold"
 		>
-			<NumberFlow value={progress.value} suffix="%" />
+			<NumberFlow {value} suffix="%" />
 		</span>
 	</div>
 </Preview>

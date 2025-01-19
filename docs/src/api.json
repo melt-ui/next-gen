@@ -432,13 +432,13 @@
       },
       {
         "name": "root",
-        "type": "{\n  value: number\n  max: number\n  role: string\n  \"aria-valuemin\": number\n  \"aria-valuemax\": number\n  \"aria-valuenow\": number\n  \"data-value\": number\n  \"data-state\": string\n  \"data-max\": number\n}",
-        "description": ""
+        "type": "{\n  \"data-melt-progress-root\": string\n  value: number\n  max: number\n  role: string\n  \"aria-valuemin\": number\n  \"aria-valuemax\": number\n  \"aria-valuenow\": number\n  \"data-value\": number\n  \"data-state\": string\n  \"data-max\": number\n}",
+        "description": "Spread attributes for the Progress root element."
       },
       {
         "name": "progress",
-        "type": "{ style: `--progress: ${string}` }",
-        "description": ""
+        "type": "{\n  \"data-melt-progress-progress\": string\n  style: `--progress: ${string}`\n}",
+        "description": "Spread attributes for the Progress percentage element.\rProvides a --progress CSS variable that can be used to style the progress:\r`transform: translateX(calc(var(--progress) * -1));`"
       }
     ],
     "propsAlt": "export type ProgressProps = {\r\n  /**\r\n   * The value for the progress.\r\n   * \r\n   * @default undefined\r\n   */\r\n  value?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The maximum value of the progress.\r\n   * \r\n   * @deafult 100\r\n   */\r\n  max?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The callback invoked when the value of the progress changes.\r\n   */\r\n  onValueChange?: (value: number) => void;\r\n};"
