@@ -3,7 +3,7 @@
 	import { scale } from "svelte/transition";
 	import { RadioGroup } from "melt/components";
 
-	const items = ["default", "comfortable", "compact"];
+	const items = $state(["default", "comfortable", "compact"]);
 
 	let controls = usePreviewControls({
 		value: {
