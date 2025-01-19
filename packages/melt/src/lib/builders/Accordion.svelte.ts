@@ -161,14 +161,14 @@ class Item<Items extends AccordionItem[], Multiple extends boolean = false> {
 
 	/** Check if this item is disabled. */
 	isDisabled = () => this.#accordion.disabled || this.item.disabled;
-	/** Check if this item is selected. */
+	/** Check if this item is expanded. */
 	isExpanded = () => this.#accordion.isExpanded(this.item.id);
-	/** Selects this item. */
+	/** Expands this item. */
 	expand = () => this.#accordion.expand(this.item.id);
-	/** Deselects this item. */
+	/** Collapses this item. */
 	collapse = () => this.#accordion.collapse(this.item.id);
-	/** Toggles the selected state of this item. */
-	toggleExpand = () => this.#accordion.toggleExpanded(this.item.id);	
+	/** Toggles the expanded state of this item. */
+	toggleExpanded = () => this.#accordion.toggleExpanded(this.item.id);	
 	
 	constructor(props: ItemProps<Items, Multiple>) {
 		this.#props = props;
@@ -186,7 +186,7 @@ class Item<Items extends AccordionItem[], Multiple extends boolean = false> {
 			'data-disabled': dataAttr(this.isDisabled()),
 			'data-value': this.item.id,
 			'data-state': this.isExpanded() ? 'open' : 'closed',
-			onclick: () => this.toggleExpand(),
+			onclick: () => this.toggleExpanded(),
 			onkeydown: (e: KeyboardEvent) => {
 				const key = e.key;
 
@@ -198,7 +198,7 @@ class Item<Items extends AccordionItem[], Multiple extends boolean = false> {
 
 				if (key === kbd.SPACE || key === kbd.ENTER) {
 					if (this.isDisabled()) return;
-					this.toggleExpand();
+					this.toggleExpanded();
 				}
 
 				const el = e.target;

@@ -23,16 +23,40 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 	<TabItem label="Builder">
 ```svelte
 <script lang="ts">
-	import { Accordion } from "melt/builders";
+	import { Accordion, type AccordionItem } from "melt/builders";
 
-	const accordion = new Accordion();
+	type Item = AccordionItem<{
+		title: string;
+		description: string;
+	}>;
+
+	const items: Item[] = [
+		{ id: "item-1", title: "What is it?", description: "..."},
+		{ id: "item-2", title: "Can I customize it?", description: "..."},
+	];
+
+	const accordion = new Accordion({
+		items: () => items
+	});
 </script>
-```
-	</TabItem>
 
-	<TabItem label="Component">
-```svelte
+<div {...accordion.root}>
+	{#each accordion.items as item}
+		<div>
+			<h2 {...item.heading}>
+				<button {...item.trigger}>
+					{item.item.title}
+				</button>
+			</h2>
 
+			{#if item.isExpanded()}
+				<div {...item.content}>
+					{item.item.description}
+				</div>
+			{/if}
+		</div>
+	{/each}
+</div>
 ```
 	</TabItem>
 </Tabs>
