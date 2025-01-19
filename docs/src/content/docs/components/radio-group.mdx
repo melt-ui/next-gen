@@ -1,0 +1,95 @@
+---
+title: Radio Group
+description: A set of checkable buttons — known as radio buttons — where no more than one of the buttons can be checked at a time.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/radio-group.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+{/*
+Things I want:
+- Preview with props DONE
+- Show builder syntax
+- Show component syntax
+- Features
+*/}
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 🎹 Keyboard navigation
+- 🧠 Smart focus management
+- 🔄 Horizontal and vertical orientation
+- ~🌐 RTL support~ (incoming!)
+</Features>
+
+## Usage
+
+<Tabs>
+	<TabItem label="Builder">
+```svelte
+<script lang="ts">
+    import { RadioGroup } from "melt/builders";
+
+    const group = new RadioGroup();
+</script>
+
+<div {...group.root}>
+    {#each group.items as item}
+        <div>
+            <button {...item.button}>
+                {#if item.checked}
+                    <p>+</p>
+                {:else}
+                    <p>-</p>
+                {/if}
+            </button>
+            <label {...item.label}>
+                {item.item}
+            </label>
+        </div>
+    {/each}
+    <input {...group.hiddenInput} />
+</div>
+```
+	</TabItem>
+
+	<TabItem label="Component">
+```svelte
+<script lang="ts">
+	import { RadioGroup } from "melt/components";
+</script>
+
+<RadioGroup>
+	{#snippet children(group)}
+		<div {...group.root}>
+            {#each group.items as item}
+                <div>
+                    <button {...item.button}>
+                        {#if item.checked}
+                            <p>+</p>
+                        {:else}
+                            <p>-</p>
+                        {/if}
+                    </button>
+                    <label {...item.label}>
+                        {item.item}
+                    </label>
+                </div>
+            {/each}
+            <input {...group.hiddenInput} />
+        </div>
+	{/snippet}
+</RadioGroup>
+```
+	</TabItem>
+</Tabs>
+
+
+## API Reference
+
+<ApiTable entry="RadioGroup" />
