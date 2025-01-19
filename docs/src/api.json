@@ -591,18 +591,18 @@
       },
       {
         "name": "root",
-        "type": "{ \"data-state\": string; \"data-disabled\": \"\" | undefined }",
-        "description": "The attributes for the root."
+        "type": "{\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  \"data-melt-collapsible-root\": string\n}",
+        "description": "The spread attributes for the root element."
       },
       {
         "name": "trigger",
-        "type": "{\n  disabled: boolean\n  onclick: () => void\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n}",
-        "description": "The attributes for the trigger button."
+        "type": "{\n  disabled: boolean\n  onclick: () => void\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  \"data-melt-collapsible-trigger\": string\n}",
+        "description": "The spread attributes for the trigger button."
       },
       {
         "name": "content",
-        "type": "{ \"data-state\": string; \"data-disabled\": \"\" | undefined }",
-        "description": "The attributes for the content."
+        "type": "{\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  \"data-melt-collapsible-content\": string\n}",
+        "description": "The spread attributes for the content element."
       }
     ],
     "propsAlt": "export type CollapsibleProps = {\r\n  /**\r\n   * Whether the collapsible is disabled which prevents it from being opened.\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * Whether the collapsible is open.\r\n   */\r\n  open?: MaybeGetter<boolean>;\r\n\r\n  /**\r\n   * A callback called when the value of `open` changes.\r\n   */\r\n  onOpenChange?: (value: boolean) => void;\r\n};"

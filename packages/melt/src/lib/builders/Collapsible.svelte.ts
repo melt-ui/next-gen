@@ -3,6 +3,9 @@ import { extract } from "$lib/utils/extract";
 import type { MaybeGetter } from "$lib/types";
 import { Synced } from "$lib/Synced.svelte";
 import { dataAttr } from "$lib/utils/attribute";
+import { createDataIds } from "$lib/utils/identifiers";
+
+const dataIds = createDataIds("collapsible", ["root", "trigger", "content"]);
 
 export type CollapsibleProps = {
 	/**
@@ -57,17 +60,21 @@ export class Collapsible {
 	}
 
 	/**
-	 * The attributes for the root.
+	 * The spread attributes for the root element.
 	 */
 	get root() {
-		return this.#sharedAttrs;
+		return {
+			[dataIds.root]: "",
+			...this.#sharedAttrs
+		};
 	}
 
 	/**
-	 * The attributes for the trigger button.
+	 * The spread attributes for the trigger button.
 	 */
 	get trigger() {
 		return {
+			[dataIds.trigger]: "",
 			...this.#sharedAttrs,
 			disabled: this.disabled,
 			onclick: () => {
@@ -79,9 +86,12 @@ export class Collapsible {
 	}
 
 	/**
-	 * The attributes for the content.
+	 * The spread attributes for the content element.
 	 */
 	get content() {
-		return this.#sharedAttrs;
+		return {
+			[dataIds.content]: "",
+			...this.#sharedAttrs
+		};
 	}
 }
