@@ -436,19 +436,15 @@
       {
         "name": "name",
         "type": "MaybeGetter<string | undefined>",
+        "description": "Input name for radio group.",
         "optional": true
       },
       {
         "name": "value",
         "type": "MaybeGetter<string | undefined>",
-        "description": "The default value for",
+        "description": "Default value for radio group.",
+        "defaultValue": "\"\"",
         "optional": true
-      },
-      {
-        "name": "items",
-        "type": "MaybeGetter<string[]>",
-        "description": "Array of all possible values.",
-        "optional": false
       },
       {
         "name": "onValueChange",
@@ -459,8 +455,13 @@
     ],
     "methods": [
       {
+        "name": "getItem",
+        "type": "(item: string) => RadioItem",
+        "description": ""
+      },
+      {
         "name": "select",
-        "type": "(id: string) => void",
+        "type": "(item: string) => void",
         "description": ""
       }
     ],
@@ -497,12 +498,12 @@
       },
       {
         "name": "root",
-        "type": "{\n  readonly \"data-melt-radio-group-root\": \"\"\n  readonly role: \"radiogroup\"\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"aria-required\": boolean\n}",
+        "type": "{\n  readonly \"data-melt-radio-group-root\": \"\"\n  readonly id: string\n  readonly role: \"radiogroup\"\n  readonly \"aria-required\": boolean\n  readonly \"aria-labelledby\": string\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-disabled\": true | undefined\n  readonly \"data-value\": string\n}",
         "description": ""
       },
       {
-        "name": "items",
-        "type": "RadioItem[]",
+        "name": "label",
+        "type": "{\n  readonly \"data-melt-radio-group-label\": \"\"\n  readonly id: string\n  readonly for: string\n  readonly onclick: (\n    e: MouseEvent & { currentTarget: EventTarget & HTMLLabelElement },\n  ) => void\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-disabled\": true | undefined\n  readonly \"data-value\": string\n}",
         "description": ""
       },
       {
@@ -511,7 +512,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type RadioGroupProps = {\n  /**\n   * If `true`, prevents the user from interacting with the group.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n  /**\n   * If `true`, indicates that the user must select a radio button before\n   * the owning form can be submitted.\n   *\n   * @default false\n   */\n  required?: MaybeGetter<boolean | undefined>;\n  /**\n   * If the the button selection should loop when navigating with the arrow keys.\n   *\n   * @default true\n   */\n  loop?: MaybeGetter<boolean | undefined>;\n  /**\n   * If `true`, the value will be changed whenever a button is focused.\n   *\n   * @default true\n   */\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\n  /**\n   * The orientation of the slider.\n   *\n   * @default \"vertical\"\n   */\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\n  name?: MaybeGetter<string | undefined>;\n  /**\n   * The default value for\n   */\n  value?: MaybeGetter<string | undefined>;\n  /**\n   * Array of all possible values.\n   */\n  items: MaybeGetter<string[]>;\n  /**\n   * Called when the radio button is clicked.\n   */\n  onValueChange?: (active: string) => void;\n};"
+    "propsAlt": "export type RadioGroupProps = {\n  /**\n   * If `true`, prevents the user from interacting with the group.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n  /**\n   * If `true`, indicates that the user must select a radio button before\n   * the owning form can be submitted.\n   *\n   * @default false\n   */\n  required?: MaybeGetter<boolean | undefined>;\n  /**\n   * If the the button selection should loop when navigating with the arrow keys.\n   *\n   * @default true\n   */\n  loop?: MaybeGetter<boolean | undefined>;\n  /**\n   * If `true`, the value will be changed whenever a button is focused.\n   *\n   * @default true\n   */\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\n  /**\n   * The orientation of the slider.\n   *\n   * @default \"vertical\"\n   */\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\n  /**\n   * Input name for radio group.\n   */\n  name?: MaybeGetter<string | undefined>;\n  /**\n   * Default value for radio group.\n   *\n   * @default \"\"\n   */\n  value?: MaybeGetter<string | undefined>;\n  /**\n   * Called when the radio button is clicked.\n   */\n  onValueChange?: (active: string) => void;\n};"
   },
   "Popover": {
     "constructorProps": [

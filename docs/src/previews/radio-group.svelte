@@ -1,7 +1,8 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
 	import { scale } from "svelte/transition";
-	import { RadioGroup } from "melt/components";
+	import { RadioGroup } from "melt/builders";
+	import { getters } from "melt/builders";
 
 	const items = $state(["default", "comfortable", "compact"]);
 
@@ -34,34 +35,45 @@
 			defaultValue: "vertical",
 		},
 	});
+
+	const group = new RadioGroup({
+		...getters(controls),
+		onValueChange(v) {
+			controls.value = v;
+		},
+	});
 </script>
 
 <Preview>
-	<RadioGroup {...controls} bind:value={controls.value}>
-		{#snippet children(group)}
+	<div
+		class="mx-auto flex w-fit flex-col gap-2 data-[orientation=horizontal]:flex-row"
+		{...group.root}
+	>
+		<!-- svelte-ignore a11y_label_has_associated_control -- https://github.com/sveltejs/svelte/issues/15067 -->
+		<label {...group.label} class="font-semibold text-white">Layout</label>
+		{#each items as i}
+			{@const item = group.getItem(i)}
 			<div
-				class="mx-auto flex w-fit flex-col gap-3 data-[orientation=horizontal]:flex-row"
-				{...group.root}
+				class="ring-accent-500 -ml-1 flex items-center gap-3 rounded p-1 outline-none focus-visible:ring"
+				{...item.attrs}
 			>
-				{#each items as item}
-					{@const itemData = group.getItem(item)}
-					<div class="flex items-center gap-3">
-						<button
-							class="grid h-6 w-6 cursor-default place-items-center
+				<div
+					class="grid h-6 w-6 cursor-default place-items-center
 							rounded-full bg-white shadow-sm hover:bg-gray-100 data-[disabled=true]:bg-gray-400"
-							{...itemData.button}
-						>
-							{#if itemData.checked}
-								<div transition:scale={{ duration: 250, opacity: 1 }} class="h-3 w-3 rounded-full bg-gray-500"></div>
-							{/if}
-						</button>
-						<label class="font-medium capitalize leading-none text-gray-100" {...itemData.label}>
-							{item}
-						</label>
-					</div>
-				{/each}
-				<input {...group.hiddenInput} />
+				>
+					{#if item.checked}
+						<div
+							transition:scale={{ duration: 150, opacity: 1 }}
+							class="bg-accent-500 h-3 w-3 rounded-full"
+						></div>
+					{/if}
+				</div>
+
+				<span class="font-medium capitalize leading-none text-gray-100">
+					{i}
+				</span>
 			</div>
-		{/snippet}
-	</RadioGroup>
+		{/each}
+		<input {...group.hiddenInput} />
+	</div>
 </Preview>

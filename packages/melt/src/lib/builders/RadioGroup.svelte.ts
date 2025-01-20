@@ -1,18 +1,13 @@
 import { Synced } from "$lib/Synced.svelte";
-import type { MaybeGetter } from "$lib/types";
+import type { Getter, MaybeGetter } from "$lib/types";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
-import { createDataIds } from "$lib/utils/identifiers";
+import { createBuilderMetadata, createDataIds, createIds } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 import { getDirectionalKeys, kbd } from "$lib/utils/keyboard";
-import type {
-	HTMLAttributes,
-	HTMLButtonAttributes,
-	HTMLInputAttributes,
-	HTMLLabelAttributes,
-} from "svelte/elements";
+import type { HTMLAttributes, HTMLInputAttributes, HTMLLabelAttributes } from "svelte/elements";
 
-const identifiers = createDataIds("radio-group", ["root", "item", "label", "hidden-input"]);
+const metadata = createBuilderMetadata("radio-group", ["root", "item", "label", "hidden-input"]);
 
 export type RadioGroupProps = {
 	/**
@@ -52,7 +47,7 @@ export type RadioGroupProps = {
 	name?: MaybeGetter<string | undefined>;
 	/**
 	 * Default value for radio group.
-	 * 
+	 *
 	 * @default ""
 	 */
 	value?: MaybeGetter<string | undefined>;
@@ -63,6 +58,8 @@ export type RadioGroupProps = {
 };
 
 export class RadioGroup {
+	#ids = metadata.createIds();
+
 	/* Props */
 	#props!: RadioGroupProps;
 	readonly disabled = $derived(extract(this.#props.disabled, false));
@@ -91,22 +88,53 @@ export class RadioGroup {
 		this.#value.current = value;
 	}
 
-	get root() {
+	get #sharedAttrs() {
 		return {
-			[identifiers["root"]]: "",
-			role: "radiogroup",
 			"data-orientation": dataAttr(this.orientation),
+			"data-disabled": disabledAttr(this.disabled),
+			"data-value": this.value,
+		};
+	}
+
+	get root() {
+		// TODO: add attachment and check if aria-label is present. Otherwise, use aria-labelledby
+		return {
+			...this.#sharedAttrs,
+			[metadata.dataAttrs["root"]]: "",
+			id: this.#ids.root,
+			role: "radiogroup",
 			"aria-required": this.required,
+			"aria-labelledby": this.#ids.label,
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
+	get label() {
+		return {
+			...this.#sharedAttrs,
+			[metadata.dataAttrs.label]: "",
+			id: this.#ids.label,
+			for: this.#ids.root,
+			onclick: (e) => {
+				// focus the selected item
+				const el = e.currentTarget;
+				if (!isHtmlElement(el)) return;
+				const root = el.closest(metadata.dataSelectors.root);
+				if (!isHtmlElement(root)) return;
+				const item = root.querySelector(
+					metadata.dataSelectors.item + `[data-value="${dataAttr(this.value)}"]`,
+				);
+				if (isHtmlElement(item)) item.focus();
+			},
+		} as const satisfies HTMLLabelAttributes;
+	}
+
 	getItem(item: string) {
-		return new RadioItem({ group: this, item });
+		return new RadioItem({ group: this, item, getSharedAttrs: () => this.#sharedAttrs });
 	}
 
 	get hiddenInput() {
 		return {
-			[identifiers["hidden-input"]]: "",
+			[metadata.dataAttrs["hidden-input"]]: "",
 			disabled: this.disabled,
 			required: this.required,
 			hidden: true,
@@ -125,46 +153,51 @@ export class RadioGroup {
 type RadioItemProps = {
 	group: RadioGroup;
 	item: string;
+	getSharedAttrs: Getter<HTMLAttributes<HTMLElement>>;
 };
 
 class RadioItem {
 	#props!: RadioItemProps;
 
 	#group = $derived(this.#props.group);
-	readonly item = $derived(this.#props.item);
-	readonly checked = $derived(this.#group.value === this.item);
+	readonly value = $derived(this.#props.item);
+	readonly checked = $derived(this.#group.value === this.value);
 
 	constructor(props: RadioItemProps) {
 		this.#props = props;
 	}
 
-	get button() {
+	#select(e: Event) {
+		this.#group.select(this.value);
+		const el = e.currentTarget;
+		if (!isHtmlElement(el)) return;
+		el.focus();
+	}
+
+	get attrs() {
 		return {
-			id: this.item,
-			[identifiers["item"]]: "",
-			disabled: this.#group.disabled,
-			"data-value": dataAttr(this.item),
-			"data-orientation": dataAttr(this.#group.orientation),
-			"data-disabled": disabledAttr(this.#group.disabled),
+			...this.#props.getSharedAttrs(),
+			[metadata.dataAttrs["item"]]: "",
+			"data-value": dataAttr(this.value),
 			"data-state": dataAttr(this.checked ? "checked" : "unchecked"),
 			"aria-checked": this.checked,
-			"aria-labelledby": `${this.item}-label`,
-			type: "button",
 			role: "radio",
-			onclick: () => {
-				this.#group.select(this.item);
+			tabindex: 0,
+			onclick: (e) => {
+				this.#select(e);
 			},
 			onkeydown: (e) => {
-				const el = e.currentTarget;
-				const root = el.closest("[data-melt-radio-group-root]");
-				if (!isHtmlElement(root)) return;
-
 				if (e.key === kbd.SPACE) {
-					this.#group.select(el.id);
+					e.preventDefault();
+					this.#select(e);
 					return;
 				}
 
-				const items = Array.from(root.querySelectorAll("[data-melt-radio-group-item]")).filter(
+				const el = e.currentTarget;
+				const root = el.closest(metadata.dataSelectors.root);
+				if (!isHtmlElement(root)) return;
+
+				const items = Array.from(root.querySelectorAll(metadata.dataSelectors.item)).filter(
 					(el): el is HTMLElement => isHtmlElement(el) && !el.hasAttribute("data-disabled"),
 				);
 				const currentIdx = items.indexOf(el);
@@ -213,16 +246,9 @@ class RadioItem {
 
 				if (itemToFocus) {
 					itemToFocus.focus();
-					if (this.#group.selectWhenFocused) this.#group.select(itemToFocus.id);
+					if (this.#group.selectWhenFocused) this.#group.select(itemToFocus.dataset.value!!);
 				}
 			},
-		} as const satisfies HTMLButtonAttributes;
-	}
-
-	get label() {
-		return {
-			for: this.item,
-			id: `${this.item}-label`,
-		} as const satisfies HTMLLabelAttributes;
+		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 }
