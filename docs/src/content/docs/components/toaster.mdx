@@ -1,0 +1,36 @@
+---
+title: Toaster
+description: A succinct message that is displayed temporarily.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/toaster.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+
+## Features
+
+<Features>
+	- 🎹
+</Features>
+
+## Usage
+
+<Tabs>
+	<TabItem label="Builder">
+```svelte
+<script lang="ts">
+	import { Toaster } from "melt/builders";
+
+	const toaster = new Toaster();
+</script>
+```
+	</TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="Toaster" />
