@@ -37,25 +37,26 @@
 </script>
 
 <Preview>
-	<RadioGroup {items} {...controls} bind:value={controls.value}>
+	<RadioGroup {...controls} bind:value={controls.value}>
 		{#snippet children(group)}
 			<div
 				class="mx-auto flex w-fit flex-col gap-3 data-[orientation=horizontal]:flex-row"
 				{...group.root}
 			>
-				{#each group.items as item}
+				{#each items as item}
+					{@const itemData = group.getItem(item)}
 					<div class="flex items-center gap-3">
 						<button
 							class="grid h-6 w-6 cursor-default place-items-center
 							rounded-full bg-white shadow-sm hover:bg-gray-100 data-[disabled=true]:bg-gray-400"
-							{...item.button}
+							{...itemData.button}
 						>
-							{#if item.checked}
+							{#if itemData.checked}
 								<div transition:scale={{ duration: 250, opacity: 1 }} class="h-3 w-3 rounded-full bg-gray-500"></div>
 							{/if}
 						</button>
-						<label class="font-medium capitalize leading-none text-gray-100" {...item.label}>
-							{item.item}
+						<label class="font-medium capitalize leading-none text-gray-100" {...itemData.label}>
+							{item}
 						</label>
 					</div>
 				{/each}

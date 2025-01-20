@@ -46,15 +46,16 @@ export type RadioGroupProps = {
 	 * @default "vertical"
 	 */
 	orientation?: MaybeGetter<"horizontal" | "vertical" | undefined>;
+	/**
+	 * Input name for radio group.
+	 */
 	name?: MaybeGetter<string | undefined>;
 	/**
-	 * The default value for
+	 * Default value for radio group.
+	 * 
+	 * @default ""
 	 */
 	value?: MaybeGetter<string | undefined>;
-	/**
-	 * Array of all possible values.
-	 */
-	items: MaybeGetter<string[]>;
 	/**
 	 * Called when the radio button is clicked.
 	 */
@@ -78,7 +79,7 @@ export class RadioGroup {
 		this.#value = new Synced({
 			value: props.value,
 			onChange: props.onValueChange,
-			defaultValue: extract(props.items)[0],
+			defaultValue: "",
 		});
 	}
 
@@ -99,8 +100,8 @@ export class RadioGroup {
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
-	get items() {
-		return extract(this.#props.items).map((item) => new RadioItem({ group: this, item }));
+	getItem(item: string) {
+		return new RadioItem({ group: this, item });
 	}
 
 	get hiddenInput() {
@@ -116,10 +117,8 @@ export class RadioGroup {
 		} as const satisfies HTMLInputAttributes;
 	}
 
-	select(id: string) {
-		if (extract(this.#props.items).includes(id)) {
-			this.value = id;
-		}
+	select(item: string) {
+		this.value = item;
 	}
 }
 
