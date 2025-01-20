@@ -4,17 +4,20 @@ import { extract } from "./extract";
 import { first, forEach, last } from "./iterator";
 import { isFunction, isIterable, isString, isSvelteSet } from "./is";
 
-type Value<Multiple extends boolean> = Multiple extends true
+type _multiple_extends = boolean;
+type _multiple_default = false;
+
+type Value<Multiple extends _multiple_extends> = Multiple extends true
 	? SvelteSet<string>
 	: string | undefined;
 
-export type MaybeMultiple<Multiple extends boolean> = Multiple extends true
+export type MaybeMultiple<Multiple extends _multiple_extends> = Multiple extends true
 	? SvelteSet<string> | MaybeGetter<Iterable<string> | undefined>
 	: MaybeGetter<string | undefined>;
 
-type OnChange<Multiple extends boolean> = (value: Value<Multiple>) => void;
+type OnChange<Multiple extends _multiple_extends> = (value: Value<Multiple>) => void;
 
-type SelectionStateProps<Multiple extends boolean> = {
+type SelectionStateProps<Multiple extends _multiple_extends> = {
 	value?: MaybeMultiple<Multiple>;
 	onChange?: OnChange<Multiple>;
 	multiple?: MaybeGetter<Multiple | undefined>;
@@ -31,7 +34,7 @@ function toSingle(v: Iterable<string> | string | undefined): string | undefined 
 	return last(v);
 }
 
-export class SelectionState<Multiple extends boolean = false> {
+export class SelectionState<Multiple extends _multiple_extends = _multiple_default> {
 	#props!: SelectionStateProps<Multiple>;
 	#internal_set = new SvelteSet<string>();
 
