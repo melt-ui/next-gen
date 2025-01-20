@@ -55,9 +55,14 @@
 
 	const CTX_KEY = Symbol();
 
+	// A type that marks all readonly values as writable
+	type Writable<T> = {
+		-readonly [P in keyof T]: T[P];
+	};
+
 	export function usePreviewControls<const Schema extends SchemaExtends>(
 		schema: Schema,
-	): Context<Schema>["values"] {
+	): Writable<Context<Schema>["values"]> {
 		const values = $state(
 			objectMap(schema, (key, { defaultValue }) => {
 				return [key, defaultValue];

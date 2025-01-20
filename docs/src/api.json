@@ -396,6 +396,124 @@
     "methods": [],
     "properties": []
   },
+  "RadioGroup": {
+    "constructorProps": [
+      {
+        "name": "disabled",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If `true`, prevents the user from interacting with the group.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "required",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If `true`, indicates that the user must select a radio button before\nthe owning form can be submitted.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "loop",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If the the button selection should loop when navigating with the arrow keys.",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
+        "name": "selectWhenFocused",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If `true`, the value will be changed whenever a button is focused.",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
+        "name": "orientation",
+        "type": "MaybeGetter<\"horizontal\" | \"vertical\" | undefined>",
+        "description": "The orientation of the slider.",
+        "defaultValue": "\"vertical\"",
+        "optional": true
+      },
+      {
+        "name": "name",
+        "type": "MaybeGetter<string | undefined>",
+        "description": "Input name for radio group.",
+        "optional": true
+      },
+      {
+        "name": "value",
+        "type": "MaybeGetter<string | undefined>",
+        "description": "Default value for radio group.",
+        "defaultValue": "\"\"",
+        "optional": true
+      },
+      {
+        "name": "onValueChange",
+        "type": "((active: string) => void) | undefined",
+        "description": "Called when the radio button is clicked.",
+        "optional": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "getItem",
+        "type": "(item: string) => RadioItem",
+        "description": ""
+      },
+      {
+        "name": "select",
+        "type": "(item: string) => void",
+        "description": ""
+      }
+    ],
+    "properties": [
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "loop",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "selectWhenFocused",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "orientation",
+        "type": "\"horizontal\" | \"vertical\"",
+        "description": ""
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "description": ""
+      },
+      {
+        "name": "root",
+        "type": "{\n  readonly \"data-melt-radio-group-root\": \"\"\n  readonly id: string\n  readonly role: \"radiogroup\"\n  readonly \"aria-required\": boolean\n  readonly \"aria-labelledby\": string\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-disabled\": true | undefined\n  readonly \"data-value\": string\n}",
+        "description": ""
+      },
+      {
+        "name": "label",
+        "type": "{\n  readonly \"data-melt-radio-group-label\": \"\"\n  readonly id: string\n  readonly for: string\n  readonly onclick: (\n    e: MouseEvent & { currentTarget: EventTarget & HTMLLabelElement },\n  ) => void\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-disabled\": true | undefined\n  readonly \"data-value\": string\n}",
+        "description": ""
+      },
+      {
+        "name": "hiddenInput",
+        "type": "{\n  readonly \"data-melt-radio-group-hidden-input\": \"\"\n  readonly disabled: boolean\n  readonly required: boolean\n  readonly hidden: true\n  readonly \"aria-hidden\": true\n  readonly tabindex: -1\n  readonly value: string\n  readonly name: string | undefined\n}",
+        "description": ""
+      }
+    ],
+    "propsAlt": "export type RadioGroupProps = {\n  /**\n   * If `true`, prevents the user from interacting with the group.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n  /**\n   * If `true`, indicates that the user must select a radio button before\n   * the owning form can be submitted.\n   *\n   * @default false\n   */\n  required?: MaybeGetter<boolean | undefined>;\n  /**\n   * If the the button selection should loop when navigating with the arrow keys.\n   *\n   * @default true\n   */\n  loop?: MaybeGetter<boolean | undefined>;\n  /**\n   * If `true`, the value will be changed whenever a button is focused.\n   *\n   * @default true\n   */\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\n  /**\n   * The orientation of the slider.\n   *\n   * @default \"vertical\"\n   */\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\n  /**\n   * Input name for radio group.\n   */\n  name?: MaybeGetter<string | undefined>;\n  /**\n   * Default value for radio group.\n   *\n   * @default \"\"\n   */\n  value?: MaybeGetter<string | undefined>;\n  /**\n   * Called when the radio button is clicked.\n   */\n  onValueChange?: (active: string) => void;\n};"
+  },
   "Popover": {
     "constructorProps": [
       {
