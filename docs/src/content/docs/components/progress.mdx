@@ -43,6 +43,33 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 </style>
 ```
 	</TabItem>
+
+	<TabItem label="Component">
+```svelte
+<script lang="ts">
+	import { Progress } from "melt/components";
+</script>
+
+<Progress>
+	{#snippet children(progress)}
+		<div {...progress.root}>
+			<div {...progress.progress} />
+		</div>
+	{/snippet}
+</Progress>
+
+<style>
+	[data-melt-progress-root] {
+		height: 1.5rem;
+		width: 300px;
+	}
+
+	[data-melt-progress-progress] {
+		transform: translateX(calc(var(--progress) * -1));
+	}
+</style>
+```
+	</TabItem>
 </Tabs>
 
 ## API Reference
