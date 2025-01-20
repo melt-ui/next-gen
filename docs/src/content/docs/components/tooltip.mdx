@@ -1,0 +1,78 @@
+---
+title: Tooltip
+description: A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/tooltip.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+{/*
+Things I want:
+- Preview with props DONE
+- Show builder syntax
+- Show component syntax
+- Features
+*/}
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 🌳 Uses native `popover` attribute, no need for portalling
+- 🧠 Smart focus management, auto-closes when tabbed out
+- 🎈 Fully customize Floating UI's options
+- 🪺 Nested popovers
+- 🎨 Animation support
+</Features>
+
+## Usage
+
+<Tabs>
+	<TabItem label="Builder">
+```svelte
+<script lang="ts">
+	import { Tooltip } from "melt/builders";
+
+	const tooltip = new Tooltip();
+</script>
+
+<button {...tooltip.trigger}>
+	Click me to open the Popover
+</button>
+{#if tooltip.open}
+	<div {...tooltip.content}>
+		Content
+	</div>
+{/if}
+```
+	</TabItem>
+
+	<TabItem label="Component">
+```svelte
+<script lang="ts">
+	import { Tooltip } from "melt/components";
+</script>
+
+<Tooltip>
+	{#snippet children(popover)}
+		<button {...tooltip.trigger}>
+			Click me to open the Popover
+		</button>
+		{#if tooltip.open}
+			<div {...tooltip.content}>
+				Content
+			</div>
+		{/if}
+	{/snippet}
+</Tooltip>
+```
+	</TabItem>
+</Tabs>
+
+
+## API Reference
+
+<ApiTable entry="Tooltip" />

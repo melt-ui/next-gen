@@ -181,6 +181,114 @@
     ],
     "propsAlt": "export type TreeProps<Items extends TreeItem[], Multiple extends boolean = false> = {\n  /**\n   * If `true`, the user can select multiple items.\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n  /**\n   * The currently selected item(s).\n   * If `multiple` is `true`, this should be an `Iterable`.\n   * Otherwise, it'll be a `string`.\n   * @default undefined\n   */\n  selected?: MaybeMultiple<Multiple>;\n  /**\n   * Callback fired when selection changes\n   * @param value - For multiple selection, a Set of selected IDs. For single selection, a single ID or undefined\n   */\n  onSelectedChange?: (value: Multiple extends true ? Set<string> : string | undefined) => void;\n  /**\n   * The currently expanded items\n   *\n   * @default undefined\n   */\n  expanded?: MaybeMultiple<true>;\n  /**\n   * Callback fired when expanded state changes\n   * @param value - Set of expanded item IDs\n   */\n  onExpandedChange?: (value: Set<string>) => void;\n  /**\n   * If `true`, groups (items with children) expand on click.\n   * @default true\n   */\n  expandOnClick?: MaybeGetter<boolean | undefined>;\n  /**\n   * The items contained in the tree.\n   * @required\n   */\n  items: Items;\n  /**\n   * How many time (in ms) the typeahead string is held before it is cleared\n   * @default 500\n   */\n  typeaheadTimeout?: MaybeGetter<number>;\n};"
   },
+  "Tooltip": {
+    "constructorProps": [
+      {
+        "name": "open",
+        "type": "MaybeGetter<boolean | undefined>",
+        "optional": true
+      },
+      {
+        "name": "onOpenChange",
+        "type": "((value: boolean) => void) | undefined",
+        "optional": true
+      },
+      {
+        "name": "arrowSize",
+        "type": "MaybeGetter<number | undefined>",
+        "optional": true
+      },
+      {
+        "name": "closeOnPointerDown",
+        "type": "MaybeGetter<boolean | undefined>",
+        "optional": true
+      },
+      {
+        "name": "openDelay",
+        "type": "MaybeGetter<number | undefined>",
+        "optional": true
+      },
+      {
+        "name": "closeDelay",
+        "type": "MaybeGetter<number | undefined>",
+        "optional": true
+      },
+      {
+        "name": "computePositionOptions",
+        "type": "Elements; }) => Promisable<Platform | undefined; }> | undefined>",
+        "optional": true
+      },
+      {
+        "name": "forceVisible",
+        "type": "MaybeGetter<boolean | undefined>",
+        "optional": true
+      },
+      {
+        "name": "disableHoverableContent",
+        "type": "MaybeGetter<boolean | undefined>",
+        "optional": true
+      }
+    ],
+    "methods": [],
+    "properties": [
+      {
+        "name": "forceVisible",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "computePositionOptions",
+        "type": "{} | Partial<{ placement?: Elements; }) => Promisable<Platform | undefined; }>",
+        "description": ""
+      },
+      {
+        "name": "closeOnPointerDown",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "openDelay",
+        "type": "number",
+        "description": ""
+      },
+      {
+        "name": "closeDelay",
+        "type": "number",
+        "description": ""
+      },
+      {
+        "name": "disableHoverableContent",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "arrowSize",
+        "type": "number",
+        "description": ""
+      },
+      {
+        "name": "open",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "trigger",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly id: \"data-melt-tooltip-trigger\"\n  readonly \"aria-describedby\": \"data-melt-tooltip-content\"\n  readonly \"data-state\": \"open\" | \"closed\"\n  readonly onpointerdown: () => void\n  readonly onpointerenter: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onpointerleave: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}",
+        "description": ""
+      },
+      {
+        "name": "content",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly id: \"data-melt-tooltip-content\"\n  readonly role: \"tooltip\"\n  readonly hidden: true | undefined\n  readonly tabindex: -1\n  readonly style: \"position: absolute;\" | \"display: none;\"\n  readonly \"data-state\": \"open\" | \"closed\"\n  readonly onpointerenter: () => void\n  readonly onpointerleave: () => void\n  readonly onpointerdown: () => void\n}",
+        "description": ""
+      },
+      {
+        "name": "arrow",
+        "type": "{\n  readonly id: \"data-melt-tooltip-arrow\"\n  readonly \"data-arrow\": true\n  readonly style: `\\n\\t\\t\\t\\tposition: absolute; \\n\\t\\t\\t\\twidth: var(--arrow-size, ${number}px);\\n\\t\\t\\t\\theight: var(--arrow-size, ${number}px);`\n}",
+        "description": ""
+      }
+    ],
+    "propsAlt": "export type TooltipProps = {\r\n  open?: MaybeGetter<boolean | undefined>;\r\n  onOpenChange?: (value: boolean) => void;\r\n  arrowSize?: MaybeGetter<number | undefined>;\r\n  closeOnPointerDown?: MaybeGetter<boolean | undefined>;\r\n  openDelay?: MaybeGetter<number | undefined>;\r\n  closeDelay?: MaybeGetter<number | undefined>;\r\n  computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;\r\n  forceVisible?: MaybeGetter<boolean | undefined>;\r\n  disableHoverableContent?: MaybeGetter<boolean | undefined>;\r\n};"
+  },
   "Toggle": {
     "constructorProps": [
       {
@@ -434,7 +542,7 @@
       },
       {
         "name": "computePositionOptions",
-        "type": "{} | Partial<{ placement?: Elements; }) => Promisable<Platform | undefined; }>",
+        "type": "Partial<{ placement?: Elements; }) => Promisable<Platform | undefined; }> | {}",
         "description": ""
       },
       {
