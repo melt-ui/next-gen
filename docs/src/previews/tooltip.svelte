@@ -55,6 +55,14 @@
 		openDelay: () => controls.openDelay,
 		closeDelay: () => controls.closeDelay,
 	});
+	
+	const tooltip2 = new Tooltip({
+		forceVisible: () => controls.forceVisible,
+		closeOnPointerDown: () => controls.closeOnPointerDown,
+		disableHoverableContent: () => controls.disableHoverableContent,
+		openDelay: () => controls.openDelay,
+		closeDelay: () => controls.closeDelay,
+	});
 </script>
 
 <Preview>
@@ -70,7 +78,22 @@
 			class="z-10 rounded-lg bg-white shadow"
 		>
 			<div {...tooltip.arrow}></div>
-			<p class="px-4 py-1 text-gray-700">Add item to library</p>
+			<p 
+				class="px-4 py-1 text-gray-700"
+				{...tooltip2.trigger}
+			>
+				Add item to library
+			</p>
+		</div>
+	{/if}
+	{#if tooltip2.open}
+		<div
+			{...tooltip2.content}
+			transition:fade={{ duration: 100 }}
+			class="z-10 rounded-lg bg-white shadow"
+		>
+			<div {...tooltip2.arrow}></div>
+			<p class="px-4 py-1 text-gray-700">You didn't expect that, did you?</p>
 		</div>
 	{/if}
 </Preview>

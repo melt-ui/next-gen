@@ -186,46 +186,62 @@
       {
         "name": "open",
         "type": "MaybeGetter<boolean | undefined>",
+        "description": "If the Tooltip is open.\r\n\r\nWhen passing a getter, it will be used as source of truth,\r\nmeaning that the value only changes when the getter returns a new value.\r\n\r\nOtherwise, if passing a static value, it'll serve as the default value.",
+        "defaultValue": "false",
         "optional": true
       },
       {
         "name": "onOpenChange",
         "type": "((value: boolean) => void) | undefined",
+        "description": "Called when the value is supposed to change.",
         "optional": true
       },
       {
         "name": "arrowSize",
         "type": "MaybeGetter<number | undefined>",
+        "description": "Size of tooltip arrow in pixels.",
+        "defaultValue": "8",
         "optional": true
       },
       {
         "name": "closeOnPointerDown",
         "type": "MaybeGetter<boolean | undefined>",
+        "description": "If `true`, tooltip will close if trigger is pressed.",
+        "defaultValue": "true",
         "optional": true
       },
       {
         "name": "openDelay",
         "type": "MaybeGetter<number | undefined>",
+        "description": "Tooltip open delay in milliseconds.",
+        "defaultValue": "1000",
         "optional": true
       },
       {
         "name": "closeDelay",
         "type": "MaybeGetter<number | undefined>",
+        "description": "Tooltip close delay in milliseconds.",
+        "defaultValue": "0",
         "optional": true
       },
       {
         "name": "computePositionOptions",
         "type": "Elements; }) => Promisable<Platform | undefined; }> | undefined>",
+        "description": "Options to be passed to Floating UI's `computePosition`",
         "optional": true
       },
       {
         "name": "forceVisible",
         "type": "MaybeGetter<boolean | undefined>",
+        "description": "If the popover visibility should be controlled by the user.",
+        "defaultValue": "false",
         "optional": true
       },
       {
         "name": "disableHoverableContent",
         "type": "MaybeGetter<boolean | undefined>",
+        "description": "If `true`, leaving trigger will close the tooltip.",
+        "defaultValue": "false",
         "optional": true
       }
     ],
@@ -273,21 +289,21 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly id: \"data-melt-tooltip-trigger\"\n  readonly \"aria-describedby\": \"data-melt-tooltip-content\"\n  readonly \"data-state\": \"open\" | \"closed\"\n  readonly onpointerdown: () => void\n  readonly onpointerenter: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onpointerleave: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-trigger\": \"\"\n  readonly id: string\n  readonly \"aria-describedby\": string\n  readonly \"data-state\": \"open\" | \"closed\"\n  readonly onpointerdown: () => void\n  readonly onpointerenter: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onpointerleave: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}",
         "description": ""
       },
       {
         "name": "content",
-        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly id: \"data-melt-tooltip-content\"\n  readonly role: \"tooltip\"\n  readonly hidden: true | undefined\n  readonly tabindex: -1\n  readonly style: \"position: absolute;\" | \"display: none;\"\n  readonly \"data-state\": \"open\" | \"closed\"\n  readonly onpointerenter: () => void\n  readonly onpointerleave: () => void\n  readonly onpointerdown: () => void\n}",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-content\": \"\"\n  readonly id: string\n  readonly role: \"tooltip\"\n  readonly hidden: true | undefined\n  readonly tabindex: -1\n  readonly style: \"\" | \"display: none;\"\n  readonly \"data-open\": \"\" | undefined\n  readonly onpointerenter: () => void\n  readonly onpointerleave: () => void\n  readonly onpointerdown: () => void\n}",
         "description": ""
       },
       {
         "name": "arrow",
-        "type": "{\n  readonly id: \"data-melt-tooltip-arrow\"\n  readonly \"data-arrow\": true\n  readonly style: `\\n\\t\\t\\t\\tposition: absolute; \\n\\t\\t\\t\\twidth: var(--arrow-size, ${number}px);\\n\\t\\t\\t\\theight: var(--arrow-size, ${number}px);`\n}",
+        "type": "{\n  readonly \"data-melt-tooltip-arrow\": \"\"\n  readonly id: string\n  readonly \"data-arrow\": true\n  readonly style: `position: absolute; width: var(--arrow-size, ${number}px); height: var(--arrow-size, ${number}px);`\n}",
         "description": ""
       }
     ],
-    "propsAlt": "export type TooltipProps = {\r\n  open?: MaybeGetter<boolean | undefined>;\r\n  onOpenChange?: (value: boolean) => void;\r\n  arrowSize?: MaybeGetter<number | undefined>;\r\n  closeOnPointerDown?: MaybeGetter<boolean | undefined>;\r\n  openDelay?: MaybeGetter<number | undefined>;\r\n  closeDelay?: MaybeGetter<number | undefined>;\r\n  computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;\r\n  forceVisible?: MaybeGetter<boolean | undefined>;\r\n  disableHoverableContent?: MaybeGetter<boolean | undefined>;\r\n};"
+    "propsAlt": "export type TooltipProps = {\r\n  /**\r\n   * If the Tooltip is open.\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that the value only changes when the getter returns a new value.\r\n   *\r\n   * Otherwise, if passing a static value, it'll serve as the default value.\r\n   *\r\n   * @default false\r\n   */\r\n  open?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * Called when the value is supposed to change.\r\n   */\r\n  onOpenChange?: (value: boolean) => void;\r\n\r\n  /**\r\n   * Size of tooltip arrow in pixels.\r\n   * \r\n   * @default 8\r\n   */\r\n  arrowSize?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * If `true`, tooltip will close if trigger is pressed.\r\n   * \r\n   * @default true\r\n   */\r\n  closeOnPointerDown?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * Tooltip open delay in milliseconds.\r\n   * \r\n   * @default 1000\r\n   */\r\n  openDelay?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * Tooltip close delay in milliseconds.\r\n   * \r\n   * @default 0\r\n   */\r\n  closeDelay?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * Options to be passed to Floating UI's `computePosition`\r\n   *\r\n   * @see https://floating-ui.com/docs/computePosition\r\n   */\r\n  computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;\r\n\r\n  /**\r\n   * If the popover visibility should be controlled by the user.\r\n   *\r\n   * @default false\r\n   */\r\n  forceVisible?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * If `true`, leaving trigger will close the tooltip.\r\n   * \r\n   * @default false\r\n   */\r\n  disableHoverableContent?: MaybeGetter<boolean | undefined>;\r\n};"
   },
   "Toggle": {
     "constructorProps": [

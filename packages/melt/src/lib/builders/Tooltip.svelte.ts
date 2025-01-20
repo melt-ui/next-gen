@@ -1,8 +1,7 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
-import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
-import { createDataIds } from "$lib/utils/identifiers";
+import { createDataIds, createIds } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 import { untrack } from "svelte";
 import { deepMerge } from "$lib/utils/merge";
@@ -20,6 +19,8 @@ import type { HTMLAttributes } from "svelte/elements";
 import { on } from "svelte/events";
 import { makeHullFromElements } from "$lib/utils/polygon";
 import { isPointerInGraceArea } from "$lib/utils/pointer";
+import { useEventListener } from "runed";
+import { dataAttr } from "$lib/utils/attribute";
 
 const dataIds = createDataIds("tooltip", ["trigger", "content", "arrow"]);
 
@@ -33,18 +34,76 @@ const ARROW_TRANSFORM = {
 type OpenReason = "pointer" | "focus";
 
 export type TooltipProps = {
+	/**
+	 * If the Tooltip is open.
+	 *
+	 * When passing a getter, it will be used as source of truth,
+	 * meaning that the value only changes when the getter returns a new value.
+	 *
+	 * Otherwise, if passing a static value, it'll serve as the default value.
+	 *
+	 * @default false
+	 */
 	open?: MaybeGetter<boolean | undefined>;
+
+	/**
+	 * Called when the value is supposed to change.
+	 */
 	onOpenChange?: (value: boolean) => void;
+
+	/**
+	 * Size of tooltip arrow in pixels.
+	 * 
+	 * @default 8
+	 */
 	arrowSize?: MaybeGetter<number | undefined>;
+
+	/**
+	 * If `true`, tooltip will close if trigger is pressed.
+	 * 
+	 * @default true
+	 */
 	closeOnPointerDown?: MaybeGetter<boolean | undefined>;
+
+	/**
+	 * Tooltip open delay in milliseconds.
+	 * 
+	 * @default 1000
+	 */
 	openDelay?: MaybeGetter<number | undefined>;
+
+	/**
+	 * Tooltip close delay in milliseconds.
+	 * 
+	 * @default 0
+	 */
 	closeDelay?: MaybeGetter<number | undefined>;
+
+	/**
+	 * Options to be passed to Floating UI's `computePosition`
+	 *
+	 * @see https://floating-ui.com/docs/computePosition
+	 */
 	computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;
+
+	/**
+	 * If the popover visibility should be controlled by the user.
+	 *
+	 * @default false
+	 */
 	forceVisible?: MaybeGetter<boolean | undefined>;
+
+	/**
+	 * If `true`, leaving trigger will close the tooltip.
+	 * 
+	 * @default false
+	 */
 	disableHoverableContent?: MaybeGetter<boolean | undefined>;
 };
 
 export class Tooltip {
+	#ids = createIds(dataIds);
+
 	#props!: TooltipProps;
 	forceVisible = $derived(extract(this.#props.forceVisible, false));
 	computePositionOptions = $derived(extract(this.#props.computePositionOptions, {}));
@@ -80,9 +139,12 @@ export class Tooltip {
 			if (!this.open || !(typeof document !== 'undefined')) return;
 
 			return on(document, "mousemove", (e) => untrack(() => {
-				const contentEl = document.getElementById(dataIds["content"]);
-				const triggerEl = document.getElementById(dataIds["trigger"]);
-				if (!contentEl || !triggerEl) return;
+				const contentEl = document.getElementById(this.#ids.content);
+				const triggerEl = document.getElementById(this.#ids.trigger);
+				if (!contentEl || !triggerEl) {
+					if (this.open) this.#closeTooltip();
+					return;
+				}
 
 				const polygonElements = this.disableHoverableContent
 					? [triggerEl]
@@ -115,8 +177,8 @@ export class Tooltip {
 		return {
 			onfocusout: async () => {
 				await new Promise((r) => setTimeout(r));
-				const contentEl = document.getElementById(dataIds["content"]);
-				const triggerEl = document.getElementById(dataIds["trigger"]);
+				const contentEl = document.getElementById(this.#ids.content);
+				const triggerEl = document.getElementById(this.#ids.trigger);
 
 				if (
 					contentEl?.contains(document.activeElement) ||
@@ -131,16 +193,17 @@ export class Tooltip {
 
 	get trigger() {
 		$effect(() => { 
-			const el = document.getElementById(dataIds["content"]);
+			const el = document.getElementById(this.#ids.content);
 			if (!isHtmlElement(el)) return;
 
 			return () => (this.#isPointerInsideTrigger = false); 
 		});
 
 		return {
-			id: dataIds["trigger"],
-			'aria-describedby': dataIds["content"],
-			'data-state': this.open ? "open" : "closed",
+			[dataIds["trigger"]]: "",
+			id: this.#ids.trigger,
+			"aria-describedby": this.#ids.content,
+			"data-state": this.open ? "open" : "closed",
 			onpointerdown: () => {
 				if (!this.closeOnPointerDown) return;
 				this.open = false;
@@ -174,15 +237,15 @@ export class Tooltip {
 
 	get content() {
 		const compute = () => {
-			const contentEl = document.getElementById(dataIds["content"]);
-			const triggerEl = document.getElementById(dataIds["trigger"]);
+			const contentEl = document.getElementById(this.#ids.content);
+			const triggerEl = document.getElementById(this.#ids.trigger);
 			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
 				return;
 			}
 
 			const arrowEl = contentEl.querySelector("[data-arrow=true]");
-			const arrowOffset = arrowEl instanceof HTMLElement ? arrowEl.offsetHeight / 2 : 0;
-			const arrowMiddleware = arrowEl instanceof HTMLElement ? arrow({ element: arrowEl }) : undefined;
+			const arrowOffset = isHtmlElement(arrowEl) ? arrowEl.offsetHeight / 2 : 0;
+			const arrowMiddleware = isHtmlElement(arrowEl) ? arrow({ element: arrowEl }) : undefined;
 			const baseOptions: Partial<ComputePositionConfig> = {
 				middleware: [shift(), flip(), arrowMiddleware, offset({ mainAxis: 8 + arrowOffset })],
 			};
@@ -215,22 +278,24 @@ export class Tooltip {
 					top: `${y}px`,
 				});
 
+				const [side, align = "center"] = placement.split("-");
+
 				contentEl.style.transformOrigin = transformOriginMap[placement];
-				contentEl.dataset.side = placement;
-
-				if (arrowEl instanceof HTMLElement && middlewareData.arrow) {
+				contentEl.dataset.side = side;
+				contentEl.dataset.align = align;
+				
+				if (isHtmlElement(arrowEl) && middlewareData.arrow) {
 					const { x, y } = middlewareData.arrow;
-
-					const dir = placement.split("-")[0] as 'top' | 'bottom' | 'left' | 'right';
+					const dir = placement.split("-")[0] as "top" | "bottom" | "left" | "right";
 
 					Object.assign(arrowEl.style, {
-						position: 'absolute',
-						left: x ? `${x}px` : '',
-						top: y ? `${y}px` : '',
+						position: "absolute",
+						left: x ? `${x}px` : "",
+						top: y ? `${y}px` : "",
 						[dir]: `calc(100% - ${arrowOffset}px)`,
 						transform: ARROW_TRANSFORM[dir],
-						backgroundColor: 'inherit',
-						zIndex: 'inherit'
+						backgroundColor: "inherit",
+						zIndex: "inherit",
 					});
 
 					arrowEl.dataset.side = dir;
@@ -239,14 +304,14 @@ export class Tooltip {
 		};
 
 		$effect(() => {
-			const contentEl = document.getElementById(dataIds["content"]);
-			const triggerEl = document.getElementById(dataIds["trigger"]);
+			const contentEl = document.getElementById(this.#ids.content);
+			const triggerEl = document.getElementById(this.#ids.trigger);
 			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
 				return;
 			}
 
 			const unsubAutoUpdate = autoUpdate(triggerEl, contentEl, compute);
-			const unsubOnScroll = on(window, "scroll", (e) => this.#handleScroll(e), { capture: true });
+			const unsubOnScroll = on(document, "scroll", (e) => this.#handleScroll(e), { capture: true });
 
 			return () => {
 				this.#isPointerInsideContent = false;
@@ -255,13 +320,30 @@ export class Tooltip {
 			};
 		});
 
+		useEventListener(
+			() => document,
+			"keydown",
+			(e) => {
+				if (e.key !== "Escape") return;
+
+				e.preventDefault();
+				if (this.#openTimeout) {
+					window.clearTimeout(this.#openTimeout);
+					this.#openTimeout = null;
+				}
+
+				this.open = false;
+			},
+		);
+
 		return {
-			id: dataIds["content"],
+			[dataIds["content"]]: "",
+			id: this.#ids.content,
 			role: "tooltip",
 			hidden: this.#isVisible ? undefined : true,
 			tabindex: -1,
-			style: this.#isVisible ? "position: absolute;" : "display: none;",
-			"data-state": this.open ? "open" : "closed",
+			style: this.#isVisible ? "" : "display: none;",
+			"data-open": dataAttr(this.open),
 			onpointerenter: () => {
 				this.#isPointerInsideContent = true;
 				this.#openTooltip('pointer');
@@ -276,12 +358,10 @@ export class Tooltip {
 
 	get arrow() {
 		return {
-			id: dataIds["arrow"],
+			[dataIds["arrow"]]: "",
+			id: this.#ids.arrow,
 			"data-arrow": true,
-			style: `
-				position: absolute; 
-				width: var(--arrow-size, ${this.arrowSize}px);
-				height: var(--arrow-size, ${this.arrowSize}px);`,
+			style: `position: absolute; width: var(--arrow-size, ${this.arrowSize}px); height: var(--arrow-size, ${this.arrowSize}px);`,
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
@@ -323,10 +403,12 @@ export class Tooltip {
 
 	#handleScroll(e: Event) {
 		if (!this.open) return;
+
 		const target = e.target;
 		if (!(target instanceof Element) && !(target instanceof Document)) return;
-		const triggerEl = document.getElementById(dataIds["trigger"]);
-		if (triggerEl && target.contains(triggerEl)) {
+
+		const triggerEl = document.getElementById(this.#ids.trigger);
+		if ((triggerEl && target.contains(triggerEl)) || this.open) {
 			this.#closeTooltip();
 		}
 	}
