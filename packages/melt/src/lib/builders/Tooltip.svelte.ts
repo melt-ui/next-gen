@@ -1,35 +1,19 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { extract } from "$lib/utils/extract";
-import { createDataIds, createIds } from "$lib/utils/identifiers";
+import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 import { untrack } from "svelte";
-import { deepMerge } from "$lib/utils/merge";
-import {
-	autoUpdate,
-	computePosition,
-	flip,
-	offset,
-	arrow,
-	shift,
-	type ComputePositionConfig,
-	type Placement,
-} from "@floating-ui/dom";
+import type { ComputePositionConfig } from "@floating-ui/dom";
 import type { HTMLAttributes } from "svelte/elements";
 import { on } from "svelte/events";
 import { makeHullFromElements } from "$lib/utils/polygon";
 import { isPointerInGraceArea } from "$lib/utils/pointer";
 import { useEventListener } from "runed";
 import { dataAttr } from "$lib/utils/attribute";
+import { useFloating } from "$lib/utils/use-floating.svelte";
 
-const dataIds = createDataIds("tooltip", ["trigger", "content", "arrow"]);
-
-const ARROW_TRANSFORM = {
-	bottom: "rotate(45deg)",
-	left: "rotate(135deg)",
-	top: "rotate(225deg)",
-	right: "rotate(315deg)",
-};
+const metadata = createBuilderMetadata("tooltip", ["trigger", "content", "arrow"]);
 
 type OpenReason = "pointer" | "focus";
 
@@ -87,13 +71,6 @@ export type TooltipProps = {
 	computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;
 
 	/**
-	 * If the popover visibility should be controlled by the user.
-	 *
-	 * @default false
-	 */
-	forceVisible?: MaybeGetter<boolean | undefined>;
-
-	/**
 	 * If `true`, leaving trigger will close the tooltip.
 	 * 
 	 * @default false
@@ -102,17 +79,15 @@ export type TooltipProps = {
 };
 
 export class Tooltip {
-	#ids = createIds(dataIds);
+	#ids = metadata.createIds();
 
 	#props!: TooltipProps;
-	forceVisible = $derived(extract(this.#props.forceVisible, false));
 	computePositionOptions = $derived(extract(this.#props.computePositionOptions, {}));
 	closeOnPointerDown = $derived(extract(this.#props.closeOnPointerDown, true));
 	openDelay = $derived(extract(this.#props.openDelay, 1000));
 	closeDelay = $derived(extract(this.#props.closeDelay, 0));
 	disableHoverableContent = $derived(extract(this.#props.disableHoverableContent, false));
 	arrowSize = $derived(extract(this.#props.arrowSize, 8));
-	#isVisible = $derived(this.open || this.forceVisible);
 
 	#open!: Synced<boolean>;
 
@@ -123,6 +98,7 @@ export class Tooltip {
 	#isMouseInTooltipArea: boolean = $state(false);
 	#openTimeout: number | null = $state(null);
 	#closeTimeout: number | null = $state(null);
+	#mounted: boolean = $state(false);
 
 	constructor(props: TooltipProps = {}) {
 		this.#open = new Synced({
@@ -131,6 +107,8 @@ export class Tooltip {
 			defaultValue: false
 		});
 		this.#props = props;
+
+		$effect(() => untrack(() => void (this.#mounted = true)));
 
 		$effect(() => {
 			this.open;
@@ -200,7 +178,7 @@ export class Tooltip {
 		});
 
 		return {
-			[dataIds["trigger"]]: "",
+			[metadata.dataAttrs.trigger]: "",
 			id: this.#ids.trigger,
 			"aria-describedby": this.#ids.content,
 			"data-state": this.open ? "open" : "closed",
@@ -236,89 +214,27 @@ export class Tooltip {
 	}
 
 	get content() {
-		const compute = () => {
-			const contentEl = document.getElementById(this.#ids.content);
-			const triggerEl = document.getElementById(this.#ids.trigger);
-			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
-				return;
-			}
-
-			const arrowEl = contentEl.querySelector("[data-arrow=true]");
-			const arrowOffset = isHtmlElement(arrowEl) ? arrowEl.offsetHeight / 2 : 0;
-			const arrowMiddleware = isHtmlElement(arrowEl) ? arrow({ element: arrowEl }) : undefined;
-			const baseOptions: Partial<ComputePositionConfig> = {
-				middleware: [shift(), flip(), arrowMiddleware, offset({ mainAxis: 8 + arrowOffset })],
-			};
-			computePosition(
-				triggerEl,
-				contentEl,
-				deepMerge(baseOptions, this.computePositionOptions),
-			).then(({ x, y, placement, middlewareData, strategy }) => {
-				const transformOriginMap: Record<Placement, string> = {
-					top: "bottom center",
-					"top-start": "bottom left",
-					"top-end": "bottom right",
-
-					bottom: "top center",
-					"bottom-start": "top left",
-					"bottom-end": "top right",
-
-					left: "center center",
-					"left-start": "top left",
-					"left-end": "bottom left",
-
-					right: "center center",
-					"right-start": "top right",
-					"right-end": "bottom right",
-				};
-
-				Object.assign(contentEl.style, {
-					position: strategy,
-					left: `${x}px`,
-					top: `${y}px`,
-				});
-
-				const [side, align = "center"] = placement.split("-");
-
-				contentEl.style.transformOrigin = transformOriginMap[placement];
-				contentEl.dataset.side = side;
-				contentEl.dataset.align = align;
-				
-				if (isHtmlElement(arrowEl) && middlewareData.arrow) {
-					const { x, y } = middlewareData.arrow;
-					const dir = placement.split("-")[0] as "top" | "bottom" | "left" | "right";
-
-					Object.assign(arrowEl.style, {
-						position: "absolute",
-						left: x ? `${x}px` : "",
-						top: y ? `${y}px` : "",
-						[dir]: `calc(100% - ${arrowOffset}px)`,
-						transform: ARROW_TRANSFORM[dir],
-						backgroundColor: "inherit",
-						zIndex: "inherit",
-					});
-
-					arrowEl.dataset.side = dir;
-				}
-			});
-		};
+		$effect(() => () => (this.#isPointerInsideContent = false));
 
 		$effect(() => {
-			const contentEl = document.getElementById(this.#ids.content);
 			const triggerEl = document.getElementById(this.#ids.trigger);
-			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
-				return;
-			}
+			const contentEl = document.getElementById(this.#ids.content);
 
-			const unsubAutoUpdate = autoUpdate(triggerEl, contentEl, compute);
-			const unsubOnScroll = on(document, "scroll", (e) => this.#handleScroll(e), { capture: true });
+			if (!triggerEl || !contentEl) return;
 
-			return () => {
-				this.#isPointerInsideContent = false;
-				unsubAutoUpdate();
-				unsubOnScroll();
-			};
+			useFloating(
+				() => triggerEl,
+				() => contentEl,
+				this.computePositionOptions,
+			);
 		});
+
+		useEventListener(
+			() => document,
+			"scroll",
+			(e ) => this.#handleScroll(e),
+			{ capture: true }
+		);
 
 		useEventListener(
 			() => document,
@@ -337,28 +253,28 @@ export class Tooltip {
 		);
 
 		return {
-			[dataIds["content"]]: "",
+			[metadata.dataAttrs.content]: "",
 			id: this.#ids.content,
 			role: "tooltip",
-			hidden: this.#isVisible ? undefined : true,
+			hidden: this.open && this.#mounted ? undefined : true,
 			tabindex: -1,
-			style: this.#isVisible ? "" : "display: none;",
+			style: this.open && this.#mounted ? "" : "display: none;",
 			"data-open": dataAttr(this.open),
 			onpointerenter: () => {
 				this.#isPointerInsideContent = true;
-				this.#openTooltip('pointer');
+				this.#openTooltip("pointer");
 			},
 			onpointerleave: () => {
 				this.#isPointerInsideContent = false;
 			},
-			onpointerdown: () => this.#openTooltip('pointer'),
+			onpointerdown: () => this.#openTooltip("pointer"),
 			...this.#sharedProps,
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
 	get arrow() {
 		return {
-			[dataIds["arrow"]]: "",
+			[metadata.dataAttrs.arrow]: "",
 			id: this.#ids.arrow,
 			"data-arrow": true,
 			style: `position: absolute; width: var(--arrow-size, ${this.arrowSize}px); height: var(--arrow-size, ${this.arrowSize}px);`,
