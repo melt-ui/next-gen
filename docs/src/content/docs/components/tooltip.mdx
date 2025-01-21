@@ -40,11 +40,12 @@ Things I want:
 </script>
 
 <button {...tooltip.trigger}>
-	Click me to open the Popover
+	Hover me
 </button>
 {#if tooltip.open}
 	<div {...tooltip.content}>
-		Content
+		<div {...tooltip.arrow}></div>
+		<p>Content</p>
 	</div>
 {/if}
 ```
@@ -59,11 +60,12 @@ Things I want:
 <Tooltip>
 	{#snippet children(popover)}
 		<button {...tooltip.trigger}>
-			Click me to open the Popover
+			Hover me
 		</button>
 		{#if tooltip.open}
 			<div {...tooltip.content}>
-				Content
+				<div {...tooltip.arrow}></div>
+				<p>Content</p>
 			</div>
 		{/if}
 	{/snippet}

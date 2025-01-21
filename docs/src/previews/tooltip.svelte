@@ -1,17 +1,12 @@
 <script lang="ts">
 	import Preview, { usePreviewControls } from "@components/preview.svelte";
-	import { Tooltip } from "melt/builders";
+	import { Tooltip, getters } from "melt/builders";
 	import { fade } from "svelte/transition";
 	import PhPlus from "~icons/ph/plus";
 
 	let controls = usePreviewControls({
 		open: {
 			label: "Open",
-			type: "boolean",
-			defaultValue: false,
-		},
-		forceVisible: {
-			label: "Force visible",
 			type: "boolean",
 			defaultValue: false,
 		},
@@ -46,22 +41,16 @@
 	const computePositionOptions = $derived({ placement: controls.placement });
 
 	const tooltip = new Tooltip({
+		...getters(controls),
 		open: () => controls.open,
 		onOpenChange: (v) => (controls.open = v),
-		forceVisible: () => controls.forceVisible,
 		computePositionOptions: () => computePositionOptions,
-		closeOnPointerDown: () => controls.closeOnPointerDown,
-		disableHoverableContent: () => controls.disableHoverableContent,
-		openDelay: () => controls.openDelay,
-		closeDelay: () => controls.closeDelay,
 	});
 	
 	const tooltip2 = new Tooltip({
-		forceVisible: () => controls.forceVisible,
-		closeOnPointerDown: () => controls.closeOnPointerDown,
-		disableHoverableContent: () => controls.disableHoverableContent,
-		openDelay: () => controls.openDelay,
-		closeDelay: () => controls.closeDelay,
+		...getters(controls),
+		open: false,
+		computePositionOptions: () => computePositionOptions,
 	});
 </script>
 
