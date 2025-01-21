@@ -36,24 +36,21 @@ Things I want:
     import { RadioGroup } from "melt/builders";
 
     const group = new RadioGroup();
+		const items = ['a', 'b', 'c'];
 </script>
 
 <div {...group.root}>
-    {#each group.items as item}
-        <div>
-            <button {...item.button}>
-                {#if item.checked}
-                    <p>+</p>
-                {:else}
-                    <p>-</p>
-                {/if}
-            </button>
-            <label {...item.label}>
-                {item.item}
-            </label>
-        </div>
-    {/each}
-    <input {...group.hiddenInput} />
+	<!-- svelte-ignore a11y_label_has_associated_control -- https://github.com/sveltejs/svelte/issues/15067 -->
+	<label {...group.label}>Label</label>
+	{#each items as i}
+		{@const item = group.getItem(i)}
+		<div {...item.attrs}>
+			{#if item.checked}
+				✅
+			{/if}
+		</div>
+	{/each}
+	<input {...group.hiddenInput} />
 </div>
 ```
 	</TabItem>
@@ -62,27 +59,24 @@ Things I want:
 ```svelte
 <script lang="ts">
 	import { RadioGroup } from "melt/components";
+	const items = ['a', 'b', 'c'];
 </script>
 
 <RadioGroup>
 	{#snippet children(group)}
 		<div {...group.root}>
-            {#each group.items as item}
-                <div>
-                    <button {...item.button}>
-                        {#if item.checked}
-                            <p>+</p>
-                        {:else}
-                            <p>-</p>
-                        {/if}
-                    </button>
-                    <label {...item.label}>
-                        {item.item}
-                    </label>
-                </div>
-            {/each}
-            <input {...group.hiddenInput} />
-        </div>
+			<!-- svelte-ignore a11y_label_has_associated_control -- https://github.com/sveltejs/svelte/issues/15067 -->
+			<label {...group.label}>Label</label>
+			{#each items as i}
+				{@const item = group.getItem(i)}
+				<div {...item.attrs}>
+					{#if item.checked}
+						✅
+					{/if}
+				</div>
+			{/each}
+			<input {...group.hiddenInput} />
+		</div>
 	{/snippet}
 </RadioGroup>
 ```
