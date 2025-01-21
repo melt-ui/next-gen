@@ -64,7 +64,7 @@ export class RadioGroup {
 	#props!: RadioGroupProps;
 	readonly disabled = $derived(extract(this.#props.disabled, false));
 	readonly required = $derived(extract(this.#props.required, false));
-	readonly loop = $derived(extract(this.#props.loop, false));
+	readonly loop = $derived(extract(this.#props.loop, true));
 	readonly selectWhenFocused = $derived(extract(this.#props.selectWhenFocused, true));
 	readonly orientation = $derived(extract(this.#props.orientation, "vertical"));
 
@@ -115,6 +115,8 @@ export class RadioGroup {
 			id: this.#ids.label,
 			for: this.#ids.root,
 			onclick: (e) => {
+				if (this.disabled) return;
+
 				// focus the selected item
 				const el = e.currentTarget;
 				if (!isHtmlElement(el)) return;
@@ -146,6 +148,7 @@ export class RadioGroup {
 	}
 
 	select(item: string) {
+		if (this.disabled) return;
 		this.value = item;
 	}
 }
@@ -168,6 +171,8 @@ class RadioItem {
 	}
 
 	#select(e: Event) {
+		if (this.#group.disabled) return;
+
 		this.#group.select(this.value);
 		const el = e.currentTarget;
 		if (!isHtmlElement(el)) return;
