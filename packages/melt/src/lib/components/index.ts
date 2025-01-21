@@ -4,3 +4,4 @@ export { default as Tabs } from "./Tabs.svelte";
 export { default as Slider } from "./Slider.svelte";
 export { default as Popover } from "./Popover.svelte";
 export { default as Tooltip } from "./Tooltip.svelte";
+export { default as RadioGroup } from "./RadioGroup.svelte";

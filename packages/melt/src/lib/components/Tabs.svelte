@@ -2,7 +2,7 @@
 	import { Tabs, type TabsProps } from "../builders/Tabs.svelte";
 	import { type Snippet } from "svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "$lib/builders/utils.svelte";
+	import { getters } from "../builders/utils.svelte";
 
 	type Props = ComponentProps<TabsProps> & {
 		children: Snippet<[Tabs]>;
