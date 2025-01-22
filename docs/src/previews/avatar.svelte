@@ -57,7 +57,7 @@
 			contenteditable
 			id="gh"
 			class=" w-auto border-b-2 border-neutral-600 bg-transparent px-1 pb-1 text-center text-2xl font-light
-			text-white placeholder-neutral-500 outline-none transition focus:border-neutral-200"
+			placeholder-neutral-500 outline-none transition focus:border-neutral-200 dark:text-white"
 			bind:innerText={username}
 			spellcheck="false"
 		></span>
