@@ -1,5 +1,11 @@
 # melt
 
+## 0.5.1
+
+### Patch Changes
+
+- 33e8480: Update peer dependency and libs
+
 ## 0.5.0
 
 ### Minor Changes
