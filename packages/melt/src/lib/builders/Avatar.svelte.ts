@@ -3,6 +3,7 @@ import { createDataIds } from "$lib/utils/identifiers";
 import { styleAttr } from "$lib/utils/attribute";
 import { inBrowser } from "$lib/utils/browser";
 import type { MaybeGetter } from "$lib/types";
+import { watch } from "runed";
 
 const identifiers = createDataIds("avatar", ["image", "fallback"]);
 
@@ -40,6 +41,14 @@ export class Avatar {
 		$effect(() => {
 			this.#props.onLoadingStatusChange?.(this.#loadingStatus);
 		});
+
+		watch(
+			() => this.src,
+			() => {
+				this.#loadingStatus = "loading";
+			},
+		);
+
 		this.#props = props;
 	}
 
@@ -53,16 +62,11 @@ export class Avatar {
 			src: this.src,
 			style: styleAttr({ display: this.#loadingStatus === "loaded" ? "block" : "none" }),
 			onload: () => {
-				if (inBrowser()) {
-					if (this.delayMs !== undefined) {
-						const timerId = window.setTimeout(() => {
-							this.#loadingStatus = "loaded";
-						}, this.delayMs);
-						return () => window.clearTimeout(timerId);
-					} else {
-						this.#loadingStatus = "loaded";
-					}
-				}
+				if (!inBrowser()) return;
+				const timerId = window.setTimeout(() => {
+					this.#loadingStatus = "loaded";
+				}, this.delayMs);
+				return () => window.clearTimeout(timerId);
 			},
 			onerror: () => {
 				this.#loadingStatus = "error";

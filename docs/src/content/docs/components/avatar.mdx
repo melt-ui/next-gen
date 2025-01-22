@@ -21,9 +21,9 @@ Things I want:
 ## Features
 
 <Features>
-  - Automatic & manual control over image rendering
-  - Fallback supports any children elements
-  - Optionally delay fallback rendering to avoid flashes
+- 🎮 Automatic & manual control over image rendering
+- 🗼 Fallback supports any children elements
+- ⌛ Optionally delay fallback rendering to avoid flashes
 </Features>
 
 ## Usage
@@ -34,11 +34,11 @@ Things I want:
 <script lang="ts">
 	import { Avatar } from "melt";
 
-	const avatar = new Avatar({src: 'https://avatars.githubusercontent.com/u/1162160?v=4'});
+	const avatar = new Avatar({src: '...'});
 </script>
 
 <img {...avatar.image} alt="Avatar" />
-<span {...avatar.fallback} >RH</span>
+<span {...avatar.fallback}>RH</span>
 
 ```
 	</TabItem>
@@ -49,10 +49,10 @@ Things I want:
 	import { Avatar } from "melt/components";
 </script>
 
-<Avatar src="https://avatars.githubusercontent.com/u/1162160?v=4">
+<Avatar src="...">
 	{#snippet children(avatar)}
 		<img {...avatar.image} alt="Avatar" />
-		<span {...avatar.fallback} >RH</span>
+		<span {...avatar.fallback}>Fallback</span>
 	{/snippet}
 </PinInput>
 ```
