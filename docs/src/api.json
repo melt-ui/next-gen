@@ -720,5 +720,56 @@
       }
     ],
     "propsAlt": "export type PinInputProps = {\n  /**\n   * The value for the Pin Input.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default ''\n   */\n  value?: MaybeGetter<string | undefined>;\n  /**\n   * Called when the `PinInput` instance tries to change the value.\n   */\n  onValueChange?: (value: string) => void;\n\n  /**\n   * The amount of digits in the Pin Input.\n   *\n   * @default 4\n   */\n  maxLength?: MaybeGetter<number | undefined>;\n  /**\n   * An optional placeholder to display when the input is empty.\n   *\n   * @default '○'\n   */\n  placeholder?: MaybeGetter<string | undefined>;\n\n  /**\n   * If `true`, prevents the user from interacting with the input.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the input should be masked like a password.\n   *\n   * @default false\n   */\n  mask?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * What characters the input accepts.\n   *\n   * @default 'text'\n   */\n  type?: MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>;\n};"
+  },
+  "Collapsible": {
+    "constructorProps": [
+      {
+        "name": "disabled",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "Whether the collapsible is disabled which prevents it from being opened.",
+        "optional": true
+      },
+      {
+        "name": "open",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "Whether the collapsible is open.",
+        "optional": true
+      },
+      {
+        "name": "onOpenChange",
+        "type": "((value: boolean) => void) | undefined",
+        "description": "A callback called when the value of `open` changes.",
+        "optional": true
+      }
+    ],
+    "methods": [],
+    "properties": [
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "open",
+        "type": "boolean",
+        "description": "The open state of the collapsible."
+      },
+      {
+        "name": "root",
+        "type": "{\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  \"data-melt-collapsible-root\": string\n}",
+        "description": "The spread attributes for the root element."
+      },
+      {
+        "name": "trigger",
+        "type": "{\n  disabled: boolean\n  onclick: () => void\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  \"data-melt-collapsible-trigger\": string\n}",
+        "description": "The spread attributes for the trigger button."
+      },
+      {
+        "name": "content",
+        "type": "{\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  \"data-melt-collapsible-content\": string\n}",
+        "description": "The spread attributes for the content element."
+      }
+    ],
+    "propsAlt": "export type CollapsibleProps = {\n  /**\n   * Whether the collapsible is disabled which prevents it from being opened.\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Whether the collapsible is open.\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * A callback called when the value of `open` changes.\n   */\n  onOpenChange?: (value: boolean) => void;\n};"
   }
 }
