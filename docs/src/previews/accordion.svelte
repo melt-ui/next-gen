@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { slide } from "svelte/transition";
-	import Preview, { usePreviewControls } from "@components/preview.svelte";
+	import { usePreviewControls } from "@components/preview-ctx.svelte";
+	import Preview from "@components/preview.svelte";
 	import { Accordion, getters, type AccordionItem } from "melt/builders";
 
 	const controls = usePreviewControls({
@@ -40,15 +41,14 @@
 		},
 	];
 
-	const accordion = new Accordion({
-		items: () => items,
-		...getters(controls),
-	});
+	const accordion = new Accordion(getters(controls));
 </script>
 
 <Preview>
 	<div {...accordion.root} class="mx-auto w-[18rem] max-w-full rounded-xl shadow-lg sm:w-[25rem]">
-		{#each accordion.items as item}
+		{#each items as i}
+			{@const item = accordion.getItem(i)}
+
 			<div class="overflow-hidden first:rounded-t-xl last:rounded-b-xl">
 				<h2 class="flex" {...item.heading}>
 					<button

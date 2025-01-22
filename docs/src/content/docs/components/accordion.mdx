@@ -35,13 +35,13 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 		{ id: "item-2", title: "Can I customize it?", description: "..."},
 	];
 
-	const accordion = new Accordion({
-		items: () => items
-	});
+	const accordion = new Accordion();
 </script>
 
 <div {...accordion.root}>
-	{#each accordion.items as item}
+	{#each items as i}
+		{@const item = accordion.getItem(i)}
+		
 		<div>
 			<h2 {...item.heading}>
 				<button {...item.trigger}>
