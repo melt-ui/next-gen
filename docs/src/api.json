@@ -731,7 +731,7 @@
       },
       {
         "name": "open",
-        "type": "MaybeGetter<boolean> | undefined",
+        "type": "MaybeGetter<boolean | undefined>",
         "description": "Whether the collapsible is open.",
         "optional": true
       },
@@ -770,6 +770,6 @@
         "description": "The spread attributes for the content element."
       }
     ],
-    "propsAlt": "export type CollapsibleProps = {\n  /**\n   * Whether the collapsible is disabled which prevents it from being opened.\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Whether the collapsible is open.\n   */\n  open?: MaybeGetter<boolean>;\n\n  /**\n   * A callback called when the value of `open` changes.\n   */\n  onOpenChange?: (value: boolean) => void;\n};"
+    "propsAlt": "export type CollapsibleProps = {\n  /**\n   * Whether the collapsible is disabled which prevents it from being opened.\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Whether the collapsible is open.\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * A callback called when the value of `open` changes.\n   */\n  onOpenChange?: (value: boolean) => void;\n};"
   }
 }

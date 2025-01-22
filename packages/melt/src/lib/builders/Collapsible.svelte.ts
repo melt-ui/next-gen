@@ -16,7 +16,7 @@ export type CollapsibleProps = {
 	/**
 	 * Whether the collapsible is open.
 	 */
-	open?: MaybeGetter<boolean>;
+	open?: MaybeGetter<boolean | undefined>;
 
 	/**
 	 * A callback called when the value of `open` changes.
@@ -37,7 +37,7 @@ export class Collapsible {
 		this.#open = new Synced({
 			value: props.open,
 			onChange: props.onOpenChange,
-			defaultValue: false
+			defaultValue: false,
 		});
 	}
 
@@ -54,8 +54,8 @@ export class Collapsible {
 
 	get #sharedAttrs() {
 		return {
-			'data-state': this.open ? 'open' : 'closed',
-			'data-disabled': dataAttr(this.disabled)
+			"data-state": this.open ? "open" : "closed",
+			"data-disabled": dataAttr(this.disabled),
 		};
 	}
 
@@ -65,7 +65,7 @@ export class Collapsible {
 	get root() {
 		return {
 			[dataIds.root]: "",
-			...this.#sharedAttrs
+			...this.#sharedAttrs,
 		};
 	}
 
@@ -81,7 +81,7 @@ export class Collapsible {
 				if (this.disabled) return;
 
 				this.#open.current = !this.#open.current;
-			}
+			},
 		};
 	}
 
@@ -91,7 +91,8 @@ export class Collapsible {
 	get content() {
 		return {
 			[dataIds.content]: "",
-			...this.#sharedAttrs
+			...this.#sharedAttrs,
 		};
 	}
 }
+
