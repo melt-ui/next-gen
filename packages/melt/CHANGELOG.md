@@ -1,5 +1,11 @@
 # melt
 
+## 0.5.0
+
+### Minor Changes
+
+- 827e5bb: feat: add collapsible builder
+
 ## 0.4.0
 
 ### Minor Changes
