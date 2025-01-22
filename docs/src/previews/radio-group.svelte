@@ -47,21 +47,19 @@
 </script>
 
 <Preview>
-	<div
-		class="mx-auto flex w-fit flex-col gap-2 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
-		{...group.root}
-	>
+	<div class="mx-auto flex w-fit flex-col gap-2" {...group.root}>
 		<!-- svelte-ignore a11y_label_has_associated_control -- https://github.com/sveltejs/svelte/issues/15067 -->
 		<label {...group.label} class="font-semibold text-white">Layout</label>
 		<div class="flex {isVert ? 'flex-col gap-1' : 'flex-row gap-3'}">
 			{#each items as i}
 				{@const item = group.getItem(i)}
 				<div
-					class="ring-accent-500 -ml-1 flex items-center gap-3 rounded p-1 outline-none focus-visible:ring"
+					class="ring-accent-500 -ml-1 flex items-center gap-3 rounded p-1 outline-none focus-visible:ring
+					data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
 					{...item.attrs}
 				>
 					<div
-						class="grid h-6 w-6 cursor-default place-items-center
+						class="grid h-6 w-6 place-items-center
 							rounded-full bg-white shadow-sm hover:bg-gray-100 data-[disabled=true]:bg-gray-400"
 					>
 						{#if item.checked}
