@@ -1,8 +1,9 @@
 <script lang="ts">
-	import Preview, { usePreviewControls } from "@components/preview.svelte";
+	import Preview from "@components/preview.svelte";
 	import { scale } from "svelte/transition";
 	import { RadioGroup } from "melt/builders";
 	import { getters } from "melt/builders";
+	import { usePreviewControls } from "@components/preview-ctx.svelte";
 
 	const items = $state(["default", "comfortable", "compact"]);
 
