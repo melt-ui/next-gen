@@ -109,10 +109,8 @@ export class Tree<I extends TreeItem[], Multiple extends boolean = false> {
 		this.#props = props;
 		this.#selected = new SelectionState({
 			value: props.selected,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			onChange: props.onSelectedChange as any,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			multiple: props.multiple as any,
+			onChange: props.onSelectedChange,
+			multiple: props.multiple,
 		}) as Selected<Multiple>;
 		this.#expanded = new SelectionState({
 			value: props.expanded,
@@ -133,12 +131,11 @@ export class Tree<I extends TreeItem[], Multiple extends boolean = false> {
 	 * For single selection, returns a single ID or undefined
 	 */
 	get selected() {
-		return this.#selected.current as Multiple extends true ? Set<string> : string | undefined;
+		return this.#selected.current;
 	}
 
 	set selected(v) {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		this.#selected.current = v as any;
+		this.#selected.current = v;
 	}
 
 	/**
@@ -450,7 +447,12 @@ class Child<I extends TreeItem[]> {
 			return this.nextSibling;
 		}
 		if (this.parent instanceof Child) {
-			return this.parent.nextSibling;
+			let p: Child<I> | undefined = this.parent;
+			while (p && !p.nextSibling) {
+				if (p.parent instanceof Tree) break;
+				p = p.parent;
+			}
+			return p?.nextSibling;
 		}
 	}
 

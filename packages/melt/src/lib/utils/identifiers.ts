@@ -1,8 +1,13 @@
 import { nanoid } from "nanoid";
+import { keys } from "./object";
 
 type DataIds<Name extends string, Parts extends string[]> = {
 	[P in Parts[number]]: `data-melt-${Name}-${P}`;
 };
+
+/**
+ * @deprecated use `createBuilderMeMetaData` instead
+ */
 export function createDataIds<const Name extends string, const Parts extends string[]>(
 	name: Name,
 	parts: Parts,
@@ -25,4 +30,35 @@ export function createIds<const T extends DataIds<string, string[]>>(identifiers
 		return acc;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	}, {} as any);
+}
+
+export type BuilderMetadata<Name extends string, Parts extends string[]> = {
+	dataAttrs: {
+		[P in Parts[number]]: `data-melt-${Name}-${P}`;
+	};
+	dataSelectors: {
+		[P in Parts[number]]: `[data-melt-${Name}-${P}]`;
+	};
+	createIds: () => {
+		[P in Parts[number]]: string;
+	};
+};
+
+export function createBuilderMetadata<const Name extends string, const Parts extends string[]>(
+	name: Name,
+	parts: Parts,
+): BuilderMetadata<Name, Parts> {
+	// TODO: clean this up
+	const dataAttrs = createDataIds(name, parts);
+	const dataSelectors = keys(dataAttrs).reduce((acc, key) => {
+		acc[key] = `[${dataAttrs[key]}]`;
+		return acc;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	}, {} as any);
+
+	return {
+		dataAttrs,
+		dataSelectors,
+		createIds: () => createIds(dataAttrs),
+	};
 }
