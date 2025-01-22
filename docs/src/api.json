@@ -848,7 +848,7 @@
       },
       {
         "name": "onValueChange",
-        "type": "any",
+        "type": "OnChange<Multiple> | undefined",
         "description": "The callback invoked when the value of the Accordion changes.",
         "optional": true
       }
@@ -902,6 +902,6 @@
         "description": "Spread attributes for the accordion root element."
       }
     ],
-    "propsAlt": "export type AccordionProps<Multiple extends boolean = false> = {\r\n  /**\r\n   * If `true`, multiple accordion items can be open at the same time.\r\n   *\r\n   * @default false\r\n   */\r\n  multiple?: MaybeGetter<Multiple | undefined>;\r\n\r\n  /**\r\n   * When `true`, prevents the user from interacting with the accordion.\r\n   *\r\n   * @default false\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * The controlled value for the accordion.\r\n   */\r\n  value?: AccordionValue<Multiple>;\r\n\r\n  /**\r\n   * The callback invoked when the value of the Accordion changes.\r\n   */\r\n  onValueChange?: OnSelectChange<Multiple>;\r\n};"
+    "propsAlt": "export type AccordionProps<Multiple extends boolean = false> = {\r\n  /**\r\n   * If `true`, multiple accordion items can be open at the same time.\r\n   *\r\n   * @default false\r\n   */\r\n  multiple?: MaybeGetter<Multiple | undefined>;\r\n\r\n  /**\r\n   * When `true`, prevents the user from interacting with the accordion.\r\n   *\r\n   * @default false\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * The controlled value for the accordion.\r\n   */\r\n  value?: AccordionValue<Multiple>;\r\n\r\n  /**\r\n   * The callback invoked when the value of the Accordion changes.\r\n   */\r\n  onValueChange?: OnChange<Multiple>;\r\n};"
   }
 }

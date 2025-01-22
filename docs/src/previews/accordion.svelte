@@ -53,7 +53,7 @@
 				<h2 class="flex" {...item.heading}>
 					<button
 						{...item.trigger}
-						class="focus-visible:text-accent-500 flex flex-1 cursor-pointer items-center justify-between bg-gray-200 px-5 py-5 text-base font-medium leading-none text-gray-800 transition-colors hover:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
+						class="focus-visible:text-accent-500 flex flex-1 cursor-pointer items-center justify-between bg-gray-200 px-5 py-5 text-base font-medium leading-none text-gray-800 transition-colors hover:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
 					>
 						{item.item.title}
 					</button>
@@ -62,7 +62,7 @@
 				{#if item.isExpanded()}
 					<div
 						{...item.content}
-						class="content overflow-hidden bg-white text-sm text-gray-800"
+						class="content overflow-hidden bg-white p-4 text-sm dark:bg-gray-900 dark:text-white/80"
 						transition:slide
 					>
 						<div class="px-5 py-4">

@@ -1,4 +1,4 @@
-import { SelectionState, type MaybeMultiple, type OnSelectChange } from "$lib/utils/selection-state.svelte";
+import { SelectionState, type MaybeMultiple, type OnChange } from "$lib/utils/selection-state.svelte";
 import { kbd } from "$lib/utils/keyboard";
 import type { FalseIfUndefined } from "$lib/utils/types";
 import type { MaybeGetter } from "$lib/types";
@@ -53,7 +53,7 @@ export type AccordionProps<Multiple extends boolean = false> = {
 	/**
 	 * The callback invoked when the value of the Accordion changes.
 	 */
-	onValueChange?: OnSelectChange<Multiple>;
+	onValueChange?: OnChange<Multiple>;
 };
 
 export class Accordion<Multiple extends boolean = false> {
