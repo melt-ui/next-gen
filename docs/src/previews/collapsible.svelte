@@ -16,7 +16,7 @@
 </script>
 
 <Preview>
-	<Collapsible {...controls} open>
+	<Collapsible {...controls}>
 		{#snippet children(collapsible)}
 			<div {...collapsible.root} class="mx-auto w-[18rem] max-w-full sm:w-[25rem]">
 				<button
