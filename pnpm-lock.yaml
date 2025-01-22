@@ -139,6 +139,9 @@ importers:
       '@iconify/json':
         specifier: ^2.2.227
         version: 2.2.227
+      '@number-flow/svelte':
+        specifier: ^0.3.3
+        version: 0.3.3(svelte@5.19.1)
       unplugin-icons:
         specifier: ^0.19.0
         version: 0.19.0
@@ -1262,6 +1265,11 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
+
+  '@number-flow/svelte@0.3.3':
+    resolution: {integrity: sha512-wo5tiU1qKc74k61sNx8GwvnmZ7yKdbfj1onjzaAa67HRXFClRcrfLlXXatBSQ/uK2XTz9156ILs3VmpuSG1sFA==}
+    peerDependencies:
+      svelte: ^4 || ^5
 
   '@oslojs/encoding@1.1.0':
     resolution: {integrity: sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ==}
@@ -3528,6 +3536,9 @@ packages:
 
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
+
+  number-flow@0.5.3:
+    resolution: {integrity: sha512-iLKyssImNWQmJ41rza9K7P5lHRZTyishi/9FarWPLQHYY2Ydtl6eiXINEjZ1fa8dHeY0O7+YOD+Py3ZsJddYkg==}
 
   nwsapi@2.2.10:
     resolution: {integrity: sha512-QK0sRs7MKv0tKe1+5uZIQk/C8XGza4DAnztJG8iD+TpJIORARrCxczA738awHrZoHeTjSSoHqao2teO0dC/gFQ==}
@@ -6278,6 +6289,12 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
+
+  '@number-flow/svelte@0.3.3(svelte@5.19.1)':
+    dependencies:
+      esm-env: 1.2.2
+      number-flow: 0.5.3
+      svelte: 5.19.1
 
   '@oslojs/encoding@1.1.0': {}
 
@@ -9132,6 +9149,10 @@ snapshots:
   nth-check@2.1.1:
     dependencies:
       boolbase: 1.0.0
+
+  number-flow@0.5.3:
+    dependencies:
+      esm-env: 1.2.2
 
   nwsapi@2.2.10: {}
 

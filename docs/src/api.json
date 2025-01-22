@@ -514,6 +514,53 @@
     ],
     "propsAlt": "export type RadioGroupProps = {\n  /**\n   * If `true`, prevents the user from interacting with the group.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n  /**\n   * If `true`, indicates that the user must select a radio button before\n   * the owning form can be submitted.\n   *\n   * @default false\n   */\n  required?: MaybeGetter<boolean | undefined>;\n  /**\n   * If the the button selection should loop when navigating with the arrow keys.\n   *\n   * @default true\n   */\n  loop?: MaybeGetter<boolean | undefined>;\n  /**\n   * If `true`, the value will be changed whenever a button is focused.\n   *\n   * @default true\n   */\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\n  /**\n   * The orientation of the slider.\n   *\n   * @default \"vertical\"\n   */\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\n  /**\n   * Input name for radio group.\n   */\n  name?: MaybeGetter<string | undefined>;\n  /**\n   * Default value for radio group.\n   *\n   * @default \"\"\n   */\n  value?: MaybeGetter<string | undefined>;\n  /**\n   * Called when the radio button is clicked.\n   */\n  onValueChange?: (active: string) => void;\n};"
   },
+  "Progress": {
+    "constructorProps": [
+      {
+        "name": "value",
+        "type": "MaybeGetter<number | undefined>",
+        "description": "The value for the progress.",
+        "defaultValue": "undefined",
+        "optional": true
+      },
+      {
+        "name": "max",
+        "type": "MaybeGetter<number | undefined>",
+        "description": "The maximum value of the progress.",
+        "optional": true
+      },
+      {
+        "name": "onValueChange",
+        "type": "((value: number) => void) | undefined",
+        "description": "The callback invoked when the value of the progress changes.",
+        "optional": true
+      }
+    ],
+    "methods": [],
+    "properties": [
+      {
+        "name": "max",
+        "type": "number",
+        "description": ""
+      },
+      {
+        "name": "value",
+        "type": "number",
+        "description": ""
+      },
+      {
+        "name": "root",
+        "type": "{\n  \"data-melt-progress-root\": string\n  value: number\n  max: number\n  role: string\n  \"aria-valuemin\": number\n  \"aria-valuemax\": number\n  \"aria-valuenow\": number\n  \"data-value\": number\n  \"data-state\": string\n  \"data-max\": number\n}",
+        "description": "Spread attributes for the Progress root element."
+      },
+      {
+        "name": "progress",
+        "type": "{\n  \"data-melt-progress-progress\": string\n  style: `--progress: ${string}`\n}",
+        "description": "Spread attributes for the Progress percentage element.\nProvides a --progress CSS variable that can be used to style the progress:\n`transform: translateX(calc(var(--progress) * -1));`"
+      }
+    ],
+    "propsAlt": "export type ProgressProps = {\n  /**\n   * The value for the progress.\n   * \n   * @default undefined\n   */\n  value?: MaybeGetter<number | undefined>;\n\n  /**\n   * The maximum value of the progress.\n   * \n   * @deafult 100\n   */\n  max?: MaybeGetter<number | undefined>;\n\n  /**\n   * The callback invoked when the value of the progress changes.\n   */\n  onValueChange?: (value: number) => void;\n};"
+  },
   "Popover": {
     "constructorProps": [
       {
