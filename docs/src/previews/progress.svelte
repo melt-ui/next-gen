@@ -4,7 +4,9 @@
 	import { Progress } from "melt/builders";
 	import { Spring } from "svelte/motion";
 
-	const spring = new Spring(Math.round(Math.random() * 100));
+	const spring = new Spring(50, {
+		damping: 5,
+	});
 	const progress = new Progress({
 		value: () => spring.current,
 	});
@@ -31,7 +33,7 @@
 	$effect(() => {
 		const interval = setInterval(() => {
 			spring.target = Math.round(Math.random() * 100);
-		}, 2000);
+		}, 3000);
 
 		return () => {
 			clearInterval(interval);
@@ -39,7 +41,7 @@
 	});
 
 	const h = 34;
-	const maxS = 91.01;
+	const maxS = 81.01;
 	const s = $derived(Math.min(scaleConvert(value, [0, 60], [0, maxS]), maxS));
 	const minL = 65.1;
 	const l = $derived(clamp(minL, scaleConvert(value, [0, 80], [100, minL]), 100));
@@ -53,7 +55,7 @@
 		</span>
 		<div
 			{...progress.root}
-			class="relative w-[300px] overflow-hidden rounded-full bg-neutral-800"
+			class="relative w-[300px] overflow-hidden rounded-full bg-neutral-700"
 			style:height={`${scaleConvert(value, [0, 100], [8, 24])}px`}
 		>
 			<div

@@ -64,7 +64,7 @@
 		{@render children()}
 	</div>
 
-	{#if !open}
+	{#if !open && values}
 		<button
 			class="absolute bottom-4 left-4 z-10 cursor-pointer rounded-lg bg-gray-500 px-2 py-1
 		text-sm text-white transition hover:bg-gray-700 active:bg-gray-800"
