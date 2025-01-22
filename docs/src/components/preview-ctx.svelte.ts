@@ -1,18 +1,6 @@
 import { getContext, setContext } from "svelte";
 import { objectMap } from "@antfu/utils";
 
-const CTX_KEY = Symbol();
-
-function set<Schema extends SchemaExtends>(ctx: Context<Schema>) {
-	return setContext(CTX_KEY, ctx);
-}
-
-function get<Schema extends SchemaExtends>() {
-	return getContext<Context<Schema>>(CTX_KEY) ?? {};
-}
-
-export const previewCtx = { get, set };
-
 // A type that marks all readonly values as writable
 type Writable<T> = {
 	-readonly [P in keyof T]: T[P];
@@ -39,7 +27,13 @@ type NumberControl = {
 	max?: number;
 };
 
-type Control = BooleanControl | SelectControl | NumberControl;
+type StringControl = {
+	label: string;
+	defaultValue: string;
+	type: "string";
+};
+
+type Control = BooleanControl | SelectControl | NumberControl | StringControl;
 
 type NormalizeType<T> = T extends string
 	? T
@@ -62,6 +56,18 @@ type Context<Schema extends SchemaExtends> = {
 	};
 	schema: Schema;
 };
+
+const CTX_KEY = Symbol();
+
+function set<Schema extends SchemaExtends>(ctx: Context<Schema>) {
+	return setContext(CTX_KEY, ctx);
+}
+
+function get<Schema extends SchemaExtends>() {
+	return getContext<Context<Schema>>(CTX_KEY) ?? {};
+}
+
+export const previewCtx = { get, set };
 
 export function usePreviewControls<const Schema extends SchemaExtends>(
 	schema: Schema,

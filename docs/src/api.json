@@ -771,5 +771,57 @@
       }
     ],
     "propsAlt": "export type CollapsibleProps = {\n  /**\n   * Whether the collapsible is disabled which prevents it from being opened.\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Whether the collapsible is open.\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * A callback called when the value of `open` changes.\n   */\n  onOpenChange?: (value: boolean) => void;\n};"
+  },
+  "Avatar": {
+    "constructorProps": [
+      {
+        "name": "src",
+        "type": "MaybeGetter<string | undefined>",
+        "description": "The source of the image to display.",
+        "optional": true
+      },
+      {
+        "name": "delayMs",
+        "type": "MaybeGetter<number | undefined>",
+        "description": "The amount of time in milliseconds to wait before displaying the image.",
+        "defaultValue": "0",
+        "optional": true
+      },
+      {
+        "name": "onLoadingStatusChange",
+        "type": "((value: ImageLoadingStatus) => void | undefined) | undefined",
+        "description": "A callback invoked when the loading status store of the avatar changes.",
+        "optional": true
+      }
+    ],
+    "methods": [],
+    "properties": [
+      {
+        "name": "src",
+        "type": "string",
+        "description": ""
+      },
+      {
+        "name": "delayMs",
+        "type": "number",
+        "description": ""
+      },
+      {
+        "name": "loadingStatus",
+        "type": "ImageLoadingStatus",
+        "description": ""
+      },
+      {
+        "name": "image",
+        "type": "{\n  readonly \"data-melt-avatar-image\": \"\"\n  readonly src: string\n  readonly style: `display: ${string}`\n  readonly onload: () => (() => void) | undefined\n  readonly onerror: () => void\n}",
+        "description": ""
+      },
+      {
+        "name": "fallback",
+        "type": "{\n  readonly \"data-melt-avatar-fallback\": \"\"\n  readonly style: `display: ${string}` | undefined\n  readonly hidden: true | undefined\n}",
+        "description": ""
+      }
+    ],
+    "propsAlt": "export type AvatarProps = {\n  /**\n   * The source of the image to display.\n   */\n  src?: MaybeGetter<string | undefined>;\n\n  /**\n   * The amount of time in milliseconds to wait before displaying the image.\n   *\n   * @default 0\n   */\n  delayMs?: MaybeGetter<number | undefined>;\n\n  /**\n   * A callback invoked when the loading status store of the avatar changes.\n   */\n  onLoadingStatusChange?: (value: ImageLoadingStatus) => void | undefined;\n};"
   }
 }
