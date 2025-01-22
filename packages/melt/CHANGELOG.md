@@ -1,5 +1,11 @@
 # melt
 
+## 0.6.0
+
+### Minor Changes
+
+- 3a7317e: feat: add avatar
+
 ## 0.5.1
 
 ### Patch Changes
