@@ -2,4 +2,4 @@
 "melt": minor
 ---
 
-New collapsible builder
+feat: add collapsible builder
