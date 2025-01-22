@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Preview, { usePreviewControls } from "@components/preview.svelte";
+	import Preview from "@components/preview.svelte";
+	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import { Tree, getters, type TreeItem } from "melt/builders";
 	import JavaScript from "~icons/devicon/javascript";
 	import Svelte from "~icons/devicon/svelte";
@@ -37,23 +38,6 @@
 			icon: "folder",
 			children: [
 				{
-					id: "lib/tree",
-					title: "tree",
-					icon: "folder",
-					children: [
-						{
-							id: "lib/tree/Tree.svelte",
-							title: "Tree.svelte",
-							icon: "svelte",
-						},
-						{
-							id: "lib/tree/TreeItem.svelte",
-							title: "TreeItem.svelte",
-							icon: "svelte",
-						},
-					],
-				},
-				{
 					id: "lib/icons",
 					title: "icons",
 					icon: "folder",
@@ -71,9 +55,21 @@
 					],
 				},
 				{
-					id: "lib/index.js",
-					title: "index.js",
-					icon: "js",
+					id: "lib/tree",
+					title: "tree",
+					icon: "folder",
+					children: [
+						{
+							id: "lib/tree/Tree.svelte",
+							title: "Tree.svelte",
+							icon: "svelte",
+						},
+						{
+							id: "lib/tree/TreeItem.svelte",
+							title: "TreeItem.svelte",
+							icon: "svelte",
+						},
+					],
 				},
 			],
 		},
@@ -130,10 +126,12 @@
 		>
 			<div class="group py-1" style="padding-left: {depth * 1}rem">
 				<div
-					class="{item.selected ? '!bg-accent-500 !text-white dark:!bg-accent-200 dark:!text-accent-950' : ''}
+					class="{item.selected
+						? '!bg-accent-500 dark:!bg-accent-200 dark:!text-accent-950 !text-white'
+						: ''}
 					ring-accent-500 dark:ring-accent-700 flex h-full w-full items-center gap-2 rounded-xl
-					px-3 py-1 ring-offset-white dark:ring-offset-black transition 
-					group-hover:bg-gray-200 dark:group-hover:bg-gray-800"
+					px-3 py-1 ring-offset-white transition group-hover:bg-gray-200
+					dark:ring-offset-black dark:group-hover:bg-gray-800"
 				>
 					{@render treeItemIcon(item)}
 					<span class="select-none">

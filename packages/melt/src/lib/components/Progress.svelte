@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { Tabs, type TabsProps } from "../builders/Tabs.svelte";
+	import { Progress, type ProgressProps } from "../builders/Progress.svelte";
 	import { type Snippet } from "svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "../builders/utils.svelte";
+	import { getters } from "$lib/builders/utils.svelte";
 
-	type Props = ComponentProps<TabsProps> & {
-		children: Snippet<[Tabs]>;
+	type Props = ComponentProps<ProgressProps> & {
+		children: Snippet<[Progress]>;
 	};
 
 	let { value = $bindable(), children, ...rest }: Props = $props();
 
-	const tabs = new Tabs({
+	const progress = new Progress({
 		value: () => value,
 		onValueChange: (v) => (value = v),
 		...getters(rest),
 	});
 </script>
 
-{@render children(tabs)}
+{@render children(progress)}

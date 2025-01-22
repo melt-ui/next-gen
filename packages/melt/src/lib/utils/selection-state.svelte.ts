@@ -7,7 +7,7 @@ import { isFunction, isIterable, isString, isSvelteSet } from "./is";
 type _multiple_extends = boolean;
 type _multiple_default = false;
 
-type _value<Multiple extends _multiple_extends> = Multiple extends true
+type Value<Multiple extends _multiple_extends> = Multiple extends true
 	? SvelteSet<string>
 	: string | undefined;
 
@@ -15,17 +15,13 @@ export type MaybeMultiple<Multiple extends _multiple_extends> = Multiple extends
 	? SvelteSet<string> | MaybeGetter<Iterable<string> | undefined>
 	: MaybeGetter<string | undefined>;
 
-type _onChange<Multiple extends _multiple_extends> = Multiple extends true
-	? ((value: SvelteSet<string>) => void) | undefined
-	: ((value: string | undefined) => void) | undefined;
+type OnChange<Multiple extends _multiple_extends> = (value: Value<Multiple>) => void;
 
-type _props<Multiple extends _multiple_extends> = {
+type SelectionStateProps<Multiple extends _multiple_extends> = {
 	value?: MaybeMultiple<Multiple>;
-	onChange?: _onChange<Multiple>;
+	onChange?: OnChange<Multiple>;
 	multiple?: MaybeGetter<Multiple | undefined>;
-} & (Multiple extends true
-	? { multiple: MaybeGetter<Multiple | undefined> }
-	: Record<never, never>);
+};
 
 function toSet(v: Iterable<string> | string | undefined): SvelteSet<string> {
 	if (isString(v)) return new SvelteSet([v]);
@@ -39,7 +35,7 @@ function toSingle(v: Iterable<string> | string | undefined): string | undefined 
 }
 
 export class SelectionState<Multiple extends _multiple_extends = _multiple_default> {
-	#props!: _props<Multiple>;
+	#props!: SelectionStateProps<Multiple>;
 	#internal_set = new SvelteSet<string>();
 
 	isControlled = $derived(isSvelteSet(this.#props.value) || isFunction(this.#props.value));
@@ -47,7 +43,7 @@ export class SelectionState<Multiple extends _multiple_extends = _multiple_defau
 		extract<boolean | undefined, false>(this.#props.multiple, false),
 	) as Multiple;
 
-	constructor(props: _props<Multiple>) {
+	constructor(props: SelectionStateProps<Multiple>) {
 		this.#props = props;
 
 		if (this.isControlled) return;
@@ -59,40 +55,37 @@ export class SelectionState<Multiple extends _multiple_extends = _multiple_defau
 		}
 	}
 
-	get current(): _value<Multiple> {
+	get current(): Value<Multiple> {
 		if (isFunction(this.#props.value)) {
 			const v = this.#props.value();
-			return (this.isMultiple ? toSet(v) : toSingle(v)) as _value<Multiple>;
+			return (this.isMultiple ? toSet(v) : toSingle(v)) as Value<Multiple>;
 		}
 
 		if (isSvelteSet(this.#props.value)) {
 			return (
 				this.isMultiple ? this.#props.value : toSingle(this.#props.value)
-			) as _value<Multiple>;
+			) as Value<Multiple>;
 		}
 
 		return (
 			this.isMultiple ? this.#internal_set : toSingle(this.#internal_set)
-		) as _value<Multiple>;
+		) as Value<Multiple>;
 	}
 
 	manipulate(cb: (set: SvelteSet<string>) => void) {
 		const set = this.isControlled ? toSet(this.current) : this.#internal_set;
-		//const { size } = set;
 		cb(set);
-		//if (size === set.size) return;
-		this.onChange(this.isMultiple ? set : toSingle(set));
+
+		const newValue = this.isMultiple ? set : toSingle(set); 
+		this.onChange(newValue as Value<Multiple>)
 	}
 
-	onChange(value: string | SvelteSet<string> | undefined) {
+	onChange(value: Value<Multiple>) {
 		if (!this.#props.onChange) return;
-		const nv = this.isMultiple ? toSet(value) : toSingle(value);
-
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		this.#props.onChange?.(nv as any);
+		this.#props.onChange(value);
 	}
 
-	set current(value: _value<Multiple>) {
+	set current(value: Value<Multiple>) {
 		this.onChange(value);
 		if (this.isControlled) return;
 
@@ -123,7 +116,6 @@ export class SelectionState<Multiple extends _multiple_extends = _multiple_defau
 				set.clear();
 				set.add(first(items)!);
 			} else {
-				console.log(items);
 				forEach(items, (i) => set.add(i));
 			}
 		});

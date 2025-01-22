@@ -9,5 +9,6 @@
 		"types": [
       "unplugin-icons/types/svelte"
     ]
-	}
+	},
+	"include": ["src/**/*", "tests/**/*"]
 }
