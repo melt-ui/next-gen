@@ -1,5 +1,11 @@
 # melt
 
+## 0.4.0
+
+### Minor Changes
+
+- 7b165bc: add progress builder
+
 ## 0.3.0
 
 ### Minor Changes
