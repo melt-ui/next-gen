@@ -1,7 +1,6 @@
 <script lang="ts">
 	import NumberFlow from "@number-flow/svelte";
 	import Preview from "@components/preview.svelte";
-	import {  } from "svelte";
 	import { Progress } from "melt/builders";
 	import { Spring } from "svelte/motion";
 
@@ -41,7 +40,11 @@
 		};
 	});
 
-	$effect(() => {
+	let theme = $state("light");
+
+	$effect.pre(() => {
+		theme = document ? document.getElementsByTagName("html")[0].dataset.theme ?? "light" : "dark";
+
 		const observer = new MutationObserver((records) => {
 			const htmlEl = records[0].target;
 
@@ -57,8 +60,6 @@
 			observer.disconnect();
 		}
 	});
-
-	let theme = $state(document ? document.getElementsByTagName("html")[0].dataset.theme ?? "light" : "dark");
 
 	const h = 34;
 	const maxS = 81.01;
