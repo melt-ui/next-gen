@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Preview, { usePreviewControls } from "@components/preview.svelte";
+	import Preview from "@components/preview.svelte";
+	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import { Tooltip, getters } from "melt/builders";
 	import { fade } from "svelte/transition";
 	import PhPlus from "~icons/ph/plus";
