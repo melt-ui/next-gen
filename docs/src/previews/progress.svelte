@@ -1,6 +1,7 @@
 <script lang="ts">
 	import NumberFlow from "@number-flow/svelte";
 	import Preview from "@components/preview.svelte";
+	import {  } from "svelte";
 	import { Progress } from "melt/builders";
 	import { Spring } from "svelte/motion";
 
@@ -40,11 +41,31 @@
 		};
 	});
 
+	$effect(() => {
+		const observer = new MutationObserver((records) => {
+			const htmlEl = records[0].target;
+
+			if (htmlEl instanceof HTMLElement) {
+				theme = htmlEl.dataset.theme ?? "light";
+			}
+		});
+
+		const el = document.getElementsByTagName("html")[0];
+		observer.observe(el, { attributes: true });
+
+		return () => {
+			observer.disconnect();
+		}
+	});
+
+	let theme = $state(document ? document.getElementsByTagName("html")[0].dataset.theme ?? "light" : "dark");
+
 	const h = 34;
 	const maxS = 81.01;
 	const s = $derived(Math.min(scaleConvert(value, [0, 60], [0, maxS]), maxS));
-	const minL = 65.1;
-	const l = $derived(clamp(minL, scaleConvert(value, [0, 80], [100, minL]), 100));
+	let minL = $derived(theme === "dark" ? 65.1 : 100);
+	let maxL = $derived(theme === "dark" ? 100 : 65.1);
+	const l = $derived(clamp(minL, scaleConvert(value, [0, 80], [maxL, minL]), maxL));
 	const color = $derived(`hsl(${h}, ${s}%, ${l}%)`);
 </script>
 
@@ -55,7 +76,7 @@
 		</span>
 		<div
 			{...progress.root}
-			class="relative w-[300px] overflow-hidden rounded-full bg-neutral-700"
+			class="relative w-[300px] overflow-hidden rounded-full dark:bg-neutral-700 bg-neutral-500"
 			style:height={`${scaleConvert(value, [0, 100], [8, 24])}px`}
 		>
 			<div
