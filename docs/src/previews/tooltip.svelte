@@ -10,6 +10,11 @@
 			type: "boolean",
 			defaultValue: false,
 		},
+		forceVisible: {
+			label: "Force visible",
+			type: "boolean",
+			defaultValue: false,
+		},
 		closeOnPointerDown: {
 			label: "Close on pointer down",
 			type: "boolean",
@@ -50,6 +55,7 @@
 	const tooltip2 = new Tooltip({
 		...getters(controls),
 		open: false,
+		forceVisible: false,
 		computePositionOptions: () => computePositionOptions,
 	});
 </script>
@@ -90,7 +96,7 @@
 <style lang="postcss">
   .trigger {
     @apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white;
-    @apply text-gray-900 transition-colors hover:bg-white/90;
+    @apply text-gray-900 hover:text-accent-700 hover:dark:text-accent-400 transition-colors hover:bg-gray-200;
     @apply focus-visible:ring focus-visible:ring-gray-400 focus-visible:ring-offset-2;
     @apply p-0 text-sm font-medium;
   }

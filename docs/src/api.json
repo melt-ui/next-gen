@@ -231,6 +231,13 @@
         "optional": true
       },
       {
+        "name": "forceVisible",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If the popover visibility should be controlled by the user.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
         "name": "disableHoverableContent",
         "type": "MaybeGetter<boolean | undefined>",
         "description": "If `true`, leaving trigger will close the tooltip.",
@@ -271,6 +278,11 @@
         "description": ""
       },
       {
+        "name": "forceVisible",
+        "type": "boolean",
+        "description": ""
+      },
+      {
         "name": "open",
         "type": "boolean",
         "description": ""
@@ -291,7 +303,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type TooltipProps = {\r\n  /**\r\n   * If the Tooltip is open.\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that the value only changes when the getter returns a new value.\r\n   *\r\n   * Otherwise, if passing a static value, it'll serve as the default value.\r\n   *\r\n   * @default false\r\n   */\r\n  open?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * Called when the value is supposed to change.\r\n   */\r\n  onOpenChange?: (value: boolean) => void;\r\n\r\n  /**\r\n   * Size of tooltip arrow in pixels.\r\n   * \r\n   * @default 8\r\n   */\r\n  arrowSize?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * If `true`, tooltip will close if trigger is pressed.\r\n   * \r\n   * @default true\r\n   */\r\n  closeOnPointerDown?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * Tooltip open delay in milliseconds.\r\n   * \r\n   * @default 1000\r\n   */\r\n  openDelay?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * Tooltip close delay in milliseconds.\r\n   * \r\n   * @default 0\r\n   */\r\n  closeDelay?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * Options to be passed to Floating UI's `computePosition`\r\n   *\r\n   * @see https://floating-ui.com/docs/computePosition\r\n   */\r\n  computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;\r\n\r\n  /**\r\n   * If `true`, leaving trigger will close the tooltip.\r\n   * \r\n   * @default false\r\n   */\r\n  disableHoverableContent?: MaybeGetter<boolean | undefined>;\r\n};"
+    "propsAlt": "export type TooltipProps = {\r\n  /**\r\n   * If the Tooltip is open.\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that the value only changes when the getter returns a new value.\r\n   *\r\n   * Otherwise, if passing a static value, it'll serve as the default value.\r\n   *\r\n   * @default false\r\n   */\r\n  open?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * Called when the value is supposed to change.\r\n   */\r\n  onOpenChange?: (value: boolean) => void;\r\n\r\n  /**\r\n   * Size of tooltip arrow in pixels.\r\n   * \r\n   * @default 8\r\n   */\r\n  arrowSize?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * If `true`, tooltip will close if trigger is pressed.\r\n   * \r\n   * @default true\r\n   */\r\n  closeOnPointerDown?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * Tooltip open delay in milliseconds.\r\n   * \r\n   * @default 1000\r\n   */\r\n  openDelay?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * Tooltip close delay in milliseconds.\r\n   * \r\n   * @default 0\r\n   */\r\n  closeDelay?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * Options to be passed to Floating UI's `computePosition`\r\n   *\r\n   * @see https://floating-ui.com/docs/computePosition\r\n   */\r\n  computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;\r\n\r\n  /**\r\n   * If the popover visibility should be controlled by the user.\r\n   *\r\n   * @default false\r\n   */\r\n  forceVisible?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * If `true`, leaving trigger will close the tooltip.\r\n   * \r\n   * @default false\r\n   */\r\n  disableHoverableContent?: MaybeGetter<boolean | undefined>;\r\n};"
   },
   "Toggle": {
     "constructorProps": [

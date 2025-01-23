@@ -71,6 +71,13 @@ export type TooltipProps = {
 	computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;
 
 	/**
+	 * If the popover visibility should be controlled by the user.
+	 *
+	 * @default false
+	 */
+	forceVisible?: MaybeGetter<boolean | undefined>;
+
+	/**
 	 * If `true`, leaving trigger will close the tooltip.
 	 * 
 	 * @default false
@@ -88,6 +95,8 @@ export class Tooltip {
 	closeDelay = $derived(extract(this.#props.closeDelay, 0));
 	disableHoverableContent = $derived(extract(this.#props.disableHoverableContent, false));
 	arrowSize = $derived(extract(this.#props.arrowSize, 8));
+	forceVisible = $derived(extract(this.#props.forceVisible, false));
+	#isVisible = $derived(this.open || this.forceVisible);
 
 	#open!: Synced<boolean>;
 
@@ -256,9 +265,9 @@ export class Tooltip {
 			[metadata.dataAttrs.content]: "",
 			id: this.#ids.content,
 			role: "tooltip",
-			hidden: this.open && this.#mounted ? undefined : true,
+			hidden: this.#isVisible && this.#mounted ? undefined : true,
 			tabindex: -1,
-			style: this.open && this.#mounted ? "" : "display: none;",
+			style: this.#isVisible && this.#mounted ? "" : "display: none;",
 			"data-open": dataAttr(this.open),
 			onpointerenter: () => {
 				this.#isPointerInsideContent = true;
