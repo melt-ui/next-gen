@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { flip } from "svelte/animate";
 	import { fly } from "svelte/transition";
-	import Preview, { usePreviewControls } from "@components/preview.svelte";
+	import { usePreviewControls } from "@components/preview-ctx.svelte";
+	import Preview from "@components/preview.svelte";
 	import { Toaster, getters } from "melt/builders";
 	import Close from "~icons/material-symbols/close-rounded";
 
@@ -39,7 +40,7 @@
 	];
 
 	const toaster = new Toaster<ToastData>({
-		closeDelay: 0,
+		closeDelay: 3000,
 		...getters(controls),
 	});
 
@@ -63,33 +64,35 @@
 	</button>
 </Preview>
 
-<div class="fixed right-0 top-0 z-50 m-4 flex flex-col items-end gap-2 md:bottom-0 md:top-auto">
-	{#each toaster.toasts as toast (toast.id)}
-		{@const toastBuilder = toaster.getToastFromToaster(toast)}
-		<div
-			{...toastBuilder.content}
-			animate:flip={{ duration: 500 }}
-			in:fly={{ duration: 150, x: "100%" }}
-			out:fly={{ duration: 150, x: "100%" }}
-			class="rounded-lg bg-gray-800 text-white shadow-md"
-		>
-			<div class="relative w-[24rem] max-w-[calc(100vw-2rem)] gap-4 p-5">
-				<div>
-					<h3 {...toastBuilder.title} class="flex items-center gap-2 !text-base font-semibold">
-						{toastBuilder.data.title}
-						<span class="size-1.5 rounded-full {toastBuilder.data.color}"></span>
-					</h3>
-					<div {...toastBuilder.description} class="!m-0 text-base">
-						{toastBuilder.data.description}
+<div {...toaster.root}>
+	<div class="fixed right-0 top-0 m-4 flex flex-col items-end gap-1 md:bottom-0 md:top-auto">
+		{#each toaster.toasts as toast (toast.id)}
+			{@const toastBuilder = toaster.getToastFromToaster(toast)}
+			<div
+				{...toastBuilder.content}
+				animate:flip={{ duration: 500 }}
+				in:fly={{ duration: 150, x: "100%" }}
+				out:fly={{ duration: 150, x: "100%" }}
+				class="rounded-lg bg-gray-800 text-white shadow-md"
+			>
+				<div class="relative w-[24rem] max-w-[calc(100vw-2rem)] gap-4 p-5">
+					<div>
+						<h3 {...toastBuilder.title} class="flex items-center gap-2 !text-base font-semibold">
+							{toastBuilder.data.title}
+							<span class="size-1.5 rounded-full {toastBuilder.data.color}"></span>
+						</h3>
+						<div {...toastBuilder.description} class="!m-0 text-base">
+							{toastBuilder.data.description}
+						</div>
 					</div>
+					<button
+						{...toastBuilder.close}
+						class="text-accent-300 absolute right-4 top-4 !m-0 grid size-10 cursor-pointer place-items-center rounded-full bg-gray-800 hover:bg-gray-500/50"
+					>
+						<Close />
+					</button>
 				</div>
-				<button
-					{...toastBuilder.close}
-					class="text-accent-300 absolute right-4 top-4 !m-0 grid size-10 place-items-center rounded-full bg-gray-800"
-				>
-					<Close />
-				</button>
 			</div>
-		</div>
-	{/each}
+		{/each}
+	</div>
 </div>
