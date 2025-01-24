@@ -156,7 +156,7 @@
       {
         "name": "selected",
         "type": "Value<FalseIfUndefined<Multiple>>",
-        "description": "Currently selected item(s)\nFor multiple selection, returns a Set of IDs\nFor single selection, returns a single ID or undefined"
+        "description": "Currently selected item(s)\rFor multiple selection, returns a Set of IDs\rFor single selection, returns a single ID or undefined"
       },
       {
         "name": "expanded",
@@ -257,22 +257,32 @@
       {
         "name": "addToast",
         "type": "(props: AddToastProps<T>) => Toast<T>",
-        "description": ""
+        "description": "Adds a toast."
       },
       {
         "name": "removeToast",
         "type": "(id: string) => void",
-        "description": ""
+        "description": "Removes the toast with the specified ID.\r@param id The id of the toast."
       },
       {
         "name": "updateToast",
         "type": "(id: string, data: T) => void",
-        "description": ""
+        "description": "Updates a toast's data.\r@param id The id of the toast.\r@param data The updated data."
+      },
+      {
+        "name": "pauseToastTimer",
+        "type": "(currentToast: Toast<T>) => void",
+        "description": "Pauses the clearance timer of a toast.\r@param currentToast The toast."
+      },
+      {
+        "name": "restartToastTimer",
+        "type": "(currentToast: Toast<T>) => void",
+        "description": "Restarts a toast timer.\r@param currentToast The toast."
       },
       {
         "name": "getToastFromToaster",
         "type": "(toast: Toast<T>) => ToastItem<T>",
-        "description": ""
+        "description": "Returns a ToastItem with the required spread attributes.\r@param toast The toast for which to return a ToastItem."
       }
     ],
     "properties": [
@@ -295,6 +305,11 @@
         "name": "toasts",
         "type": "Toast<T>[]",
         "description": "The active toasts."
+      },
+      {
+        "name": "root",
+        "type": "{ readonly id: string; readonly popover: \"manual\" }",
+        "description": "Spread attributes for the container of the toasts."
       }
     ],
     "propsAlt": "export type ToasterProps = {\r\n  /**\r\n   * The delay in milliseconds before the toast closes. Set to 0 to disable.\r\n   * @default 5000\r\n   */\r\n  closeDelay?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The sensitivity of the toast for accessibility purposes.\r\n   * @default 'foreground'\r\n   */\r\n  type?: MaybeGetter<'foreground' | 'background' | undefined>;\r\n\r\n  /**\r\n   * The behaviour when a toast is hovered.\r\n   * @default 'pause'\r\n   */\r\n  hover?: MaybeGetter<'pause' | 'pause-all' | null | undefined>;\r\n};"
@@ -325,7 +340,7 @@
       {
         "name": "value",
         "type": "MaybeGetter<T | undefined>",
-        "description": "The default value for `tabs.value`\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that `tabs.value` only changes when the getter returns a new value.\n\nIf omitted, it will use the first tab as default.",
+        "description": "The default value for `tabs.value`\r\n\r\nWhen passing a getter, it will be used as source of truth,\r\nmeaning that `tabs.value` only changes when the getter returns a new value.\r\n\r\nIf omitted, it will use the first tab as default.",
         "defaultValue": "undefined",
         "optional": true
       },
@@ -375,7 +390,7 @@
         "description": "The attributes for the list that contains the tab triggers."
       }
     ],
-    "propsAlt": "export type TabsProps<T extends string = string> = {\n  /**\n   * If `true`, the value will be changed whenever a trigger is focused.\n   *\n   * @default true\n   */\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\n  /**\n   * If the the trigger selection should loop when navigating with the arrow keys.\n   *\n   * @default true\n   */\n  loop?: MaybeGetter<boolean | undefined>;\n  /**\n   * The orientation of the tabs.\n   *\n   * @default \"horizontal\"\n   */\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\n  /**\n   * The default value for `tabs.value`\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that `tabs.value` only changes when the getter returns a new value.\n   *\n   * If omitted, it will use the first tab as default.\n   *\n   * @default undefined\n   */\n  value?: MaybeGetter<T | undefined>;\n  /**\n   * Called when the `Tabs` instance tries to change the active tab.\n   */\n  onValueChange?: (active: T) => void;\n};"
+    "propsAlt": "export type TabsProps<T extends string = string> = {\r\n  /**\r\n   * If `true`, the value will be changed whenever a trigger is focused.\r\n   *\r\n   * @default true\r\n   */\r\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * If the the trigger selection should loop when navigating with the arrow keys.\r\n   *\r\n   * @default true\r\n   */\r\n  loop?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * The orientation of the tabs.\r\n   *\r\n   * @default \"horizontal\"\r\n   */\r\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\r\n  /**\r\n   * The default value for `tabs.value`\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that `tabs.value` only changes when the getter returns a new value.\r\n   *\r\n   * If omitted, it will use the first tab as default.\r\n   *\r\n   * @default undefined\r\n   */\r\n  value?: MaybeGetter<T | undefined>;\r\n  /**\r\n   * Called when the `Tabs` instance tries to change the active tab.\r\n   */\r\n  onValueChange?: (active: T) => void;\r\n};"
   },
   "Slider": {
     "constructorProps": [
@@ -478,7 +493,7 @@
       {
         "name": "required",
         "type": "MaybeGetter<boolean | undefined>",
-        "description": "If `true`, indicates that the user must select a radio button before\nthe owning form can be submitted.",
+        "description": "If `true`, indicates that the user must select a radio button before\r\nthe owning form can be submitted.",
         "defaultValue": "false",
         "optional": true
       },
@@ -582,7 +597,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type RadioGroupProps = {\n  /**\n   * If `true`, prevents the user from interacting with the group.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n  /**\n   * If `true`, indicates that the user must select a radio button before\n   * the owning form can be submitted.\n   *\n   * @default false\n   */\n  required?: MaybeGetter<boolean | undefined>;\n  /**\n   * If the the button selection should loop when navigating with the arrow keys.\n   *\n   * @default true\n   */\n  loop?: MaybeGetter<boolean | undefined>;\n  /**\n   * If `true`, the value will be changed whenever a button is focused.\n   *\n   * @default true\n   */\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\n  /**\n   * The orientation of the slider.\n   *\n   * @default \"vertical\"\n   */\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\n  /**\n   * Input name for radio group.\n   */\n  name?: MaybeGetter<string | undefined>;\n  /**\n   * Default value for radio group.\n   *\n   * @default \"\"\n   */\n  value?: MaybeGetter<string | undefined>;\n  /**\n   * Called when the radio button is clicked.\n   */\n  onValueChange?: (active: string) => void;\n};"
+    "propsAlt": "export type RadioGroupProps = {\r\n  /**\r\n   * If `true`, prevents the user from interacting with the group.\r\n   *\r\n   * @default false\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * If `true`, indicates that the user must select a radio button before\r\n   * the owning form can be submitted.\r\n   *\r\n   * @default false\r\n   */\r\n  required?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * If the the button selection should loop when navigating with the arrow keys.\r\n   *\r\n   * @default true\r\n   */\r\n  loop?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * If `true`, the value will be changed whenever a button is focused.\r\n   *\r\n   * @default true\r\n   */\r\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * The orientation of the slider.\r\n   *\r\n   * @default \"vertical\"\r\n   */\r\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\r\n  /**\r\n   * Input name for radio group.\r\n   */\r\n  name?: MaybeGetter<string | undefined>;\r\n  /**\r\n   * Default value for radio group.\r\n   *\r\n   * @default \"\"\r\n   */\r\n  value?: MaybeGetter<string | undefined>;\r\n  /**\r\n   * Called when the radio button is clicked.\r\n   */\r\n  onValueChange?: (active: string) => void;\r\n};"
   },
   "Progress": {
     "constructorProps": [
@@ -626,10 +641,10 @@
       {
         "name": "progress",
         "type": "{\n  \"data-melt-progress-progress\": string\n  style: `--progress: ${string}`\n}",
-        "description": "Spread attributes for the Progress percentage element.\nProvides a --progress CSS variable that can be used to style the progress:\n`transform: translateX(calc(var(--progress) * -1));`"
+        "description": "Spread attributes for the Progress percentage element.\rProvides a --progress CSS variable that can be used to style the progress:\r`transform: translateX(calc(var(--progress) * -1));`"
       }
     ],
-    "propsAlt": "export type ProgressProps = {\n  /**\n   * The value for the progress.\n   * \n   * @default undefined\n   */\n  value?: MaybeGetter<number | undefined>;\n\n  /**\n   * The maximum value of the progress.\n   * \n   * @deafult 100\n   */\n  max?: MaybeGetter<number | undefined>;\n\n  /**\n   * The callback invoked when the value of the progress changes.\n   */\n  onValueChange?: (value: number) => void;\n};"
+    "propsAlt": "export type ProgressProps = {\r\n  /**\r\n   * The value for the progress.\r\n   * \r\n   * @default undefined\r\n   */\r\n  value?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The maximum value of the progress.\r\n   * \r\n   * @deafult 100\r\n   */\r\n  max?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The callback invoked when the value of the progress changes.\r\n   */\r\n  onValueChange?: (value: number) => void;\r\n};"
   },
   "Popover": {
     "constructorProps": [
@@ -789,7 +804,7 @@
         "description": "An array of props that should be spread to the input elements."
       }
     ],
-    "propsAlt": "export type PinInputProps = {\n  /**\n   * The value for the Pin Input.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default ''\n   */\n  value?: MaybeGetter<string | undefined>;\n  /**\n   * Called when the `PinInput` instance tries to change the value.\n   */\n  onValueChange?: (value: string) => void;\n\n  /**\n   * The amount of digits in the Pin Input.\n   *\n   * @default 4\n   */\n  maxLength?: MaybeGetter<number | undefined>;\n  /**\n   * An optional placeholder to display when the input is empty.\n   *\n   * @default '○'\n   */\n  placeholder?: MaybeGetter<string | undefined>;\n\n  /**\n   * If `true`, prevents the user from interacting with the input.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the input should be masked like a password.\n   *\n   * @default false\n   */\n  mask?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * What characters the input accepts.\n   *\n   * @default 'text'\n   */\n  type?: MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>;\n};"
+    "propsAlt": "export type PinInputProps = {\r\n  /**\r\n   * The value for the Pin Input.\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that the value only changes when the getter returns a new value.\r\n   *\r\n   * Otherwise, if passing a static value, it'll serve as the default value.\r\n   *\r\n   *\r\n   * @default ''\r\n   */\r\n  value?: MaybeGetter<string | undefined>;\r\n  /**\r\n   * Called when the `PinInput` instance tries to change the value.\r\n   */\r\n  onValueChange?: (value: string) => void;\r\n\r\n  /**\r\n   * The amount of digits in the Pin Input.\r\n   *\r\n   * @default 4\r\n   */\r\n  maxLength?: MaybeGetter<number | undefined>;\r\n  /**\r\n   * An optional placeholder to display when the input is empty.\r\n   *\r\n   * @default '○'\r\n   */\r\n  placeholder?: MaybeGetter<string | undefined>;\r\n\r\n  /**\r\n   * If `true`, prevents the user from interacting with the input.\r\n   *\r\n   * @default false\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * If the input should be masked like a password.\r\n   *\r\n   * @default false\r\n   */\r\n  mask?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * What characters the input accepts.\r\n   *\r\n   * @default 'text'\r\n   */\r\n  type?: MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>;\r\n};"
   },
   "Collapsible": {
     "constructorProps": [
@@ -840,7 +855,7 @@
         "description": "The spread attributes for the content element."
       }
     ],
-    "propsAlt": "export type CollapsibleProps = {\n  /**\n   * Whether the collapsible is disabled which prevents it from being opened.\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Whether the collapsible is open.\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * A callback called when the value of `open` changes.\n   */\n  onOpenChange?: (value: boolean) => void;\n};"
+    "propsAlt": "export type CollapsibleProps = {\r\n  /**\r\n   * Whether the collapsible is disabled which prevents it from being opened.\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * Whether the collapsible is open.\r\n   */\r\n  open?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * A callback called when the value of `open` changes.\r\n   */\r\n  onOpenChange?: (value: boolean) => void;\r\n};"
   },
   "Avatar": {
     "constructorProps": [
@@ -892,6 +907,6 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type AvatarProps = {\n  /**\n   * The source of the image to display.\n   */\n  src?: MaybeGetter<string | undefined>;\n\n  /**\n   * The amount of time in milliseconds to wait before displaying the image.\n   *\n   * @default 0\n   */\n  delayMs?: MaybeGetter<number | undefined>;\n\n  /**\n   * A callback invoked when the loading status store of the avatar changes.\n   */\n  onLoadingStatusChange?: (value: ImageLoadingStatus) => void | undefined;\n};"
+    "propsAlt": "export type AvatarProps = {\r\n  /**\r\n   * The source of the image to display.\r\n   */\r\n  src?: MaybeGetter<string | undefined>;\r\n\r\n  /**\r\n   * The amount of time in milliseconds to wait before displaying the image.\r\n   *\r\n   * @default 0\r\n   */\r\n  delayMs?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * A callback invoked when the loading status store of the avatar changes.\r\n   */\r\n  onLoadingStatusChange?: (value: ImageLoadingStatus) => void | undefined;\r\n};"
   }
 }
