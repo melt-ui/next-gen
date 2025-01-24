@@ -1,0 +1,61 @@
+---
+title: Accordion
+description: An interactive component that enables the organization and navigation of content by allowing users to expand and collapse sections.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/accordion.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 🎹 Keyboard navigation
+- 🍃 Can expand one or multiple items
+</Features>
+
+## Usage
+
+<Tabs>
+	<TabItem label="Builder">
+```svelte
+<script lang="ts">
+	import { Accordion, type AccordionItem } from "melt/builders";
+
+	type Item = AccordionItem<{
+		title: string;
+		description: string;
+	}>;
+
+	const items: Item[] = [
+		{ id: "item-1", title: "What is it?", description: "..."},
+		{ id: "item-2", title: "Can I customize it?", description: "..."},
+	];
+
+	const accordion = new Accordion();
+</script>
+
+<div {...accordion.root}>
+	{#each items as i}
+		{@const item = accordion.getItem(i)}
+		<h2 {...item.heading}>
+			<button {...item.trigger}>
+				{item.item.title}
+			</button>
+		</h2>
+
+		<div {...item.content}>
+			{item.item.description}
+		</div>
+	{/each}
+</div>
+```
+	</TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="Accordion" />

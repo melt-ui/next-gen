@@ -823,5 +823,85 @@
       }
     ],
     "propsAlt": "export type AvatarProps = {\n  /**\n   * The source of the image to display.\n   */\n  src?: MaybeGetter<string | undefined>;\n\n  /**\n   * The amount of time in milliseconds to wait before displaying the image.\n   *\n   * @default 0\n   */\n  delayMs?: MaybeGetter<number | undefined>;\n\n  /**\n   * A callback invoked when the loading status store of the avatar changes.\n   */\n  onLoadingStatusChange?: (value: ImageLoadingStatus) => void | undefined;\n};"
+  },
+  "Accordion": {
+    "constructorProps": [
+      {
+        "name": "multiple",
+        "type": "MaybeGetter<Multiple | undefined>",
+        "description": "If `true`, multiple accordion items can be open at the same time.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "disabled",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "When `true`, prevents the user from interacting with the accordion.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "value",
+        "type": "MaybeMultiple<Multiple> | undefined",
+        "description": "The controlled value for the accordion.",
+        "optional": true
+      },
+      {
+        "name": "onValueChange",
+        "type": "OnChange<Multiple> | undefined",
+        "description": "The callback invoked when the value of the Accordion changes.",
+        "optional": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "getItem",
+        "type": "<Meta extends Record<string, unknown>>(\n  item: AccordionItem<Meta>,\n) => Item<Meta, Multiple>",
+        "description": "Returns an Item class with the necessary\nspread attributes for an accordion item.\n@param item"
+      },
+      {
+        "name": "isExpanded",
+        "type": "(id: string) => boolean",
+        "description": "Checks if an item is currently expanded.\n@param id - ID of the item to check."
+      },
+      {
+        "name": "expand",
+        "type": "(id: string) => void",
+        "description": "Expands a specific item.\n@param id - ID of the item to expand."
+      },
+      {
+        "name": "collapse",
+        "type": "(id: string) => void",
+        "description": "Collapses a specific item.\n@param id - ID of the item to collapse."
+      },
+      {
+        "name": "toggleExpanded",
+        "type": "(id: string) => void",
+        "description": "Toggles the expanded state of an item.\n@param id - ID of the item to toggle."
+      }
+    ],
+    "properties": [
+      {
+        "name": "multiple",
+        "type": "Multiple extends null | undefined\n  ? Multiple | undefined\n  : Multiple | Exclude<Multiple, null | undefined>",
+        "description": ""
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "value",
+        "type": "Value<FalseIfUndefined<Multiple>>",
+        "description": ""
+      },
+      {
+        "name": "root",
+        "type": "{ \"data-melt-accordion-root\": string; id: string }",
+        "description": "Spread attributes for the accordion root element."
+      }
+    ],
+    "propsAlt": "export type AccordionProps<Multiple extends boolean = false> = {\n  /**\n   * If `true`, multiple accordion items can be open at the same time.\n   *\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * When `true`, prevents the user from interacting with the accordion.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * The controlled value for the accordion.\n   */\n  value?: AccordionValue<Multiple>;\n\n  /**\n   * The callback invoked when the value of the Accordion changes.\n   */\n  onValueChange?: OnChange<Multiple>;\n};"
   }
 }
