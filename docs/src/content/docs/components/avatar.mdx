@@ -1,0 +1,64 @@
+---
+title: Avatar
+description: An image element with a fallback for representing the user.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/avatar.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+{/*
+Things I want:
+- Preview with props DONE
+- Show builder syntax
+- Show component syntax
+- Features
+*/}
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 🎮 Automatic & manual control over image rendering
+- 🗼 Fallback supports any children elements
+- ⌛ Optionally delay fallback rendering to avoid flashes
+</Features>
+
+## Usage
+
+<Tabs>
+	<TabItem label="Builder">
+```svelte
+<script lang="ts">
+	import { Avatar } from "melt";
+
+	const avatar = new Avatar({src: '...'});
+</script>
+
+<img {...avatar.image} alt="Avatar" />
+<span {...avatar.fallback}>RH</span>
+
+```
+	</TabItem>
+
+	<TabItem label="Component">
+```svelte
+<script lang="ts">
+	import { Avatar } from "melt/components";
+</script>
+
+<Avatar src="...">
+	{#snippet children(avatar)}
+		<img {...avatar.image} alt="Avatar" />
+		<span {...avatar.fallback}>Fallback</span>
+	{/snippet}
+</PinInput>
+```
+	</TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="Avatar" />

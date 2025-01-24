@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Preview, { usePreviewControls } from "@components/preview.svelte";
+	import Preview from "@components/preview.svelte";
+	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import { Tree, getters, type TreeItem } from "melt/builders";
 	import JavaScript from "~icons/devicon/javascript";
 	import Svelte from "~icons/devicon/svelte";

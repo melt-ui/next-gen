@@ -39,7 +39,7 @@
 		"ts-morph": "^23.0.0",
 		"tslib": "^2.4.1",
 		"tsup": "8.0.2",
-		"typescript": "^5.0.0",
+		"typescript": "^5.7.3",
 		"typescript-eslint": "^8.0.0-alpha.20",
 		"vitest": "^1.6.0"
 	},

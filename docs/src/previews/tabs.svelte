@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Preview, { usePreviewControls } from "@components/preview.svelte";
+	import Preview from "@components/preview.svelte";
+	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import { Tabs } from "melt/builders";
 	import { Debounced, ElementSize, Previous } from "runed";
 	import Transition from "@components/transition.svelte";

@@ -23,7 +23,9 @@ async function main() {
 	const glob = `${dir}/src/**/*.ts`;
 	project.addSourceFilesAtPaths(glob);
 
-	const builders = globSync(`${dir}/src/**/builders/*.svelte.ts`);
+	const builders = globSync(`${dir}/src/**/builders/*.svelte.ts`)
+		.filter((filename) => !filename.endsWith('.spec.svelte.ts'));
+	
 	console.log(`Found ${builders.length} builders...`);
 
 	for (const builderDir of builders) {

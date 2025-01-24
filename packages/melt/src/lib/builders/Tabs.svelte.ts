@@ -28,7 +28,7 @@ export type TabsProps<T extends string = string> = {
 	 *
 	 * @default "horizontal"
 	 */
-	orientation?: MaybeGetter<"horizontal" | "vertical">;
+	orientation?: MaybeGetter<"horizontal" | "vertical" | undefined>;
 	/**
 	 * The default value for `tabs.value`
 	 *
@@ -39,7 +39,7 @@ export type TabsProps<T extends string = string> = {
 	 *
 	 * @default undefined
 	 */
-	value?: MaybeGetter<T>;
+	value?: MaybeGetter<T | undefined>;
 	/**
 	 * Called when the `Tabs` instance tries to change the active tab.
 	 */

@@ -1,11 +1,11 @@
 import { describe, expect } from "vitest";
 import { testWithEffect } from "./test.svelte";
-import { AltSelectionState } from "./alt-selection-state.svelte";
+import { SelectionState } from "./selection-state.svelte";
 import { SvelteSet } from "svelte/reactivity";
 
 describe("alt-selection-state", () => {
 	testWithEffect("uncontrolled single", () => {
-		const state = new AltSelectionState({
+		const state = new SelectionState({
 			multiple: false,
 		});
 		expect(state.current).toBeUndefined();
@@ -16,7 +16,7 @@ describe("alt-selection-state", () => {
 	});
 
 	testWithEffect("uncontrolled multiple", () => {
-		const state = new AltSelectionState({
+		const state = new SelectionState({
 			multiple: true,
 		});
 		expect(state.current).toEqual(new SvelteSet([]));
@@ -27,7 +27,7 @@ describe("alt-selection-state", () => {
 	});
 
 	testWithEffect("defaultValue single", () => {
-		const state = new AltSelectionState({
+		const state = new SelectionState({
 			value: "1",
 		});
 		expect(state.current).toBe("1");
@@ -36,7 +36,7 @@ describe("alt-selection-state", () => {
 	});
 
 	testWithEffect("defaultValue multiple", () => {
-		const state = new AltSelectionState({
+		const state = new SelectionState({
 			multiple: true,
 			value: ["1"],
 		});
@@ -47,7 +47,7 @@ describe("alt-selection-state", () => {
 
 	testWithEffect("controlled single", () => {
 		let value = $state<string | undefined>("1");
-		const state = new AltSelectionState({
+		const state = new SelectionState({
 			multiple: false,
 			value: () => value,
 			onChange: (v) => {
@@ -62,7 +62,7 @@ describe("alt-selection-state", () => {
 
 	testWithEffect("controlled multiple", () => {
 		let value = $state<string[] | undefined>(["1"]);
-		const state = new AltSelectionState<true>({
+		const state = new SelectionState<true>({
 			multiple: true,
 			value: () => value,
 			onChange: (v) => {
@@ -77,7 +77,7 @@ describe("alt-selection-state", () => {
 
 	testWithEffect("uncontrolled alternating between single and multiple", () => {
 		let multiple = $state<boolean>(false);
-		const state = new AltSelectionState<boolean>({
+		const state = new SelectionState<boolean>({
 			multiple: () => multiple,
 			value: "1",
 		});
