@@ -47,17 +47,19 @@
 <Preview>
 	<div class="flex flex-col items-center">
 		<div class="flex w-full items-center justify-center gap-6">
-			<div class="flex size-32 items-center justify-center rounded-full bg-neutral-100">
+			<div
+				class="flex size-32 items-center justify-center rounded-full bg-neutral-300 dark:bg-neutral-100"
+			>
 				<img {...avatar.image} alt="Avatar" class="h-full w-full rounded-[inherit]" />
-				<span {...avatar.fallback} class="text-magnum-700 text-4xl font-medium">{initials}</span>
+				<span {...avatar.fallback} class="text-4xl font-medium text-neutral-700">{initials}</span>
 			</div>
 		</div>
 		<label for="gh" class="mt-4"> GitHub username </label>
 		<span
 			contenteditable
 			id="gh"
-			class=" w-auto border-b-2 border-neutral-600 bg-transparent px-1 pb-1 text-center text-2xl font-light
-			text-white placeholder-neutral-500 outline-none transition focus:border-neutral-200"
+			class="focus:border-accent-200 w-auto border-b-2 border-neutral-600 bg-transparent px-1 pb-1 text-center text-2xl
+			font-light placeholder-neutral-500 outline-none transition dark:text-white"
 			bind:innerText={username}
 			spellcheck="false"
 		></span>
