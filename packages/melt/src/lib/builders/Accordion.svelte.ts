@@ -1,4 +1,8 @@
-import { SelectionState, type MaybeMultiple, type OnChange } from "$lib/utils/selection-state.svelte";
+import {
+	SelectionState,
+	type MaybeMultiple,
+	type OnChange,
+} from "$lib/utils/selection-state.svelte";
 import { kbd } from "$lib/utils/keyboard";
 import type { FalseIfUndefined } from "$lib/utils/types";
 import type { MaybeGetter } from "$lib/types";
@@ -7,15 +11,14 @@ import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { createBuilderMetadata } from "../utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 
-const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("accordion", ["root", "item", "trigger", "heading", "content"]);
+const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("accordion", [
+	"root",
+	"item",
+	"trigger",
+	"heading",
+	"content",
+]);
 
-type AccordionValue<Multiple extends boolean> = MaybeMultiple<Multiple>;
-type Selected<Multiple extends boolean | undefined> = SelectionState<FalseIfUndefined<Multiple>>;
-
-/**
- * Represents an accordion item with optional metadata.
- * @template Meta - Type of additional metadata properties for the accordion item.
- */
 export type AccordionItem<Meta extends Record<string, unknown> = Record<never, never>> = {
 	/** Unique identifier for the accordion item. */
 	id: string;
@@ -24,6 +27,9 @@ export type AccordionItem<Meta extends Record<string, unknown> = Record<never, n
 	/** If the item has a header, this represents the level of the header. */
 	headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
 } & Meta;
+
+type AccordionValue<Multiple extends boolean> = MaybeMultiple<Multiple>;
+type Selected<Multiple extends boolean | undefined> = SelectionState<FalseIfUndefined<Multiple>>;
 
 /**
  * Props for the configuration of the Accordion builder.
@@ -59,7 +65,6 @@ export type AccordionProps<Multiple extends boolean = false> = {
 export class Accordion<Multiple extends boolean = false> {
 	// Props
 	#props!: AccordionProps<Multiple>;
-	// readonly items = $derived(extract(this.#props.items));
 	readonly multiple = $derived(extract(this.#props.multiple, false as Multiple));
 	readonly disabled = $derived(extract(this.#props.disabled, false));
 
@@ -67,13 +72,12 @@ export class Accordion<Multiple extends boolean = false> {
 	#value: Selected<Multiple>;
 	#ids = createIds();
 
-	constructor(props: AccordionProps<Multiple>) {
+	constructor(props: AccordionProps<Multiple> = {}) {
 		this.#props = props;
 		this.#value = new SelectionState({
 			value: props.value,
 			onChange: props.onValueChange,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			multiple: props.multiple as any
+			multiple: props.multiple,
 		}) as Selected<Multiple>;
 	}
 
@@ -91,20 +95,20 @@ export class Accordion<Multiple extends boolean = false> {
 	get root() {
 		return {
 			[dataAttrs.root]: "",
-			id: this.#ids.root
+			id: this.#ids.root,
 		};
 	}
 
 	/**
-	 * Returns an Item class with the necessary 
+	 * Returns an Item class with the necessary
 	 * spread attributes for an accordion item.
-	 * @param item 
+	 * @param item
 	 */
 	getItem<Meta extends Record<string, unknown>>(item: AccordionItem<Meta>) {
-		return new Item({ 
-			accordion: this, 
-			item, 
-			rootId: this.#ids.root 
+		return new Item({
+			accordion: this,
+			item,
+			rootId: this.#ids.root,
 		});
 	}
 
@@ -163,44 +167,44 @@ class Item<Meta extends Record<string, unknown>, Multiple extends boolean = fals
 	#rootId = $derived(this.#props.rootId);
 
 	/** Check if this item is disabled. */
-	isDisabled = () => this.#accordion.disabled || this.item.disabled;
+	isDisabled = $derived(this.#accordion.disabled || this.item.disabled);
 	/** Check if this item is expanded. */
-	isExpanded = () => this.#accordion.isExpanded(this.item.id);
+	isExpanded = $derived(this.#accordion.isExpanded(this.item.id));
 	/** Expands this item. */
 	expand = () => this.#accordion.expand(this.item.id);
 	/** Collapses this item. */
 	collapse = () => this.#accordion.collapse(this.item.id);
 	/** Toggles the expanded state of this item. */
-	toggleExpanded = () => this.#accordion.toggleExpanded(this.item.id);	
-	
+	toggleExpanded = () => this.#accordion.toggleExpanded(this.item.id);
+
 	constructor(props: ItemProps<Meta, Multiple>) {
 		this.#props = props;
 	}
 
 	/**
-	 * Spread attributes for an accordion heading element.
+	 * Attributes for an accordion heading element.
 	 */
 	get heading() {
 		return {
 			[dataAttrs.heading]: "",
-			role: 'heading',
-			'aria-level': this.item.headingLevel,
-			'data-heading-level': this.item.headingLevel 
+			role: "heading",
+			"aria-level": this.item.headingLevel,
+			"data-heading-level": this.item.headingLevel,
 		};
 	}
 
 	/**
-	 * Spread attributes for an accordion item trigger.
+	 * Attributes for an accordion item trigger.
 	 */
 	get trigger() {
 		return {
 			[dataAttrs.trigger]: "",
-			disabled: disabledAttr(this.isDisabled()),
-			'aria-disabled': this.isDisabled(),
-			'aria-expanded': this.isExpanded(),
-			'data-disabled': dataAttr(this.isDisabled()),
-			'data-value': this.item.id,
-			'data-state': this.isExpanded() ? 'open' : 'closed',
+			disabled: disabledAttr(this.isDisabled),
+			"aria-disabled": this.isDisabled,
+			"aria-expanded": this.isExpanded,
+			"data-disabled": dataAttr(this.isDisabled),
+			"data-value": this.item.id,
+			"data-state": this.isExpanded ? "open" : "closed",
 			onclick: () => this.toggleExpanded(),
 			onkeydown: (e: KeyboardEvent) => {
 				const key = e.key;
@@ -212,7 +216,7 @@ class Item<Meta extends Record<string, unknown>, Multiple extends boolean = fals
 				e.preventDefault();
 
 				if (key === kbd.SPACE || key === kbd.ENTER) {
-					if (this.isDisabled()) return;
+					if (this.isDisabled) return;
 					this.toggleExpanded();
 				}
 
@@ -224,7 +228,7 @@ class Item<Meta extends Record<string, unknown>, Multiple extends boolean = fals
 
 				const candidateItems = items.filter((item): item is HTMLElement => {
 					if (!isHtmlElement(item)) return false;
-					return !('disabled' in item.dataset);
+					return !("disabled" in item.dataset);
 				});
 
 				if (!candidateItems.length) return;
@@ -242,19 +246,20 @@ class Item<Meta extends Record<string, unknown>, Multiple extends boolean = fals
 				if (e.key === kbd.END) {
 					candidateItems[candidateItems.length - 1].focus();
 				}
-			}
+			},
 		};
 	}
 
 	/**
-	 * Spread attributes for an accordion content element.
+	 * Attributes for an accordion content element.
 	 */
 	get content() {
 		return {
 			[dataAttrs.content]: "",
-			'data-state': this.isExpanded() ? 'open': 'closed',
-			'data-disabled': disabledAttr(this.isDisabled()),
-			'data-value': this.item.id,
+			"data-state": this.isExpanded ? "open" : "closed",
+			"data-disabled": disabledAttr(this.isDisabled),
+			"data-value": this.item.id,
 		};
-	}	
+	}
 }
+

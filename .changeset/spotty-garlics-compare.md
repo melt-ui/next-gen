@@ -2,4 +2,4 @@
 "melt": minor
 ---
 
-Add Accordion builder
+feat: add accordion

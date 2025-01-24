@@ -41,19 +41,14 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 <div {...accordion.root}>
 	{#each items as i}
 		{@const item = accordion.getItem(i)}
-		
-		<div>
-			<h2 {...item.heading}>
-				<button {...item.trigger}>
-					{item.item.title}
-				</button>
-			</h2>
+		<h2 {...item.heading}>
+			<button {...item.trigger}>
+				{item.item.title}
+			</button>
+		</h2>
 
-			{#if item.isExpanded()}
-				<div {...item.content}>
-					{item.item.description}
-				</div>
-			{/if}
+		<div {...item.content}>
+			{item.item.description}
 		</div>
 	{/each}
 </div>
