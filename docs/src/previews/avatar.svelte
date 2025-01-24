@@ -12,7 +12,7 @@
 		},
 	});
 
-	let username = $state("rich-harris");
+	let username = $state("tglide");
 	const src = new Debounced(() => `https://github.com/${username}.png`, 500);
 
 	const getInitials = (username: string): string => {
