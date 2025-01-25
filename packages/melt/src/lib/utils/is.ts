@@ -27,3 +27,7 @@ export function isHtmlInputElement(element: unknown): element is HTMLInputElemen
 export function isString(value: unknown): value is string {
 	return typeof value === "string";
 }
+
+export function isTouch(event: PointerEvent): boolean {
+	return event.pointerType === 'touch';
+}
