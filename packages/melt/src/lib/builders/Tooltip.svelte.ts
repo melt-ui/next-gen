@@ -13,7 +13,7 @@ import { useEventListener } from "runed";
 import { dataAttr } from "$lib/utils/attribute";
 import { useFloating } from "$lib/utils/use-floating.svelte";
 
-const metadata = createBuilderMetadata("tooltip", ["trigger", "content", "arrow"]);
+const { createIds, dataAttrs } = createBuilderMetadata("tooltip", ["trigger", "content", "arrow"]);
 
 type OpenReason = "pointer" | "focus";
 
@@ -86,7 +86,7 @@ export type TooltipProps = {
 };
 
 export class Tooltip {
-	#ids = metadata.createIds();
+	#ids = createIds();
 
 	#props!: TooltipProps;
 	computePositionOptions = $derived(extract(this.#props.computePositionOptions, {}));
@@ -187,7 +187,7 @@ export class Tooltip {
 		});
 
 		return {
-			[metadata.dataAttrs.trigger]: "",
+			[dataAttrs.trigger]: "",
 			id: this.#ids.trigger,
 			"aria-describedby": this.#ids.content,
 			"data-state": this.open ? "open" : "closed",
@@ -262,7 +262,7 @@ export class Tooltip {
 		);
 
 		return {
-			[metadata.dataAttrs.content]: "",
+			[dataAttrs.content]: "",
 			id: this.#ids.content,
 			role: "tooltip",
 			hidden: this.#isVisible && this.#mounted ? undefined : true,
@@ -283,7 +283,7 @@ export class Tooltip {
 
 	get arrow() {
 		return {
-			[metadata.dataAttrs.arrow]: "",
+			[dataAttrs.arrow]: "",
 			id: this.#ids.arrow,
 			"data-arrow": true,
 			style: `position: absolute; width: var(--arrow-size, ${this.arrowSize}px); height: var(--arrow-size, ${this.arrowSize}px);`,
