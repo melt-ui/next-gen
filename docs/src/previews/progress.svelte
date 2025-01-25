@@ -33,35 +33,51 @@
 	$effect(() => {
 		const interval = setInterval(() => {
 			spring.target = Math.round(Math.random() * 100);
-		}, 3000);
+		}, 2000);
 
 		return () => {
 			clearInterval(interval);
 		};
 	});
 
-	const h = 34;
-	const maxS = 81.01;
-	const s = $derived(Math.min(scaleConvert(value, [0, 60], [0, maxS]), maxS));
-	const minL = 65.1;
-	const l = $derived(clamp(minL, scaleConvert(value, [0, 80], [100, minL]), 100));
-	const color = $derived(`hsl(${h}, ${s}%, ${l}%)`);
+	const dark = {
+		h: 34,
+		maxS: 81.01,
+		s: () => Math.min(scaleConvert(value, [0, 60], [0, dark.maxS]), dark.maxS),
+		minL: 65.1,
+		l: () => clamp(dark.minL, scaleConvert(value, [0, 80], [100, dark.minL]), 100),
+	};
+
+	const darkClr = $derived(`hsl(${dark.h}, ${dark.s()}%, ${dark.l()}%)`);
+
+	const light = {
+		h: 34,
+		maxS: 81.01,
+		s: () => Math.min(scaleConvert(value, [0, 60], [0, light.maxS]), light.maxS),
+		maxL: 65.1,
+		l: () => clamp(40, scaleConvert(value, [0, 80], [0, light.maxL]), light.maxL),
+	};
+
+	const lightClr = $derived(`hsl(${light.h}, ${light.s()}%, ${light.l()}%)`);
+
+	const clrClasses = "text-[--light] dark:text-[--dark]";
+	const bgClasses = "bg-[--light] dark:bg-[--dark]";
+	const clrStyle = $derived(`--light: ${lightClr}; --dark: ${darkClr};`);
 </script>
 
 <Preview class="place-content-center">
-	<div class="flex flex-col items-center gap-2">
-		<span class="origin-bottom" style:scale={scaleConvert(value, [0, 100], [1, 2])} style:color>
+	<div class="flex flex-col items-center gap-2" style={clrStyle}>
+		<span class={["origin-bottom", clrClasses]} style:scale={scaleConvert(value, [0, 100], [1, 2])}>
 			<NumberFlow {value} suffix="%" class="font-semibold" />
 		</span>
 		<div
 			{...progress.root}
-			class="relative w-[300px] overflow-hidden rounded-full bg-neutral-700"
+			class="relative w-[300px] overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700"
 			style:height={`${scaleConvert(value, [0, 100], [8, 24])}px`}
 		>
 			<div
 				{...progress.progress}
-				class="h-full w-full -translate-x-[var(--progress)]"
-				style:background-color={color}
+				class={["h-full w-full -translate-x-[var(--progress)]", bgClasses]}
 			></div>
 		</div>
 	</div>

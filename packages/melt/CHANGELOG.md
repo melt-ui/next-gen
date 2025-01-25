@@ -1,5 +1,11 @@
 # melt
 
+## 0.7.0
+
+### Minor Changes
+
+- 8f19486: feat: add accordion
+
 ## 0.6.0
 
 ### Minor Changes

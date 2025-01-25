@@ -41,7 +41,8 @@ export default defineConfig({
 				replacesTitle: true,
 			},
 			social: {
-				github: "https://github.com/melt-ui/next-gen",
+				discord: "https://melt-ui.com/discord",
+				github: "https://github.com/melt-ui/next-gen"
 			},
 			sidebar: [
 				{

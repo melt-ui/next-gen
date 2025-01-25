@@ -15,7 +15,7 @@ export type MaybeMultiple<Multiple extends _multiple_extends> = Multiple extends
 	? SvelteSet<string> | MaybeGetter<Iterable<string> | undefined>
 	: MaybeGetter<string | undefined>;
 
-type OnChange<Multiple extends _multiple_extends> = (value: Value<Multiple>) => void;
+export type OnChange<Multiple extends _multiple_extends> = (value: Value<Multiple>) => void;
 
 type SelectionStateProps<Multiple extends _multiple_extends> = {
 	value?: MaybeMultiple<Multiple>;
