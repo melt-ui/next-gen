@@ -26,6 +26,7 @@
 		title: string;
 		description: string;
 		color: string;
+		shadow: string;
 	};
 
 	const toastData: ToastData[] = [
@@ -33,16 +34,19 @@
 			title: "Success",
 			description: "Congratulations! It worked!",
 			color: "bg-green-500",
+			shadow: "shadow-green-500/50",
 		},
 		{
 			title: "Warning",
 			description: "Please check again.",
 			color: "bg-orange-500",
+			shadow: "shadow-orange-500/50",
 		},
 		{
 			title: "Error",
 			description: "Something did not work!",
 			color: "bg-red-500",
+			shadow: "shadow-red-500/50",
 		},
 	];
 
@@ -70,7 +74,7 @@
 
 	<div {...toaster.root}>
 		<div
-			class="fixed right-0 top-0 m-4 flex flex-col items-end gap-2 text-left md:bottom-0 md:top-auto"
+			class="fixed right-0 top-0 m-4 flex flex-col items-end gap-4 text-left md:bottom-0 md:top-auto"
 		>
 			{#each toaster.toasts as t (t.id)}
 				{@const toast = toaster.getToastFromToaster(t)}
@@ -81,7 +85,7 @@
 					animate:flip={{ duration: 500 }}
 					in:fly={{ duration: 150, x: "100%" }}
 					out:fly={{ duration: 150, x: "100%" }}
-					class="rounded-lg bg-gray-800 text-white shadow-md"
+					class="{toast.data.shadow} rounded-lg bg-white shadow-md dark:bg-gray-800"
 				>
 					<div class="relative w-[24rem] max-w-[calc(100vw-2rem)] gap-4 p-5">
 						<div>
@@ -98,13 +102,13 @@
 						<button
 							{...toast.close}
 							aria-label="dismiss alert"
-							class="text-accent-300 absolute right-4 top-4 !m-0 grid size-10 cursor-pointer place-items-center rounded-full bg-gray-800 hover:bg-gray-500/50"
+							class="text-accent-500 dark:text-accent-300 absolute right-4 top-4 !m-0 grid size-10 cursor-pointer place-items-center rounded-full hover:bg-gray-300/50 dark:bg-gray-800 dark:hover:bg-gray-500/50"
 						>
 							<Close />
 						</button>
 
 						{#if toast.closeDelay !== 0}
-							<div class="absolute bottom-0.5 right-auto">
+							<div class="absolute bottom-1 right-auto">
 								<div
 									{...progress.root}
 									class="relative h-1.5 w-[20rem] overflow-hidden rounded-full bg-white"
