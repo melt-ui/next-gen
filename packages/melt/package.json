@@ -1,8 +1,12 @@
 {
 	"name": "melt",
 	"type": "module",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"license": "MIT",
+	"repository": "github:melt-ui/next-gen",
+	"author": "Thomas G. Lopes",
+	"homepage": "https://next.melt-ui.com/",
+	"description": "The next generation of Melt UI. Built for Svelte 5.",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
