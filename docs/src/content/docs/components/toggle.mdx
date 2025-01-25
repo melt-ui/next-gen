@@ -26,6 +26,8 @@ Things I want:
 
 ## Usage
 
+For accessibility reasons, toggle buttons also require the `aria-label` attribute to be set to describe to screen readers what is being enabled/disabled.
+
 <Tabs>
 	<TabItem label="Builder">
 ```svelte
@@ -35,7 +37,7 @@ Things I want:
 	const toggle = new Toggle();
 </script>
 
-<button {...toggle.trigger}>
+<button {...toggle.trigger} aria-label="toggle favourite">
 	{toggle.value ? "✅" : "❌"}
 </button>
 ```

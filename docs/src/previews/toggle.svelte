@@ -33,6 +33,7 @@
 			  hover:bg-gray-300/25 focus-visible:ring active:bg-gray-300/40 disabled:cursor-not-allowed
 				dark:hover:bg-gray-700 dark:active:bg-gray-600 dark:disabled:bg-gray-900"
 			{...toggle.trigger}
+			aria-label="toggle favourite"
 		>
 			<PhHeartFill
 				class="text-accent-500 dark:text-accent-200 absolute left-1/2 top-1/2 z-10 origin-center -translate-x-1/2 -translate-y-1/2"
