@@ -4,6 +4,7 @@ import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement, isTouch } from "../utils/is";
 import { SvelteMap } from "svelte/reactivity";
+import { onMount } from "svelte";
 
 const { dataAttrs, createIds } = createBuilderMetadata("toaster", ["root", "content", "title", "description", "close"]);
 
@@ -223,7 +224,15 @@ class ToastItem<T = object> {
 	#toaster = $derived(this.#props.toaster);
 	#toast = $derived(this.#props.toast);
 
-	data = $derived(this.#props.toast.data);
+	/** The original data you passed to the `addToast` function. */
+	readonly data = $derived(this.#props.toast.data);
+	readonly closeDelay = $derived(this.#toast.closeDelay);
+	#percentage = $state(0);
+
+	/** Get the toast timer percentage. */
+	get percentage() {
+		return this.#percentage;
+	}
 
 	/** Pause toast timer. */
 	readonly pauseToastTimer = () => {
@@ -239,10 +248,26 @@ class ToastItem<T = object> {
 
 	constructor(props: ToastItemProps<T>) {
 		this.#props = props;
+
+		onMount(() => {
+			if (this.#toast.closeDelay === 0) return;
+
+			let frame: number;
+			const updatePercentage = () => {
+				this.#percentage = this.#toast.getPercentage();
+				frame = requestAnimationFrame(updatePercentage);
+			};
+
+			frame = requestAnimationFrame(updatePercentage);
+
+			return () => {
+				cancelAnimationFrame(frame);
+			};
+		});
 	}
 
 	/**
-	 * Spread attributes for a toast's content element.
+	 * Spread attributes for a toast's content (wrapper) element.
 	 */
 	get content() {
 		return {
@@ -280,10 +305,16 @@ class ToastItem<T = object> {
 		} as const;
 	}
 
+	/**
+	 * Spread attributes for a toast's title element.
+	 */
 	get title() {
 		return { id: this.#toast.ids.title };
 	}
 
+	/**
+	 * Soread attributes for a toast's description element.
+	 */
 	get description() {
 		return { id: this.#toast.ids.description };
 	}
