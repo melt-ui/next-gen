@@ -240,9 +240,9 @@
       },
       {
         "name": "type",
-        "type": "MaybeGetter<\"foreground\" | \"background\" | undefined>",
-        "description": "The sensitivity of the toast for accessibility purposes.",
-        "defaultValue": "'foreground'",
+        "type": "MaybeGetter<\"assertive\" | \"polite\" | undefined>",
+        "description": "The sensitivity of the toast for accessibility purposes.\r\nhttps://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live",
+        "defaultValue": "'polite'",
         "optional": true
       },
       {
@@ -293,7 +293,7 @@
       },
       {
         "name": "type",
-        "type": "\"foreground\" | \"background\"",
+        "type": "\"assertive\" | \"polite\"",
         "description": ""
       },
       {
@@ -308,11 +308,11 @@
       },
       {
         "name": "root",
-        "type": "{ readonly id: string; readonly popover: \"manual\" }",
+        "type": "{\n  readonly \"data-melt-toaster-root\": \"\"\n  readonly id: string\n  readonly popover: \"manual\"\n}",
         "description": "Spread attributes for the container of the toasts."
       }
     ],
-    "propsAlt": "export type ToasterProps = {\r\n  /**\r\n   * The delay in milliseconds before the toast closes. Set to 0 to disable.\r\n   * @default 5000\r\n   */\r\n  closeDelay?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The sensitivity of the toast for accessibility purposes.\r\n   * @default 'foreground'\r\n   */\r\n  type?: MaybeGetter<'foreground' | 'background' | undefined>;\r\n\r\n  /**\r\n   * The behaviour when a toast is hovered.\r\n   * @default 'pause'\r\n   */\r\n  hover?: MaybeGetter<'pause' | 'pause-all' | null | undefined>;\r\n};"
+    "propsAlt": "export type ToasterProps = {\r\n  /**\r\n   * The delay in milliseconds before the toast closes. Set to 0 to disable.\r\n   * @default 5000\r\n   */\r\n  closeDelay?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The sensitivity of the toast for accessibility purposes.\r\n   * https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live\r\n   * @default 'polite'\r\n   */\r\n  type?: MaybeGetter<'assertive' | 'polite' | undefined>;\r\n\r\n  /**\r\n   * The behaviour when a toast is hovered.\r\n   * @default 'pause'\r\n   */\r\n  hover?: MaybeGetter<'pause' | 'pause-all' | null | undefined>;\r\n};"
   },
   "Tabs": {
     "constructorProps": [

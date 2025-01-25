@@ -5,7 +5,7 @@ import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement, isTouch } from "../utils/is";
 import { SvelteMap } from "svelte/reactivity";
 
-const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("toaster", ["root", "content", "title", "description", "close"]);
+const { dataAttrs, createIds } = createBuilderMetadata("toaster", ["root", "content", "title", "description", "close"]);
 
 export type ToasterProps = {
 	/**
@@ -16,9 +16,10 @@ export type ToasterProps = {
 
 	/**
 	 * The sensitivity of the toast for accessibility purposes.
-	 * @default 'foreground'
+	 * https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live
+	 * @default 'polite'
 	 */
-	type?: MaybeGetter<'foreground' | 'background' | undefined>;
+	type?: MaybeGetter<'assertive' | 'polite' | undefined>;
 
 	/**
 	 * The behaviour when a toast is hovered.
@@ -36,7 +37,7 @@ export type AddToastProps<T = object> = {
 	/**
 	 * The sensitivity of the toast for accessibility purposes.
 	 */
-	type?: 'foreground' | 'background';
+	type?: 'assertive' | 'polite';
 
 	/**
 	 * The data passed to the toaster.
@@ -52,7 +53,7 @@ export type Toast<T = object> = {
 		description: string;
 	};
 	closeDelay: number;
-	type: 'foreground' | 'background';
+	type: 'assertive' | 'polite';
 	data: T;
 	timeout: number | null;
 	createdAt: number;
@@ -65,7 +66,7 @@ export class Toaster<T = object> {
 	// Props
 	#props!: ToasterProps;
 	closeDelay = $derived(extract(this.#props.closeDelay, 5000));
-	type = $derived(extract(this.#props.type, 'foreground'));
+	type = $derived(extract(this.#props.type, 'polite'));
 	hover = $derived(extract(this.#props.hover, 'pause'));
 
 	// State
@@ -196,12 +197,16 @@ export class Toaster<T = object> {
 
 			if (this.toasts.length > 0) {
 				el.showPopover();
+				
+				const toastEl = document.getElementById(this.toasts[0].ids.content);
+				if (isHtmlElement(toastEl)) toastEl.focus();
 			} else {
 				el.hidePopover();
 			}
 		});
 
 		return {
+			[dataAttrs.root]: "",
 			id: this.#ids.root,
 			popover: "manual"
 		} as const;
@@ -241,11 +246,13 @@ class ToastItem<T = object> {
 	 */
 	get content() {
 		return {
+			[dataAttrs.content]: "",
 			id: this.#toast.id,
 			role: 'alert',
+			'aria-labelledby': this.#toast.ids.title,
 			'aria-describedby': this.#toast.ids.description,
-			'aria-labeldby': this.#toast.ids.title,
-			'aria-live': this.#toaster.type === 'foreground' ? 'assertive' : 'polite',
+			'aria-live': this.#toast.type ?? this.#toaster.type,
+			tabindex: -1,
 			onpointerenter: (e: PointerEvent) => {
 				if (isTouch(e)) return;
 
@@ -286,6 +293,7 @@ class ToastItem<T = object> {
 	 */
 	get close() {
 		return {
+			[dataAttrs.close]: "",
 			onclick: () => {
 				this.#toaster.removeToast(this.#toast.id);
 			}
