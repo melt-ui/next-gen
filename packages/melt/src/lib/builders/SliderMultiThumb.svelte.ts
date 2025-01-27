@@ -3,11 +3,11 @@ import { useEventListener } from "runed";
 import { dataAttr, styleAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { Synced } from "../Synced.svelte";
-import { createDataIds, createIds } from "../utils/identifiers";
+import { createBuilderMetadata } from "../utils/identifiers";
 import { isHtmlElement } from "../utils/is";
 import type { MaybeGetter } from "../types";
 
-const dataIds = createDataIds("slider", ["root", "track", "thumb", "range"]);
+const {	dataAttrs, dataSelectors, createIds } = createBuilderMetadata("slider", ["root", "track", "thumb", "range"]);
 
 export type SliderMultiThumbProps = {
     /**
@@ -16,24 +16,28 @@ export type SliderMultiThumbProps = {
 	 * @default 0
 	 */
 	min?: MaybeGetter<number | undefined>;
+
 	/**
 	 * The maximum value of the slider.
 	 *
 	 * @default 100
 	 */
 	max?: MaybeGetter<number | undefined>;
+
     /**
 	 * The orientation of the slider.
 	 *
 	 * @default "horizontal"
 	 */
 	orientation?: MaybeGetter<"horizontal" | "vertical" | undefined>;
+
 	/**
 	 * The step size of the slider.
 	 *
 	 * @default 1
 	 */
 	step?: MaybeGetter<number | undefined>;
+
     /**
 	 * The default value.
 	 *
@@ -43,6 +47,7 @@ export type SliderMultiThumbProps = {
 	 * @default undefined
 	 */
 	value?: MaybeGetter<number[] | undefined>;
+
 	/**
 	 * The direction of the slider.
 	 *
@@ -52,12 +57,14 @@ export type SliderMultiThumbProps = {
 	 * @default "ltr"
 	 */
 	dir?: MaybeGetter<"ltr" | "rtl" | undefined>;
+
 	/**
 	 * Determines if the values array should be automatically sorted.
 	 * 
 	 * @default true
 	 */
 	autoSort?: MaybeGetter<boolean | undefined>;
+
     /**
 	 * Called when the `Slider` instance value changes.
 	 */
@@ -78,12 +85,13 @@ export class SliderMultiThumb {
 
     /* State */
     #value!: Synced<number[]>;
-	#ids = createIds(dataIds);
+	#ids = createIds();
 	#dragging = $state(false);
 	#activeThumb = $state<{ el: HTMLElement; index: number } | null>(null);
 	#pointerdown = false;
 	#numThumbs = $derived(this.#value.current.length);
 	#pointerMoveTimer: ReturnType<typeof setTimeout> | null = null;
+	#thumbElements: HTMLElement[] | null = null;
 
     constructor(props: SliderMultiThumbProps = {}) {
         this.#props = props;
@@ -115,22 +123,21 @@ export class SliderMultiThumb {
 		const root = document.getElementById(this.#ids.root);
 		if (!root) return [];
 
-		const thumbs = root.querySelectorAll(`[${dataIds.thumb}]`);
+		const thumbs = root.querySelectorAll(dataSelectors.thumb);
 		return Array.from(thumbs).filter(isHtmlElement);
 	}
 
 	#getClosestThumb(e: PointerEvent) {
-		const thumbs = this.#getAllThumbs();
-		if (thumbs.length === 0) return null;
+		if (!this.#thumbElements || this.#thumbElements.length === 0) return null;
 
-		for (const thumb of thumbs) {
+		for (const thumb of this.#thumbElements) {
 			thumb.blur();
 		}
 
 		let minIndex = 0;
-		let minDistance = this.#getThumbDistance(e, thumbs[0]!);
-		for (let i = 1; i < thumbs.length; i++) {
-			const distance = this.#getThumbDistance(e, thumbs[i]!);
+		let minDistance = this.#getThumbDistance(e, this.#thumbElements[0]!);
+		for (let i = 1; i < this.#thumbElements.length; i++) {
+			const distance = this.#getThumbDistance(e, this.#thumbElements[i]!);
 			if (distance < minDistance) {
 				minDistance = distance;
 				minIndex = i;
@@ -138,7 +145,7 @@ export class SliderMultiThumb {
 		}
 
 		return {
-			el: thumbs[minIndex]!,
+			el: this.#thumbElements[minIndex]!,
 			index: minIndex,
 		};
 	}
@@ -176,12 +183,12 @@ export class SliderMultiThumb {
 		this.value[index] = otherValue;
 		this.value[otherIndex] = value;
 
-		const thumbs = this.#getAllThumbs();
-		const thumb = thumbs[otherIndex];
-		if (thumb === undefined) return;
+		if (!this.#thumbElements || !this.#thumbElements[otherIndex]) {
+			return;
+		}
 
-		thumb.focus();
-		this.#activeThumb = { el: thumb, index: otherIndex };
+		this.#thumbElements[otherIndex].focus();
+		this.#activeThumb = { el: this.#thumbElements[otherIndex], index: otherIndex };
 	}
 
 	#applyPosition(clientXY: number, activeThumbIndex: number, start: number, end: number) {
@@ -235,6 +242,13 @@ export class SliderMultiThumb {
 	 * Any cursor interaction along this element will change the slider's values.
 	 **/
     get root() {
+		// Store a reference to all the thumb elements.
+		$effect(() => {
+			// eslint-disable-next-line
+			this.#numThumbs; // Re-run if a new thumb is added or removed.
+			this.#thumbElements = this.#getAllThumbs();
+		});
+
 		useEventListener(
 			() => document,
 			"pointermove",
@@ -290,14 +304,12 @@ export class SliderMultiThumb {
 
         return {
             "aria-orientation": this.orientation,
-			[dataIds.root]: "",
+			[dataAttrs.root]: "",
 			id: this.#ids.root,
         };
     }
 
 	get thumbs() {
-		console.log('re-running');
-
 		return Array(this.#numThumbs)
 			.fill(null)
 			.map((_, i) => new Thumb({
@@ -351,7 +363,7 @@ class Thumb {
 			"data-dragging": dataAttr(this.#dragging),
 			role: "slider",
 			tabindex: 0,
-			[dataIds.thumb]: "",
+			[dataAttrs.thumb]: "",
 			style: styleAttr({
 				'--percentage': this.#slider.ltr ? percentage : percentageInverse,
 				'--percentage-inv': this.#slider.ltr ? percentageInverse : percentage,
