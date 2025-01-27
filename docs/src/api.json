@@ -155,7 +155,7 @@
       },
       {
         "name": "selected",
-        "type": "Multiple extends true ? Set<string> : string | undefined",
+        "type": "Value<FalseIfUndefined<Multiple>>",
         "description": "Currently selected item(s)\rFor multiple selection, returns a Set of IDs\rFor single selection, returns a single ID or undefined"
       },
       {
@@ -247,14 +247,14 @@
       },
       {
         "name": "orientation",
-        "type": "MaybeGetter<\"horizontal\" | \"vertical\"> | undefined",
+        "type": "MaybeGetter<\"horizontal\" | \"vertical\" | undefined>",
         "description": "The orientation of the tabs.",
         "defaultValue": "\"horizontal\"",
         "optional": true
       },
       {
         "name": "value",
-        "type": "MaybeGetter<T> | undefined",
+        "type": "MaybeGetter<T | undefined>",
         "description": "The default value for `tabs.value`\r\n\r\nWhen passing a getter, it will be used as source of truth,\r\nmeaning that `tabs.value` only changes when the getter returns a new value.\r\n\r\nIf omitted, it will use the first tab as default.",
         "defaultValue": "undefined",
         "optional": true
@@ -305,7 +305,7 @@
         "description": "The attributes for the list that contains the tab triggers."
       }
     ],
-    "propsAlt": "export type TabsProps<T extends string = string> = {\r\n  /**\r\n   * If `true`, the value will be changed whenever a trigger is focused.\r\n   *\r\n   * @default true\r\n   */\r\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * If the the trigger selection should loop when navigating with the arrow keys.\r\n   *\r\n   * @default true\r\n   */\r\n  loop?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * The orientation of the tabs.\r\n   *\r\n   * @default \"horizontal\"\r\n   */\r\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\">;\r\n  /**\r\n   * The default value for `tabs.value`\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that `tabs.value` only changes when the getter returns a new value.\r\n   *\r\n   * If omitted, it will use the first tab as default.\r\n   *\r\n   * @default undefined\r\n   */\r\n  value?: MaybeGetter<T>;\r\n  /**\r\n   * Called when the `Tabs` instance tries to change the active tab.\r\n   */\r\n  onValueChange?: (active: T) => void;\r\n};"
+    "propsAlt": "export type TabsProps<T extends string = string> = {\r\n  /**\r\n   * If `true`, the value will be changed whenever a trigger is focused.\r\n   *\r\n   * @default true\r\n   */\r\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * If the the trigger selection should loop when navigating with the arrow keys.\r\n   *\r\n   * @default true\r\n   */\r\n  loop?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * The orientation of the tabs.\r\n   *\r\n   * @default \"horizontal\"\r\n   */\r\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\r\n  /**\r\n   * The default value for `tabs.value`\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that `tabs.value` only changes when the getter returns a new value.\r\n   *\r\n   * If omitted, it will use the first tab as default.\r\n   *\r\n   * @default undefined\r\n   */\r\n  value?: MaybeGetter<T | undefined>;\r\n  /**\r\n   * Called when the `Tabs` instance tries to change the active tab.\r\n   */\r\n  onValueChange?: (active: T) => void;\r\n};"
   },
   "SliderMultiThumb": {
     "constructorProps": [
@@ -530,6 +530,171 @@
     "methods": [],
     "properties": []
   },
+  "RadioGroup": {
+    "constructorProps": [
+      {
+        "name": "disabled",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If `true`, prevents the user from interacting with the group.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "required",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If `true`, indicates that the user must select a radio button before\r\nthe owning form can be submitted.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "loop",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If the the button selection should loop when navigating with the arrow keys.",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
+        "name": "selectWhenFocused",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If `true`, the value will be changed whenever a button is focused.",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
+        "name": "orientation",
+        "type": "MaybeGetter<\"horizontal\" | \"vertical\" | undefined>",
+        "description": "The orientation of the slider.",
+        "defaultValue": "\"vertical\"",
+        "optional": true
+      },
+      {
+        "name": "name",
+        "type": "MaybeGetter<string | undefined>",
+        "description": "Input name for radio group.",
+        "optional": true
+      },
+      {
+        "name": "value",
+        "type": "MaybeGetter<string | undefined>",
+        "description": "Default value for radio group.",
+        "defaultValue": "\"\"",
+        "optional": true
+      },
+      {
+        "name": "onValueChange",
+        "type": "((active: string) => void) | undefined",
+        "description": "Called when the radio button is clicked.",
+        "optional": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "getItem",
+        "type": "(item: string) => RadioItem",
+        "description": ""
+      },
+      {
+        "name": "select",
+        "type": "(item: string) => void",
+        "description": ""
+      }
+    ],
+    "properties": [
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "loop",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "selectWhenFocused",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "orientation",
+        "type": "\"horizontal\" | \"vertical\"",
+        "description": ""
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "description": ""
+      },
+      {
+        "name": "root",
+        "type": "{\n  readonly \"data-melt-radio-group-root\": \"\"\n  readonly id: string\n  readonly role: \"radiogroup\"\n  readonly \"aria-required\": boolean\n  readonly \"aria-labelledby\": string\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-disabled\": true | undefined\n  readonly \"data-value\": string\n}",
+        "description": ""
+      },
+      {
+        "name": "label",
+        "type": "{\n  readonly \"data-melt-radio-group-label\": \"\"\n  readonly id: string\n  readonly for: string\n  readonly onclick: (\n    e: MouseEvent & { currentTarget: EventTarget & HTMLLabelElement },\n  ) => void\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-disabled\": true | undefined\n  readonly \"data-value\": string\n}",
+        "description": ""
+      },
+      {
+        "name": "hiddenInput",
+        "type": "{\n  readonly \"data-melt-radio-group-hidden-input\": \"\"\n  readonly disabled: boolean\n  readonly required: boolean\n  readonly hidden: true\n  readonly \"aria-hidden\": true\n  readonly tabindex: -1\n  readonly value: string\n  readonly name: string | undefined\n}",
+        "description": ""
+      }
+    ],
+    "propsAlt": "export type RadioGroupProps = {\r\n  /**\r\n   * If `true`, prevents the user from interacting with the group.\r\n   *\r\n   * @default false\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * If `true`, indicates that the user must select a radio button before\r\n   * the owning form can be submitted.\r\n   *\r\n   * @default false\r\n   */\r\n  required?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * If the the button selection should loop when navigating with the arrow keys.\r\n   *\r\n   * @default true\r\n   */\r\n  loop?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * If `true`, the value will be changed whenever a button is focused.\r\n   *\r\n   * @default true\r\n   */\r\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\r\n  /**\r\n   * The orientation of the slider.\r\n   *\r\n   * @default \"vertical\"\r\n   */\r\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\r\n  /**\r\n   * Input name for radio group.\r\n   */\r\n  name?: MaybeGetter<string | undefined>;\r\n  /**\r\n   * Default value for radio group.\r\n   *\r\n   * @default \"\"\r\n   */\r\n  value?: MaybeGetter<string | undefined>;\r\n  /**\r\n   * Called when the radio button is clicked.\r\n   */\r\n  onValueChange?: (active: string) => void;\r\n};"
+  },
+  "Progress": {
+    "constructorProps": [
+      {
+        "name": "value",
+        "type": "MaybeGetter<number | undefined>",
+        "description": "The value for the progress.",
+        "defaultValue": "undefined",
+        "optional": true
+      },
+      {
+        "name": "max",
+        "type": "MaybeGetter<number | undefined>",
+        "description": "The maximum value of the progress.",
+        "optional": true
+      },
+      {
+        "name": "onValueChange",
+        "type": "((value: number) => void) | undefined",
+        "description": "The callback invoked when the value of the progress changes.",
+        "optional": true
+      }
+    ],
+    "methods": [],
+    "properties": [
+      {
+        "name": "max",
+        "type": "number",
+        "description": ""
+      },
+      {
+        "name": "value",
+        "type": "number",
+        "description": ""
+      },
+      {
+        "name": "root",
+        "type": "{\n  \"data-melt-progress-root\": string\n  value: number\n  max: number\n  role: string\n  \"aria-valuemin\": number\n  \"aria-valuemax\": number\n  \"aria-valuenow\": number\n  \"data-value\": number\n  \"data-state\": string\n  \"data-max\": number\n}",
+        "description": "Spread attributes for the Progress root element."
+      },
+      {
+        "name": "progress",
+        "type": "{\n  \"data-melt-progress-progress\": string\n  style: `--progress: ${string}`\n}",
+        "description": "Spread attributes for the Progress percentage element.\rProvides a --progress CSS variable that can be used to style the progress:\r`transform: translateX(calc(var(--progress) * -1));`"
+      }
+    ],
+    "propsAlt": "export type ProgressProps = {\r\n  /**\r\n   * The value for the progress.\r\n   * \r\n   * @default undefined\r\n   */\r\n  value?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The maximum value of the progress.\r\n   * \r\n   * @deafult 100\r\n   */\r\n  max?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The callback invoked when the value of the progress changes.\r\n   */\r\n  onValueChange?: (value: number) => void;\r\n};"
+  },
   "Popover": {
     "constructorProps": [
       {
@@ -689,5 +854,188 @@
       }
     ],
     "propsAlt": "export type PinInputProps = {\r\n  /**\r\n   * The value for the Pin Input.\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that the value only changes when the getter returns a new value.\r\n   *\r\n   * Otherwise, if passing a static value, it'll serve as the default value.\r\n   *\r\n   *\r\n   * @default ''\r\n   */\r\n  value?: MaybeGetter<string | undefined>;\r\n  /**\r\n   * Called when the `PinInput` instance tries to change the value.\r\n   */\r\n  onValueChange?: (value: string) => void;\r\n\r\n  /**\r\n   * The amount of digits in the Pin Input.\r\n   *\r\n   * @default 4\r\n   */\r\n  maxLength?: MaybeGetter<number | undefined>;\r\n  /**\r\n   * An optional placeholder to display when the input is empty.\r\n   *\r\n   * @default '○'\r\n   */\r\n  placeholder?: MaybeGetter<string | undefined>;\r\n\r\n  /**\r\n   * If `true`, prevents the user from interacting with the input.\r\n   *\r\n   * @default false\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * If the input should be masked like a password.\r\n   *\r\n   * @default false\r\n   */\r\n  mask?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * What characters the input accepts.\r\n   *\r\n   * @default 'text'\r\n   */\r\n  type?: MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>;\r\n};"
+  },
+  "Collapsible": {
+    "constructorProps": [
+      {
+        "name": "disabled",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "Whether the collapsible is disabled which prevents it from being opened.",
+        "optional": true
+      },
+      {
+        "name": "open",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "Whether the collapsible is open.",
+        "optional": true
+      },
+      {
+        "name": "onOpenChange",
+        "type": "((value: boolean) => void) | undefined",
+        "description": "A callback called when the value of `open` changes.",
+        "optional": true
+      }
+    ],
+    "methods": [],
+    "properties": [
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "open",
+        "type": "boolean",
+        "description": "The open state of the collapsible."
+      },
+      {
+        "name": "root",
+        "type": "{\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  \"data-melt-collapsible-root\": string\n}",
+        "description": "The spread attributes for the root element."
+      },
+      {
+        "name": "trigger",
+        "type": "{\n  disabled: boolean\n  onclick: () => void\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  \"data-melt-collapsible-trigger\": string\n}",
+        "description": "The spread attributes for the trigger button."
+      },
+      {
+        "name": "content",
+        "type": "{\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  \"data-melt-collapsible-content\": string\n}",
+        "description": "The spread attributes for the content element."
+      }
+    ],
+    "propsAlt": "export type CollapsibleProps = {\r\n  /**\r\n   * Whether the collapsible is disabled which prevents it from being opened.\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * Whether the collapsible is open.\r\n   */\r\n  open?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * A callback called when the value of `open` changes.\r\n   */\r\n  onOpenChange?: (value: boolean) => void;\r\n};"
+  },
+  "Avatar": {
+    "constructorProps": [
+      {
+        "name": "src",
+        "type": "MaybeGetter<string | undefined>",
+        "description": "The source of the image to display.",
+        "optional": true
+      },
+      {
+        "name": "delayMs",
+        "type": "MaybeGetter<number | undefined>",
+        "description": "The amount of time in milliseconds to wait before displaying the image.",
+        "defaultValue": "0",
+        "optional": true
+      },
+      {
+        "name": "onLoadingStatusChange",
+        "type": "((value: ImageLoadingStatus) => void | undefined) | undefined",
+        "description": "A callback invoked when the loading status store of the avatar changes.",
+        "optional": true
+      }
+    ],
+    "methods": [],
+    "properties": [
+      {
+        "name": "src",
+        "type": "string",
+        "description": ""
+      },
+      {
+        "name": "delayMs",
+        "type": "number",
+        "description": ""
+      },
+      {
+        "name": "loadingStatus",
+        "type": "ImageLoadingStatus",
+        "description": ""
+      },
+      {
+        "name": "image",
+        "type": "{\n  readonly \"data-melt-avatar-image\": \"\"\n  readonly src: string\n  readonly style: `display: ${string}`\n  readonly onload: () => (() => void) | undefined\n  readonly onerror: () => void\n}",
+        "description": ""
+      },
+      {
+        "name": "fallback",
+        "type": "{\n  readonly \"data-melt-avatar-fallback\": \"\"\n  readonly style: `display: ${string}` | undefined\n  readonly hidden: true | undefined\n}",
+        "description": ""
+      }
+    ],
+    "propsAlt": "export type AvatarProps = {\r\n  /**\r\n   * The source of the image to display.\r\n   */\r\n  src?: MaybeGetter<string | undefined>;\r\n\r\n  /**\r\n   * The amount of time in milliseconds to wait before displaying the image.\r\n   *\r\n   * @default 0\r\n   */\r\n  delayMs?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * A callback invoked when the loading status store of the avatar changes.\r\n   */\r\n  onLoadingStatusChange?: (value: ImageLoadingStatus) => void | undefined;\r\n};"
+  },
+  "Accordion": {
+    "constructorProps": [
+      {
+        "name": "multiple",
+        "type": "MaybeGetter<Multiple | undefined>",
+        "description": "If `true`, multiple accordion items can be open at the same time.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "disabled",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "When `true`, prevents the user from interacting with the accordion.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "value",
+        "type": "MaybeMultiple<Multiple> | undefined",
+        "description": "The controlled value for the accordion.",
+        "optional": true
+      },
+      {
+        "name": "onValueChange",
+        "type": "OnChange<Multiple> | undefined",
+        "description": "The callback invoked when the value of the Accordion changes.",
+        "optional": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "getItem",
+        "type": "<Meta extends Record<string, unknown>>(\n  item: AccordionItem<Meta>,\n) => Item<Meta, Multiple>",
+        "description": "Returns an Item class with the necessary\rspread attributes for an accordion item.\r@param item"
+      },
+      {
+        "name": "isExpanded",
+        "type": "(id: string) => boolean",
+        "description": "Checks if an item is currently expanded.\r@param id - ID of the item to check."
+      },
+      {
+        "name": "expand",
+        "type": "(id: string) => void",
+        "description": "Expands a specific item.\r@param id - ID of the item to expand."
+      },
+      {
+        "name": "collapse",
+        "type": "(id: string) => void",
+        "description": "Collapses a specific item.\r@param id - ID of the item to collapse."
+      },
+      {
+        "name": "toggleExpanded",
+        "type": "(id: string) => void",
+        "description": "Toggles the expanded state of an item.\r@param id - ID of the item to toggle."
+      }
+    ],
+    "properties": [
+      {
+        "name": "multiple",
+        "type": "Multiple extends null | undefined\n  ? Multiple | undefined\n  : Multiple | Exclude<Multiple, null | undefined>",
+        "description": ""
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "value",
+        "type": "Value<FalseIfUndefined<Multiple>>",
+        "description": ""
+      },
+      {
+        "name": "root",
+        "type": "{ \"data-melt-accordion-root\": string; id: string }",
+        "description": "Spread attributes for the accordion root element."
+      }
+    ],
+    "propsAlt": "export type AccordionProps<Multiple extends boolean = false> = {\r\n  /**\r\n   * If `true`, multiple accordion items can be open at the same time.\r\n   *\r\n   * @default false\r\n   */\r\n  multiple?: MaybeGetter<Multiple | undefined>;\r\n\r\n  /**\r\n   * When `true`, prevents the user from interacting with the accordion.\r\n   *\r\n   * @default false\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * The controlled value for the accordion.\r\n   */\r\n  value?: AccordionValue<Multiple>;\r\n\r\n  /**\r\n   * The callback invoked when the value of the Accordion changes.\r\n   */\r\n  onValueChange?: OnChange<Multiple>;\r\n};"
   }
 }
