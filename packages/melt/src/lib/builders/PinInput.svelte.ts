@@ -60,6 +60,13 @@ export type PinInputProps = {
 	 * @default 'text'
 	 */
 	type?: MaybeGetter<"alphanumeric" | "numeric" | "text" | undefined>;
+
+	/**
+	 * If `true`, allows pasting values from the clipboard.
+	 *
+	 * @default true
+	 */
+	allowPaste?: MaybeGetter<boolean | undefined>;
 };
 
 function validateInput(char: string, type: Extracted<PinInputProps["type"]>) {
@@ -83,6 +90,7 @@ export class PinInput {
 	readonly disabled = $derived(extract(this.#props.disabled, false));
 	readonly mask = $derived(extract(this.#props.mask, false));
 	readonly type = $derived(extract(this.#props.type, "text"));
+	readonly allowPaste = $derived(extract(this.#props.allowPaste, true));
 
 	/* State */
 	#value!: Synced<string>;
@@ -243,6 +251,30 @@ export class PinInput {
 			},
 			onblur: () => {
 				this.#focusedIndex = -1;
+			},
+			onpaste: (e: ClipboardEvent) => {
+				if (!this.allowPaste) return;
+
+				e.preventDefault();
+				const inputs = this.#getInputEls();
+				if (!inputs.length) return;
+
+				const inputEvent = e as ClipboardEvent;
+				const clipboardData = inputEvent.clipboardData;
+				if (!clipboardData) return;
+
+				const pasted = clipboardData.getData("text").slice(0, this.maxLength);
+				const focusedIndex = Math.max(this.#focusedIndex, 0);
+				const initialIndex = pasted.length >= inputs.length ? 0 : focusedIndex;
+				const lastIndex = Math.min(initialIndex + pasted.length, inputs.length);
+
+				for (let i = initialIndex; i < lastIndex; i++) {
+					const input = inputs[i];
+					input.value = pasted[i - initialIndex];
+					this.#addCharAtIndex(pasted[i - initialIndex], i);
+					input.focus();
+				}
+				inputs[lastIndex]?.focus();
 			},
 		} as const;
 	}
