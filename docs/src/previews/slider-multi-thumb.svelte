@@ -40,8 +40,8 @@
 		<SliderMultiThumb bind:value {...controls}>
 			{#snippet children(slider)}
 				<div
-					class="group relative mx-auto p-3 outline-none
-					{slider.orientation === 'horizontal' ? 'w-[350px] max-w-[90%]' : 'h-[350px] w-[50px]'}"
+					class="relative mx-auto p-3 outline-none
+					{slider.orientation === 'horizontal' ? 'h-[50px] w-[350px] max-w-[90%]' : 'h-[350px] w-[50px]'}"
 					{...slider.root}
 				>
 					<div
@@ -50,11 +50,11 @@
 							? 'left-0 right-0 top-1/2 h-2 -translate-y-1/2'
 							: 'bottom-0 left-1/2 top-0 w-2 -translate-x-1/2'}"
 					>
-						<!-- <div
-							class="bg-accent-300 absolute inset-0 rounded-full transition-all group-data-[dragging]:transition-none
-							{slider.orientation === 'horizontal' ? 'right-[var(--percentage-inv)]' : 'top-[var(--percentage)]'}"
-						></div> -->
+						<div class="bg-accent-500 h-2 rounded-full" {...slider.range}></div>
 					</div>
+
+					<!-- <div class="bg-accent-300 absolute inset-0 rounded-full"></div> -->
+
 					{#if open}
 						{#each slider.thumbs as thumb}
 							<div

@@ -434,12 +434,17 @@
         "description": "The root of the slider.\rAny cursor interaction along this element will change the slider's values."
       },
       {
+        "name": "range",
+        "type": "| { readonly style?: undefined }\n  | { readonly style: `${string}: ${string}` }",
+        "description": ""
+      },
+      {
         "name": "thumbs",
         "type": "Thumb[]",
         "description": ""
       }
     ],
-    "propsAlt": "export type SliderMultiThumbProps = {\r\n    /**\r\n   * The minimum value of the slider.\r\n   *\r\n   * @default 0\r\n   */\r\n  min?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The maximum value of the slider.\r\n   *\r\n   * @default 100\r\n   */\r\n  max?: MaybeGetter<number | undefined>;\r\n\r\n    /**\r\n   * The orientation of the slider.\r\n   *\r\n   * @default \"horizontal\"\r\n   */\r\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\r\n\r\n  /**\r\n   * The step size of the slider.\r\n   *\r\n   * @default 1\r\n   */\r\n  step?: MaybeGetter<number | undefined>;\r\n\r\n    /**\r\n   * The default value.\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that `value` only changes when the getter returns a new value.\r\n   *\r\n   * @default undefined\r\n   */\r\n  value?: MaybeGetter<number[] | undefined>;\r\n\r\n  /**\r\n   * The direction of the slider.\r\n   *\r\n   * For vertical sliders, setting `dir` to `rtl`\r\n   * causes the slider to start from the top.\r\n   *\r\n   * @default \"ltr\"\r\n   */\r\n  dir?: MaybeGetter<\"ltr\" | \"rtl\" | undefined>;\r\n\r\n  /**\r\n   * Determines if the values array should be automatically sorted.\r\n   * \r\n   * @default true\r\n   */\r\n  autoSort?: MaybeGetter<boolean | undefined>;\r\n\r\n    /**\r\n   * Called when the `Slider` instance value changes.\r\n   */\r\n  onValueChange?: (active: number[]) => void;\r\n};"
+    "propsAlt": "export type SliderMultiThumbProps = {\r\n    /**\r\n   * The minimum value of the slider.\r\n   *\r\n   * @default 0\r\n   */\r\n  min?: MaybeGetter<number | undefined>;\r\n  \r\n  /**\r\n   * The maximum value of the slider.\r\n   *\r\n   * @default 100\r\n   */\r\n  max?: MaybeGetter<number | undefined>;\r\n\r\n    /**\r\n   * The orientation of the slider.\r\n   *\r\n   * @default \"horizontal\"\r\n   */\r\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\r\n\r\n  /**\r\n   * The step size of the slider.\r\n   *\r\n   * @default 1\r\n   */\r\n  step?: MaybeGetter<number | undefined>;\r\n\r\n    /**\r\n   * The default value.\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that `value` only changes when the getter returns a new value.\r\n   *\r\n   * @default undefined\r\n   */\r\n  value?: MaybeGetter<number[] | undefined>;\r\n\r\n  /**\r\n   * The direction of the slider.\r\n   *\r\n   * For vertical sliders, setting `dir` to `rtl`\r\n   * causes the slider to start from the top.\r\n   *\r\n   * @default \"ltr\"\r\n   */\r\n  dir?: MaybeGetter<\"ltr\" | \"rtl\" | undefined>;\r\n\r\n  /**\r\n   * Determines if the values array should be automatically sorted.\r\n   * \r\n   * @default true\r\n   */\r\n  autoSort?: MaybeGetter<boolean | undefined>;\r\n\r\n    /**\r\n   * Called when the `Slider` instance value changes.\r\n   */\r\n  onValueChange?: (active: number[]) => void;\r\n};"
   },
   "Slider": {
     "constructorProps": [

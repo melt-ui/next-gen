@@ -16,7 +16,7 @@ export type SliderMultiThumbProps = {
 	 * @default 0
 	 */
 	min?: MaybeGetter<number | undefined>;
-
+	
 	/**
 	 * The maximum value of the slider.
 	 *
@@ -91,7 +91,13 @@ export class SliderMultiThumb {
 	#pointerdown = false;
 	#numThumbs = $derived(this.#value.current.length);
 	#pointerMoveTimer: ReturnType<typeof setTimeout> | null = null;
-	#thumbElements: HTMLElement[] | null = null;
+	#dirWithOrientation: "lr" | "rl" | "bt" | "tb" = $derived.by(() => {
+		if (this.orientation === 'horizontal') {
+			return this.dir === 'ltr' ? 'lr' : 'rl';
+		}
+
+		return this.dir === 'ltr' ? 'bt' : 'tb';
+	});
 
     constructor(props: SliderMultiThumbProps = {}) {
         this.#props = props;
@@ -128,16 +134,17 @@ export class SliderMultiThumb {
 	}
 
 	#getClosestThumb(e: PointerEvent) {
-		if (!this.#thumbElements || this.#thumbElements.length === 0) return null;
+		const thumbs = this.#getAllThumbs();
+		if (thumbs.length === 0) return null;
 
-		for (const thumb of this.#thumbElements) {
+		for (const thumb of thumbs) {
 			thumb.blur();
 		}
 
 		let minIndex = 0;
-		let minDistance = this.#getThumbDistance(e, this.#thumbElements[0]!);
-		for (let i = 1; i < this.#thumbElements.length; i++) {
-			const distance = this.#getThumbDistance(e, this.#thumbElements[i]!);
+		let minDistance = this.#getThumbDistance(e, thumbs[0]!);
+		for (let i = 1; i < thumbs.length; i++) {
+			const distance = this.#getThumbDistance(e, thumbs[i]!);
 			if (distance < minDistance) {
 				minDistance = distance;
 				minIndex = i;
@@ -145,7 +152,7 @@ export class SliderMultiThumb {
 		}
 
 		return {
-			el: this.#thumbElements[minIndex]!,
+			el: thumbs[minIndex]!,
 			index: minIndex,
 		};
 	}
@@ -183,12 +190,12 @@ export class SliderMultiThumb {
 		this.value[index] = otherValue;
 		this.value[otherIndex] = value;
 
-		if (!this.#thumbElements || !this.#thumbElements[otherIndex]) {
-			return;
-		}
+		const thumbs = this.#getAllThumbs();
+		const thumb = thumbs[otherIndex];
+		if (thumb === undefined) return;
 
-		this.#thumbElements[otherIndex].focus();
-		this.#activeThumb = { el: this.#thumbElements[otherIndex], index: otherIndex };
+		thumb.focus();
+		this.#activeThumb = { el: thumb, index: otherIndex };
 	}
 
 	#applyPosition(clientXY: number, activeThumbIndex: number, start: number, end: number) {
@@ -242,13 +249,6 @@ export class SliderMultiThumb {
 	 * Any cursor interaction along this element will change the slider's values.
 	 **/
     get root() {
-		// Store a reference to all the thumb elements.
-		$effect(() => {
-			// eslint-disable-next-line
-			this.#numThumbs; // Re-run if a new thumb is added or removed.
-			this.#thumbElements = this.#getAllThumbs();
-		});
-
 		useEventListener(
 			() => document,
 			"pointermove",
@@ -309,7 +309,33 @@ export class SliderMultiThumb {
         };
     }
 
+	get range() {
+		if (this.#numThumbs < 2) return {};
+
+		const min = Math.min(...this.value);
+		const max = Math.max(...this.value);
+		const style: Record<string, string> = { };
+
+		if (this.#dirWithOrientation === 'lr') {
+			style.left = `${min}%`;
+			style.right = `${max}%`;
+		} else if (this.#dirWithOrientation === 'rl') {
+			style.left = `${max}%`;
+			style.right = `${min}%`;
+		} else if (this.#dirWithOrientation === 'bt') {
+			style.bottom = `${min}%`;
+			style.top = `${max}%`;
+		} else {
+			style.bottom = `${max}%`;
+			style.top = `${min}%`;
+		}
+
+		return { style: styleAttr(style) } as const;
+	}
+
 	get thumbs() {
+		console.log('re-running');
+
 		return Array(this.#numThumbs)
 			.fill(null)
 			.map((_, i) => new Thumb({
