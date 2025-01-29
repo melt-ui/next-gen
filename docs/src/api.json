@@ -15,7 +15,7 @@
       },
       {
         "name": "selected",
-        "type": "MaybeMultiple<Multiple> | undefined",
+        "type": "MaybeMultiple<string, Multiple> | undefined",
         "description": "The currently selected item(s).\nIf `multiple` is `true`, this should be an `Iterable`.\nOtherwise, it'll be a `string`.",
         "defaultValue": "undefined",
         "optional": true
@@ -155,7 +155,7 @@
       },
       {
         "name": "selected",
-        "type": "Value<FalseIfUndefined<Multiple>>",
+        "type": "Value<string, FalseIfUndefined<Multiple>>",
         "description": "Currently selected item(s)\nFor multiple selection, returns a Set of IDs\nFor single selection, returns a single ID or undefined"
       },
       {
@@ -179,7 +179,7 @@
         "description": "Array of Child instances representing the top-level items"
       }
     ],
-    "propsAlt": "export type TreeProps<Items extends TreeItem[], Multiple extends boolean = false> = {\n  /**\n   * If `true`, the user can select multiple items.\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n  /**\n   * The currently selected item(s).\n   * If `multiple` is `true`, this should be an `Iterable`.\n   * Otherwise, it'll be a `string`.\n   * @default undefined\n   */\n  selected?: MaybeMultiple<Multiple>;\n  /**\n   * Callback fired when selection changes\n   * @param value - For multiple selection, a Set of selected IDs. For single selection, a single ID or undefined\n   */\n  onSelectedChange?: (value: Multiple extends true ? Set<string> : string | undefined) => void;\n  /**\n   * The currently expanded items\n   *\n   * @default undefined\n   */\n  expanded?: MaybeMultiple<true>;\n  /**\n   * Callback fired when expanded state changes\n   * @param value - Set of expanded item IDs\n   */\n  onExpandedChange?: (value: Set<string>) => void;\n  /**\n   * If `true`, groups (items with children) expand on click.\n   * @default true\n   */\n  expandOnClick?: MaybeGetter<boolean | undefined>;\n  /**\n   * The items contained in the tree.\n   * @required\n   */\n  items: Items;\n  /**\n   * How many time (in ms) the typeahead string is held before it is cleared\n   * @default 500\n   */\n  typeaheadTimeout?: MaybeGetter<number>;\n};"
+    "propsAlt": "export type TreeProps<Items extends TreeItem[], Multiple extends boolean = false> = {\n  /**\n   * If `true`, the user can select multiple items.\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n  /**\n   * The currently selected item(s).\n   * If `multiple` is `true`, this should be an `Iterable`.\n   * Otherwise, it'll be a `string`.\n   * @default undefined\n   */\n  selected?: MaybeMultiple<string, Multiple>;\n  /**\n   * Callback fired when selection changes\n   * @param value - For multiple selection, a Set of selected IDs. For single selection, a single ID or undefined\n   */\n  onSelectedChange?: (value: Multiple extends true ? Set<string> : string | undefined) => void;\n  /**\n   * The currently expanded items\n   *\n   * @default undefined\n   */\n  expanded?: MaybeMultiple<string, true>;\n  /**\n   * Callback fired when expanded state changes\n   * @param value - Set of expanded item IDs\n   */\n  onExpandedChange?: (value: Set<string>) => void;\n  /**\n   * If `true`, groups (items with children) expand on click.\n   * @default true\n   */\n  expandOnClick?: MaybeGetter<boolean | undefined>;\n  /**\n   * The items contained in the tree.\n   * @required\n   */\n  items: Items;\n  /**\n   * How many time (in ms) the typeahead string is held before it is cleared\n   * @default 500\n   */\n  typeaheadTimeout?: MaybeGetter<number>;\n};"
   },
   "Toggle": {
     "constructorProps": [
@@ -929,13 +929,13 @@
       },
       {
         "name": "value",
-        "type": "MaybeMultiple<Multiple> | undefined",
+        "type": "any",
         "description": "The controlled value for the accordion.",
         "optional": true
       },
       {
         "name": "onValueChange",
-        "type": "OnChange<Multiple> | undefined",
+        "type": "any",
         "description": "The callback invoked when the value of the Accordion changes.",
         "optional": true
       }
@@ -980,7 +980,7 @@
       },
       {
         "name": "value",
-        "type": "Value<FalseIfUndefined<Multiple>>",
+        "type": "FalseIfUndefined<Multiple> | undefined",
         "description": ""
       },
       {
