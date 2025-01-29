@@ -12,3 +12,4 @@ export * from "./Tree.svelte";
 export * from "./utils.svelte";
 
 export * from './Dropzone.svelte';
+export * from './Dropzone.svelte';

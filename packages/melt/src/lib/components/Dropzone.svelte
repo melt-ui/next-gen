@@ -9,9 +9,7 @@
 
   let { children, ...rest }: Props = $props();
 
-  const dropzone = new Dropzone({
-    disabled: () => rest.disabled,
-  });
+  const dropzone = new Dropzone({});
 </script>
 
 {@render children(dropzone)}
