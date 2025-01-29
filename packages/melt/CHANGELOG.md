@@ -1,5 +1,15 @@
 # melt
 
+## 0.8.0
+
+### Minor Changes
+
+- 95b32f1: add paste support to pin input
+
+### Patch Changes
+
+- 82cdfec: fix toggle accessibility
+
 ## 0.7.0
 
 ### Minor Changes
