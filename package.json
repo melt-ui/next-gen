@@ -10,6 +10,7 @@
 		"format": "prettier --write .",
 		"gen:api": "jiti scripts/generate-api.ts",
 		"gen:components": "jiti scripts/generate-components.ts",
+		"create:builder": "jiti scripts/create-builder.ts",
 		"watch-and-type": "jiti scripts/watch-and-type.ts",
 		"build:docs": "pnpm install && pnpm --filter melt build && pnpm --filter @melt-ui/docs build",
 		"release": "changeset publish"
