@@ -636,6 +636,12 @@
         "optional": true
       },
       {
+        "name": "onComplete",
+        "type": "((value: string) => void) | undefined",
+        "description": "Calledwhen the `PinInput` instance is filled.",
+        "optional": true
+      },
+      {
         "name": "maxLength",
         "type": "MaybeGetter<number | undefined>",
         "description": "The amount of digits in the Pin Input.",
@@ -669,6 +675,13 @@
         "description": "What characters the input accepts.",
         "defaultValue": "'text'",
         "optional": true
+      },
+      {
+        "name": "allowPaste",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If `true`, allows pasting values from the clipboard.",
+        "defaultValue": "true",
+        "optional": true
       }
     ],
     "methods": [],
@@ -699,6 +712,11 @@
         "description": ""
       },
       {
+        "name": "allowPaste",
+        "type": "boolean",
+        "description": ""
+      },
+      {
         "name": "isFilled",
         "type": "boolean",
         "description": ""
@@ -715,11 +733,11 @@
       },
       {
         "name": "inputs",
-        "type": "{\n  readonly \"data-melt-pin-input-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"text\" | \"password\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}[]",
+        "type": "{\n  readonly \"data-melt-pin-input-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"text\" | \"password\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly inputmode: \"numeric\" | \"text\"\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n  readonly onpaste: (\n    e: ClipboardEvent & { currentTarget: EventTarget & HTMLInputElement },\n  ) => void\n}[]",
         "description": "An array of props that should be spread to the input elements."
       }
     ],
-    "propsAlt": "export type PinInputProps = {\r\n  /**\r\n   * The value for the Pin Input.\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that the value only changes when the getter returns a new value.\r\n   *\r\n   * Otherwise, if passing a static value, it'll serve as the default value.\r\n   *\r\n   *\r\n   * @default ''\r\n   */\r\n  value?: MaybeGetter<string | undefined>;\r\n  /**\r\n   * Called when the `PinInput` instance tries to change the value.\r\n   */\r\n  onValueChange?: (value: string) => void;\r\n\r\n  /**\r\n   * The amount of digits in the Pin Input.\r\n   *\r\n   * @default 4\r\n   */\r\n  maxLength?: MaybeGetter<number | undefined>;\r\n  /**\r\n   * An optional placeholder to display when the input is empty.\r\n   *\r\n   * @default '○'\r\n   */\r\n  placeholder?: MaybeGetter<string | undefined>;\r\n\r\n  /**\r\n   * If `true`, prevents the user from interacting with the input.\r\n   *\r\n   * @default false\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * If the input should be masked like a password.\r\n   *\r\n   * @default false\r\n   */\r\n  mask?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * What characters the input accepts.\r\n   *\r\n   * @default 'text'\r\n   */\r\n  type?: MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>;\r\n};"
+    "propsAlt": "export type PinInputProps = {\n  /**\n   * The value for the Pin Input.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default ''\n   */\n  value?: MaybeGetter<string | undefined>;\n  /**\n   * Called when the `PinInput` instance tries to change the value.\n   */\n  onValueChange?: (value: string) => void;\n\n  /**\n   * Calledwhen the `PinInput` instance is filled.\n   */\n  onComplete?: (value: string) => void;\n\n  /**\n   * The amount of digits in the Pin Input.\n   *\n   * @default 4\n   */\n  maxLength?: MaybeGetter<number | undefined>;\n  /**\n   * An optional placeholder to display when the input is empty.\n   *\n   * @default '○'\n   */\n  placeholder?: MaybeGetter<string | undefined>;\n\n  /**\n   * If `true`, prevents the user from interacting with the input.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the input should be masked like a password.\n   *\n   * @default false\n   */\n  mask?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * What characters the input accepts.\n   *\n   * @default 'text'\n   */\n  type?: MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>;\n\n  /**\n   * If `true`, allows pasting values from the clipboard.\n   *\n   * @default true\n   */\n  allowPaste?: MaybeGetter<boolean | undefined>;\n};"
   },
   "Collapsible": {
     "constructorProps": [
