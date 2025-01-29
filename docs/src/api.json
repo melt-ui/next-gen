@@ -155,7 +155,7 @@
       },
       {
         "name": "selected",
-        "type": "Value<string, FalseIfUndefined<Multiple>>",
+        "type": "SelectionStateValue<string, FalseIfUndefined<Multiple>>",
         "description": "Currently selected item(s)\nFor multiple selection, returns a Set of IDs\nFor single selection, returns a single ID or undefined"
       },
       {
@@ -742,16 +742,22 @@
   "Dropzone": {
     "constructorProps": [
       {
-        "name": "onFilesSelected",
-        "type": "((files: File[]) => void) | undefined",
-        "description": "Function called when files are dropped or selected",
+        "name": "selected",
+        "type": "MaybeMultiple<File, Multiple> | undefined",
+        "description": "The currently selected files",
+        "optional": true
+      },
+      {
+        "name": "onSelectedChange",
+        "type": "| ((files: Multiple extends true ? Set<File> : File | undefined) => void)\n  | undefined",
+        "description": "Callback fired when selected files change",
         "optional": true
       },
       {
         "name": "multiple",
-        "type": "MaybeGetter<boolean | undefined>",
+        "type": "MaybeGetter<Multiple | undefined>",
         "description": "Whether to accept multiple files",
-        "defaultValue": "true",
+        "defaultValue": "false",
         "optional": true
       },
       {
@@ -766,13 +772,30 @@
         "description": "Maximum file size in bytes",
         "defaultValue": "undefined",
         "optional": true
+      },
+      {
+        "name": "validate",
+        "type": "((file: File) => boolean) | undefined",
+        "description": "Custom validate fn. Will be called together with the original validation,\nwhich takes into account the `accept` and `maxSize` props.",
+        "optional": true
       }
     ],
-    "methods": [],
+    "methods": [
+      {
+        "name": "clear",
+        "type": "() => void",
+        "description": "Clears the currently selected files"
+      },
+      {
+        "name": "remove",
+        "type": "(file: File) => void",
+        "description": "Removes a file from the selection"
+      }
+    ],
     "properties": [
       {
         "name": "multiple",
-        "type": "boolean",
+        "type": "Multiple",
         "description": ""
       },
       {
@@ -796,17 +819,22 @@
         "description": ""
       },
       {
+        "name": "selected",
+        "type": "SelectionStateValue<File, Multiple>",
+        "description": "Gets the currently selected files"
+      },
+      {
         "name": "root",
         "type": "{\n  readonly \"data-melt-dropzone-root\": \"\"\n  readonly \"data-dragging\": \"\" | undefined\n  readonly ondragenter: (e: DragEvent) => void\n  readonly ondragleave: (e: DragEvent) => void\n  readonly ondragover: (e: DragEvent) => void\n  readonly ondrop: (e: DragEvent) => void\n  readonly onclick: () => void\n}",
         "description": "The root element."
       },
       {
         "name": "input",
-        "type": "{\n  readonly \"data-melt-dropzone-input\": \"\"\n  readonly type: \"file\"\n  readonly accept: string | undefined\n  readonly multiple: boolean\n  readonly style: \"display: none;\"\n  readonly onchange: (e: Event) => void\n  readonly onblur: () => void\n}",
+        "type": "{\n  readonly \"data-melt-dropzone-input\": \"\"\n  readonly id: string\n  readonly type: \"file\"\n  readonly accept: string | undefined\n  readonly multiple: Multiple\n  readonly style: \"display: none;\"\n  readonly onchange: (e: Event) => void\n  readonly onblur: () => void\n}",
         "description": "The hidden file input element."
       }
     ],
-    "propsAlt": "export type DropzoneProps = {\n  /**\n   * Function called when files are dropped or selected\n   */\n  onFilesSelected?: (files: File[]) => void;\n\n  /**\n   * Whether to accept multiple files\n   * @default true\n   */\n  multiple?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * The accepted file types\n   * @example \"image/*\" or \".pdf,.doc\"\n   */\n  accept?: MaybeGetter<string | undefined>;\n\n  /**\n   * Maximum file size in bytes\n   * @default undefined\n   */\n  maxSize?: MaybeGetter<number | undefined>;\n};"
+    "propsAlt": "export type DropzoneProps<Multiple extends boolean = false> = {\n  /**\n   * The currently selected files\n   */\n  selected?: MaybeMultiple<File, Multiple>;\n\n  /**\n   * Callback fired when selected files change\n   */\n  onSelectedChange?: (files: Multiple extends true ? Set<File> : File | undefined) => void;\n\n  /**\n   * Whether to accept multiple files\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The accepted file types\n   * @example \"image/*\" or \".pdf,.doc\"\n   */\n  accept?: MaybeGetter<string | undefined>;\n\n  /**\n   * Maximum file size in bytes\n   * @default undefined\n   */\n  maxSize?: MaybeGetter<number | undefined>;\n\n  /**\n   * Custom validate fn. Will be called together with the original validation,\n   * which takes into account the `accept` and `maxSize` props.\n   */\n  validate?: (file: File) => boolean;\n};"
   },
   "Collapsible": {
     "constructorProps": [
@@ -929,13 +957,13 @@
       },
       {
         "name": "value",
-        "type": "any",
+        "type": "MaybeMultiple<string, Multiple> | undefined",
         "description": "The controlled value for the accordion.",
         "optional": true
       },
       {
         "name": "onValueChange",
-        "type": "any",
+        "type": "OnMultipleChange<string, Multiple> | undefined",
         "description": "The callback invoked when the value of the Accordion changes.",
         "optional": true
       }
@@ -980,7 +1008,7 @@
       },
       {
         "name": "value",
-        "type": "FalseIfUndefined<Multiple> | undefined",
+        "type": "SelectionStateValue<string, FalseIfUndefined<Multiple>>",
         "description": ""
       },
       {
@@ -989,6 +1017,6 @@
         "description": "Spread attributes for the accordion root element."
       }
     ],
-    "propsAlt": "export type AccordionProps<Multiple extends boolean = false> = {\n  /**\n   * If `true`, multiple accordion items can be open at the same time.\n   *\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * When `true`, prevents the user from interacting with the accordion.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * The controlled value for the accordion.\n   */\n  value?: AccordionValue<Multiple>;\n\n  /**\n   * The callback invoked when the value of the Accordion changes.\n   */\n  onValueChange?: OnChange<Multiple>;\n};"
+    "propsAlt": "export type AccordionProps<Multiple extends boolean = false> = {\n  /**\n   * If `true`, multiple accordion items can be open at the same time.\n   *\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * When `true`, prevents the user from interacting with the accordion.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * The controlled value for the accordion.\n   */\n  value?: AccordionValue<Multiple>;\n\n  /**\n   * The callback invoked when the value of the Accordion changes.\n   */\n  onValueChange?: OnMultipleChange<string, Multiple>;\n};"
   }
 }

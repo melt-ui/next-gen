@@ -1,18 +1,44 @@
 <script lang="ts">
-	import { Dropzone, type DropzoneProps } from "../builders/Dropzone.svelte";
-	import { type Snippet } from "svelte";
-	import type { ComponentProps } from "../types";
+	import { Dropzone } from "../builders/Dropzone.svelte";
 	import { getters } from "$lib/builders";
 
-	type Props = ComponentProps<DropzoneProps> & {
-		children: Snippet<[Dropzone]>;
-	};
+	let { 
+		children,
+		selected,
+		onSelectedChange,
+		multiple = false,
+		accept,
+		maxSize 
+	} = $props<{
+		children: (dropzone: Dropzone<typeof multiple extends true ? true : false>) => void;
+		selected?: typeof multiple extends true ? Set<File> : File | undefined;
+		onSelectedChange?: (files: typeof multiple extends true ? Set<File> : File | undefined) => void;
+		multiple?: boolean;
+		accept?: string;
+		maxSize?: number;
+	}>();
+	
+	type Multiple = typeof multiple extends true ? true : false;
+	let dropzone = $state(new Dropzone<Multiple>({
+		selected,
+		onSelectedChange,
+		...getters({ 
+			multiple: multiple as Multiple,
+			accept, 
+			maxSize 
+		}),
+	}));
 
-	let { children, onFilesSelected, multiple = true, accept, maxSize }: Props = $props();
-
-	const dropzone = new Dropzone({
-		onFilesSelected,
-		...getters({ multiple, accept, maxSize }),
+	$effect(() => {
+		dropzone = new Dropzone<Multiple>({
+			selected,
+			onSelectedChange,
+			...getters({ 
+				multiple: multiple as Multiple,
+				accept, 
+				maxSize 
+			}),
+		});
 	});
 </script>
 

@@ -3,6 +3,7 @@ import { SvelteSet } from "svelte/reactivity";
 import { extract } from "./extract";
 import { first, forEach, last } from "./iterator";
 import { isFunction, isIterable, isSvelteSet } from "./is";
+import { watch } from "runed";
 
 /**
  * Internal type for the multiple flag constraint
@@ -21,7 +22,7 @@ type _multiple_default = false;
  * @template T - The type of values that can be selected
  * @template Multiple - Boolean flag indicating if multiple selection is enabled
  */
-type Value<T, Multiple extends _multiple_extends> = Multiple extends true
+type SelectionStateValue<T, Multiple extends _multiple_extends> = Multiple extends true
 	? SvelteSet<T>
 	: T | undefined;
 
@@ -39,7 +40,9 @@ export type MaybeMultiple<T, Multiple extends _multiple_extends> = Multiple exte
  * @template T - The type of values that can be selected
  * @template Multiple - Boolean flag indicating if multiple selection is enabled
  */
-export type OnChange<T, Multiple extends _multiple_extends> = (value: Value<T, Multiple>) => void;
+export type OnMultipleChange<T, Multiple extends _multiple_extends> = (
+	value: SelectionStateValue<T, Multiple>,
+) => void;
 
 /**
  * Configuration props for SelectionState
@@ -48,7 +51,7 @@ export type OnChange<T, Multiple extends _multiple_extends> = (value: Value<T, M
  */
 type SelectionStateProps<T, Multiple extends _multiple_extends> = {
 	value?: MaybeMultiple<T, Multiple>;
-	onChange?: OnChange<T, Multiple>;
+	onChange?: OnMultipleChange<T, Multiple>;
 	multiple?: MaybeGetter<Multiple | undefined>;
 };
 
@@ -115,13 +118,27 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 		} else if (isIterable(props.value)) {
 			forEach(props.value, (v) => this.#internal_set.add(v as T));
 		}
+
+		watch(
+			() => this.isMultiple,
+			(isMultiple) => {
+				if (isMultiple) return;
+				const curr = this.current;
+				this.#internal_set.clear();
+				if (curr === undefined) return;
+				this.#internal_set.add(curr as T);
+			},
+			{
+				lazy: true,
+			},
+		);
 	}
 
 	/**
 	 * Gets the current selection value(s)
 	 * @returns For multiple selection, returns a SvelteSet of values. For single selection, returns a single value or undefined.
 	 */
-	get current(): Value<T, Multiple> {
+	get current(): SelectionStateValue<T, Multiple> {
 		let value: T | Iterable<T> | undefined;
 
 		if (isFunction(this.#props.value)) {
@@ -133,9 +150,9 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 		}
 
 		if (this.isMultiple) {
-			return toSet<T>(value) as Value<T, Multiple>;
+			return toSet<T>(value) as SelectionStateValue<T, Multiple>;
 		}
-		return toSingle<T>(value) as Value<T, Multiple>;
+		return toSingle<T>(value) as SelectionStateValue<T, Multiple>;
 	}
 
 	/**
@@ -148,7 +165,7 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 		cb(set);
 
 		const newValue = this.isMultiple ? set : toSingle<T>(set);
-		this.onChange(newValue as Value<T, Multiple>);
+		this.onChange(newValue as SelectionStateValue<T, Multiple>);
 	}
 
 	/**
@@ -156,7 +173,7 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 	 * @param value - The current selection value(s)
 	 * @internal
 	 */
-	onChange(value: Value<T, Multiple>) {
+	onChange(value: SelectionStateValue<T, Multiple>) {
 		if (!this.#props.onChange) return;
 		this.#props.onChange(value);
 	}
@@ -165,7 +182,7 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 	 * Sets the current selection value(s)
 	 * @param value - The new selection value(s)
 	 */
-	set current(value: Value<T, Multiple>) {
+	set current(value: SelectionStateValue<T, Multiple>) {
 		this.onChange(value);
 		if (this.isControlled) return;
 
@@ -223,7 +240,9 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 	 * @param value - The item to remove
 	 */
 	delete(value: T) {
-		this.manipulate((set) => set.delete(value));
+		this.manipulate((set) => {
+			set.delete(value);
+		});
 	}
 
 	/**
