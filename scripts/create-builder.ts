@@ -23,34 +23,49 @@ const builderContent = `import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
-import { createDataIds } from "$lib/utils/identifiers";
+import { createBuilderMetadata } from "$lib/utils/identifiers";
 
-const identifiers = createDataIds("${componentName}", ["root"]);
+const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("${componentName}", ["root"]);
 
 export type ${formattedName}Props = {
   /**
-   * If \`true\`, prevents the user from interacting with the component.
+   * The value for the ${formattedName}.
+   *
+   * When passing a getter, it will be used as source of truth,
+   * meaning that the value only changes when the getter returns a new value.
+   *
+   * Otherwise, if passing a static value, it'll serve as the default value.
+   *
    *
    * @default false
    */
-  disabled?: MaybeGetter<boolean | undefined>;
+  value?: MaybeGetter<boolean>;
+  /**
+   * Called when the value is supposed to change.
+   */
+  onValueChange?: (value: boolean) => void;
 };
 
 export class ${formattedName} {
   /* Props */
   #props!: ${formattedName}Props;
-  readonly disabled = $derived(extract(this.#props.disabled, false));
+
+  /* State */
+  #value!: Synced<boolean>;
 
   constructor(props: ${formattedName}Props = {}) {
     this.#props = props;
+    this.#value = new Synced({
+      value: props.value,
+      onChange: props.onValueChange,
+      defaultValue: false,
+    });
   }
 
   /** The root element. */
   get root() {
     return {
-      [identifiers.root]: "",
-      "data-disabled": dataAttr(this.disabled),
-      disabled: disabledAttr(this.disabled),
+      [dataAttrs.root]: "",
     } as const;
   }
 }`;
@@ -66,9 +81,7 @@ const componentContent = `<script lang="ts">
 
   let { children, ...rest }: Props = $props();
 
-  const ${componentName} = new ${formattedName}({
-    disabled: () => rest.disabled,
-  });
+  const ${componentName} = new ${formattedName}({});
 </script>
 
 {@render children(${componentName})}`;
@@ -78,17 +91,9 @@ const previewContent = `<script lang="ts">
   import { usePreviewControls } from "@components/preview-ctx.svelte";
   import { ${formattedName} } from "melt/builders";
 
-  const controls = usePreviewControls({
-    disabled: {
-      label: "Disabled",
-      type: "boolean",
-      defaultValue: false,
-    },
-  });
+  const controls = usePreviewControls({});
 
-  const ${componentName} = new ${formattedName}({
-    disabled: () => controls.disabled,
-  });
+  const ${componentName} = new ${formattedName}({});
 </script>
 
 <Preview>
