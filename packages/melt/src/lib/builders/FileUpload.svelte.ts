@@ -129,11 +129,21 @@ export class FileUpload<Multiple extends boolean = false> {
 			"data-dragging": dataAttr(this.#isDragging),
 			ondragenter: (e: DragEvent) => {
 				e.preventDefault();
-				this.#isDragging = true;
+				if (!this.#isDragging) {
+					this.#isDragging = true;
+				}
 			},
 			ondragleave: (e: DragEvent) => {
 				e.preventDefault();
-				this.#isDragging = false;
+				// Check if we're actually leaving the dropzone
+				const relatedTarget = e.relatedTarget as Node | null;
+				const dropzone = e.currentTarget as Node;
+				
+				// Only set dragging to false if we're actually leaving the dropzone
+				// and not just moving between its children
+				if (!relatedTarget || !dropzone.contains(relatedTarget)) {
+					this.#isDragging = false;
+				}
 			},
 			ondragover: (e: DragEvent) => {
 				e.preventDefault();
