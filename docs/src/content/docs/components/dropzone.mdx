@@ -1,0 +1,54 @@
+---
+title: Dropzone
+description: A description of the Dropzone component.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/dropzone.svelte";
+import Features from "@components/features.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 💪 It works
+</Features>
+
+## Usage
+
+<Tabs>
+  <TabItem label="Builder">
+```svelte
+<script lang="ts">
+  import { Dropzone } from "melt/builders";
+
+  const dropzone = new Dropzone();
+</script>
+
+<div {...dropzone.root}>
+  Dropzone content
+</div>
+```
+  </TabItem>
+
+  <TabItem label="Component">
+```svelte
+<script lang="ts">
+  import { Dropzone } from "melt/components";
+</script>
+
+<Dropzone>
+  {#snippet children(dropzone)}
+    <div {...dropzone.root}>
+      Dropzone content
+    </div>
+  {/snippet}
+</Dropzone>
+```
+  </TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="Dropzone" />
