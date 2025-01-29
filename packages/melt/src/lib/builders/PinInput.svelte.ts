@@ -253,17 +253,13 @@ export class PinInput {
 				this.#focusedIndex = -1;
 			},
 			onpaste: (e: ClipboardEvent) => {
-				if (!this.allowPaste) return;
+				if (!this.allowPaste || !e.clipboardData) return;
 
 				e.preventDefault();
 				const inputs = this.#getInputEls();
 				if (!inputs.length) return;
 
-				const inputEvent = e as ClipboardEvent;
-				const clipboardData = inputEvent.clipboardData;
-				if (!clipboardData) return;
-
-				const pasted = clipboardData.getData("text").slice(0, this.maxLength);
+				const pasted = e.clipboardData.getData("text").slice(0, this.maxLength);
 				const focusedIndex = Math.max(this.#focusedIndex, 0);
 				const initialIndex = pasted.length >= inputs.length ? 0 : focusedIndex;
 				const lastIndex = Math.min(initialIndex + pasted.length, inputs.length);
