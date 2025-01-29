@@ -742,28 +742,71 @@
   "Dropzone": {
     "constructorProps": [
       {
-        "name": "value",
-        "type": "MaybeGetter<boolean> | undefined",
-        "description": "The value for the Dropzone.\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that the value only changes when the getter returns a new value.\n\nOtherwise, if passing a static value, it'll serve as the default value.",
-        "defaultValue": "false",
+        "name": "onFilesSelected",
+        "type": "((files: File[]) => void) | undefined",
+        "description": "Function called when files are dropped or selected",
         "optional": true
       },
       {
-        "name": "onValueChange",
-        "type": "((value: boolean) => void) | undefined",
-        "description": "Called when the value is supposed to change.",
+        "name": "multiple",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "Whether to accept multiple files",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
+        "name": "accept",
+        "type": "MaybeGetter<string | undefined>",
+        "description": "The accepted file types",
+        "optional": true
+      },
+      {
+        "name": "maxSize",
+        "type": "MaybeGetter<number | undefined>",
+        "description": "Maximum file size in bytes",
+        "defaultValue": "undefined",
         "optional": true
       }
     ],
     "methods": [],
     "properties": [
       {
+        "name": "multiple",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "accept",
+        "type": "string | undefined",
+        "description": ""
+      },
+      {
+        "name": "maxSize",
+        "type": "number | undefined",
+        "description": ""
+      },
+      {
+        "name": "isDragging",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "isFileDialogOpen",
+        "type": "boolean",
+        "description": ""
+      },
+      {
         "name": "root",
-        "type": "{ readonly \"data-melt-dropzone-root\": \"\" }",
+        "type": "{\n  readonly \"data-melt-dropzone-root\": \"\"\n  readonly \"data-dragging\": \"\" | undefined\n  readonly ondragenter: (e: DragEvent) => void\n  readonly ondragleave: (e: DragEvent) => void\n  readonly ondragover: (e: DragEvent) => void\n  readonly ondrop: (e: DragEvent) => void\n  readonly onclick: () => void\n}",
         "description": "The root element."
+      },
+      {
+        "name": "input",
+        "type": "{\n  readonly \"data-melt-dropzone-input\": \"\"\n  readonly type: \"file\"\n  readonly accept: string | undefined\n  readonly multiple: boolean\n  readonly style: \"display: none;\"\n  readonly onchange: (e: Event) => void\n  readonly onblur: () => void\n}",
+        "description": "The hidden file input element."
       }
     ],
-    "propsAlt": "export type DropzoneProps = {\n  /**\n   * The value for the Dropzone.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  value?: MaybeGetter<boolean>;\n  /**\n   * Called when the value is supposed to change.\n   */\n  onValueChange?: (value: boolean) => void;\n};"
+    "propsAlt": "export type DropzoneProps = {\n  /**\n   * Function called when files are dropped or selected\n   */\n  onFilesSelected?: (files: File[]) => void;\n\n  /**\n   * Whether to accept multiple files\n   * @default true\n   */\n  multiple?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * The accepted file types\n   * @example \"image/*\" or \".pdf,.doc\"\n   */\n  accept?: MaybeGetter<string | undefined>;\n\n  /**\n   * Maximum file size in bytes\n   * @default undefined\n   */\n  maxSize?: MaybeGetter<number | undefined>;\n};"
   },
   "Collapsible": {
     "constructorProps": [
