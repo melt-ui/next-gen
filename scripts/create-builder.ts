@@ -73,6 +73,32 @@ const componentContent = `<script lang="ts">
 
 {@render children(${componentName})}`;
 
+const previewContent = `<script lang="ts">
+  import Preview from "@components/preview.svelte";
+  import { usePreviewControls } from "@components/preview-ctx.svelte";
+  import { ${formattedName} } from "melt/builders";
+
+  const controls = usePreviewControls({
+    disabled: {
+      label: "Disabled",
+      type: "boolean",
+      defaultValue: false,
+    },
+  });
+
+  const ${componentName} = new ${formattedName}({
+    disabled: () => controls.disabled,
+  });
+</script>
+
+<Preview>
+  <div class="flex justify-center">
+    <div {...${componentName}.root} class="p-4 rounded-lg bg-gray-100 dark:bg-gray-800">
+      ${formattedName} Preview
+    </div>
+  </div>
+</Preview>`;
+
 const docsContent = `---
 title: ${formattedName}
 description: A description of the ${formattedName} component.
@@ -152,6 +178,10 @@ async function main() {
   await createFile(builderPath, builderContent);
   await createFile(componentPath, componentContent);
   await createFile(docsPath, docsContent);
+  
+  // Create preview file
+  const previewPath = path.join(basePath, 'docs/src/previews', `${componentName}.svelte`);
+  await createFile(previewPath, previewContent);
 
   // Update barrel files
   await updateBarrelFile('packages/melt/src/lib/builders', formattedName);
