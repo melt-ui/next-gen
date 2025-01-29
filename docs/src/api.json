@@ -739,7 +739,7 @@
     ],
     "propsAlt": "export type PinInputProps = {\n  /**\n   * The value for the Pin Input.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default ''\n   */\n  value?: MaybeGetter<string | undefined>;\n  /**\n   * Called when the `PinInput` instance tries to change the value.\n   */\n  onValueChange?: (value: string) => void;\n\n  /**\n   * Calledwhen the `PinInput` instance is filled.\n   */\n  onComplete?: (value: string) => void;\n\n  /**\n   * The amount of digits in the Pin Input.\n   *\n   * @default 4\n   */\n  maxLength?: MaybeGetter<number | undefined>;\n  /**\n   * An optional placeholder to display when the input is empty.\n   *\n   * @default '○'\n   */\n  placeholder?: MaybeGetter<string | undefined>;\n\n  /**\n   * If `true`, prevents the user from interacting with the input.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the input should be masked like a password.\n   *\n   * @default false\n   */\n  mask?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * What characters the input accepts.\n   *\n   * @default 'text'\n   */\n  type?: MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>;\n\n  /**\n   * If `true`, allows pasting values from the clipboard.\n   *\n   * @default true\n   */\n  allowPaste?: MaybeGetter<boolean | undefined>;\n};"
   },
-  "Dropzone": {
+  "FileUpload": {
     "constructorProps": [
       {
         "name": "selected",
@@ -824,17 +824,22 @@
         "description": "Gets the currently selected files"
       },
       {
-        "name": "root",
-        "type": "{\n  readonly \"data-melt-dropzone-root\": \"\"\n  readonly \"data-dragging\": \"\" | undefined\n  readonly ondragenter: (e: DragEvent) => void\n  readonly ondragleave: (e: DragEvent) => void\n  readonly ondragover: (e: DragEvent) => void\n  readonly ondrop: (e: DragEvent) => void\n  readonly onclick: () => void\n}",
-        "description": "The root element."
+        "name": "dropzone",
+        "type": "{\n  readonly \"data-melt-fileupload-dropzone\": \"\"\n  readonly \"data-dragging\": \"\" | undefined\n  readonly ondragenter: (e: DragEvent) => void\n  readonly ondragleave: (e: DragEvent) => void\n  readonly ondragover: (e: DragEvent) => void\n  readonly ondrop: (e: DragEvent) => void\n  readonly onclick: () => void\n}",
+        "description": "The dropzone element, where you can drag files into, or click to open the file picker."
       },
       {
         "name": "input",
-        "type": "{\n  readonly \"data-melt-dropzone-input\": \"\"\n  readonly id: string\n  readonly type: \"file\"\n  readonly accept: string | undefined\n  readonly multiple: Multiple\n  readonly style: \"display: none;\"\n  readonly onchange: (e: Event) => void\n  readonly onblur: () => void\n}",
+        "type": "{\n  readonly \"data-melt-fileupload-input\": \"\"\n  readonly id: string\n  readonly type: \"file\"\n  readonly accept: string | undefined\n  readonly multiple: Multiple\n  readonly style: \"display: none;\"\n  readonly onchange: (e: Event) => void\n  readonly onblur: () => void\n}",
         "description": "The hidden file input element."
+      },
+      {
+        "name": "trigger",
+        "type": "{ readonly onclick: () => void }",
+        "description": "An optional trigger element, which can be used to open the file picker."
       }
     ],
-    "propsAlt": "export type DropzoneProps<Multiple extends boolean = false> = {\n  /**\n   * The currently selected files\n   */\n  selected?: MaybeMultiple<File, Multiple>;\n\n  /**\n   * Callback fired when selected files change\n   */\n  onSelectedChange?: (files: Multiple extends true ? Set<File> : File | undefined) => void;\n\n  /**\n   * Whether to accept multiple files\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The accepted file types\n   * @example \"image/*\" or \".pdf,.doc\"\n   */\n  accept?: MaybeGetter<string | undefined>;\n\n  /**\n   * Maximum file size in bytes\n   * @default undefined\n   */\n  maxSize?: MaybeGetter<number | undefined>;\n\n  /**\n   * Custom validate fn. Will be called together with the original validation,\n   * which takes into account the `accept` and `maxSize` props.\n   */\n  validate?: (file: File) => boolean;\n};"
+    "propsAlt": "export type FileUploadProps<Multiple extends boolean = false> = {\n  /**\n   * The currently selected files\n   */\n  selected?: MaybeMultiple<File, Multiple>;\n\n  /**\n   * Callback fired when selected files change\n   */\n  onSelectedChange?: (files: Multiple extends true ? Set<File> : File | undefined) => void;\n\n  /**\n   * Whether to accept multiple files\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The accepted file types\n   * @example \"image/*\" or \".pdf,.doc\"\n   */\n  accept?: MaybeGetter<string | undefined>;\n\n  /**\n   * Maximum file size in bytes\n   * @default undefined\n   */\n  maxSize?: MaybeGetter<number | undefined>;\n\n  /**\n   * Custom validate fn. Will be called together with the original validation,\n   * which takes into account the `accept` and `maxSize` props.\n   */\n  validate?: (file: File) => boolean;\n};"
   },
   "Collapsible": {
     "constructorProps": [

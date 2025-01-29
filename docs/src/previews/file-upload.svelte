@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Preview from "@components/preview.svelte";
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
-	import { Dropzone, getters } from "melt/builders";
+	import { FileUpload, getters } from "melt/builders";
 	import UploadIcon from "~icons/tabler/cloud-upload";
 	import XIcon from "~icons/tabler/x";
 	import { SvelteSet } from "svelte/reactivity";
@@ -30,16 +30,16 @@
 		},
 	}) as Controls;
 
-	const dropzone = new Dropzone({
+	const fileUpload = new FileUpload({
 		...getters(controls),
 		selected: [new File([""], "empty.txt", { type: "text/plain" })],
 	});
 
 	const files = $derived.by(() => {
-		if (dropzone.selected instanceof SvelteSet) {
-			return Array.from(dropzone.selected);
+		if (fileUpload.selected instanceof SvelteSet) {
+			return Array.from(fileUpload.selected);
 		}
-		return [dropzone.selected].filter((f): f is File => !!f);
+		return [fileUpload.selected].filter((f): f is File => !!f);
 	});
 
 	function formatFileSize(bytes: number) {
@@ -53,17 +53,17 @@
 
 <Preview>
 	<div class="flex flex-col items-center gap-4">
-		<input {...dropzone.input} />
+		<input {...fileUpload.input} />
 		<div
-			{...dropzone.root}
+			{...fileUpload.dropzone}
 			class="relative flex min-h-[200px] w-[300px] cursor-pointer
 				flex-col items-center justify-center gap-4
 				rounded-lg border-2 border-dashed border-gray-300 bg-gray-50
 				p-6 text-center transition-colors
 				hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
-			class:!border-accent-500={dropzone.isDragging}
+			class:!border-accent-500={fileUpload.isDragging}
 		>
-			{#if dropzone.isDragging}
+			{#if fileUpload.isDragging}
 				<p class="text-accent-400 font-medium">Drop files here</p>
 			{:else}
 				<div class="pointer-events-none flex flex-col items-center gap-2">
@@ -99,7 +99,7 @@
 							class="grid place-items-center bg-transparent text-gray-500
 							hover:text-gray-400 dark:text-gray-400 dark:hover:text-gray-300"
 							onclick={() => {
-								dropzone.remove(file);
+								fileUpload.remove(file);
 							}}
 						>
 							<XIcon />

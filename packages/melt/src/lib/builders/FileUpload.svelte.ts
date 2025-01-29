@@ -5,9 +5,9 @@ import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { SelectionState, type MaybeMultiple } from "$lib/utils/selection-state.svelte";
 import { watch } from "runed";
 
-const { dataAttrs, createIds } = createBuilderMetadata("dropzone", ["root", "input"]);
+const { dataAttrs, createIds } = createBuilderMetadata("fileupload", ["dropzone", "input"]);
 
-export type DropzoneProps<Multiple extends boolean = false> = {
+export type FileUploadProps<Multiple extends boolean = false> = {
 	/**
 	 * The currently selected files
 	 */
@@ -43,8 +43,8 @@ export type DropzoneProps<Multiple extends boolean = false> = {
 	validate?: (file: File) => boolean;
 };
 
-export class Dropzone<Multiple extends boolean = false> {
-	#props!: DropzoneProps<Multiple>;
+export class FileUpload<Multiple extends boolean = false> {
+	#props!: FileUploadProps<Multiple>;
 	readonly multiple = $derived(extract(this.#props.multiple, false as Multiple)) as Multiple;
 	readonly accept = $derived(extract(this.#props.accept, undefined));
 	readonly maxSize = $derived(extract(this.#props.maxSize, undefined));
@@ -56,7 +56,7 @@ export class Dropzone<Multiple extends boolean = false> {
 
 	#selected: SelectionState<File, Multiple>;
 
-	constructor(props: DropzoneProps<Multiple> = {}) {
+	constructor(props: FileUploadProps<Multiple> = {}) {
 		this.#props = props;
 		this.#selected = new SelectionState<File, Multiple>({
 			value: props.selected,
@@ -122,28 +122,24 @@ export class Dropzone<Multiple extends boolean = false> {
 		}
 	};
 
-	/** The root element. */
-	get root() {
+	/** The dropzone element, where you can drag files into, or click to open the file picker. */
+	get dropzone() {
 		return {
-			[dataAttrs.root]: "",
+			[dataAttrs.dropzone]: "",
 			"data-dragging": dataAttr(this.#isDragging),
 			ondragenter: (e: DragEvent) => {
 				e.preventDefault();
-				e.stopPropagation();
 				this.#isDragging = true;
 			},
 			ondragleave: (e: DragEvent) => {
 				e.preventDefault();
-				e.stopPropagation();
 				this.#isDragging = false;
 			},
 			ondragover: (e: DragEvent) => {
 				e.preventDefault();
-				e.stopPropagation();
 			},
 			ondrop: (e: DragEvent) => {
 				e.preventDefault();
-				e.stopPropagation();
 				this.#isDragging = false;
 				if (e.dataTransfer?.files) {
 					this.#handleFiles(e.dataTransfer.files);
@@ -152,7 +148,7 @@ export class Dropzone<Multiple extends boolean = false> {
 			onclick: () => {
 				if (this.#isFileDialogOpen) return;
 
-				const input = document.querySelector(`[${dataAttrs.input}]`) as HTMLInputElement;
+				const input = document.getElementById(this.#ids.input) as HTMLInputElement;
 				if (input) {
 					this.#isFileDialogOpen = true;
 					input.click();
@@ -192,6 +188,21 @@ export class Dropzone<Multiple extends boolean = false> {
 			},
 			onblur: () => {
 				this.#isFileDialogOpen = false;
+			},
+		} as const;
+	}
+
+	/** An optional trigger element, which can be used to open the file picker. */
+	get trigger() {
+		return {
+			onclick: () => {
+				if (this.#isFileDialogOpen) return;
+
+				const input = document.getElementById(this.#ids.input) as HTMLInputElement;
+				if (input) {
+					this.#isFileDialogOpen = true;
+					input.click();
+				}
 			},
 		} as const;
 	}
