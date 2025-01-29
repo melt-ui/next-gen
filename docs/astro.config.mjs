@@ -4,6 +4,8 @@ import tailwind from "@astrojs/tailwind";
 import svelte from "@astrojs/svelte";
 import icons from "unplugin-icons/vite";
 
+const isDev = process.env.NODE_ENV === "development";
+
 // https://astro.build/config
 export default defineConfig({
 	site: "https://next.melt-ui.com",
@@ -42,7 +44,7 @@ export default defineConfig({
 			},
 			social: {
 				discord: "https://melt-ui.com/discord",
-				github: "https://github.com/melt-ui/next-gen"
+				github: "https://github.com/melt-ui/next-gen",
 			},
 			sidebar: [
 				{
@@ -88,5 +90,8 @@ export default defineConfig({
 	],
 	vite: {
 		plugins: [icons({ compiler: "svelte" })],
+		server: {
+			allowedHosts: isDev ? true : undefined,
+		},
 	},
 });

@@ -43,8 +43,12 @@ export class Synced<T> {
 	}
 
 	set current(value: T) {
-		this.#onChange?.(value);
-		if (isFunction(this.#valueArg)) return;
+		if (isFunction(this.#valueArg)) {
+			this.#onChange?.(value);
+			return;
+		}
+
 		this.#internalValue = value;
+		this.#onChange?.(value);
 	}
 }
