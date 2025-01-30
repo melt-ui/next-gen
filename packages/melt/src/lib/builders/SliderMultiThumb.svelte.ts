@@ -304,17 +304,21 @@ export class SliderMultiThumb {
 
         return {
             "aria-orientation": this.orientation,
+			"data-orientation": this.orientation,
 			[dataAttrs.root]: "",
 			id: this.#ids.root,
         };
     }
 
+	/**
+	 * The spread attributes for the min-max range element.
+	 */
 	get range() {
 		if (this.#numThumbs < 2) return {};
 
-		const min = Math.min(...this.value);
-		const max = Math.max(...this.value);
-		const style: Record<string, string> = { };
+		const min = 100 * Math.min(...this.value) / this.max;
+		const max = 100 - 100 * Math.max(...this.value) / this.max;
+		const style: Record<string, string> = { position: 'absolute' };
 
 		if (this.#dirWithOrientation === 'lr') {
 			style.left = `${min}%`;
@@ -330,12 +334,14 @@ export class SliderMultiThumb {
 			style.top = `${min}%`;
 		}
 
-		return { style: styleAttr(style) } as const;
+		return {
+			[dataAttrs.range]: "",
+			"data-orientation": this.orientation,
+			style: styleAttr(style) 
+		} as const;
 	}
 
 	get thumbs() {
-		console.log('re-running');
-
 		return Array(this.#numThumbs)
 			.fill(null)
 			.map((_, i) => new Thumb({
@@ -386,6 +392,7 @@ class Thumb {
 			"aria-valuemin": this.#slider.min,
 			"aria-valuemax": this.#slider.max,
 			"aria-orientation": this.#slider.orientation,
+			"data-orientation": this.#slider.orientation,
 			"data-dragging": dataAttr(this.#dragging),
 			role: "slider",
 			tabindex: 0,

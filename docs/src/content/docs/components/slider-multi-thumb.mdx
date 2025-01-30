@@ -32,11 +32,46 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 	const slider = new SliderMultiThumb();
 </script>
 
-<div {...slider.root}>
+<span {...slider.root}>
+	<span>
+		<span {...slider.range}></span>
+	</span>
+
     {#each slider.thumbs as thumb}
-	    <div {...thumb.trigger}></div>
+	    <span {...thumb.trigger}></span>
     {/each}
-</div>
+</span>
+
+<style>
+	[data-melt-slider-root] {
+		position: relative;
+		display: flex;
+
+		&[data-orientation="horizontal"] { /* height: ..., width: ... */ }
+
+		&[data-orientation="vertical"] { /* height: ..., width: ... */ }
+	}
+
+	[data-melt-slider-range] {
+		/* background: ... */
+
+		&[data-orientation="horizontal"] { }
+		
+		&[data-orientation="vertical"] { }
+	}
+
+	[data-melt-slider-thumb] {
+		position: absolute;
+
+		&[data-orientation="horizontal"] {
+			left: var(--percentage);
+		}
+
+		&[data-orientation="vertical"] {
+			top: var(--percentage);
+		}
+	}
+</style>
 ```
 	</TabItem>
 
@@ -49,13 +84,48 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 
 <SliderMultiThumb>
 	{#snippet children(slider)}
-		<div {...slider.root}>
-            {#each slider.thumbs as thumb}
-			    <div {...thumb.trigger}></div>
-            {/each}
-		</div>
+		<span {...slider.root}>
+			<span>
+				<span {...slider.range}></span>
+			</span>
+
+			{#each slider.thumbs as thumb}
+				<span {...thumb.trigger}></span>
+			{/each}
+		</span>
 	{/snippet}
 </SliderMultiThumb>
+
+<style>
+	[data-melt-slider-root] {
+		position: relative;
+		display: flex;
+
+		&[data-orientation="horizontal"] { /* height: ..., width: ... */ }
+
+		&[data-orientation="vertical"] { /* height: ..., width: ... */ }
+	}
+
+	[data-melt-slider-range] {
+		/* background: ... */
+
+		&[data-orientation="horizontal"] { }
+		
+		&[data-orientation="vertical"] { }
+	}
+
+	[data-melt-slider-thumb] {
+		position: absolute;
+
+		&[data-orientation="horizontal"] {
+			left: var(--percentage);
+		}
+
+		&[data-orientation="vertical"] {
+			top: var(--percentage);
+		}
+	}
+</style>
 	```
 	</TabItem>
 </Tabs>

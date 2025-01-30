@@ -26,51 +26,44 @@
 		},
 	});
 
-	let open = $state(true);
-	let value = $state([0, 25, 50, 75, 100]);
+	let value = $state([35, 65]);
 </script>
 
 <Preview>
-	<div class="flex flex-col gap-8">
-		<button onclick={() => value.push(20)}>push</button>
-		<button onclick={() => (value[0] += 15)}>add</button>
-		<button onclick={() => (open = !open)}>open: {open}</button>
-		<div class="text-center">[{value}]</div>
+	<div class="flex flex-col items-center gap-8">
+		<div class="text-center font-semibold">Range: [{value.join(" - ")}]</div>
 
 		<SliderMultiThumb bind:value {...controls}>
 			{#snippet children(slider)}
-				<div
-					class="relative mx-auto p-3 outline-none
-					{slider.orientation === 'horizontal' ? 'h-[50px] w-[350px] max-w-[90%]' : 'h-[350px] w-[50px]'}"
+				<span
+					class="relative flex items-center justify-center p-3 outline-none
+					{slider.horizontal ? 'h-[50px] w-[350px] max-w-[90%]' : 'h-[350px] w-[50px]'}"
 					{...slider.root}
 				>
-					<div
-						class="absolute rounded-full bg-gray-500
-						{slider.orientation === 'horizontal'
-							? 'left-0 right-0 top-1/2 h-2 -translate-y-1/2'
-							: 'bottom-0 left-1/2 top-0 w-2 -translate-x-1/2'}"
+					<span
+						class="rounded-full bg-gray-500
+						{slider.horizontal ? 'h-2 w-full' : 'h-full w-2'}"
 					>
-						<div class="bg-accent-500 h-2 rounded-full" {...slider.range}></div>
-					</div>
+						<span
+							class="bg-accent-500 rounded-full {slider.horizontal ? 'h-2' : 'w-2'}"
+							{...slider.range}
+						></span>
+					</span>
 
-					<!-- <div class="bg-accent-300 absolute inset-0 rounded-full"></div> -->
-
-					{#if open}
-						{#each slider.thumbs as thumb}
-							<div
-								class="focus-visible:ring-accent-300 border-accent-300 absolute size-6 rounded-md border-2 bg-white outline-none
-							transition-all duration-200
-							focus-visible:ring focus-visible:ring-offset-black
-							data-[dragging]:transition-none
-							dark:border-none dark:focus-visible:ring-offset-2
-							{slider.orientation === 'horizontal'
-									? 'left-[var(--percentage)] top-1/2 -translate-x-1/2 -translate-y-1/2'
-									: 'left-1/2 top-[var(--percentage)] -translate-x-1/2 -translate-y-1/2'}"
-								{...thumb.trigger}
-							></div>
-						{/each}
-					{/if}
-				</div>
+					{#each slider.thumbs as thumb}
+						<span
+							class="focus-visible:ring-accent-300 border-accent-300 absolute size-6 rounded-md border-2 bg-white outline-none
+						transition-all duration-200
+						focus-visible:ring focus-visible:ring-offset-black
+						data-[dragging]:transition-none
+						dark:border-none dark:focus-visible:ring-offset-2
+						{slider.horizontal
+								? 'left-[var(--percentage)] top-1/2 -translate-x-1/2 -translate-y-1/2'
+								: 'left-1/2 top-[var(--percentage)] -translate-x-1/2 -translate-y-1/2'}"
+							{...thumb.trigger}
+						></span>
+					{/each}
+				</span>
 			{/snippet}
 		</SliderMultiThumb>
 	</div>

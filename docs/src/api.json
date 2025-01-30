@@ -430,13 +430,13 @@
       },
       {
         "name": "root",
-        "type": "{\n  \"aria-orientation\": \"horizontal\" | \"vertical\"\n  \"data-melt-slider-root\": string\n  id: string\n}",
+        "type": "{\n  \"aria-orientation\": \"horizontal\" | \"vertical\"\n  \"data-orientation\": \"horizontal\" | \"vertical\"\n  \"data-melt-slider-root\": string\n  id: string\n}",
         "description": "The root of the slider.\rAny cursor interaction along this element will change the slider's values."
       },
       {
         "name": "range",
-        "type": "| { readonly style?: undefined }\n  | { readonly style: `${string}: ${string}` }",
-        "description": ""
+        "type": "| {\n      readonly \"data-melt-slider-range\"?: undefined\n      readonly \"data-orientation\"?: undefined\n      readonly style?: undefined\n    }\n  | {\n      readonly \"data-melt-slider-range\": \"\"\n      readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n      readonly style: `${string}: ${string}`\n    }",
+        "description": "The spread attributes for the min-max range element."
       },
       {
         "name": "thumbs",
