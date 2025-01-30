@@ -29,9 +29,22 @@ export type PinInputProps = {
 	onValueChange?: (value: string) => void;
 
 	/**
-	 * Calledwhen the `PinInput` instance is filled.
+	 * Called when the `PinInput` instance is filled.
 	 */
 	onComplete?: (value: string) => void;
+
+	/**
+	 * Called before the pasted value is processed by the `PinInput` instance to allow for custom processing.
+	 *
+	 * @param value The pasted value.
+	 * @returns The processed value.
+	 */
+	onPaste?: (value: string) => string;
+
+	/**
+	 * Called when the paste encounters an error.
+	 */
+	onPasteError?: (error: Error) => void;
 
 	/**
 	 * The amount of digits in the Pin Input.
@@ -177,10 +190,8 @@ export class PinInput {
 			const inputs = this.#getInputEls();
 			if (!inputs.length) return;
 
-			if (this.type === "numeric") {
-				pasted = pasted.replace(/[^0-9]/g, "");
-			} else if (this.type === "alphanumeric") {
-				pasted = pasted.replace(/[^a-zA-Z0-9]/g, "");
+			if (this.#props.onPaste) {
+				pasted = this.#props.onPaste(pasted);
 			}
 
 			const focusedIndex = Math.max(this.#focusedIndex, 0);
@@ -189,11 +200,15 @@ export class PinInput {
 
 			for (let i = initialIndex; i < lastIndex; i++) {
 				const input = inputs[i];
+				if (!validateInput(pasted[i - initialIndex], this.type)) {
+					this.#props.onPasteError?.(new Error("Invalid input"));
+					break;
+				}
 				input.value = pasted[i - initialIndex];
 				this.#addCharAtIndex(pasted[i - initialIndex], i);
 				input.focus();
+				inputs[i + 1]?.focus();
 			}
-			inputs[lastIndex]?.focus();
 		};
 
 		return {
