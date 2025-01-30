@@ -44,7 +44,7 @@ export type PinInputProps = {
 	/**
 	 * Called when the paste encounters an error.
 	 */
-	onPasteError?: (error: Error) => void;
+	onError?: (error: Error) => void;
 
 	/**
 	 * The amount of digits in the Pin Input.
@@ -201,7 +201,7 @@ export class PinInput {
 			for (let i = initialIndex; i < lastIndex; i++) {
 				const input = inputs[i];
 				if (!validateInput(pasted[i - initialIndex], this.type)) {
-					this.#props.onPasteError?.(new Error("Invalid input"));
+					this.#props.onError?.(new Error("Invalid input"));
 					break;
 				}
 				input.value = pasted[i - initialIndex];
@@ -294,6 +294,7 @@ export class PinInput {
 				if (inputted.length === 1) {
 					const char = el.value.slice(el.value.length - 1);
 					if (!validateInput(char, this.type)) {
+						this.#props.onError?.(new Error("Invalid input"));
 						el.value = el.value.slice(0, -1);
 						return;
 					}
