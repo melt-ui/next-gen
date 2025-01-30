@@ -177,6 +177,12 @@ export class PinInput {
 			const inputs = this.#getInputEls();
 			if (!inputs.length) return;
 
+			if (this.type === "numeric") {
+				pasted = pasted.replace(/[^0-9]/g, "");
+			} else if (this.type === "alphanumeric") {
+				pasted = pasted.replace(/[^a-zA-Z0-9]/g, "");
+			}
+
 			const focusedIndex = Math.max(this.#focusedIndex, 0);
 			const initialIndex = pasted.length >= inputs.length ? 0 : focusedIndex;
 			const lastIndex = Math.min(initialIndex + pasted.length, inputs.length);
