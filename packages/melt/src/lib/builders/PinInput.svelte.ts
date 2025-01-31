@@ -34,15 +34,25 @@ export type PinInputProps = {
 	onComplete?: (value: string) => void;
 
 	/**
-	 * Called before the pasted value is processed by the `PinInput` instance to allow for custom processing.
+	 * Override the default behavior when pasting a value.
 	 *
 	 * @param value The pasted value.
-	 * @returns The processed value.
+	 *
+	 * @example ```ts
+	 * let pin = new PinInput({
+	 *   onPaste(value) {
+	 *     if (!valid(value)) {
+	 *       //do something
+	 *       return
+	 *     }
+	 *     pin.value = value
+	 *   }
+	 * });
 	 */
-	onPaste?: (value: string) => string;
+	onPaste?: (value: string) => void;
 
 	/**
-	 * Called when the paste encounters an error.
+	 * Called when the PinInput encounters an error.
 	 */
 	onError?: (error: Error) => void;
 
@@ -190,10 +200,6 @@ export class PinInput {
 			const inputs = this.#getInputEls();
 			if (!inputs.length) return;
 
-			if (this.#props.onPaste) {
-				pasted = this.#props.onPaste(pasted);
-			}
-
 			const focusedIndex = Math.max(this.#focusedIndex, 0);
 			const initialIndex = pasted.length >= inputs.length ? 0 : focusedIndex;
 			const lastIndex = Math.min(initialIndex + pasted.length, inputs.length);
@@ -307,7 +313,11 @@ export class PinInput {
 					// Set timeout so deps can change, and canFocus is re-evaluated.
 					setTimeout(() => inputs[currIndex + 1]?.focus());
 				} else {
-					onpaste(inputted);
+					if (this.#props.onPaste) {
+						this.#props.onPaste(inputted);
+					} else {
+						onpaste(inputted);
+					}
 				}
 			},
 			onfocus: () => {
@@ -322,7 +332,11 @@ export class PinInput {
 				console.log(pasted);
 				if (!pasted) return;
 
-				onpaste(pasted);
+				if (this.#props.onPaste) {
+					this.#props.onPaste(pasted);
+				} else {
+					onpaste(pasted);
+				}
 			},
 		} as const satisfies HTMLInputAttributes;
 	}
