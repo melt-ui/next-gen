@@ -10,7 +10,7 @@
 
 	let { open = $bindable(false), children, ...rest }: Props = $props();
 
-	const popover = new Builder({
+	export const popover = new Builder({
 		open: () => open,
 		onOpenChange: (v) => (open = v),
 		...getters(rest),

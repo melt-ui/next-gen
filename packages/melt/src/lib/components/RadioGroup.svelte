@@ -10,7 +10,7 @@
 
 	let { value = $bindable(undefined), children, ...rest }: Props = $props();
 
-	const group = new Builder({
+	export const group = new Builder({
 		value: () => value,
 		onValueChange: (v) => (value = v),
 		...getters(rest),

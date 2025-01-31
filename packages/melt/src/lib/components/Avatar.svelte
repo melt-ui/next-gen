@@ -11,7 +11,7 @@
 
 	let { children, onLoadingStatusChange, ...rest }: Props = $props();
 
-	const avatar = new Builder(getters({ ...rest }));
+	export const avatar = new Builder(getters({ ...rest }));
 </script>
 
 {@render children(avatar)}
