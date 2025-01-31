@@ -1,5 +1,11 @@
 # melt
 
+## 0.9.0
+
+### Minor Changes
+
+- 0886281: BREAKING: remove collapsible root element
+
 ## 0.8.1
 
 ### Patch Changes
