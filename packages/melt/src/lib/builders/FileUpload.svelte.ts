@@ -41,6 +41,8 @@ export type FileUploadProps<Multiple extends boolean = false> = {
 	 * which takes into account the `accept` and `maxSize` props.
 	 */
 	validate?: (file: File) => boolean;
+
+	// TODO: On fail
 };
 
 export class FileUpload<Multiple extends boolean = false> {
@@ -51,7 +53,6 @@ export class FileUpload<Multiple extends boolean = false> {
 
 	/* State */
 	#isDragging = $state(false);
-	#isFileDialogOpen = $state(false);
 	#ids = createIds();
 
 	#selected: SelectionState<File, Multiple>;
@@ -67,10 +68,6 @@ export class FileUpload<Multiple extends boolean = false> {
 
 	get isDragging() {
 		return this.#isDragging;
-	}
-
-	get isFileDialogOpen() {
-		return this.#isFileDialogOpen;
 	}
 
 	/**
@@ -138,7 +135,7 @@ export class FileUpload<Multiple extends boolean = false> {
 				// Check if we're actually leaving the dropzone
 				const relatedTarget = e.relatedTarget as Node | null;
 				const dropzone = e.currentTarget as Node;
-				
+
 				// Only set dragging to false if we're actually leaving the dropzone
 				// and not just moving between its children
 				if (!relatedTarget || !dropzone.contains(relatedTarget)) {
@@ -156,11 +153,8 @@ export class FileUpload<Multiple extends boolean = false> {
 				}
 			},
 			onclick: () => {
-				if (this.#isFileDialogOpen) return;
-
 				const input = document.getElementById(this.#ids.input) as HTMLInputElement;
 				if (input) {
-					this.#isFileDialogOpen = true;
 					input.click();
 				}
 			},
@@ -196,9 +190,6 @@ export class FileUpload<Multiple extends boolean = false> {
 				const input = e.target as HTMLInputElement;
 				this.#handleFiles(input.files);
 			},
-			onblur: () => {
-				this.#isFileDialogOpen = false;
-			},
 		} as const;
 	}
 
@@ -206,11 +197,8 @@ export class FileUpload<Multiple extends boolean = false> {
 	get trigger() {
 		return {
 			onclick: () => {
-				if (this.#isFileDialogOpen) return;
-
 				const input = document.getElementById(this.#ids.input) as HTMLInputElement;
 				if (input) {
-					this.#isFileDialogOpen = true;
 					input.click();
 				}
 			},

@@ -58,7 +58,7 @@
 			{...fileUpload.dropzone}
 			class="relative flex min-h-[200px] w-[300px] cursor-pointer
 				flex-col items-center justify-center gap-4
-				rounded-lg border-2 border-dashed border-gray-300 bg-gray-50
+				rounded-xl border-2 border-dashed border-gray-300 bg-gray-50
 				p-6 text-center transition-colors
 				hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
 			class:!border-accent-500={fileUpload.isDragging}
@@ -74,7 +74,10 @@
 						or drag and drop
 					</p>
 					<p class="text-xs text-gray-500 dark:text-gray-400">
-						{controls.accept} (up to {formatFileSize(controls.maxSize)})
+						{controls.accept}
+						{#if controls.maxSize}
+							<span>(up to {formatFileSize(controls.maxSize)})</span>
+						{/if}
 					</p>
 				</div>
 			{/if}
