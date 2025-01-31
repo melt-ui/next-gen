@@ -1,5 +1,11 @@
 # melt
 
+## 0.8.1
+
+### Patch Changes
+
+- b30421f: fix component types
+
 ## 0.8.0
 
 ### Minor Changes
