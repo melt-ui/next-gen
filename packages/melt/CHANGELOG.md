@@ -1,5 +1,11 @@
 # melt
 
+## 0.10.0
+
+### Minor Changes
+
+- 979c893: export builder instance in components
+
 ## 0.9.0
 
 ### Minor Changes
