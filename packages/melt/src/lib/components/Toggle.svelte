@@ -9,7 +9,7 @@
 
 	let { value = $bindable(false), children, ...rest }: Props = $props();
 
-	const toggle = new Builder({
+	export const toggle = new Builder({
 		value: () => value,
 		onValueChange: (v) => (value = v),
 		disabled: () => rest.disabled,

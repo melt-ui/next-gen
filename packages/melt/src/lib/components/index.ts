@@ -1,3 +1,4 @@
+export { default as Accordion } from "./Avatar.svelte";
 export { default as Avatar } from "./Avatar.svelte";
 export { default as Collapsible } from "./Collapsible.svelte";
 export { default as PinInput } from "./PinInput.svelte";

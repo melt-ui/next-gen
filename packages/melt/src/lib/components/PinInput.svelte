@@ -10,7 +10,7 @@
 
 	let { value = $bindable(), children, ...rest }: Props = $props();
 
-	const pinInput = new Builder({
+	export const pinInput = new Builder({
 		value: () => value,
 		onValueChange: (v) => (value = v),
 		...getters(rest),

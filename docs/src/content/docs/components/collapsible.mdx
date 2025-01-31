@@ -27,13 +27,11 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 	const collapsible = new Collapsible();
 </script>
 
-<div {...collapsible.root}>
-    <button {...collapsible.trigger}>Open/Close content</button>
+<button {...collapsible.trigger}>Open/Close content</button>
 
-    {#if collapsible.open}
-        <div {...collapsible.content}>Content</div>
-    {/if}
-</div>
+{#if collapsible.open}
+		<div {...collapsible.content}>Content</div>
+{/if}
 ```
 	</TabItem>
 
@@ -44,15 +42,13 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 </script>
 
 <Collapsible>
-    {#snippet children(collapsible)}
-        <div {...collapsible.root}>
-            <button {...collapsible.trigger}>Open/Close content</button>
-            
-            {#if collapsible.open}
-                <div {...collapsible.content}>Content</div>
-            {/if}
-        </div>
-    {/snippet}
+	{#snippet children(collapsible)}
+			<button {...collapsible.trigger}>Open/Close content</button>
+
+			{#if collapsible.open}
+					<div {...collapsible.content}>Content</div>
+			{/if}
+	{/snippet}
 </Collapsible>
 ```
 	</TabItem>

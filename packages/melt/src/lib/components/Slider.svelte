@@ -10,7 +10,7 @@
 
 	let { value = $bindable(), children, ...rest }: Props = $props();
 
-	const slider = new Builder({
+	export const slider = new Builder({
 		value: () => value,
 		onValueChange: (v) => (value = v),
 		...getters(rest),

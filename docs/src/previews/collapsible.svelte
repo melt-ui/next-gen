@@ -18,7 +18,7 @@
 <Preview>
 	<Collapsible {...controls}>
 		{#snippet children(collapsible)}
-			<div {...collapsible.root} class="mx-auto w-[18rem] max-w-full sm:w-[25rem]">
+			<div class="mx-auto w-[18rem] max-w-full sm:w-[25rem]">
 				<button
 					{...collapsible.trigger}
 					class="relative z-10 mx-auto flex w-full items-center justify-between rounded-xl bg-gray-200

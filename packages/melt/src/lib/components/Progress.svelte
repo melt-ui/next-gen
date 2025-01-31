@@ -10,7 +10,7 @@
 
 	let { value = $bindable(), children, ...rest }: Props = $props();
 
-	const progress = new Builder({
+	export const progress = new Builder({
 		value: () => value,
 		onValueChange: (v) => (value = v),
 		...getters(rest),

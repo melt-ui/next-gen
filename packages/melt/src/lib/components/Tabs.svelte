@@ -10,7 +10,7 @@
 
 	let { value = $bindable(), children, ...rest }: Props = $props();
 
-	const tabs = new Builder({
+	export const tabs = new Builder({
 		value: () => value,
 		onValueChange: (v) => (value = v),
 		...getters(rest),

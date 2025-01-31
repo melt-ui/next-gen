@@ -10,7 +10,7 @@
 
 	let { open = $bindable(false), children, ...rest }: Props = $props();
 
-	const collapsible = new Builder({
+	export const collapsible = new Builder({
 		open: () => open,
 		onOpenChange: (v) => (open = v),
 		...getters(rest),
