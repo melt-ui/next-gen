@@ -1,5 +1,11 @@
 # melt
 
+## 0.10.1
+
+### Patch Changes
+
+- 476006d: fix accordion component import
+
 ## 0.10.0
 
 ### Minor Changes
