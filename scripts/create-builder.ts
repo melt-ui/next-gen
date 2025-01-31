@@ -56,17 +56,17 @@ export class ${formattedName} {
 }`;
 
 const componentContent = `<script lang="ts">
-  import { ${formattedName}, type ${formattedName}Props } from "../builders/${formattedName}.svelte";
+  import { ${formattedName} as Builder, type ${formattedName}Props } from "../builders/${formattedName}.svelte";
   import { type Snippet } from "svelte";
   import type { ComponentProps } from "../types";
 
   type Props = ComponentProps<${formattedName}Props> & {
-    children: Snippet<[${formattedName}]>;
+    children: Snippet<[Builder]>;
   };
 
   let { children, ...rest }: Props = $props();
 
-  const ${componentName} = new ${formattedName}({
+  const ${componentName} = new Builder({
     disabled: () => rest.disabled,
   });
 </script>

@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { Popover, type PopoverProps } from "../builders/Popover.svelte";
+	import { Popover as Builder, type PopoverProps } from "../builders/Popover.svelte";
 	import { type Snippet } from "svelte";
 	import type { ComponentProps } from "../types";
 	import { getters } from "$lib/builders";
 
 	type Props = ComponentProps<PopoverProps> & {
-		children: Snippet<[Popover]>;
+		children: Snippet<[Builder]>;
 	};
 
 	let { open = $bindable(false), children, ...rest }: Props = $props();
 
-	const popover = new Popover({
+	const popover = new Builder({
 		open: () => open,
 		onOpenChange: (v) => (open = v),
 		...getters(rest),
