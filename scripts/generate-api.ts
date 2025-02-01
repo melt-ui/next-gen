@@ -8,6 +8,7 @@ import {
 	parseProperty,
 	parseType,
 	project,
+	sanitizeNextLine,
 	toArray,
 	type ResultSchema,
 } from "./project";
@@ -51,7 +52,7 @@ async function main() {
 					.filter((c): c is TypeReferenceNode => c instanceof TypeReferenceNode)
 					.map((c) => sourceFile.getTypeAlias(c.getType().getText())?.getText()) ?? [];
 
-			result[name].propsAlt = [...typeParams, props.getText().replaceAll("\t", "  ")].join("\n\n");
+			result[name].propsAlt = [...typeParams, props.getText().replaceAll("\t", "  ")].map((v) => sanitizeNextLine(v)).join("\n\n");
 		}
 
 		const constructor = builderClass?.getConstructors()?.[0];
