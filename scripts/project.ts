@@ -95,7 +95,7 @@ export async function parseProperty(property: PropertyDeclaration): Promise<Type
 	return {
 		name: property.getName(),
 		type: await trimType(property.getType().getText()),
-		description: getDescriptionFromJsDocs(property),
+		description: sanitizeNextLine(getDescriptionFromJsDocs(property)),
 	};
 }
 
@@ -103,7 +103,7 @@ export async function parseAccessor(accessor: GetAccessorDeclaration): Promise<T
 	return {
 		name: accessor.getName(),
 		type: await trimType(accessor.getType().getText()),
-		description: getDescriptionFromJsDocs(accessor),
+		description: sanitizeNextLine(getDescriptionFromJsDocs(accessor)),
 	};
 }
 
@@ -116,7 +116,7 @@ export async function parseSymbol(symbol: Symbol): Promise<TypeSchema> {
 	return {
 		name: symbol.getName(),
 		type: await trimType(declaredType.getText()),
-		description: getDescription(symbol),
+		description: sanitizeNextLine(getDescription(symbol)),
 		defaultValue: getDefaultValue(symbol),
 		optional: symbol.isOptional(),
 	};

@@ -16,7 +16,7 @@
       {
         "name": "selected",
         "type": "MaybeMultiple<Multiple> | undefined",
-        "description": "The currently selected item(s).\r\nIf `multiple` is `true`, this should be an `Iterable`.\r\nOtherwise, it'll be a `string`.",
+        "description": "The currently selected item(s).\nIf `multiple` is `true`, this should be an `Iterable`.\nOtherwise, it'll be a `string`.",
         "defaultValue": "undefined",
         "optional": true
       },
@@ -156,7 +156,7 @@
       {
         "name": "selected",
         "type": "Value<FalseIfUndefined<Multiple>>",
-        "description": "Currently selected item(s)\rFor multiple selection, returns a Set of IDs\rFor single selection, returns a single ID or undefined"
+        "description": "Currently selected item(s)\nFor multiple selection, returns a Set of IDs\nFor single selection, returns a single ID or undefined"
       },
       {
         "name": "expanded",
@@ -186,7 +186,7 @@
       {
         "name": "value",
         "type": "MaybeGetter<boolean> | undefined",
-        "description": "The value for the Toggle.\r\n\r\nWhen passing a getter, it will be used as source of truth,\r\nmeaning that the value only changes when the getter returns a new value.\r\n\r\nOtherwise, if passing a static value, it'll serve as the default value.",
+        "description": "The value for the Toggle.\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that the value only changes when the getter returns a new value.\n\nOtherwise, if passing a static value, it'll serve as the default value.",
         "defaultValue": "false",
         "optional": true
       },
@@ -255,7 +255,7 @@
       {
         "name": "value",
         "type": "MaybeGetter<T | undefined>",
-        "description": "The default value for `tabs.value`\r\n\r\nWhen passing a getter, it will be used as source of truth,\r\nmeaning that `tabs.value` only changes when the getter returns a new value.\r\n\r\nIf omitted, it will use the first tab as default.",
+        "description": "The default value for `tabs.value`\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that `tabs.value` only changes when the getter returns a new value.\n\nIf omitted, it will use the first tab as default.",
         "defaultValue": "undefined",
         "optional": true
       },
@@ -340,7 +340,7 @@
       {
         "name": "value",
         "type": "MaybeGetter<number | undefined>",
-        "description": "The default value for `tabs.value`\r\n\r\nWhen passing a getter, it will be used as source of truth,\r\nmeaning that `tabs.value` only changes when the getter returns a new value.\r\n\r\nIf omitted, it will use the first tab as default.",
+        "description": "The default value for `tabs.value`\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that `tabs.value` only changes when the getter returns a new value.\n\nIf omitted, it will use the first tab as default.",
         "defaultValue": "undefined",
         "optional": true
       },
@@ -381,7 +381,7 @@
       {
         "name": "root",
         "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"aria-valuenow\": number\n  readonly \"aria-valuemin\": number\n  readonly \"aria-valuemax\": number\n  readonly \"aria-orientation\": \"horizontal\" | \"vertical\"\n  readonly style: `--percentage: ${string}; --percentage-inv: ${string}; touch-action: ${string}`\n  readonly tabindex: 0\n  readonly role: \"slider\"\n  readonly \"data-melt-slider-root\": \"\"\n  readonly id: string\n  readonly onpointerdown: (e: PointerEvent) => void\n  readonly onkeydown: (e: KeyboardEvent) => void\n}",
-        "description": "The root of the slider.\rAny cursor interaction along this element will change the slider's values."
+        "description": "The root of the slider.\nAny cursor interaction along this element will change the slider's values."
       },
       {
         "name": "thumb",
@@ -408,7 +408,7 @@
       {
         "name": "required",
         "type": "MaybeGetter<boolean | undefined>",
-        "description": "If `true`, indicates that the user must select a radio button before\r\nthe owning form can be submitted.",
+        "description": "If `true`, indicates that the user must select a radio button before\nthe owning form can be submitted.",
         "defaultValue": "false",
         "optional": true
       },
@@ -556,7 +556,7 @@
       {
         "name": "progress",
         "type": "{\n  \"data-melt-progress-progress\": string\n  style: `--progress: ${string}`\n}",
-        "description": "Spread attributes for the Progress percentage element.\rProvides a --progress CSS variable that can be used to style the progress:\r`transform: translateX(calc(var(--progress) * -1));`"
+        "description": "Spread attributes for the Progress percentage element.\nProvides a --progress CSS variable that can be used to style the progress:\n`transform: translateX(calc(var(--progress) * -1));`"
       }
     ],
     "propsAlt": "export type ProgressProps = {\n  /**\n   * The value for the progress.\n   * \n   * @default undefined\n   */\n  value?: MaybeGetter<number | undefined>;\n\n  /**\n   * The maximum value of the progress.\n   * \n   * @deafult 100\n   */\n  max?: MaybeGetter<number | undefined>;\n\n  /**\n   * The callback invoked when the value of the progress changes.\n   */\n  onValueChange?: (value: number) => void;\n};"
@@ -566,7 +566,7 @@
       {
         "name": "open",
         "type": "MaybeGetter<boolean> | undefined",
-        "description": "If the Popover is open.\r\n\r\nWhen passing a getter, it will be used as source of truth,\r\nmeaning that the value only changes when the getter returns a new value.\r\n\r\nOtherwise, if passing a static value, it'll serve as the default value.",
+        "description": "If the Popover is open.\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that the value only changes when the getter returns a new value.\n\nOtherwise, if passing a static value, it'll serve as the default value.",
         "defaultValue": "false",
         "optional": true
       },
@@ -625,7 +625,7 @@
       {
         "name": "value",
         "type": "MaybeGetter<string | undefined>",
-        "description": "The value for the Pin Input.\r\n\r\nWhen passing a getter, it will be used as source of truth,\r\nmeaning that the value only changes when the getter returns a new value.\r\n\r\nOtherwise, if passing a static value, it'll serve as the default value.",
+        "description": "The value for the Pin Input.\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that the value only changes when the getter returns a new value.\n\nOtherwise, if passing a static value, it'll serve as the default value.",
         "defaultValue": "''",
         "optional": true
       },
