@@ -40,7 +40,8 @@
 		"watch": "svelte-kit sync && svelte-package --watch"
 	},
 	"peerDependencies": {
-		"svelte": "^5.0.0"
+		"svelte": "^5.0.0",
+		"@floating-ui/dom": "^1.6.0"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.3.1",
