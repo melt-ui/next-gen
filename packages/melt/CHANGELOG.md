@@ -1,5 +1,11 @@
 # melt
 
+## 0.10.2
+
+### Patch Changes
+
+- f7767fa: add floating ui to peer deps
+
 ## 0.10.1
 
 ### Patch Changes
