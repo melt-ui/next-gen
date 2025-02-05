@@ -1,5 +1,11 @@
 # melt
 
+## 0.10.3
+
+### Patch Changes
+
+- a1fa673: fix deep merge fn
+
 ## 0.10.2
 
 ### Patch Changes
