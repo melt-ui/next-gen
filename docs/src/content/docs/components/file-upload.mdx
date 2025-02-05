@@ -1,6 +1,6 @@
 ---
 title: File Upload
-description: A description of the Dropzone component.
+description: A drag and drop zone for file uploads.
 ---
 import ApiTable from "@components/api-table.astro";
 import Preview from "@previews/file-upload.svelte";
@@ -12,7 +12,10 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 ## Features
 
 <Features>
-- 💪 It works
+- 🗂️ Drag and drop support
+- 📎 Multiple file support
+- ✨ File type validation
+- 📏 File size limits
 </Features>
 
 ## Usage
@@ -21,13 +24,18 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
   <TabItem label="Builder">
 ```svelte
 <script lang="ts">
-  import { Dropzone } from "melt/builders";
+  import { FileUpload } from "melt/builders";
 
-  const dropzone = new Dropzone();
+  const fileUpload = new FileUpload();
 </script>
 
-<div {...dropzone.root}>
-  Dropzone content
+<input {...fileUpload.input} />
+<div {...fileUpload.dropzone}>
+  {#if fileUpload.isDragging}
+    Drop files here
+  {:else}
+    Click to upload or drag and drop
+  {/if}
 </div>
 ```
   </TabItem>
@@ -35,16 +43,21 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
   <TabItem label="Component">
 ```svelte
 <script lang="ts">
-  import { Dropzone } from "melt/components";
+  import { FileUpload } from "melt/components";
 </script>
 
-<Dropzone>
-  {#snippet children(dropzone)}
-    <div {...dropzone.root}>
-      Dropzone content
+<FileUpload>
+  {#snippet children(fileUpload)}
+    <input {...fileUpload.input} />
+    <div {...fileUpload.dropzone}>
+      {#if fileUpload.isDragging}
+        Drop files here
+      {:else}
+        Click to upload or drag and drop
+      {/if}
     </div>
   {/snippet}
-</Dropzone>
+</FileUpload>
 ```
   </TabItem>
 </Tabs>
