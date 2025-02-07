@@ -46,7 +46,7 @@
 	},
 	"engines": {
 		"pnpm": "^9.0.0",
-		"node": ">=18 <21"
+		"node": "^18.0.0 || ^20.0.0 || >=22"
 	},
 	"packageManager": "pnpm@9.14.2",
 	"dependencies": {
