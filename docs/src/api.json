@@ -229,6 +229,196 @@
     ],
     "propsAlt": "export type ToggleProps = {\r\n  /**\r\n   * The value for the Toggle.\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that the value only changes when the getter returns a new value.\r\n   *\r\n   * Otherwise, if passing a static value, it'll serve as the default value.\r\n   *\r\n   *\r\n   * @default false\r\n   */\r\n  value?: MaybeGetter<boolean>;\r\n  /**\r\n   * Called when the value is supposed to change.\r\n   */\r\n  onValueChange?: (value: boolean) => void;\r\n\r\n  /**\r\n   * If `true`, prevents the user from interacting with the input.\r\n   *\r\n   * @default false\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n};"
   },
+  "TagsInput": {
+    "constructorProps": [
+      {
+        "name": "tags",
+        "type": "Tag[] | undefined>",
+        "description": "The values for the tags.\r\n\r\nWhen passing a getter, it will be used as source of truth,\r\nmeaning that the value only changes when the getter returns a new value.\r\n\r\nOtherwise, if passing a static value, it'll serve as the default values.",
+        "optional": true
+      },
+      {
+        "name": "placeholder",
+        "type": "MaybeGetter<string | undefined>",
+        "description": "The placeholder text for the input element.",
+        "optional": true
+      },
+      {
+        "name": "disabled",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "Whether or not the tags input is disabled.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "editable",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "Whether or not the input is editable.",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
+        "name": "selected",
+        "type": "Tag | undefined>",
+        "description": "The selected tag.",
+        "optional": true
+      },
+      {
+        "name": "unique",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "Whether or not the tags input should only allow unique tags.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "trim",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "Whether or not whitespace from both ends of input string should be removed when a tag is added.",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
+        "name": "blur",
+        "type": "MaybeGetter<Blur | undefined>",
+        "description": "Define the action that should be taken when the input element loses focus (blurs).\r\n'nothing' - Left over strings in the input are left as they are.\r\n'add' - Left over strings get added as a tag.\r\n'clear' - Left over strings get cleared, so the input is empty again.",
+        "defaultValue": "'nothing'",
+        "optional": true
+      },
+      {
+        "name": "addOnPaste",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "Whether or not the input should add tags on paste.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "maxTags",
+        "type": "MaybeGetter<number | undefined>",
+        "description": "The maximum number of tags allowed.",
+        "optional": true
+      },
+      {
+        "name": "allowed",
+        "type": "MaybeGetter<string[] | undefined>",
+        "description": "The allowed tags.",
+        "optional": true
+      },
+      {
+        "name": "denied",
+        "type": "MaybeGetter<string[] | undefined>",
+        "description": "The disallowed tags.",
+        "optional": true
+      },
+      {
+        "name": "onTagsChange",
+        "type": "((value: Tag[]) => void) | undefined",
+        "description": "A function that is called when the tags change.",
+        "optional": true
+      },
+      {
+        "name": "add",
+        "type": "((tag: string) => string | Tag>) | undefined",
+        "description": "Optional validator/parser function that runs on tag addition.\r\n\r\nIf an error is thrown, or the promise is rejected, the tag will not be added.\r\n\r\nOtherwise, return a Tag or a string for the tag to be added.",
+        "optional": true
+      },
+      {
+        "name": "remove",
+        "type": "((tag: Tag) => boolean | Promise<boolean>) | undefined",
+        "description": "Optional validator/parser function that runs on tag removal.\r\n\r\nIf an error is thrown, the promise is rejected, and that will not be removed.\r\nIf `false` is returned, the tag will also not be removed.\r\n\r\nOtherwise, return `true` for the tag to be removed.",
+        "optional": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "addTag",
+        "type": "(v: string) => Promise<boolean>",
+        "description": ""
+      },
+      {
+        "name": "removeTag",
+        "type": "(t: Tag) => Promise<boolean>",
+        "description": ""
+      },
+      {
+        "name": "getTagItem",
+        "type": "({ tag, disabled, editable }: GetTagItemProps) => TagItem",
+        "description": "A function to create a TagItem class with the necessary\rtag item element spread attributes."
+      }
+    ],
+    "properties": [
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "description": ""
+      },
+      {
+        "name": "blur",
+        "type": "Blur",
+        "description": ""
+      },
+      {
+        "name": "trim",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "unique",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "allowed",
+        "type": "string[] | undefined",
+        "description": ""
+      },
+      {
+        "name": "denied",
+        "type": "string[] | undefined",
+        "description": ""
+      },
+      {
+        "name": "maxTags",
+        "type": "number | undefined",
+        "description": ""
+      },
+      {
+        "name": "editable",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "isInputValid",
+        "type": "(v: string) => boolean",
+        "description": ""
+      },
+      {
+        "name": "isInvalidInput",
+        "type": "boolean",
+        "description": "Whether the entered input is valid or not."
+      },
+      {
+        "name": "tags",
+        "type": "Tag[]",
+        "description": ""
+      },
+      {
+        "name": "root",
+        "type": "{\n  readonly \"data-melt-tags-input-root\": \"\"\n  readonly id: string\n  readonly \"data-invalid\": \"\" | undefined\n  readonly \"data-disabled\": true | undefined\n  readonly disabled: true | undefined\n  readonly onmousedown: (e: MouseEvent) => void\n}",
+        "description": "Spread attributes for the root element."
+      },
+      {
+        "name": "input",
+        "type": "{\n  readonly \"data-melt-tags-input-input\": \"\"\n  readonly \"data-invalid\": \"\" | undefined\n  readonly id: string\n  readonly \"data-disabled\": true | undefined\n  readonly disabled: true | undefined\n  readonly placeholder: string\n  readonly onblur: FormEventHandler<HTMLInputElement>\n}",
+        "description": "Spread attributes for the input element."
+      }
+    ],
+    "propsAlt": "export type TagsInputProps = {\r\n  /**\r\n   * The values for the tags.\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that the value only changes when the getter returns a new value.\r\n   *\r\n   * Otherwise, if passing a static value, it'll serve as the default values.\r\n   */\r\n  tags?: MaybeGetter<Tag[] | undefined>;\r\n\r\n  /**\r\n   * The placeholder text for the input element.\r\n   */\r\n  placeholder?: MaybeGetter<string | undefined>;\r\n\r\n  /**\r\n   * Whether or not the tags input is disabled.\r\n   * @default false\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * Whether or not the input is editable.\r\n   * @default true\r\n   */\r\n  editable?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * The selected tag.\r\n   */\r\n  selected?: MaybeGetter<Tag | undefined>;\r\n\r\n  /**\r\n   * Whether or not the tags input should only allow unique tags.\r\n   * @default false\r\n   */\r\n  unique?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * Whether or not whitespace from both ends of input string should be removed when a tag is added.\r\n   * @default true\r\n   */\r\n  trim?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * Define the action that should be taken when the input element loses focus (blurs).\r\n   * 'nothing' - Left over strings in the input are left as they are.\r\n   * 'add' - Left over strings get added as a tag.\r\n   * 'clear' - Left over strings get cleared, so the input is empty again.\r\n   * @default 'nothing'\r\n   */\r\n  blur?: MaybeGetter<Blur | undefined>;\r\n\r\n  /**\r\n   * Whether or not the input should add tags on paste.\r\n   * @default false\r\n   */\r\n  addOnPaste?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * The maximum number of tags allowed.\r\n   */\r\n  maxTags?: MaybeGetter<number | undefined>;\r\n\r\n  /**\r\n   * The allowed tags.\r\n   */\r\n  allowed?: MaybeGetter<string[] | undefined>;\r\n\r\n  /**\r\n   * The disallowed tags.\r\n   */\r\n  denied?: MaybeGetter<string[] | undefined>;\r\n\r\n  /**\r\n   * A function that is called when the tags change.\r\n   */\r\n  onTagsChange?: (value: Tag[]) => void;\r\n\r\n  /**\r\n   * Optional validator/parser function that runs on tag addition.\r\n   *\r\n   * If an error is thrown, or the promise is rejected, the tag will not be added.\r\n   *\r\n   * Otherwise, return a Tag or a string for the tag to be added.\r\n   *\r\n   * @param tag The tag to be added\r\n   */\r\n  add?: (tag: string) => (Tag | string | never) | Promise<Tag | string | never>;\r\n\r\n  /**\r\n   * Optional validator/parser function that runs on tag removal.\r\n   *\r\n   * If an error is thrown, the promise is rejected, and that will not be removed.\r\n   * If `false` is returned, the tag will also not be removed.\r\n   *\r\n   * Otherwise, return `true` for the tag to be removed.\r\n   *\r\n   * @param tag The tag to be removed\r\n   */\r\n  remove?: (tag: Tag) => (boolean | never) | Promise<boolean | never>;\r\n};"
+  },
   "Tabs": {
     "constructorProps": [
       {
@@ -737,7 +927,7 @@
         "description": "An array of props that should be spread to the input elements."
       }
     ],
-    "propsAlt": "export type PinInputProps = {\n  /**\n   * The value for the Pin Input.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default ''\n   */\n  value?: MaybeGetter<string | undefined>;\n  /**\n   * Called when the `PinInput` instance tries to change the value.\n   */\n  onValueChange?: (value: string) => void;\n\n  /**\n   * Calledwhen the `PinInput` instance is filled.\n   */\n  onComplete?: (value: string) => void;\n\n  /**\n   * The amount of digits in the Pin Input.\n   *\n   * @default 4\n   */\n  maxLength?: MaybeGetter<number | undefined>;\n  /**\n   * An optional placeholder to display when the input is empty.\n   *\n   * @default '○'\n   */\n  placeholder?: MaybeGetter<string | undefined>;\n\n  /**\n   * If `true`, prevents the user from interacting with the input.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the input should be masked like a password.\n   *\n   * @default false\n   */\n  mask?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * What characters the input accepts.\n   *\n   * @default 'text'\n   */\n  type?: MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>;\n\n  /**\n   * If `true`, allows pasting values from the clipboard.\n   *\n   * @default true\n   */\n  allowPaste?: MaybeGetter<boolean | undefined>;\n};"
+    "propsAlt": "export type PinInputProps = {\r\n  /**\r\n   * The value for the Pin Input.\r\n   *\r\n   * When passing a getter, it will be used as source of truth,\r\n   * meaning that the value only changes when the getter returns a new value.\r\n   *\r\n   * Otherwise, if passing a static value, it'll serve as the default value.\r\n   *\r\n   *\r\n   * @default ''\r\n   */\r\n  value?: MaybeGetter<string | undefined>;\r\n  /**\r\n   * Called when the `PinInput` instance tries to change the value.\r\n   */\r\n  onValueChange?: (value: string) => void;\r\n\r\n  /**\r\n   * Calledwhen the `PinInput` instance is filled.\r\n   */\r\n  onComplete?: (value: string) => void;\r\n\r\n  /**\r\n   * The amount of digits in the Pin Input.\r\n   *\r\n   * @default 4\r\n   */\r\n  maxLength?: MaybeGetter<number | undefined>;\r\n  /**\r\n   * An optional placeholder to display when the input is empty.\r\n   *\r\n   * @default '○'\r\n   */\r\n  placeholder?: MaybeGetter<string | undefined>;\r\n\r\n  /**\r\n   * If `true`, prevents the user from interacting with the input.\r\n   *\r\n   * @default false\r\n   */\r\n  disabled?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * If the input should be masked like a password.\r\n   *\r\n   * @default false\r\n   */\r\n  mask?: MaybeGetter<boolean | undefined>;\r\n\r\n  /**\r\n   * What characters the input accepts.\r\n   *\r\n   * @default 'text'\r\n   */\r\n  type?: MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>;\r\n\r\n  /**\r\n   * If `true`, allows pasting values from the clipboard.\r\n   *\r\n   * @default true\r\n   */\r\n  allowPaste?: MaybeGetter<boolean | undefined>;\r\n};"
   },
   "Collapsible": {
     "constructorProps": [
