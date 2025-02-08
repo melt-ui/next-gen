@@ -21,7 +21,7 @@
 		accept: {
 			type: "string",
 			label: "Accept",
-			defaultValue: "image/*",
+			defaultValue: "",
 		},
 		maxSize: {
 			type: "number",
@@ -33,6 +33,9 @@
 	const fileUpload = new FileUpload({
 		...getters(controls),
 		selected: [new File([""], "empty.txt", { type: "text/plain" })],
+		onError: (e) => {
+			console.log(e);
+		},
 	});
 
 	const files = $derived.by(() => {

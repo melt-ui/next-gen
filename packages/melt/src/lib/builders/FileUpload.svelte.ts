@@ -7,6 +7,12 @@ import { watch } from "runed";
 
 const { dataAttrs, createIds } = createBuilderMetadata("fileupload", ["dropzone", "input"]);
 
+export type FileUploadError = {
+	type: "size" | "type" | "validation" | "custom";
+	file: File;
+	message: string;
+};
+
 export type FileUploadProps<Multiple extends boolean = false> = {
 	/**
 	 * The currently selected files
@@ -25,8 +31,11 @@ export type FileUploadProps<Multiple extends boolean = false> = {
 	multiple?: MaybeGetter<Multiple | undefined>;
 
 	/**
-	 * The accepted file types
-	 * @example "image/*" or ".pdf,.doc"
+	 * The accepted file types. Can be a MIME type, a MIME group, or a file extension.
+	 * Separate multiple types with a comma.
+	 * @example 'image/jpeg'
+	 * @example 'image/*'
+	 * @example '.png, .jpg, .jpeg'
 	 */
 	accept?: MaybeGetter<string | undefined>;
 
@@ -42,7 +51,15 @@ export type FileUploadProps<Multiple extends boolean = false> = {
 	 */
 	validate?: (file: File) => boolean;
 
-	// TODO: On fail
+	/**
+	 * Callback fired when a file fails validation
+	 */
+	onError?: (error: FileUploadError) => void;
+
+	/**
+	 * Callback fired when a file is accepted
+	 */
+	onAccept?: (file: File) => void;
 };
 
 export class FileUpload<Multiple extends boolean = false> {
@@ -102,13 +119,60 @@ export class FileUpload<Multiple extends boolean = false> {
 		if (!files) return;
 
 		const fileArray = Array.from(files);
-		const validFiles = this.maxSize
-			? fileArray.filter((file) => {
-					const isValid = file.size <= this.maxSize!;
-					const customIsValid = this.#props.validate ? this.#props.validate(file) : true;
-					return isValid && customIsValid;
-				})
-			: fileArray;
+		const validFiles: File[] = [];
+
+		for (const file of fileArray) {
+			// Check file type if accept is specified
+			if (this.accept) {
+				const acceptTypes = this.accept.split(",").map((t) => t.trim());
+				const isValidType = acceptTypes.some((type) => {
+					if (type.startsWith(".")) {
+						// Extension check
+						return file.name.toLowerCase().endsWith(type.toLowerCase());
+					} else if (type.endsWith("/*")) {
+						// Mime type group check
+						const group = type.split("/")[0];
+						return file.type.startsWith(`${group}/`);
+					} else {
+						// Exact mime type check
+						return file.type === type;
+					}
+				});
+
+				if (!isValidType) {
+					this.#props.onError?.({
+						type: "type",
+						file,
+						message: `File type ${file.type} is not accepted`,
+					});
+					continue;
+				}
+			}
+
+			// Check file size if maxSize is specified
+			if (this.maxSize && file.size > this.maxSize) {
+				this.#props.onError?.({
+					type: "size",
+					file,
+					message: `File size ${file.size} exceeds maximum size of ${this.maxSize}`,
+				});
+				continue;
+			}
+
+			// Run custom validation if provided
+			if (this.#props.validate && !this.#props.validate(file)) {
+				this.#props.onError?.({
+					type: "validation",
+					file,
+					message: `File failed custom validation`,
+				});
+				continue;
+			}
+
+			// File passed all validations
+			validFiles.push(file);
+			this.#props.onAccept?.(file);
+		}
 
 		if (!validFiles.length) return;
 
