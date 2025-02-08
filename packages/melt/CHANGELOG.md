@@ -1,5 +1,11 @@
 # melt
 
+## 0.11.0
+
+### Minor Changes
+
+- c4d3f96: add file upload
+
 ## 0.10.3
 
 ### Patch Changes
