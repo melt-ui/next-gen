@@ -40,7 +40,7 @@ export type TreeProps<Items extends TreeItem[], Multiple extends boolean = false
 	 * Otherwise, it'll be a `string`.
 	 * @default undefined
 	 */
-	selected?: MaybeMultiple<Multiple>;
+	selected?: MaybeMultiple<string, Multiple>;
 	/**
 	 * Callback fired when selection changes
 	 * @param value - For multiple selection, a Set of selected IDs. For single selection, a single ID or undefined
@@ -51,7 +51,7 @@ export type TreeProps<Items extends TreeItem[], Multiple extends boolean = false
 	 *
 	 * @default undefined
 	 */
-	expanded?: MaybeMultiple<true>;
+	expanded?: MaybeMultiple<string, true>;
 	/**
 	 * Callback fired when expanded state changes
 	 * @param value - Set of expanded item IDs
@@ -74,7 +74,10 @@ export type TreeProps<Items extends TreeItem[], Multiple extends boolean = false
 	typeaheadTimeout?: MaybeGetter<number>;
 };
 
-type Selected<Multiple extends boolean | undefined> = SelectionState<FalseIfUndefined<Multiple>>;
+type Selected<Multiple extends boolean | undefined> = SelectionState<
+	string,
+	FalseIfUndefined<Multiple>
+>;
 type Items<I extends TreeItem[]> = Extracted<TreeProps<I>["items"]>;
 type Item<I extends TreeItem[]> = Items<I>[number];
 
@@ -95,7 +98,7 @@ export class Tree<I extends TreeItem[], Multiple extends boolean = false> {
 	readonly typeaheadTimeout = $derived(extract(this.#props.typeaheadTimeout, 500));
 
 	#selected: Selected<Multiple>;
-	#expanded: SelectionState<true>;
+	#expanded: SelectionState<string, true>;
 
 	#id = crypto.randomUUID();
 
@@ -107,12 +110,12 @@ export class Tree<I extends TreeItem[], Multiple extends boolean = false> {
 	 */
 	constructor(props: TreeProps<I, Multiple>) {
 		this.#props = props;
-		this.#selected = new SelectionState({
+		this.#selected = new SelectionState<string, Multiple>({
 			value: props.selected,
 			onChange: props.onSelectedChange,
 			multiple: props.multiple,
 		}) as Selected<Multiple>;
-		this.#expanded = new SelectionState({
+		this.#expanded = new SelectionState<string, true>({
 			value: props.expanded,
 			onChange: props.onExpandedChange,
 			multiple: true,
@@ -360,7 +363,7 @@ function getAllChildren<I extends TreeItem[]>(
 
 type ChildProps<I extends TreeItem[]> = {
 	tree: Tree<I, boolean>;
-	selectedState: SelectionState<boolean>;
+	selectedState: SelectionState<string, boolean>;
 	item: Item<I>;
 	parent?: Child<I> | Tree<I, boolean>;
 };
