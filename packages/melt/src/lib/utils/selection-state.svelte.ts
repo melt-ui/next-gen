@@ -22,7 +22,7 @@ type _multiple_default = false;
  * @template T - The type of values that can be selected
  * @template Multiple - Boolean flag indicating if multiple selection is enabled
  */
-type SelectionStateValue<T, Multiple extends _multiple_extends> = Multiple extends true
+export type SelectionStateValue<T, Multiple extends _multiple_extends> = Multiple extends true
 	? SvelteSet<T>
 	: T | undefined;
 
