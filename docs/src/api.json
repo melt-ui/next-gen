@@ -283,23 +283,28 @@
         "description": ""
       },
       {
+        "name": "isVisible",
+        "type": "boolean",
+        "description": ""
+      },
+      {
         "name": "open",
         "type": "boolean",
         "description": ""
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-trigger\": \"\"\n  readonly id: string\n  readonly \"aria-describedby\": string\n  readonly \"data-state\": \"open\" | \"closed\"\n  readonly onpointerdown: () => void\n  readonly onpointerenter: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onpointerleave: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-trigger\": \"\"\n  readonly id: string\n  readonly popovertarget: string\n  readonly \"aria-describedby\": string\n  readonly \"data-state\": \"open\" | \"closed\"\n  readonly onpointerdown: () => void\n  readonly onpointerenter: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onpointerleave: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}",
         "description": ""
       },
       {
         "name": "content",
-        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-content\": \"\"\n  readonly id: string\n  readonly role: \"tooltip\"\n  readonly hidden: true | undefined\n  readonly tabindex: -1\n  readonly style: \"\" | \"display: none;\"\n  readonly \"data-open\": \"\" | undefined\n  readonly onpointerenter: () => void\n  readonly onpointerleave: () => void\n  readonly onpointerdown: () => void\n}",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-content\": \"\"\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly role: \"tooltip\"\n  readonly tabindex: -1\n  readonly style: \"overflow: visible;\"\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onpointerenter: () => void\n  readonly onpointerleave: () => void\n  readonly onpointerdown: () => void\n}",
         "description": ""
       },
       {
         "name": "arrow",
-        "type": "{\n  readonly \"data-melt-tooltip-arrow\": \"\"\n  readonly id: string\n  readonly \"data-arrow\": true\n  readonly style: `position: absolute; width: var(--arrow-size, ${number}px); height: var(--arrow-size, ${number}px);`\n}",
+        "type": "{\n  readonly \"data-melt-tooltip-arrow\": \"\"\n  readonly id: string\n  readonly \"data-arrow\": \"\"\n  readonly style: `position: absolute; width: var(--arrow-size, ${number}px); height: var(--arrow-size, ${number}px);`\n}",
         "description": ""
       }
     ],

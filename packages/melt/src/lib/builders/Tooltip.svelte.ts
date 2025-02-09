@@ -12,8 +12,9 @@ import { isPointerInGraceArea } from "$lib/utils/pointer";
 import { useEventListener } from "runed";
 import { dataAttr } from "$lib/utils/attribute";
 import { useFloating } from "$lib/utils/use-floating.svelte";
+import { addEventListener } from "$lib/utils/event";
 
-const { createIds, dataAttrs } = createBuilderMetadata("tooltip", ["trigger", "content", "arrow"]);
+const { createIds, dataAttrs, dataSelectors } = createBuilderMetadata("tooltip", ["trigger", "content", "arrow"]);
 
 type OpenReason = "pointer" | "focus";
 
@@ -96,7 +97,8 @@ export class Tooltip {
 	disableHoverableContent = $derived(extract(this.#props.disableHoverableContent, false));
 	arrowSize = $derived(extract(this.#props.arrowSize, 8));
 	forceVisible = $derived(extract(this.#props.forceVisible, false));
-	#isVisible = $derived(this.open || this.forceVisible);
+
+	isVisible = $derived(this.open || this.forceVisible);
 
 	#open!: Synced<boolean>;
 
@@ -107,7 +109,6 @@ export class Tooltip {
 	#isMouseInTooltipArea: boolean = $state(false);
 	#openTimeout: number | null = $state(null);
 	#closeTimeout: number | null = $state(null);
-	#mounted: boolean = $state(false);
 
 	constructor(props: TooltipProps = {}) {
 		this.#open = new Synced({
@@ -116,8 +117,6 @@ export class Tooltip {
 			defaultValue: false
 		});
 		this.#props = props;
-
-		$effect(() => untrack(() => void (this.#mounted = true)));
 
 		$effect(() => {
 			this.open;
@@ -189,42 +188,41 @@ export class Tooltip {
 		return {
 			[dataAttrs.trigger]: "",
 			id: this.#ids.trigger,
+			popovertarget: this.#ids.content,
 			"aria-describedby": this.#ids.content,
 			"data-state": this.open ? "open" : "closed",
 			onpointerdown: () => {
 				if (!this.closeOnPointerDown) return;
+
 				this.open = false;
 				this.#clickedTrigger = true;
-				if (this.#openTimeout) {
-					window.clearTimeout(this.#openTimeout);
-					this.#openTimeout = null;
-				}
+				this.#stopOpening();
 			},
 			onpointerenter: (e) => {
 				this.#isPointerInsideTrigger = true;
 				if (e.pointerType === "touch") return;
+
 				this.#openTooltip("pointer");
 			},
 			onpointerleave: (e) => {
 				this.#isPointerInsideTrigger = false;
 				if (e.pointerType === "touch") return;
-				if (this.#openTimeout) {
-					window.clearTimeout(this.#openTimeout);
-					this.#openTimeout = null;
-				}
+
+				this.#stopOpening();
 			},
 			onfocus: () => {
 				if (this.#clickedTrigger) return;
+
 				this.#openTooltip("focus");
 			},
 			onblur: () => this.#closeTooltip(true),
-			...this.#sharedProps
-		} as const satisfies HTMLAttributes<HTMLElement>;
+			...this.#sharedProps,
+		} as const satisfies HTMLAttributes<HTMLElement> & {
+			popovertarget?: string | null | undefined;
+		};
 	}
 
 	get content() {
-		$effect(() => () => (this.#isPointerInsideContent = false));
-
 		$effect(() => {
 			const triggerEl = document.getElementById(this.#ids.trigger);
 			const contentEl = document.getElementById(this.#ids.content);
@@ -237,11 +235,48 @@ export class Tooltip {
 				this.computePositionOptions,
 			);
 		});
+		
+		$effect(() => {
+			const triggerEl = document.getElementById(this.#ids.trigger);
+			const contentEl = document.getElementById(this.#ids.content);
+
+			if (!triggerEl || !contentEl) return;
+
+			if (this.isVisible) {
+				// Check if there's a parent tooltip. If so, only open if the parent's open.
+				// This is to guarantee correct layering.
+				const parent = isHtmlElement(contentEl.parentNode)
+					? contentEl.parentNode.closest(dataSelectors.content)
+					: undefined;
+
+				if (!isHtmlElement(parent)) {
+					contentEl.showPopover();
+					return;
+				}
+
+				if (parent.dataset.open !== undefined) contentEl.showPopover();
+
+				return addEventListener(parent, "toggle", async (e) => {
+					await new Promise((r) => setTimeout(r));
+
+					const isOpen = e.newState === "open";
+					if (isOpen) {
+						contentEl.showPopover();
+					} else {
+						contentEl.hidePopover();
+					}
+				});
+			} else {
+				contentEl.hidePopover();
+			}
+
+			return () => (this.#isPointerInsideContent = false);
+ 		});
 
 		useEventListener(
 			() => document,
 			"scroll",
-			(e ) => this.#handleScroll(e),
+			(e) => this.#handleScroll(e),
 			{ capture: true }
 		);
 
@@ -249,26 +284,39 @@ export class Tooltip {
 			() => document,
 			"keydown",
 			(e) => {
-				if (e.key !== "Escape") return;
+				const el = document.getElementById(this.#ids.content);
+				if (e.key !== "Escape" || !this.open || !el) return;
 
 				e.preventDefault();
-				if (this.#openTimeout) {
-					window.clearTimeout(this.#openTimeout);
-					this.#openTimeout = null;
-				}
+				const openTooltips = [...el.querySelectorAll("[popover]")].filter((child) => {
+					if (!isHtmlElement(child)) return false;
+					// If child is a Melt popover, check if it's open
+					if (child.matches(dataSelectors.content)) return child.dataset.open !== undefined;
+					return child.matches(":popover-open");
+				});
 
-				this.open = false;
+				if (openTooltips.length) return;
+
+				this.#stopOpening();
+				setTimeout(() => this.open = false);
 			},
 		);
 
 		return {
 			[dataAttrs.content]: "",
 			id: this.#ids.content,
+			popover: "manual",
 			role: "tooltip",
-			hidden: this.#isVisible && this.#mounted ? undefined : true,
 			tabindex: -1,
-			style: this.#isVisible && this.#mounted ? "" : "display: none;",
+			style: `overflow: visible;`,
+			inert: !this.open,
 			"data-open": dataAttr(this.open),
+			ontoggle: (e) => {
+				const newOpen = e.newState === "open";
+				if (this.open !== newOpen && newOpen === false) {
+					this.open = newOpen;
+				}
+			},
 			onpointerenter: () => {
 				this.#isPointerInsideContent = true;
 				this.#openTooltip("pointer");
@@ -285,12 +333,15 @@ export class Tooltip {
 		return {
 			[dataAttrs.arrow]: "",
 			id: this.#ids.arrow,
-			"data-arrow": true,
+			"data-arrow": "",
 			style: `position: absolute; width: var(--arrow-size, ${this.arrowSize}px); height: var(--arrow-size, ${this.arrowSize}px);`,
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
 	#openTooltip(reason: OpenReason) {
+		const contentEl = document.getElementById(this.#ids.content);
+		if (!isHtmlElement(contentEl)) return;
+
 		if (this.#closeTimeout) {
 			window.clearTimeout(this.#closeTimeout);
 			this.#closeTimeout = null;
@@ -305,11 +356,18 @@ export class Tooltip {
 		}
 	}
 
-	#closeTooltip(isBlur?: boolean) {
+	#stopOpening() {
 		if (this.#openTimeout) {
 			window.clearTimeout(this.#openTimeout);
 			this.#openTimeout = null;
 		}
+	}
+
+	#closeTooltip(isBlur?: boolean) {
+		const contentEl = document.getElementById(this.#ids.content);
+		if (!isHtmlElement(contentEl)) return;
+
+		this.#stopOpening();
 
 		if (isBlur && this.#isMouseInTooltipArea) {
 			this.#openReason = "pointer";

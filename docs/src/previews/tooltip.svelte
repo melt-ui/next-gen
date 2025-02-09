@@ -2,7 +2,7 @@
 	import Preview from "@components/preview.svelte";
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import { Tooltip, getters } from "melt/builders";
-	import { fade } from "svelte/transition";
+	import { Tooltip as TooltipComponent } from "melt/components";
 	import PhPlus from "~icons/ph/plus";
 
 	let controls = usePreviewControls({
@@ -56,49 +56,55 @@
 	const tooltip2 = new Tooltip({
 		...getters(controls),
 		open: false,
-		forceVisible: false,
 		computePositionOptions: () => computePositionOptions,
 	});
 </script>
 
 <Preview>
-	<div class="flex justify-center">
-		<button type="button" class="trigger" aria-label="Add" {...tooltip.trigger}>
-			<PhPlus class="size-4" aria-label="Plus"></PhPlus>
-		</button>
-	</div>
-	{#if controls.open}
-		<div 
-			{...tooltip.content}
-			transition:fade={{ duration: 100 }}
-			class="z-10 rounded-lg bg-white shadow"
-		>
-			<div {...tooltip.arrow}></div>
-			<p 
-				class="px-4 py-1 text-gray-700"
-				{...tooltip2.trigger}
-			>
-				Add item to library
+	<button 
+		type="button" class="mx-auto block rounded-full text-gray-900 h-9 w-9
+			hover:text-accent-700 hover:dark:text-accent-400 transition-colors 
+			hover:bg-gray-200 p-0 text-sm font-medium focus-visible:ring
+			focus-visible:ring-gray-400 focus-visible:ring-offset-2 bg-white" 
+		aria-label="Add" 
+		{...tooltip.trigger}
+	>
+		<PhPlus class="size-4 m-auto block" aria-label="Plus"></PhPlus>
+	</button>
+
+	<div {...tooltip.content} class="rounded-lg bg-white shadow-xl p-0">
+		<div {...tooltip.arrow}></div>
+		<p class="px-4 py-1 text-gray-700" {...tooltip2.trigger}>
+			Add item to library
+		</p>
+		<div {...tooltip2.content} class="rounded-lg bg-white shadow-xl backdrop-blur p-0">
+			<div {...tooltip2.arrow}></div>
+			<p class="px-4 py-1 text-gray-700">
+				You didn't expect that, did you?
 			</p>
 		</div>
-	{/if}
-	{#if tooltip2.open}
-		<div
-			{...tooltip2.content}
-			transition:fade={{ duration: 100 }}
-			class="z-10 rounded-lg bg-white shadow"
-		>
-			<div {...tooltip2.arrow}></div>
-			<p class="px-4 py-1 text-gray-700">You didn't expect that, did you?</p>
-		</div>
-	{/if}
+	</div>
 </Preview>
 
-<style lang="postcss">
-  .trigger {
-    @apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-white;
-    @apply text-gray-900 hover:text-accent-700 hover:dark:text-accent-400 transition-colors hover:bg-gray-200;
-    @apply focus-visible:ring focus-visible:ring-gray-400 focus-visible:ring-offset-2;
-    @apply p-0 text-sm font-medium;
-  }
+<style>
+	[data-melt-tooltip-content] {
+		border: 0;
+
+		position: absolute;
+		pointer-events: none;
+		opacity: 0;
+
+		transform: scale(0.9);
+
+		transition: 0.3s;
+		transition-property: opacity, transform;
+		transform-origin: var(--melt-popover-content-transform-origin, center);
+	}
+
+	[data-melt-tooltip-content][data-open] {
+		pointer-events: auto;
+		opacity: 1;
+
+		transform: scale(1);
+	}
 </style>
