@@ -5,11 +5,12 @@
 	"main": "index.js",
 	"scripts": {
 		"dev": "concurrently --kill-others \"pnpm --parallel dev\" \"pnpm watch-and-type\"",
-		"test": "vitest",
+		"test": "pnpm --filter melt test",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"gen:api": "jiti scripts/generate-api.ts",
 		"gen:components": "jiti scripts/generate-components.ts",
+		"create:builder": "jiti scripts/create-builder.ts",
 		"watch-and-type": "jiti scripts/watch-and-type.ts",
 		"build:docs": "pnpm install && pnpm --filter melt build && pnpm --filter @melt-ui/docs build",
 		"release": "changeset publish"
@@ -41,11 +42,14 @@
 		"tsup": "8.0.2",
 		"typescript": "^5.7.3",
 		"typescript-eslint": "^8.0.0-alpha.20",
-		"vitest": "^1.6.0"
+		"vitest": "^3.0.5",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/svelte": "^5.2.6",
+		"@vitest/coverage-v8": "^3.0.5"
 	},
 	"engines": {
 		"pnpm": "^9.0.0",
-		"node": ">=18 <21"
+		"node": "^18.0.0 || ^20.0.0 || >=22"
 	},
 	"packageManager": "pnpm@9.14.2",
 	"dependencies": {

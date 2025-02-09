@@ -1,24 +1,22 @@
-<!-- 
- <script lang="ts" generics="Multiple extends boolean = false">
-	import { Accordion, type AccordionProps } from "../builders/Accordion.svelte";
+<script lang="ts" generics="Multiple extends boolean = false">
+	import { Accordion as Builder, type AccordionProps } from "../builders/Accordion.svelte";
 	import { type Snippet } from "svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "$lib/builders";
+	import { getters } from "../builders/utils.svelte";
 
 	type Props = ComponentProps<AccordionProps<Multiple>> & {
-		children: Snippet<[Accordion<Multiple>]>;
+		children: Snippet<[Builder<Multiple>]>;
 	};
 
 	let { value = $bindable(), children, ...rest }: Props = $props();
 
-    // TODO: getting some type errors on the value...
-	const accordion = new Accordion<Multiple>({
+	export const accordion = new Builder<Multiple>({
 		value: () => value,
-		onValueChange: (v) => (value = v),
+		onValueChange(v) {
+			value = v;
+		},
 		...getters({ ...rest }),
 	});
 </script>
 
-{@render children(accordion)} 
-
--->
+{@render children(accordion)}

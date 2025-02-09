@@ -62,6 +62,7 @@ export class Toggle {
 		return {
 			[identifiers.trigger]: "",
 			"data-checked": dataAttr(this.value),
+			"aria-pressed": this.value,
 			disabled: disabledAttr(this.disabled),
 			onclick: () => {
 				if (this.disabled) return;

@@ -1,5 +1,57 @@
 # melt
 
+## 0.11.0
+
+### Minor Changes
+
+- c4d3f96: add file upload
+
+## 0.10.3
+
+### Patch Changes
+
+- a1fa673: fix deep merge fn
+
+## 0.10.2
+
+### Patch Changes
+
+- f7767fa: add floating ui to peer deps
+
+## 0.10.1
+
+### Patch Changes
+
+- 476006d: fix accordion component import
+
+## 0.10.0
+
+### Minor Changes
+
+- 979c893: export builder instance in components
+
+## 0.9.0
+
+### Minor Changes
+
+- 0886281: BREAKING: remove collapsible root element
+
+## 0.8.1
+
+### Patch Changes
+
+- b30421f: fix component types
+
+## 0.8.0
+
+### Minor Changes
+
+- 95b32f1: add paste support to pin input
+
+### Patch Changes
+
+- 82cdfec: fix toggle accessibility
+
 ## 0.7.0
 
 ### Minor Changes

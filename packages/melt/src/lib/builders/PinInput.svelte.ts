@@ -6,6 +6,7 @@ import { extract } from "$lib/utils/extract";
 import { createDataIds } from "$lib/utils/identifiers";
 import { isHtmlInputElement } from "$lib/utils/is";
 import { nanoid } from "nanoid";
+import type { HTMLInputAttributes } from "svelte/elements";
 
 const identifiers = createDataIds("pin-input", ["root", "input"]);
 
@@ -26,6 +27,11 @@ export type PinInputProps = {
 	 * Called when the `PinInput` instance tries to change the value.
 	 */
 	onValueChange?: (value: string) => void;
+
+	/**
+	 * Calledwhen the `PinInput` instance is filled.
+	 */
+	onComplete?: (value: string) => void;
 
 	/**
 	 * The amount of digits in the Pin Input.
@@ -60,6 +66,13 @@ export type PinInputProps = {
 	 * @default 'text'
 	 */
 	type?: MaybeGetter<"alphanumeric" | "numeric" | "text" | undefined>;
+
+	/**
+	 * If `true`, allows pasting values from the clipboard.
+	 *
+	 * @default true
+	 */
+	allowPaste?: MaybeGetter<boolean | undefined>;
 };
 
 function validateInput(char: string, type: Extracted<PinInputProps["type"]>) {
@@ -73,6 +86,14 @@ function validateInput(char: string, type: Extracted<PinInputProps["type"]>) {
 	}
 }
 
+function setInputSelectionRange(input: HTMLInputElement, start: number, end: number) {
+	setTimeout(() => {
+		if (input.value.length === 0) return;
+		if (input.selectionStart === start && input.selectionEnd === end) return;
+		input.setSelectionRange(start, end);
+	});
+}
+
 export class PinInput {
 	#id = nanoid();
 
@@ -83,6 +104,7 @@ export class PinInput {
 	readonly disabled = $derived(extract(this.#props.disabled, false));
 	readonly mask = $derived(extract(this.#props.mask, false));
 	readonly type = $derived(extract(this.#props.type, "text"));
+	readonly allowPaste = $derived(extract(this.#props.allowPaste, true));
 
 	/* State */
 	#value!: Synced<string>;
@@ -149,6 +171,25 @@ export class PinInput {
 		const isLast = index === this.maxLength - 1;
 		const canFocus = (this.isFilled && isLast) || index === this.value.length;
 
+		const onpaste = (pasted: string) => {
+			if (!this.allowPaste) return;
+
+			const inputs = this.#getInputEls();
+			if (!inputs.length) return;
+
+			const focusedIndex = Math.max(this.#focusedIndex, 0);
+			const initialIndex = pasted.length >= inputs.length ? 0 : focusedIndex;
+			const lastIndex = Math.min(initialIndex + pasted.length, inputs.length);
+
+			for (let i = initialIndex; i < lastIndex; i++) {
+				const input = inputs[i];
+				input.value = pasted[i - initialIndex];
+				this.#addCharAtIndex(pasted[i - initialIndex], i);
+				input.focus();
+			}
+			inputs[lastIndex]?.focus();
+		};
+
 		return {
 			[identifiers.input]: "",
 			placeholder: isFocused ? undefined : this.placeholder,
@@ -156,6 +197,7 @@ export class PinInput {
 			type: this.mask ? "password" : "text",
 			"data-filled": dataAttr(isFilled),
 			tabindex: canFocus ? 0 : -1,
+			inputmode: this.type === "numeric" ? "numeric" : "text",
 			style: canFocus && isFocused && !isFilled ? undefined : "caret-color: transparent;",
 			onkeydown: (e: KeyboardEvent) => {
 				const el = e.target;
@@ -204,7 +246,8 @@ export class PinInput {
 				if (!isHtmlInputElement(el)) {
 					return;
 				}
-				setTimeout(() => el.setSelectionRange(1, 1));
+
+				setInputSelectionRange(el, 1, 1);
 
 				if (this.value[index]) return;
 				const inputs = this.#getInputEls();
@@ -216,7 +259,8 @@ export class PinInput {
 				if (!isHtmlInputElement(el)) {
 					return;
 				}
-				setTimeout(() => el.setSelectionRange(1, 1));
+
+				setInputSelectionRange(el, 1, 1);
 			},
 			oninput: (e: Event) => {
 				const el = e.target;
@@ -224,19 +268,25 @@ export class PinInput {
 					return;
 				}
 				e.preventDefault();
-				const char = el.value.slice(el.value.length - 1);
-				if (!validateInput(char, this.type)) {
-					el.value = el.value.slice(0, -1);
-					return;
+				const prev = currValue;
+				const inputted = prev ? el.value.slice(prev.length) : el.value;
+				if (inputted.length === 1) {
+					const char = el.value.slice(el.value.length - 1);
+					if (!validateInput(char, this.type)) {
+						el.value = el.value.slice(0, -1);
+						return;
+					}
+					el.value = char;
+					this.#addCharAtIndex(char, index);
+
+					const inputs = this.#getInputEls();
+					const currIndex = inputs.indexOf(el);
+
+					// Set timeout so deps can change, and canFocus is re-evaluated.
+					setTimeout(() => inputs[currIndex + 1]?.focus());
+				} else {
+					onpaste(inputted);
 				}
-				el.value = char;
-				this.#addCharAtIndex(char, index);
-
-				const inputs = this.#getInputEls();
-				const currIndex = inputs.indexOf(el);
-
-				// Set timeout so deps can change, and canFocus is re-evaluated.
-				setTimeout(() => inputs[currIndex + 1]?.focus());
 			},
 			onfocus: () => {
 				this.#focusedIndex = index;
@@ -244,6 +294,14 @@ export class PinInput {
 			onblur: () => {
 				this.#focusedIndex = -1;
 			},
-		} as const;
+			onpaste: (e) => {
+				e.preventDefault();
+				const pasted = e.clipboardData?.getData("text");
+				console.log(pasted);
+				if (!pasted) return;
+
+				onpaste(pasted);
+			},
+		} as const satisfies HTMLInputAttributes;
 	}
 }
