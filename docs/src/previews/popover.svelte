@@ -32,7 +32,10 @@
 						yes
 					</button>
 
-					<div {...popover2.content} class="rounded-xl bg-gray-100 p-4 shadow-xl backdrop-blur dark:bg-gray-700">
+					<div
+						{...popover2.content}
+						class="rounded-xl bg-gray-100 p-4 shadow-xl backdrop-blur dark:bg-gray-700"
+					>
 						you're awesome
 					</div>
 				{/snippet}

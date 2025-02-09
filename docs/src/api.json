@@ -399,6 +399,39 @@
   "Select": {
     "constructorProps": [
       {
+        "name": "open",
+        "type": "MaybeGetter<boolean> | undefined",
+        "description": "If the Popover is open.\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that the value only changes when the getter returns a new value.\n\nOtherwise, if passing a static value, it'll serve as the default value.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "onOpenChange",
+        "type": "((value: boolean) => void) | undefined",
+        "description": "Called when the value is supposed to change.",
+        "optional": true
+      },
+      {
+        "name": "forceVisible",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If the popover visibility should be controlled by the user.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "computePositionOptions",
+        "type": "Elements; }) => Promisable<Platform | undefined; }> | undefined>",
+        "description": "Options to be passed to Floating UI's `computePosition`",
+        "optional": true
+      },
+      {
+        "name": "sameWidth",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If the popover should have the same width as the trigger",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
         "name": "multiple",
         "type": "MaybeGetter<Multiple | undefined>",
         "description": "If `true`, multiple options can be selected at the same time.",
@@ -424,23 +457,48 @@
         "description": "If the popover visibility should be controlled by the user.",
         "defaultValue": "false",
         "optional": true
-      },
-      {
-        "name": "computePositionOptions",
-        "type": "Elements; }) => Promisable<Platform | undefined; }> | undefined>",
-        "description": "Options to be passed to Floating UI's `computePosition`",
-        "optional": true
       }
     ],
-    "methods": [],
+    "methods": [
+      {
+        "name": "getOption",
+        "type": "(value: T) => {\n  readonly \"data-melt-select-option\": \"\"\n  readonly \"data-value\": DataReturn<T>\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onclick: () => void\n}",
+        "description": ""
+      },
+      {
+        "name": "getNextOptionEl",
+        "type": "(value: T) => HTMLElement | undefined",
+        "description": ""
+      },
+      {
+        "name": "getPrevOptionEl",
+        "type": "(value: T) => HTMLElement | undefined",
+        "description": ""
+      }
+    ],
     "properties": [
+      {
+        "name": "multiple",
+        "type": "Multiple extends null | undefined\n  ? Multiple | undefined\n  : Multiple | Exclude<Multiple, null | undefined>",
+        "description": ""
+      },
       {
         "name": "value",
         "type": "SelectionStateValue<T, Multiple>",
         "description": ""
+      },
+      {
+        "name": "trigger",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-popover-trigger\": \"\"\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n} & {\n  \"data-melt-select-trigger\": string\n  onkeydown: (e: KeyboardEvent) => void\n}",
+        "description": ""
+      },
+      {
+        "name": "content",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-popover-content\": \"\"\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly tabindex: -1\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n} & { \"data-melt-select-content\": string }",
+        "description": ""
       }
     ],
-    "propsAlt": "export type SelectProps<T extends string, Multiple extends boolean = false> = {\n  /**\n   * If `true`, multiple options can be selected at the same time.\n   *\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The value for the Select.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  value?: MaybeMultiple<T, Multiple>;\n  /**\n   * Called when the value is supposed to change.\n   */\n  onValueChange?: OnMultipleChange<T, Multiple>;\n\n  /**\n   * If the popover visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Options to be passed to Floating UI's `computePosition`\n   *\n   * @see https://floating-ui.com/docs/computePosition\n   */\n  computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;\n};"
+    "propsAlt": "export type SelectProps<T extends string, Multiple extends boolean = false> = PopoverProps & {\n  /**\n   * If `true`, multiple options can be selected at the same time.\n   *\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The value for the Select.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  value?: MaybeMultiple<T, Multiple>;\n  /**\n   * Called when the value is supposed to change.\n   */\n  onValueChange?: OnMultipleChange<T, Multiple>;\n\n  /**\n   * If the popover visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n};"
   },
   "RadioGroup": {
     "constructorProps": [
@@ -634,10 +692,22 @@
         "type": "Elements; }) => Promisable<Platform | undefined; }> | undefined>",
         "description": "Options to be passed to Floating UI's `computePosition`",
         "optional": true
+      },
+      {
+        "name": "sameWidth",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If the popover should have the same width as the trigger",
+        "defaultValue": "false",
+        "optional": true
       }
     ],
     "methods": [],
     "properties": [
+      {
+        "name": "ids",
+        "type": "Ids<DataIds<\"popover\", [\"trigger\", \"content\"]>>",
+        "description": ""
+      },
       {
         "name": "forceVisible",
         "type": "boolean",
@@ -645,7 +715,7 @@
       },
       {
         "name": "computePositionOptions",
-        "type": "Partial<{ placement?: Elements; }) => Promisable<Platform | undefined; }> | {}",
+        "type": "{} | Partial<{ placement?: Elements; }) => Promisable<Platform | undefined; }>",
         "description": ""
       },
       {
@@ -664,7 +734,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type PopoverProps = {\n  /**\n   * If the Popover is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * If the popover visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Options to be passed to Floating UI's `computePosition`\n   *\n   * @see https://floating-ui.com/docs/computePosition\n   */\n  computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;\n};"
+    "propsAlt": "export type PopoverProps = {\n  /**\n   * If the Popover is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * If the popover visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Options to be passed to Floating UI's `computePosition`\n   *\n   * @see https://floating-ui.com/docs/computePosition\n   */\n  computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;\n\n  /**\n   * If the popover should have the same width as the trigger\n   *\n   * @default false\n   */\n  sameWidth?: MaybeGetter<boolean | undefined>;\n};"
   },
   "PinInput": {
     "constructorProps": [
@@ -717,7 +787,7 @@
       },
       {
         "name": "type",
-        "type": "MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>",
+        "type": "MaybeGetter<\"text\" | \"alphanumeric\" | \"numeric\" | undefined>",
         "description": "What characters the input accepts.",
         "defaultValue": "'text'",
         "optional": true
@@ -754,7 +824,7 @@
       },
       {
         "name": "type",
-        "type": "\"alphanumeric\" | \"numeric\" | \"text\"",
+        "type": "\"text\" | \"alphanumeric\" | \"numeric\"",
         "description": ""
       },
       {
@@ -779,7 +849,7 @@
       },
       {
         "name": "inputs",
-        "type": "{\n  readonly \"data-melt-pin-input-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"text\" | \"password\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly inputmode: \"numeric\" | \"text\"\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n  readonly onpaste: (\n    e: ClipboardEvent & { currentTarget: EventTarget & HTMLInputElement },\n  ) => void\n}[]",
+        "type": "{\n  readonly \"data-melt-pin-input-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"text\" | \"password\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly inputmode: \"text\" | \"numeric\"\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n  readonly onpaste: (\n    e: ClipboardEvent & { currentTarget: EventTarget & HTMLInputElement },\n  ) => void\n}[]",
         "description": "An array of props that should be spread to the input elements."
       }
     ],
