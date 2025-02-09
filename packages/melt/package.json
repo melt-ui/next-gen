@@ -31,7 +31,7 @@
 		"dev": "pnpm sync && pnpm watch",
 		"test": "vitest",
 		"sync": "svelte-kit sync",
-		"build": "vite build && npm run package",
+		"build": "npm run package",
 		"preview": "vite preview",
 		"package": "svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run package",
@@ -44,7 +44,6 @@
 		"@floating-ui/dom": "^1.6.0"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "^3.3.1",
 		"@sveltejs/kit": "^2.15.2",
 		"@sveltejs/package": "^2.3.9",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
