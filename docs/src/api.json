@@ -848,6 +848,122 @@
     ],
     "propsAlt": "export type FileUploadProps<Multiple extends boolean = false> = {\n  /**\n   * The currently selected files\n   */\n  selected?: MaybeMultiple<File, Multiple>;\n\n  /**\n   * Callback fired when selected files change\n   */\n  onSelectedChange?: (files: Multiple extends true ? Set<File> : File | undefined) => void;\n\n  /**\n   * Whether to accept multiple files\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The accepted file types. Can be a MIME type, a MIME group, or a file extension.\n   * Separate multiple types with a comma.\n   * @example 'image/jpeg'\n   * @example 'image/*'\n   * @example '.png, .jpg, .jpeg'\n   */\n  accept?: MaybeGetter<string | undefined>;\n\n  /**\n   * Maximum file size in bytes\n   * @default undefined\n   */\n  maxSize?: MaybeGetter<number | undefined>;\n\n  /**\n   * Custom validate fn. Will be called together with the original validation,\n   * which takes into account the `accept` and `maxSize` props.\n   */\n  validate?: (file: File) => boolean;\n\n  /**\n   * Callback fired when a file fails validation\n   */\n  onError?: (error: FileUploadError) => void;\n\n  /**\n   * Callback fired when a file is accepted\n   */\n  onAccept?: (file: File) => void;\n};"
   },
+  "NativeDialog": {
+    "constructorProps": [
+      {
+        "name": "open",
+        "type": "MaybeGetter<boolean> | undefined",
+        "description": "If the dialog is open.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "onOpenChange",
+        "type": "((value: boolean, e?: Event | undefined) => void) | undefined",
+        "description": "Called when the dialog state changes.",
+        "optional": true
+      },
+      {
+        "name": "beforeOpenChange",
+        "type": "((value: boolean, e?: Event | undefined) => boolean) | undefined",
+        "description": "Called before opening or closing the dialog.",
+        "optional": true
+      },
+      {
+        "name": "modal",
+        "type": "MaybeGetter<boolean> | undefined",
+        "description": "Show the dialog using `showModal` instead of `show`.",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
+        "name": "lightDismiss",
+        "type": "MaybeGetter<boolean> | undefined",
+        "description": "Close the dialog whenever a user clicks outside.",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
+        "name": "forceVisible",
+        "type": "MaybeGetter<boolean> | undefined",
+        "description": "If the dialog visibility should be controlled by the user.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "preventScroll",
+        "type": "MaybeGetter<boolean | HTMLElement> | undefined",
+        "description": "Disable scrolling on dialog's containing element or on a specific element.",
+        "defaultValue": "true",
+        "optional": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "getTrigger",
+        "type": "({ mode }?: { mode?: \"toggle\" | \"open\" | \"close\" | undefined }) => {\n  readonly \"data-melt-dialog-trigger\": \"\"\n  readonly \"aria-haspopup\": \"dialog\"\n  readonly onclick: (\n    e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },\n  ) => void\n  readonly \"data-state\": string\n}",
+        "description": ""
+      }
+    ],
+    "properties": [
+      {
+        "name": "modal",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "forceVisible",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "lightDismiss",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "preventScroll",
+        "type": "boolean | HTMLElement",
+        "description": ""
+      },
+      {
+        "name": "open",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "root",
+        "type": "{\n  readonly \"data-melt-dialog-root\": \"\"\n  readonly id: string\n  readonly onclick: (\n    e: MouseEvent & { currentTarget: EventTarget & HTMLDialogElement },\n  ) => void\n  readonly oncancel: (\n    e: Event & { currentTarget: EventTarget & HTMLDialogElement },\n  ) => void\n  readonly \"data-state\": string\n}",
+        "description": ""
+      },
+      {
+        "name": "overlay",
+        "type": "{\n  readonly \"data-melt-dialog-overlay\": \"\"\n  readonly \"data-state\": string\n}",
+        "description": ""
+      },
+      {
+        "name": "content",
+        "type": "{\n  readonly \"data-melt-dialog-content\": \"\"\n  readonly id: string\n  readonly \"data-state\": string\n}",
+        "description": ""
+      },
+      {
+        "name": "close",
+        "type": "{\n  readonly \"data-melt-dialog-close\": \"\"\n  readonly onclick: (\n    e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },\n  ) => void\n}",
+        "description": ""
+      },
+      {
+        "name": "title",
+        "type": "{ readonly \"data-melt-dialog-title\": \"\" }",
+        "description": ""
+      },
+      {
+        "name": "description",
+        "type": "{ readonly \"data-melt-dialog-description\": \"\" }",
+        "description": ""
+      }
+    ],
+    "propsAlt": "export type NativeDialogProps = {\n  /**\n   * If the dialog is open.\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean>;\n  /**\n   * Called when the dialog state changes.\n   *\n   * @param value New state of the dialog.\n   * @param e Triggering event.\n   */\n  onOpenChange?: (value: boolean, e?: Event) => void;\n  /**\n   * Called before opening or closing the dialog.\n   *\n   * @param value New attempted state of the dialog.\n   * @param e Triggering event.\n   *\n   * @returns Truthy to proceed, else will prevent the expected state change.\n   */\n  beforeOpenChange?: (value: boolean, e?: Event) => boolean;\n  /**\n   * Show the dialog using `showModal` instead of `show`.\n   *\n   * @default true\n   */\n  modal?: MaybeGetter<boolean>;\n  /**\n   * Close the dialog whenever a user clicks outside.\n   *\n   * @default true\n   */\n  lightDismiss?: MaybeGetter<boolean>;\n  /**\n   * If the dialog visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean>;\n  /**\n   * Disable scrolling on dialog's containing element or on a specific element.\n   *\n   * @default true\n   */\n  preventScroll?: MaybeGetter<boolean | HTMLElement>;\n};"
+  },
   "Collapsible": {
     "constructorProps": [
       {
