@@ -1,11 +1,7 @@
-import {
-	SelectionState,
-	type MaybeMultiple,
-	type OnMultipleChange,
-} from "$lib/utils/selection-state.svelte";
+import { SelectionState, type OnMultipleChange } from "$lib/utils/selection-state.svelte";
 import { kbd } from "$lib/utils/keyboard";
 import type { FalseIfUndefined } from "$lib/utils/types";
-import type { MaybeGetter } from "$lib/types";
+import type { MaybeGetter, MaybeMultiple } from "$lib/types";
 import { extract } from "$lib/utils/extract";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { createBuilderMetadata } from "../utils/identifiers";

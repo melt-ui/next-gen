@@ -190,7 +190,7 @@ A simple example would be a toggle button, which waits for the value to be saved
 		} catch {
 			console.error("Error! Do something dev!");
 		} finally {
-			isSaving = true;
+			isSaving = false;
 		}
 	}
 
