@@ -1,8 +1,8 @@
-import type { MaybeGetter } from "$lib/types";
+import type { MaybeGetter, MaybeMultiple } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
-import { SelectionState, type MaybeMultiple } from "$lib/utils/selection-state.svelte";
+import { SelectionState } from "$lib/utils/selection-state.svelte";
 import { watch } from "runed";
 
 const { dataAttrs, createIds } = createBuilderMetadata("fileupload", ["dropzone", "input"]);
@@ -15,7 +15,7 @@ export type FileUploadError = {
 
 export type FileUploadProps<Multiple extends boolean = false> = {
 	/**
-	 * The currently selected files
+	 * The currently selected files.
 	 */
 	selected?: MaybeMultiple<File, Multiple>;
 
