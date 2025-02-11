@@ -27,8 +27,6 @@ Things I want:
 
 ## Usage
 
-#### Without animations
-
 <Tabs>
 	<TabItem label="Builder">
 ```svelte
@@ -69,63 +67,6 @@ Things I want:
 	</TabItem>
 </Tabs>
 
-#### With animations
-
-If you want to use in/out animations, wrap content container with `{#if tooltip.open}...{/if}` block. 
-
-Note that with this block `forceVisible` prop will be useless, because now visibility will rely on open state.
-
-<Tabs>
-	<TabItem label="Builder">
-```svelte
-<script lang="ts">
-	import { Tooltip } from "melt/builders";
-	import { fade } from "svelte/transition";
-
-	const tooltip = new Tooltip();
-</script>
-
-<button {...tooltip.trigger}>
-	Hover me
-</button>
-{#if tooltip.open}
-	<div 
-		{...tooltip.content}
-		transition:fade={{ duration: 100 }}
-	>
-		<div {...tooltip.arrow}></div>
-		<p>Content</p>
-	</div>
-{/if}
-```
-	</TabItem>
-
-	<TabItem label="Component">
-```svelte
-<script lang="ts">
-	import { Tooltip } from "melt/components";
-	import { fade } from "svelte/transition";
-</script>
-
-<Tooltip>
-	{#snippet children(tooltip)}
-		<button {...tooltip.trigger}>
-			Hover me
-		</button>
-		{#if tooltip.open}
-			<div 
-				{...tooltip.content}
-				transition:fade={{ duration: 100 }}
-			>
-				<div {...tooltip.arrow}></div>
-				<p>Content</p>
-			</div>
-		{/if}
-	{/snippet}
-</Tooltip>
-```
-	</TabItem>
-</Tabs>
 
 ## API Reference
 
