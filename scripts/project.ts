@@ -31,7 +31,7 @@ export function toArray<T>(value: T | T[]): T[] {
 export async function formatType(type: string): Promise<string> {
 	const prefix = "type TEMP =";
 	try {
-		return (await prettier.format(prefix + type, { parser: "typescript", semi: false }))
+		return (await prettier.format(prefix + sanitizeNextLine(type), { parser: "typescript", semi: false }))
 			.replace(prefix, "")
 			.trim();
 	} catch (_e) {
@@ -60,6 +60,12 @@ export function getDescription(property: any): string | undefined {
 	return description?.text;
 }
 
+export function sanitizeNextLine(text: string | undefined): string | undefined {
+	// Windows sometimes uses \r or \r\n for next lines, so to make sure
+	// it's consistent with Linux, we replace them with \n.
+	return text?.replaceAll(/\r\n|\r/g, '\n');
+}
+
 export function getDescriptionFromJsDocs(property: {
 	getJsDocs: () => Array<JSDoc>;
 }): string | undefined {
@@ -81,7 +87,7 @@ export async function parseMethod(method: MethodDeclaration): Promise<TypeSchema
 	return {
 		name: method.getName(),
 		type: await trimType(method.getType().getText()),
-		description: getDescriptionFromJsDocs(method),
+		description: sanitizeNextLine(getDescriptionFromJsDocs(method)),
 	};
 }
 
@@ -89,7 +95,7 @@ export async function parseProperty(property: PropertyDeclaration): Promise<Type
 	return {
 		name: property.getName(),
 		type: await trimType(property.getType().getText()),
-		description: getDescriptionFromJsDocs(property),
+		description: sanitizeNextLine(getDescriptionFromJsDocs(property)),
 	};
 }
 
@@ -97,7 +103,7 @@ export async function parseAccessor(accessor: GetAccessorDeclaration): Promise<T
 	return {
 		name: accessor.getName(),
 		type: await trimType(accessor.getType().getText()),
-		description: getDescriptionFromJsDocs(accessor),
+		description: sanitizeNextLine(getDescriptionFromJsDocs(accessor)),
 	};
 }
 
@@ -110,7 +116,7 @@ export async function parseSymbol(symbol: Symbol): Promise<TypeSchema> {
 	return {
 		name: symbol.getName(),
 		type: await trimType(declaredType.getText()),
-		description: getDescription(symbol),
+		description: sanitizeNextLine(getDescription(symbol)),
 		defaultValue: getDefaultValue(symbol),
 		optional: symbol.isOptional(),
 	};
