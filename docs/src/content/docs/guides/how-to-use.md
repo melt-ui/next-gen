@@ -123,6 +123,9 @@ However, in most cases you do want to change `isEnabled` whenever `toggle.trigge
 
 	const toggle = new Toggle({
 		value: () => isEnabled,
+		onValueChange(v: boolean) {
+			isEnabled = v;
+		},
 	});
 </script>
 ```
@@ -193,6 +196,7 @@ A simple example would be a toggle button, which waits for the value to be saved
 
 	const toggle = new Toggle({
 		value: () => isEnabled,
+		onValueChange: onChange,
 	});
 </script>
 
