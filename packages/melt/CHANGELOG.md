@@ -1,5 +1,11 @@
 # melt
 
+## 0.12.0
+
+### Minor Changes
+
+- 6e98362: tree: allow passing dynamic iterables to item
+
 ## 0.11.0
 
 ### Minor Changes
