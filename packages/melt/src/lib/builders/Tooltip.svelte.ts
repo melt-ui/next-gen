@@ -124,30 +124,32 @@ export class Tooltip {
 
 			if (!this.open || !(typeof document !== 'undefined')) return;
 
-			return on(document, "mousemove", (e) => untrack(() => {
-				const contentEl = document.getElementById(this.#ids.content);
-				const triggerEl = document.getElementById(this.#ids.trigger);
-				if (!contentEl || !triggerEl) {
-					if (this.open) this.#closeTooltip();
-					return;
-				}
+			return on(document, "mousemove", (e) =>
+				untrack(() => {
+					const contentEl = document.getElementById(this.#ids.content);
+					const triggerEl = document.getElementById(this.#ids.trigger);
+					if (!contentEl || !triggerEl) {
+						if (this.open) this.#closeTooltip();
+						return;
+					}
 
-				const polygonElements = this.disableHoverableContent
-					? [triggerEl]
-					: [triggerEl, contentEl];
-				const polygon = makeHullFromElements(polygonElements);
+					const polygonElements = this.disableHoverableContent
+						? [triggerEl]
+						: [triggerEl, contentEl];
+					const polygon = makeHullFromElements(polygonElements);
 
-				this.#isMouseInTooltipArea = 
-					this.#isPointerInsideContent 
-					|| this.#isPointerInsideTrigger 
-					|| isPointerInGraceArea(e, polygon);
+					this.#isMouseInTooltipArea =
+						this.#isPointerInsideContent ||
+						this.#isPointerInsideTrigger ||
+						isPointerInGraceArea(e, polygon);
 
-				if (this.#openReason !== "pointer") return;
+					if (this.#openReason !== "pointer") return;
 
-				if (!this.#isMouseInTooltipArea) {
-					this.#closeTooltip();
-				}
-			}));
+					if (!this.#isMouseInTooltipArea) {
+						this.#closeTooltip();
+					}
+				}),
+			);
 		});
 	}
 
@@ -182,7 +184,7 @@ export class Tooltip {
 			const el = document.getElementById(this.#ids.content);
 			if (!isHtmlElement(el)) return;
 
-			return () => (this.#isPointerInsideTrigger = false); 
+			return () => (this.#isPointerInsideTrigger = false);
 		});
 
 		return {
@@ -256,7 +258,7 @@ export class Tooltip {
 
 				if (parent.dataset.open !== undefined) contentEl.showPopover();
 
-				return addEventListener(parent, "toggle", async (e) => {
+				const toggleUnsub = addEventListener(parent, "toggle", async (e) => {
 					await new Promise((r) => setTimeout(r));
 
 					const isOpen = e.newState === "open";
@@ -266,6 +268,25 @@ export class Tooltip {
 						contentEl.hidePopover();
 					}
 				});
+
+				const observer = new MutationObserver((mutations) => untrack(() => {
+					const parent = mutations[0].target;
+
+					if (!isHtmlElement(parent)) return;
+
+					if (parent.inert && this.open) {
+						this.#closeTooltip();
+					}
+				}));
+
+				observer.observe(parent, { 
+					attributes: true,
+				});
+
+				return () => {
+					toggleUnsub();
+					observer.disconnect();
+				}
 			} else {
 				contentEl.hidePopover();
 			}
@@ -311,12 +332,6 @@ export class Tooltip {
 			style: `overflow: visible;`,
 			inert: !this.open,
 			"data-open": dataAttr(this.open),
-			ontoggle: (e) => {
-				const newOpen = e.newState === "open";
-				if (this.open !== newOpen && newOpen === false) {
-					this.open = newOpen;
-				}
-			},
 			onpointerenter: () => {
 				this.#isPointerInsideContent = true;
 				this.#openTooltip("pointer");

@@ -299,7 +299,7 @@
       },
       {
         "name": "content",
-        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-content\": \"\"\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly role: \"tooltip\"\n  readonly tabindex: -1\n  readonly style: \"overflow: visible;\"\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onpointerenter: () => void\n  readonly onpointerleave: () => void\n  readonly onpointerdown: () => void\n}",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-content\": \"\"\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly role: \"tooltip\"\n  readonly tabindex: -1\n  readonly style: \"overflow: visible;\"\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n  readonly onpointerenter: () => void\n  readonly onpointerleave: () => void\n  readonly onpointerdown: () => void\n}",
         "description": ""
       },
       {
