@@ -52,12 +52,6 @@
 		onOpenChange: (v) => (controls.open = v),
 		computePositionOptions: () => computePositionOptions,
 	});
-	
-	const tooltip2 = new Tooltip({
-		...getters(controls),
-		open: false,
-		computePositionOptions: () => computePositionOptions,
-	});
 </script>
 
 <Preview>
@@ -74,15 +68,19 @@
 
 	<div {...tooltip.content} class="rounded-lg bg-white shadow-xl p-0">
 		<div {...tooltip.arrow}></div>
-		<p class="px-4 py-1 text-gray-700" {...tooltip2.trigger}>
-			Add item to library
-		</p>
-		<div {...tooltip2.content} class="rounded-lg bg-white shadow-xl backdrop-blur p-0">
-			<div {...tooltip2.arrow}></div>
-			<p class="px-4 py-1 text-gray-700">
-				You didn't expect that, did you?
-			</p>
-		</div>
+		<TooltipComponent {...controls} open={false} {computePositionOptions}>
+			{#snippet children(tooltip2)}
+				<p class="px-4 py-1 text-gray-700" {...tooltip2.trigger}>
+					Add item to library
+				</p>
+				<div {...tooltip2.content} class="rounded-lg bg-white shadow-xl backdrop-blur p-0">
+					<div {...tooltip2.arrow}></div>
+					<p class="px-4 py-1 text-gray-700">
+						You didn't expect that, did you?
+					</p>
+				</div>
+			{/snippet}
+		</TooltipComponent>
 	</div>
 </Preview>
 
