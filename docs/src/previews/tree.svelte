@@ -21,10 +21,11 @@
 		},
 	});
 
-	type Item = TreeItem<{
+	type Item = TreeItem & {
 		title: string;
 		icon: "folder" | "svelte" | "js";
-	}>;
+		children?: Item[];
+	};
 
 	const data: Item[] = [
 		{

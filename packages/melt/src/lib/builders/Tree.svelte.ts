@@ -1,4 +1,4 @@
-import type { Extracted, MaybeGetter } from "$lib/types";
+import type { Extracted, IterableProp, MaybeGetter } from "$lib/types";
 import { SelectionState, type MaybeMultiple } from "$lib/utils/selection-state.svelte";
 import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
@@ -8,6 +8,7 @@ import { first, last } from "$lib/utils/iterator";
 import { isControlOrMeta } from "$lib/utils/platform";
 import type { FalseIfUndefined } from "$lib/utils/types";
 import { useDebounce } from "runed";
+import { Collection } from "$lib/utils/collection";
 
 const identifiers = createDataIds("tree", ["root", "item", "group"]);
 const letterRegex = /^[a-zA-Z]$/;
@@ -16,19 +17,19 @@ const letterRegex = /^[a-zA-Z]$/;
  * Represents a tree item with optional metadata and children
  * @template Meta - Type of additional metadata properties for the tree item
  */
-export type TreeItem<Meta extends Record<string, unknown> = Record<never, never>> = {
+export type TreeItem = {
 	/** Unique identifier for the tree item */
 	id: string;
 	/** Optional array of child tree items */
-	children?: TreeItem<Meta>[];
-} & Meta;
+	children?: TreeItem[];
+};
 
 /**
  * Props for configuring the Tree component
- * @template Items - Array type extending TreeItem
+ * @template Item - The type of the Item array
  * @template Multiple - Boolean indicating if multiple selection is enabled
  */
-export type TreeProps<Items extends TreeItem[], Multiple extends boolean = false> = {
+export type TreeProps<Item extends TreeItem, Multiple extends boolean = false> = {
 	/**
 	 * If `true`, the user can select multiple items.
 	 * @default false
@@ -66,7 +67,7 @@ export type TreeProps<Items extends TreeItem[], Multiple extends boolean = false
 	 * The items contained in the tree.
 	 * @required
 	 */
-	items: Items;
+	items: IterableProp<Item>;
 	/**
 	 * How many time (in ms) the typeahead string is held before it is cleared
 	 * @default 500
@@ -78,19 +79,17 @@ type Selected<Multiple extends boolean | undefined> = SelectionState<
 	string,
 	FalseIfUndefined<Multiple>
 >;
-type Items<I extends TreeItem[]> = Extracted<TreeProps<I>["items"]>;
-type Item<I extends TreeItem[]> = Items<I>[number];
 
 /**
  * Main tree component class that handles selection, expansion, and keyboard navigation
  * @template I - Array type extending TreeItem
  * @template Multiple - Boolean indicating if multiple selection is enabled
  */
-export class Tree<I extends TreeItem[], Multiple extends boolean = false> {
+export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 	#props!: TreeProps<I, Multiple>;
 
 	/** The items contained in the tree */
-	readonly items = $derived(extract(this.#props.items)) as Items<I>;
+	readonly collection: Collection<I>;
 	/** If `true`, the user can select multiple items holding `Control`/`Meta` or `Shift` */
 	readonly multiple = $derived(extract(this.#props.multiple, false as Multiple)) as Multiple;
 	/** If `true`, groups (items with children) expand on click */
@@ -110,6 +109,7 @@ export class Tree<I extends TreeItem[], Multiple extends boolean = false> {
 	 */
 	constructor(props: TreeProps<I, Multiple>) {
 		this.#props = props;
+		this.collection = new Collection(props.items);
 		this.#selected = new SelectionState<string, Multiple>({
 			value: props.selected,
 			onChange: props.onSelectedChange,
@@ -120,6 +120,10 @@ export class Tree<I extends TreeItem[], Multiple extends boolean = false> {
 			onChange: props.onExpandedChange,
 			multiple: true,
 		});
+	}
+
+	get items() {
+		return [...this.collection];
 	}
 
 	#clearTypeahead = $derived(
@@ -335,8 +339,8 @@ export class Tree<I extends TreeItem[], Multiple extends boolean = false> {
 	/**
 	 * Array of Child instances representing the top-level items
 	 */
-	get children() {
-		return this.items.map(
+	get children(): Child<I>[] {
+		return [...this.collection].map(
 			(i) => new Child({ tree: this, item: i, parent: this, selectedState: this.#selected }),
 		);
 	}
@@ -347,7 +351,7 @@ export class Tree<I extends TreeItem[], Multiple extends boolean = false> {
  * @param treeOrChild - Tree or Child instance to get children from
  * @param onlyVisible - If true, only returns visible (expanded) children
  */
-function getAllChildren<I extends TreeItem[]>(
+function getAllChildren<I extends TreeItem>(
 	treeOrChild: Tree<I, boolean> | Child<I>,
 	onlyVisible = false,
 ): Child<I>[] {
@@ -361,10 +365,10 @@ function getAllChildren<I extends TreeItem[]>(
 	);
 }
 
-type ChildProps<I extends TreeItem[]> = {
+type ChildProps<I extends TreeItem> = {
 	tree: Tree<I, boolean>;
 	selectedState: SelectionState<string, boolean>;
-	item: Item<I>;
+	item: I;
 	parent?: Child<I> | Tree<I, boolean>;
 };
 
@@ -372,7 +376,7 @@ type ChildProps<I extends TreeItem[]> = {
  * Class representing a single item in the tree
  * @template I - Array type extending TreeItem
  */
-class Child<I extends TreeItem[]> {
+class Child<I extends TreeItem> {
 	#props!: ChildProps<I>;
 	tree = $derived(this.#props.tree);
 	selectedState = $derived(this.#props.selectedState);
@@ -576,7 +580,9 @@ class Child<I extends TreeItem[]> {
 	}
 
 	/** The item's sub-items, if any */
-	get children() {
-		return this.item.children?.map((i) => new Child({ ...this.#props, item: i, parent: this }));
+	get children(): Child<I>[] | undefined {
+		return this.item.children?.map(
+			(i) => new Child<I>({ ...this.#props, item: i as I, parent: this }),
+		);
 	}
 }

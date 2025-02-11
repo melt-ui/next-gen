@@ -1,4 +1,4 @@
-import type { MaybeGetter } from "$lib";
+import type { IterableProp, MaybeGetter } from "$lib";
 import { SvelteSet } from "svelte/reactivity";
 import { extract } from "./extract";
 import { first, forEach, last } from "./iterator";
@@ -32,7 +32,7 @@ export type SelectionStateValue<T, Multiple extends _multiple_extends> = Multipl
  * @template Multiple - Boolean flag indicating if multiple selection is enabled
  */
 export type MaybeMultiple<T, Multiple extends _multiple_extends> = Multiple extends true
-	? SvelteSet<T> | MaybeGetter<Iterable<T> | undefined>
+	? IterableProp<T>
 	: MaybeGetter<T | undefined>;
 
 /**
