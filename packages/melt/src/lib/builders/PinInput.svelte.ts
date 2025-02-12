@@ -29,9 +29,32 @@ export type PinInputProps = {
 	onValueChange?: (value: string) => void;
 
 	/**
-	 * Calledwhen the `PinInput` instance is filled.
+	 * Called when the `PinInput` instance is filled.
 	 */
 	onComplete?: (value: string) => void;
+
+	/**
+	 * Override the default behavior when pasting a value.
+	 *
+	 * @param value The pasted value.
+	 *
+	 * @example ```ts
+	 * let pin = new PinInput({
+	 *   onPaste(value) {
+	 *     if (!valid(value)) {
+	 *       //do something
+	 *       return
+	 *     }
+	 *     pin.value = value
+	 *   }
+	 * });
+	 */
+	onPaste?: (value: string) => void;
+
+	/**
+	 * Called when the PinInput encounters an error.
+	 */
+	onError?: (error: Error) => void;
 
 	/**
 	 * The amount of digits in the Pin Input.
@@ -183,11 +206,15 @@ export class PinInput {
 
 			for (let i = initialIndex; i < lastIndex; i++) {
 				const input = inputs[i];
+				if (!validateInput(pasted[i - initialIndex], this.type)) {
+					this.#props.onError?.(new Error("Invalid input"));
+					break;
+				}
 				input.value = pasted[i - initialIndex];
 				this.#addCharAtIndex(pasted[i - initialIndex], i);
 				input.focus();
+				inputs[i + 1]?.focus();
 			}
-			inputs[lastIndex]?.focus();
 		};
 
 		return {
@@ -273,6 +300,7 @@ export class PinInput {
 				if (inputted.length === 1) {
 					const char = el.value.slice(el.value.length - 1);
 					if (!validateInput(char, this.type)) {
+						this.#props.onError?.(new Error("Invalid input"));
 						el.value = el.value.slice(0, -1);
 						return;
 					}
@@ -285,7 +313,11 @@ export class PinInput {
 					// Set timeout so deps can change, and canFocus is re-evaluated.
 					setTimeout(() => inputs[currIndex + 1]?.focus());
 				} else {
-					onpaste(inputted);
+					if (this.#props.onPaste) {
+						this.#props.onPaste(inputted);
+					} else {
+						onpaste(inputted);
+					}
 				}
 			},
 			onfocus: () => {
@@ -300,7 +332,11 @@ export class PinInput {
 				console.log(pasted);
 				if (!pasted) return;
 
-				onpaste(pasted);
+				if (this.#props.onPaste) {
+					this.#props.onPaste(pasted);
+				} else {
+					onpaste(pasted);
+				}
 			},
 		} as const satisfies HTMLInputAttributes;
 	}
