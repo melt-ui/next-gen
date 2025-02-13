@@ -275,6 +275,7 @@ export class Popover {
 					this.open = newOpen;
 				}
 			},
+			// Needed so it receives focus on click, but not on tab, because of focus out
 			tabindex: -1,
 			inert: !this.open,
 			"data-open": dataAttr(this.open),

@@ -16,6 +16,7 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"strict": true,
+		"noUncheckedIndexAccess": true,
 		"strictNullChecks": true,
 		"stripInternal": true,
 		"ignoreDeprecations": "5.0",
