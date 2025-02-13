@@ -10,7 +10,7 @@ import {
 	type OnMultipleChange,
 } from "$lib/utils/selection-state.svelte";
 import { tick } from "svelte";
-import type { HTMLButtonAttributes } from "svelte/elements";
+import type { HTMLAttributes, HTMLButtonAttributes } from "svelte/elements";
 import { Popover, type PopoverProps } from "./Popover.svelte";
 import { pick } from "$lib/utils/object";
 
@@ -60,32 +60,20 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 	/* State */
 	#value!: SelectionState<T, Multiple>;
 	multiple = $derived(extract(this.#props.multiple, false as Multiple));
+	highlighted: T | null = $state(null);
 
 	constructor(props: SelectProps<T, Multiple> = {}) {
 		super({
 			...props,
-			onOpenChange: async (o) => {
-				props.onOpenChange?.(o);
+			onOpenChange: async (open) => {
+				props.onOpenChange?.(open);
 				await tick();
-				if (!o) {
-					const trigger = document.getElementById(this.ids.trigger);
-					trigger?.focus();
-					return;
-				}
+				if (!open) this.highlighted = null;
+				this.highlighted = this.#value.toArray().at(-1) ?? null;
 
 				const content = document.getElementById(this.ids.content);
 				if (!content) return;
-
-				const options = [...content.querySelectorAll(dataSelectors.option)].filter(isHtmlElement);
-
-				let toFocus = options[0];
-				if (isString(this.value)) {
-					toFocus = options.find((o) => o.dataset.value === this.value) ?? toFocus;
-				} else if (isSvelteSet(this.value)) {
-					const value = this.value.values().next().value;
-					toFocus = options.find((o) => (o.dataset.value = value)) ?? toFocus;
-				}
-				toFocus.focus();
+				content.focus();
 			},
 		});
 
@@ -108,19 +96,42 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 	get trigger() {
 		return Object.assign(super.trigger, {
 			[dataAttrs.trigger]: "",
-			onkeydown: (e: KeyboardEvent) => {
-				if (e.key === kbd.ARROW_DOWN) {
-					e.preventDefault();
-					this.open = true;
-				}
-			},
 		});
 	}
 
 	get content() {
 		return Object.assign(super.content, {
 			[dataAttrs.content]: "",
-		});
+
+			onclick: (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+			},
+
+			onkeydown: (e: KeyboardEvent) => {
+				const kbdSubset = pick(kbd, "HOME", "END", "ARROW_DOWN", "ARROW_UP");
+				if (Object.values(kbdSubset).includes(e.key as any)) e.preventDefault();
+
+				switch (e.key) {
+					case kbdSubset.HOME: {
+						this.#highlightFirst();
+						break;
+					}
+					case kbdSubset.END: {
+						this.#highlightLast();
+						break;
+					}
+					case kbdSubset.ARROW_DOWN: {
+						this.#highlightNext();
+						break;
+					}
+					case kbdSubset.ARROW_UP: {
+						this.#highlightPrev();
+						break;
+					}
+				}
+			},
+		} as const satisfies HTMLAttributes<HTMLDivElement>);
 	}
 
 	getOption(value: T) {
@@ -129,37 +140,18 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 			"data-value": dataAttr(value),
 			"aria-hidden": this.open ? undefined : true,
 			"aria-selected": this.#value.has(value),
-			disabled: this.open ? undefined : true,
-			tabindex: this.open ? 0 : -1,
+			"data-highlighted": this.highlighted === value,
+			// disabled: this.open ? undefined : true,
 			role: "option",
-			onkeydown: (e: KeyboardEvent) => {
-				const kbdSubset = pick(kbd, "HOME", "END", "ARROW_DOWN", "ARROW_UP");
-				if (Object.values(kbdSubset).includes(e.key as any)) e.preventDefault();
-
-				switch (e.key) {
-					case kbdSubset.HOME: {
-						this.#getOptionsEls()[0]?.focus();
-						break;
-					}
-					case kbdSubset.END: {
-						this.#getOptionsEls().at(-1)?.focus();
-						break;
-					}
-					case kbdSubset.ARROW_DOWN: {
-						this.#getNextOptionEl(value)?.focus();
-						break;
-					}
-					case kbdSubset.ARROW_UP: {
-						this.#getPrevOptionEl(value)?.focus();
-						break;
-					}
-				}
+			onmouseover: (e) => {
+				this.highlighted = value;
 			},
 			onclick: () => {
-				this.#value.add(value);
+				console.log("click!", value);
+				this.#value.toggle(value);
 				if (!this.multiple) this.open = false;
 			},
-		} as const satisfies HTMLButtonAttributes;
+		} as const satisfies HTMLAttributes<HTMLDivElement>;
 	}
 
 	#getOptionsEls(): HTMLElement[] {
@@ -167,6 +159,41 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		if (!contentEl) return [];
 
 		return [...contentEl.querySelectorAll(dataSelectors.option)].filter(isHtmlElement);
+	}
+
+	#highlight(el: HTMLElement) {
+		if (!el.dataset.value) return;
+		this.highlighted = el.dataset.value as T;
+	}
+
+	#highlightNext() {
+		const options = this.#getOptionsEls();
+		const current = options.find((o) => o.dataset.value === this.highlighted);
+		const next = current?.nextElementSibling ?? options[0];
+		if (isHtmlElement(next)) this.#highlight(next);
+	}
+
+	#highlightPrev() {
+		const options = this.#getOptionsEls();
+		const current = options.find((o) => o.dataset.value === this.highlighted);
+		const prev = current?.previousElementSibling ?? options.at(-1);
+		if (isHtmlElement(prev)) this.#highlight(prev);
+	}
+
+	#highlightFirst() {
+		const first = this.#getOptionsEls()[0];
+		if (first) this.#highlight(first);
+	}
+
+	#highlightLast() {
+		const last = this.#getOptionsEls().at(-1);
+
+		if (last) this.#highlight(last);
+	}
+
+	#highlightOptionEl(el: HTMLElement) {
+		this.#highlight(el);
+		el.scrollIntoView({ block: "nearest" });
 	}
 
 	#getNextOptionEl(value: T) {

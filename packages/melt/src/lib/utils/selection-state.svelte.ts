@@ -279,7 +279,7 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 			if (set.has(item)) {
 				set.delete(item);
 			} else {
-				set.add(item);
+				this.add(item);
 			}
 		});
 	}
@@ -290,5 +290,13 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 	 */
 	toSet() {
 		return toSet<T>(this.current as T | Iterable<T>);
+	}
+
+	/**
+	 * Converts the current selection to an array
+	 * @returns An array containing the current selection
+	 */
+	toArray() {
+		return Array.from(this.toSet());
 	}
 }
