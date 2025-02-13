@@ -11,7 +11,7 @@
 <Preview>
 	<button
 		class="mx-auto block rounded-xl bg-gray-100 px-4 py-2 text-gray-800
-				transition-all hover:cursor-pointer hover:bg-gray-200
+				transition hover:cursor-pointer hover:bg-gray-200
 				active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
 				dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
 		{...popover.trigger}
@@ -26,7 +26,7 @@
 			<PopoverComponent forceVisible>
 				{#snippet children(popover2)}
 					<button
-						class="border-b-2 border-dashed bg-transparent transition-all hover:cursor-pointer hover:opacity-75 active:opacity-50"
+						class="border-b-2 border-dashed bg-transparent transition hover:cursor-pointer hover:opacity-75 active:opacity-50"
 						{...popover2.trigger}
 					>
 						yes
