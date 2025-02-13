@@ -462,17 +462,7 @@
     "methods": [
       {
         "name": "getOption",
-        "type": "(value: T) => {\n  readonly \"data-melt-select-option\": \"\"\n  readonly \"data-value\": DataReturn<T>\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onclick: () => void\n}",
-        "description": ""
-      },
-      {
-        "name": "getNextOptionEl",
-        "type": "(value: T) => HTMLElement | undefined",
-        "description": ""
-      },
-      {
-        "name": "getPrevOptionEl",
-        "type": "(value: T) => HTMLElement | undefined",
+        "type": "(value: T) => {\n  readonly \"data-melt-select-option\": \"\"\n  readonly \"data-value\": DataReturn<T>\n  readonly \"aria-hidden\": true | undefined\n  readonly \"aria-selected\": boolean\n  readonly disabled: true | undefined\n  readonly tabindex: 0 | -1\n  readonly role: \"option\"\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onclick: () => void\n}",
         "description": ""
       }
     ],
@@ -787,7 +777,7 @@
       },
       {
         "name": "type",
-        "type": "MaybeGetter<\"text\" | \"alphanumeric\" | \"numeric\" | undefined>",
+        "type": "MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>",
         "description": "What characters the input accepts.",
         "defaultValue": "'text'",
         "optional": true
@@ -824,7 +814,7 @@
       },
       {
         "name": "type",
-        "type": "\"text\" | \"alphanumeric\" | \"numeric\"",
+        "type": "\"alphanumeric\" | \"numeric\" | \"text\"",
         "description": ""
       },
       {
@@ -849,7 +839,7 @@
       },
       {
         "name": "inputs",
-        "type": "{\n  readonly \"data-melt-pin-input-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"text\" | \"password\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly inputmode: \"text\" | \"numeric\"\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n  readonly onpaste: (\n    e: ClipboardEvent & { currentTarget: EventTarget & HTMLInputElement },\n  ) => void\n}[]",
+        "type": "{\n  readonly \"data-melt-pin-input-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"text\" | \"password\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly inputmode: \"numeric\" | \"text\"\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n  readonly onpaste: (\n    e: ClipboardEvent & { currentTarget: EventTarget & HTMLInputElement },\n  ) => void\n}[]",
         "description": "An array of props that should be spread to the input elements."
       }
     ],

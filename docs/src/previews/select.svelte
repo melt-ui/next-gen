@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Preview from "@components/preview.svelte";
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
+	import Preview from "@components/preview.svelte";
 	import { Select } from "melt/builders";
 
 	const controls = usePreviewControls({});
@@ -38,9 +38,9 @@
 		pointer-events: none;
 		opacity: 0;
 
-		transform: scale(0.9);
+		transform: scale(0.95);
 
-		transition: 0.3s;
+		transition: 0.2s;
 		transition-property: opacity, transform;
 		transform-origin: var(--melt-popover-content-transform-origin, center);
 	}
@@ -52,4 +52,3 @@
 		transform: scale(1);
 	}
 </style>
-

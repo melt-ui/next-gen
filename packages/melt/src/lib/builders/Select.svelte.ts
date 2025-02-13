@@ -1,19 +1,18 @@
-import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
-import { dataAttr, disabledAttr } from "$lib/utils/attribute";
+import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
+import { isHtmlElement, isString, isSvelteSet } from "$lib/utils/is";
+import { kbd } from "$lib/utils/keyboard";
 import {
 	SelectionState,
 	type MaybeMultiple,
 	type OnMultipleChange,
 } from "$lib/utils/selection-state.svelte";
-import type { ComputePositionConfig } from "@floating-ui/dom";
-import { Popover, type PopoverProps } from "./Popover.svelte";
-import { omit } from "$lib/utils/object";
-import { kbd } from "$lib/utils/keyboard";
-import { isHtmlElement, isString, isSvelteSet } from "$lib/utils/is";
+import { tick } from "svelte";
 import type { HTMLButtonAttributes } from "svelte/elements";
+import { Popover, type PopoverProps } from "./Popover.svelte";
+import { pick } from "$lib/utils/object";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("select", [
 	"trigger",
@@ -65,9 +64,14 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 	constructor(props: SelectProps<T, Multiple> = {}) {
 		super({
 			...props,
-			onOpenChange: (o) => {
+			onOpenChange: async (o) => {
 				props.onOpenChange?.(o);
-				if (!o) return;
+				await tick();
+				if (!o) {
+					const trigger = document.getElementById(this.ids.trigger);
+					trigger?.focus();
+					return;
+				}
 
 				const content = document.getElementById(this.ids.content);
 				if (!content) return;
@@ -105,7 +109,10 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		return Object.assign(super.trigger, {
 			[dataAttrs.trigger]: "",
 			onkeydown: (e: KeyboardEvent) => {
-				if (e.key === kbd.ARROW_DOWN) this.open = true;
+				if (e.key === kbd.ARROW_DOWN) {
+					e.preventDefault();
+					this.open = true;
+				}
 			},
 		});
 	}
@@ -120,13 +127,32 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		return {
 			[dataAttrs.option]: "",
 			"data-value": dataAttr(value),
+			"aria-hidden": this.open ? undefined : true,
+			"aria-selected": this.#value.has(value),
+			disabled: this.open ? undefined : true,
+			tabindex: this.open ? 0 : -1,
+			role: "option",
 			onkeydown: (e: KeyboardEvent) => {
-				if (e.key === kbd.ARROW_DOWN) {
-					e.preventDefault();
-					this.getNextOptionEl(value)?.focus();
-				} else if (e.key === kbd.ARROW_UP) {
-					e.preventDefault();
-					this.getPrevOptionEl(value)?.focus();
+				const kbdSubset = pick(kbd, "HOME", "END", "ARROW_DOWN", "ARROW_UP");
+				if (Object.values(kbdSubset).includes(e.key as any)) e.preventDefault();
+
+				switch (e.key) {
+					case kbdSubset.HOME: {
+						this.#getOptionsEls()[0]?.focus();
+						break;
+					}
+					case kbdSubset.END: {
+						this.#getOptionsEls().at(-1)?.focus();
+						break;
+					}
+					case kbdSubset.ARROW_DOWN: {
+						this.#getNextOptionEl(value)?.focus();
+						break;
+					}
+					case kbdSubset.ARROW_UP: {
+						this.#getPrevOptionEl(value)?.focus();
+						break;
+					}
 				}
 			},
 			onclick: () => {
@@ -136,22 +162,22 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		} as const satisfies HTMLButtonAttributes;
 	}
 
-	getNextOptionEl(value: T) {
+	#getOptionsEls(): HTMLElement[] {
 		const contentEl = document.getElementById(this.ids.content);
-		if (!contentEl) return;
+		if (!contentEl) return [];
 
-		const options = [...contentEl.querySelectorAll(dataSelectors.option)].filter(isHtmlElement);
+		return [...contentEl.querySelectorAll(dataSelectors.option)].filter(isHtmlElement);
+	}
+
+	#getNextOptionEl(value: T) {
+		const options = this.#getOptionsEls();
 		const index = options.findIndex((o) => o.dataset.value === value);
 		return options[index + 1] ?? options[0];
 	}
 
-	getPrevOptionEl(value: T) {
-		const contentEl = document.getElementById(this.ids.content);
-		if (!contentEl) return;
-
-		const options = [...contentEl.querySelectorAll(dataSelectors.option)].filter(isHtmlElement);
+	#getPrevOptionEl(value: T) {
+		const options = this.#getOptionsEls();
 		const index = options.findIndex((o) => o.dataset.value === value);
 		return options[index - 1] ?? options[options.length - 1];
 	}
 }
-
