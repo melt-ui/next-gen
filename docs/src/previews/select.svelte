@@ -2,7 +2,8 @@
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import Preview from "@components/preview.svelte";
 	import { Select } from "melt/builders";
-	import ChevronDown from "~icons/heroicons/chevron-down-solid";
+	import ChevronDown from "~icons/lucide/chevron-down";
+	import Check from "~icons/lucide/check";
 	import AlphabetJapanese from "~icons/hugeicons/alphabet-japanese";
 
 	const controls = usePreviewControls({});
@@ -27,7 +28,7 @@
 		<button
 			{...select.trigger}
 			class="mx-auto flex w-[300px] items-center justify-between rounded-xl bg-gray-100 py-2 pl-3 pr-4 text-left text-gray-800
-				transition-all hover:cursor-pointer hover:bg-gray-200
+				transition hover:cursor-pointer hover:bg-gray-200
 				active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
 				dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
 		>
@@ -38,13 +39,22 @@
 			<ChevronDown />
 		</button>
 
-		<div {...select.content} class="flex flex-col bg-neutral-500">
+		<div
+			{...select.content}
+			class="flex flex-col rounded-xl bg-gray-100 bg-neutral-500 p-2 shadow dark:bg-gray-800"
+		>
 			{#each options as option}
 				<div
 					{...select.getOption(option)}
-					class={["relative py-4", select.highlighted === option && "bg-accent-500"]}
+					class={[
+						"relative flex items-center justify-between rounded-xl py-2 pl-8 pr-2",
+						select.highlighted === option && "bg-gray-700",
+					]}
 				>
-					{option}
+					<span>{option}</span>
+					{#if select.value === option}
+						<Check class="text-accent-300 font-bold" />
+					{/if}
 				</div>
 			{/each}
 		</div>

@@ -93,23 +93,57 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		this.#value.current = value;
 	}
 
+	#select(value: T) {
+		this.#value.toggle(value);
+		if (this.multiple) return;
+
+		this.open = false;
+		tick().then(() => {
+			document.getElementById(this.ids.trigger)?.focus();
+		});
+	}
+
 	get trigger() {
 		return Object.assign(super.trigger, {
 			[dataAttrs.trigger]: "",
+			onkeydown: (e: KeyboardEvent) => {
+				const kbdSubset = pick(kbd, "ARROW_DOWN", "ARROW_UP");
+				if (Object.values(kbdSubset).includes(e.key as any)) e.preventDefault();
+
+				switch (e.key) {
+					case kbdSubset.ARROW_DOWN: {
+						this.open = true;
+						tick().then(() => {
+							if (!this.value) this.#highlightFirst();
+						});
+						break;
+					}
+					case kbdSubset.ARROW_UP: {
+						this.open = true;
+						tick().then(() => {
+							if (!this.value) this.#highlightLast();
+						});
+						break;
+					}
+				}
+			},
 		});
 	}
 
 	get content() {
 		return Object.assign(super.content, {
 			[dataAttrs.content]: "",
-
-			onclick: (e) => {
-				e.preventDefault();
-				e.stopPropagation();
-			},
-
 			onkeydown: (e: KeyboardEvent) => {
-				const kbdSubset = pick(kbd, "HOME", "END", "ARROW_DOWN", "ARROW_UP");
+				const kbdSubset = pick(
+					kbd,
+					"HOME",
+					"END",
+					"ARROW_DOWN",
+					"ARROW_UP",
+					"ESCAPE",
+					"ENTER",
+					"SPACE",
+				);
 				if (Object.values(kbdSubset).includes(e.key as any)) e.preventDefault();
 
 				switch (e.key) {
@@ -127,6 +161,19 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 					}
 					case kbdSubset.ARROW_UP: {
 						this.#highlightPrev();
+						break;
+					}
+					case kbdSubset.SPACE:
+					case kbdSubset.ENTER: {
+						if (!this.highlighted) break;
+						this.#select(this.highlighted);
+						break;
+					}
+					case kbdSubset.ESCAPE: {
+						this.open = false;
+						tick().then(() => {
+							document.getElementById(this.ids.trigger)?.focus();
+						});
 						break;
 					}
 				}
@@ -147,9 +194,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 				this.highlighted = value;
 			},
 			onclick: () => {
-				console.log("click!", value);
-				this.#value.toggle(value);
-				if (!this.multiple) this.open = false;
+				this.#select(value);
 			},
 		} as const satisfies HTMLAttributes<HTMLDivElement>;
 	}
