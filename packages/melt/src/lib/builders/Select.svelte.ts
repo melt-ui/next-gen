@@ -2,19 +2,19 @@ import type { MaybeGetter } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
-import { isHtmlElement, isString, isSvelteSet } from "$lib/utils/is";
+import { isHtmlElement } from "$lib/utils/is";
 import { kbd } from "$lib/utils/keyboard";
+import { pick } from "$lib/utils/object";
 import {
 	SelectionState,
 	type MaybeMultiple,
 	type OnMultipleChange,
 } from "$lib/utils/selection-state.svelte";
 import { tick } from "svelte";
-import type { HTMLAttributes, HTMLButtonAttributes } from "svelte/elements";
+import type { HTMLAttributes } from "svelte/elements";
 import { Popover, type PopoverProps } from "./Popover.svelte";
-import { pick } from "$lib/utils/object";
 
-const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("select", [
+const { dataAttrs, dataSelectors } = createBuilderMetadata("select", [
 	"trigger",
 	"content",
 	"option",
@@ -188,9 +188,8 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 			"aria-hidden": this.open ? undefined : true,
 			"aria-selected": this.#value.has(value),
 			"data-highlighted": this.highlighted === value,
-			// disabled: this.open ? undefined : true,
 			role: "option",
-			onmouseover: (e) => {
+			onmouseover: () => {
 				this.highlighted = value;
 			},
 			onclick: () => {
@@ -234,22 +233,5 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		const last = this.#getOptionsEls().at(-1);
 
 		if (last) this.#highlight(last);
-	}
-
-	#highlightOptionEl(el: HTMLElement) {
-		this.#highlight(el);
-		el.scrollIntoView({ block: "nearest" });
-	}
-
-	#getNextOptionEl(value: T) {
-		const options = this.#getOptionsEls();
-		const index = options.findIndex((o) => o.dataset.value === value);
-		return options[index + 1] ?? options[0];
-	}
-
-	#getPrevOptionEl(value: T) {
-		const options = this.#getOptionsEls();
-		const index = options.findIndex((o) => o.dataset.value === value);
-		return options[index - 1] ?? options[options.length - 1];
 	}
 }

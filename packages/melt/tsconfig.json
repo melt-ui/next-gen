@@ -10,7 +10,7 @@
 		"allowJs": true,
 		"checkJs": true,
 		"strict": true,
-		"noUncheckedIndexAccess": true,
+		"noUncheckedIndexedAccess": true,
 		"sourceMap": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,

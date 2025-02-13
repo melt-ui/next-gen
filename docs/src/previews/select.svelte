@@ -5,6 +5,7 @@
 	import ChevronDown from "~icons/lucide/chevron-down";
 	import Check from "~icons/lucide/check";
 	import AlphabetJapanese from "~icons/hugeicons/alphabet-japanese";
+	import { fade } from "svelte/transition";
 
 	const controls = usePreviewControls({});
 
@@ -49,6 +50,7 @@
 					class={[
 						"relative flex items-center justify-between rounded-xl py-2 pl-8 pr-2",
 						select.highlighted === option && "bg-gray-700",
+						select.value === option && "font-semibold",
 					]}
 				>
 					<span>{option}</span>
