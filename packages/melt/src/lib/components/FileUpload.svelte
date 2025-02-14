@@ -1,5 +1,4 @@
 <script lang="ts" generics="Multiple extends boolean">
-	// TODO: use generics
 	import { FileUpload, type FileUploadProps } from "../builders/FileUpload.svelte";
 	import { type Snippet } from "svelte";
 	import type { ComponentProps } from "../types";

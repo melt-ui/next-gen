@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "concurrently --kill-others \"pnpm --parallel dev\" \"pnpm watch-and-type\"",
 		"test": "pnpm --filter melt test",
+		"check": "pnpm --filter melt check",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"gen:api": "jiti scripts/generate-api.ts",

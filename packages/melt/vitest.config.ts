@@ -12,7 +12,7 @@ export default defineConfig({
 		// workspace settings
 		workspace: [
 			{
-				extends: true,
+				extends: "./vite.config.ts",
 				plugins: [svelteTesting()],
 				test: {
 					name: "client",
@@ -24,7 +24,7 @@ export default defineConfig({
 				},
 			},
 			{
-				extends: true,
+				extends: "./vite.config.ts",
 				test: {
 					name: "server",
 					environment: "node",

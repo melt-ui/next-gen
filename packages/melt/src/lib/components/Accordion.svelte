@@ -4,16 +4,17 @@
 	import type { ComponentProps } from "../types";
 	import { getters } from "../builders/utils.svelte";
 
-	type Props = ComponentProps<AccordionProps<Multiple>> & {
+	type Props = Omit<ComponentProps<AccordionProps<Multiple>>, "multiple"> & {
 		children: Snippet<[Builder<Multiple>]>;
+		multiple?: Multiple;
 	};
 
 	let { value = $bindable(), children, ...rest }: Props = $props();
 
 	export const accordion = new Builder<Multiple>({
-		value: () => value,
+		value: () => value as unknown as any,
 		onValueChange(v) {
-			value = v;
+			value = v as any;
 		},
 		...getters({ ...rest }),
 	});
