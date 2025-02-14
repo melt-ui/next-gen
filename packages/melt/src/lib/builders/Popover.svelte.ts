@@ -12,6 +12,7 @@ import {
 	flip,
 	offset,
 	shift,
+	size,
 	type ComputePositionConfig,
 	type Placement,
 } from "@floating-ui/dom";
@@ -52,10 +53,17 @@ export type PopoverProps = {
 	 * @see https://floating-ui.com/docs/computePosition
 	 */
 	computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;
+
+	/**
+	 * If the popover should have the same width as the trigger
+	 *
+	 * @default false
+	 */
+	sameWidth?: MaybeGetter<boolean | undefined>;
 };
 
 export class Popover {
-	#ids = createIds(dataIds);
+	ids = createIds(dataIds);
 
 	/* Props */
 	#props!: PopoverProps;
@@ -86,8 +94,8 @@ export class Popover {
 		return {
 			onfocusout: async () => {
 				await new Promise((r) => setTimeout(r));
-				const contentEl = document.getElementById(this.#ids.content);
-				const triggerEl = document.getElementById(this.#ids.trigger);
+				const contentEl = document.getElementById(this.ids.content);
+				const triggerEl = document.getElementById(this.ids.trigger);
 
 				if (
 					contentEl?.contains(document.activeElement) ||
@@ -104,8 +112,8 @@ export class Popover {
 	get trigger() {
 		return {
 			[dataIds.trigger]: "",
-			id: this.#ids.trigger,
-			popovertarget: this.#ids.content,
+			id: this.ids.trigger,
+			popovertarget: this.ids.content,
 			onclick: (e: Event) => {
 				e.preventDefault();
 				this.open = !this.open;
@@ -117,7 +125,7 @@ export class Popover {
 	get content() {
 		// Show and hide popover based on open state
 		$effect(() => {
-			const el = document.getElementById(this.#ids.content);
+			const el = document.getElementById(this.ids.content);
 			if (!isHtmlElement(el)) {
 				return;
 			}
@@ -153,14 +161,28 @@ export class Popover {
 
 		// Floating UI
 		const compute = () => {
-			const contentEl = document.getElementById(this.#ids.content);
-			const triggerEl = document.getElementById(this.#ids.trigger);
+			const contentEl = document.getElementById(this.ids.content);
+			const triggerEl = document.getElementById(this.ids.trigger);
 			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
 				return;
 			}
 
 			const baseOptions: Partial<ComputePositionConfig> = {
-				middleware: [shift(), flip(), offset({ mainAxis: 8 })],
+				middleware: [
+					shift(),
+					flip(),
+					offset({ mainAxis: 8 }),
+					this.#props.sameWidth
+						? size({
+								apply({ rects, elements }) {
+									Object.assign(elements.floating?.style ?? {}, {
+										width: `${rects.reference.width}px`,
+										minWidth: `${rects.reference.width}px`,
+									});
+								},
+							})
+						: undefined,
+				],
 			};
 			computePosition(
 				triggerEl,
@@ -188,6 +210,7 @@ export class Popover {
 				Object.assign(contentEl.style, {
 					left: `${x}px`,
 					top: `${y}px`,
+					position: "absolute",
 				});
 				contentEl.style.transformOrigin = transformOriginMap[placement];
 
@@ -196,8 +219,8 @@ export class Popover {
 		};
 
 		$effect(() => {
-			const contentEl = document.getElementById(this.#ids.content);
-			const triggerEl = document.getElementById(this.#ids.trigger);
+			const contentEl = document.getElementById(this.ids.content);
+			const triggerEl = document.getElementById(this.ids.trigger);
 			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
 				return;
 			}
@@ -209,7 +232,7 @@ export class Popover {
 			() => document,
 			"keydown",
 			(e) => {
-				const el = document.getElementById(this.#ids.content);
+				const el = document.getElementById(this.ids.content);
 				if (e.key !== "Escape" || !this.open || !isHtmlElement(el)) return;
 				e.preventDefault();
 				const openPopovers = [...el.querySelectorAll("[popover]")].filter((child) => {
@@ -229,8 +252,8 @@ export class Popover {
 			() => document,
 			"click",
 			(e) => {
-				const contentEl = document.getElementById(this.#ids.content);
-				const triggerEl = document.getElementById(this.#ids.trigger);
+				const contentEl = document.getElementById(this.ids.content);
+				const triggerEl = document.getElementById(this.ids.trigger);
 
 				if (
 					this.open &&
@@ -244,7 +267,7 @@ export class Popover {
 
 		return {
 			[dataIds.content]: "",
-			id: this.#ids.content,
+			id: this.ids.content,
 			popover: "manual",
 			ontoggle: (e) => {
 				const newOpen = e.newState === "open";
@@ -252,6 +275,7 @@ export class Popover {
 					this.open = newOpen;
 				}
 			},
+			// Needed so it receives focus on click, but not on tab, because of focus out
 			tabindex: -1,
 			inert: !this.open,
 			"data-open": dataAttr(this.open),

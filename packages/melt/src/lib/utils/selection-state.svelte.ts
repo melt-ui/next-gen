@@ -22,7 +22,7 @@ type _multiple_default = false;
  * @template T - The type of values that can be selected
  * @template Multiple - Boolean flag indicating if multiple selection is enabled
  */
-type SelectionStateValue<T, Multiple extends _multiple_extends> = Multiple extends true
+export type SelectionStateValue<T, Multiple extends _multiple_extends> = Multiple extends true
 	? SvelteSet<T>
 	: T | undefined;
 
@@ -279,7 +279,7 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 			if (set.has(item)) {
 				set.delete(item);
 			} else {
-				set.add(item);
+				this.add(item);
 			}
 		});
 	}
@@ -290,5 +290,13 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 	 */
 	toSet() {
 		return toSet<T>(this.current as T | Iterable<T>);
+	}
+
+	/**
+	 * Converts the current selection to an array
+	 * @returns An array containing the current selection
+	 */
+	toArray() {
+		return Array.from(this.toSet());
 	}
 }

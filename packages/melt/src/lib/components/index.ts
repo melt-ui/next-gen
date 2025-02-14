@@ -11,3 +11,5 @@ export { default as Slider } from "./Slider.svelte";
 export { default as Tabs } from "./Tabs.svelte";
 export { default as Toggle } from "./Toggle.svelte";
 
+
+export * from './Select.svelte';
