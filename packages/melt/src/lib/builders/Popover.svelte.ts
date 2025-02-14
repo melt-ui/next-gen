@@ -33,7 +33,7 @@ export type PopoverProps = {
 	 *
 	 * @default false
 	 */
-	open?: MaybeGetter<boolean>;
+	open?: MaybeGetter<boolean | undefined>;
 
 	/**
 	 * Called when the value is supposed to change.

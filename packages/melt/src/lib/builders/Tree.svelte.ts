@@ -1,14 +1,14 @@
-import type { Extracted, IterableProp, MaybeGetter } from "$lib/types";
-import { SelectionState, type MaybeMultiple } from "$lib/utils/selection-state.svelte";
+import type { IterableProp, MaybeGetter } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
+import { Collection } from "$lib/utils/collection";
 import { extract } from "$lib/utils/extract";
 import { createDataIds } from "$lib/utils/identifiers";
 import { isString } from "$lib/utils/is";
 import { first, last } from "$lib/utils/iterator";
 import { isControlOrMeta } from "$lib/utils/platform";
+import { SelectionState, type MaybeMultiple } from "$lib/utils/selection-state.svelte";
 import type { FalseIfUndefined } from "$lib/utils/types";
 import { useDebounce } from "runed";
-import { Collection } from "$lib/utils/collection";
 
 const identifiers = createDataIds("tree", ["root", "item", "group"]);
 const letterRegex = /^[a-zA-Z]$/;
@@ -313,7 +313,7 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 				return e.index >= index;
 			}) ?? elementsForTypeahead[0];
 
-		nextEl.c.focus();
+		nextEl?.c.focus();
 	}
 
 	/**
