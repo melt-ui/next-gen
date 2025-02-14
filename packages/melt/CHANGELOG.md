@@ -1,5 +1,21 @@
 # melt
 
+## 0.13.0
+
+### Minor Changes
+
+- add wip select ([`6301b0c`](https://github.com/melt-ui/next-gen/commit/6301b0c494a903460f2ddbf8dd7d3966d52ca180))
+
+- tree: allow passing dynamic iterables to item ([`25f7f21`](https://github.com/melt-ui/next-gen/commit/25f7f21ad84f7171c390c4e1a2ac2156d0c3ab69))
+
+- popover: add sameWidth prop ([`99771a8`](https://github.com/melt-ui/next-gen/commit/99771a83e1b0df7ce4997e59db5067d3fc58dce4))
+
+### Patch Changes
+
+- auto add position: absolute to popover content ([`99771a8`](https://github.com/melt-ui/next-gen/commit/99771a83e1b0df7ce4997e59db5067d3fc58dce4))
+
+- type fixes ([`f77c910`](https://github.com/melt-ui/next-gen/commit/f77c9101597ec2005954586d561499c0cbb30649))
+
 ## 0.12.0
 
 ### Minor Changes
