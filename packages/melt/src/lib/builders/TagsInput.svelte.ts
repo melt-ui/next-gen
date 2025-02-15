@@ -1,11 +1,12 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
-import { dataAttr, disabledAttr } from "$lib/utils/attribute";
+import { dataAttr, disabledAttr, styleAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 import { kbd } from "$lib/utils/keyboard";
 import { nanoid } from "nanoid";
+import { tick } from "svelte";
 import type { ChangeEventHandler, ClipboardEventHandler, EventHandler, FormEventHandler, HTMLButtonAttributes, HTMLInputAttributes, KeyboardEventHandler } from "svelte/elements";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata('tags-input', ['root', 'input', 'tag', 'delete-trigger', 'edit']);
@@ -207,6 +208,20 @@ export class TagsInput {
 	}
 
 	/**
+	 * The selected tag.
+	 */
+	get selected() {
+		return this.#selected;
+	}
+
+	/**
+	 * The tag being edited.
+	 */
+	get editing() {
+		return this.#editing;
+	}
+
+	/**
 	 * Whether the entered input is valid or not.
 	 */
 	get isInvalidInput() {
@@ -226,7 +241,8 @@ export class TagsInput {
 			parent: this,
 			tag,
 			disabled,
-			editable 
+			editable,
+			editId: this.#tagEditId(tag.id)
 		});
 	}
 
@@ -286,7 +302,7 @@ export class TagsInput {
 	}
 
 	/**
-	 * Spread attributes for the root element.
+	 * The spread attributes for the root element.
 	 */
 	get root() {
 		return {
@@ -302,7 +318,7 @@ export class TagsInput {
 	}
 
 	/**
-	 * Spread attributes for the input element.
+	 * The spread attributes for the input element.
 	 */
 	get input() {
 		const onchange: ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -313,8 +329,6 @@ export class TagsInput {
 		};
 
 		const onkeydown: KeyboardEventHandler<HTMLInputElement> = async (e) => {
-			// const node = e.currentTarget;
-			// console.log('keyboard value:', e.key, node.value);
 			const key = e.key;
 
 			if (this.#selected) {
@@ -401,10 +415,16 @@ export class TagsInput {
 					// Start editing this selected tag
 					e.preventDefault();
 
-					const editEl = document.getElementById(this.#tagEditId(this.#selected.id));
+					console.log('in here');
+
+					const editEl = document.getElementById(this.#tagEditId(this.#selected.id)) as HTMLInputElement;
 					if (!editEl) return;
 
 					this.#editing = this.#selected;
+					editEl.value = this.#selected.value;
+
+					await tick();
+					editEl.focus();
 
 					// TODO...
 				}
@@ -415,8 +435,12 @@ export class TagsInput {
 					if (!this.#inputValue) return;
 
 					if (this.isInputValid(this.#inputValue) && (await this.addTag(this.#inputValue))) {
-						e.currentTarget.value = '';
+						const inputEl = document.getElementById(this.#ids.input) as HTMLInputElement;
+
+						if (!isHtmlElement(inputEl)) return;
+
 						this.#inputValue = '';
+						inputEl.value = '';
 					} else {
 						this.#isInvalidInput = true;
 					}
@@ -445,16 +469,25 @@ export class TagsInput {
 			// TODO
 		};
 
-		const onblur: EventHandler<FocusEvent, HTMLInputElement> = (e) => {
+		const onblur: EventHandler<FocusEvent, HTMLInputElement> = async (e) => {
 			this.#selected = null;
 
-				if (!this.#inputValue) return;
+			if (!this.#inputValue) return;
 
-				if (this.blur === 'clear') {
-					e.currentTarget.value = '';
-				} else if (this.blur === 'add') {
-					// TODO
+			if (this.blur === 'clear') {
+				e.currentTarget.value = '';
+			} else if (this.blur === 'add') {
+				if (this.isInputValid(this.#inputValue) && (await this.addTag(this.#inputValue))) {
+					const inputEl = document.getElementById(this.#ids.input) as HTMLInputElement;
+
+					if (!isHtmlElement(inputEl)) return;
+
+					this.#inputValue = '';
+					inputEl.value = '';
+				} else {
+					this.#isInvalidInput = true;
 				}
+			}
 		};
 
 		return {
@@ -503,6 +536,7 @@ type GetTagItemProps = {
 
 type TagItemProps = {
 	parent: TagsInput;
+	editId: string;
 } & GetTagItemProps;
 
 class TagItem {
@@ -511,27 +545,71 @@ class TagItem {
 	readonly id = $derived(this.#props.tag.id);
 	readonly value = $derived(this.#props.tag.value);
 	readonly disabled = $derived(this.#parent.disabled || this.#props.disabled);
+	/** Whether the tag item is editable. */
 	readonly editable = $derived(this.#parent.editable && this.#props.editable !== false);
+	/** Whether the tag item is selected. */
+	readonly selected = $derived(!this.disabled && this.id === this.#parent.selected?.id);
+	/** Whether the tag item is being edited. */
+	readonly editing = $derived(this.editable && this.#parent.editing?.id === this.id);
 
 	constructor(props: TagItemProps) {
 		this.#props = props;
+
+		$effect(() => {
+			$inspect(this.editing);
+		})
 	}
 
+	/**
+	 * The spread attributes for a tag item.
+	 */
 	get tag() {
 		return {
+			[dataAttrs.tag]: '',
+			'data-selected': dataAttr(this.selected),
 			'data-tag-id': this.id,
 			'data-tag-value': this.value,
 			disabled: dataAttr(this.disabled),
 			tabindex: -1,
-
+			hidden: this.editing ? '' : undefined,
+			style: this.editing ? styleAttr({
+				display: 'none'
+			}) : undefined
 		} as const;
 	}
 
+	/**
+	 * The spread attributes for a tag item's delete button.
+	 */
 	get deleteTrigger() {
 		return {
+			[dataAttrs["delete-trigger"]]: '',
 			'data-tag-id': this.id,
 			'data-tag-value': this.value,
+			'data-selected': dataAttr(this.selected),
 			disabled: dataAttr(this.disabled),
+			tabindex: -1,
+			onclick: () => this.#parent.removeTag(this.#props.tag)
 		} as const as HTMLButtonAttributes;
+	}
+
+	/**
+	 * The spread attributes for a tag item's edit element.
+	 */
+	get edit() {
+		return {
+			[dataAttrs.edit]: '',
+			id: this.#props.editId,
+			'aria-hidden': !this.editing,
+			'data-tag-id': this.id,
+			'data-tag-value': this.value,
+			hidden: this.editing ? undefined : '',
+			tabindex: -1,
+			style: this.editing ? styleAttr({
+
+			}) : styleAttr({
+				display: 'none'
+			})
+		} as const as HTMLInputAttributes;
 	}
 }
