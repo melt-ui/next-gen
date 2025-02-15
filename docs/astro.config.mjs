@@ -59,8 +59,8 @@ export default defineConfig({
 							link: "/guides/styling",
 						},
 						{
-							label: "Best Practices",
-							link: "/guides/best-practices",
+							label: "How To Use",
+							link: "/guides/how-to-use",
 						},
 					],
 				},

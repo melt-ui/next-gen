@@ -1,11 +1,7 @@
-import {
-	SelectionState,
-	type MaybeMultiple,
-	type OnChange,
-} from "$lib/utils/selection-state.svelte";
+import { SelectionState, type OnMultipleChange } from "$lib/utils/selection-state.svelte";
 import { kbd } from "$lib/utils/keyboard";
 import type { FalseIfUndefined } from "$lib/utils/types";
-import type { MaybeGetter } from "$lib/types";
+import type { MaybeGetter, MaybeMultiple } from "$lib/types";
 import { extract } from "$lib/utils/extract";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { createBuilderMetadata } from "../utils/identifiers";
@@ -28,8 +24,11 @@ export type AccordionItem<Meta extends Record<string, unknown> = Record<never, n
 	headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
 } & Meta;
 
-type AccordionValue<Multiple extends boolean> = MaybeMultiple<Multiple>;
-type Selected<Multiple extends boolean | undefined> = SelectionState<FalseIfUndefined<Multiple>>;
+type AccordionValue<Multiple extends boolean> = MaybeMultiple<string, Multiple>;
+type Selected<Multiple extends boolean | undefined> = SelectionState<
+	string,
+	FalseIfUndefined<Multiple>
+>;
 
 /**
  * Props for the configuration of the Accordion builder.
@@ -59,7 +58,7 @@ export type AccordionProps<Multiple extends boolean = false> = {
 	/**
 	 * The callback invoked when the value of the Accordion changes.
 	 */
-	onValueChange?: OnChange<Multiple>;
+	onValueChange?: OnMultipleChange<string, Multiple>;
 };
 
 export class Accordion<Multiple extends boolean = false> {
@@ -235,16 +234,16 @@ class Item<Meta extends Record<string, unknown>, Multiple extends boolean = fals
 				const elIdx = candidateItems.indexOf(el);
 
 				if (e.key === kbd.ARROW_DOWN) {
-					candidateItems[(elIdx + 1) % candidateItems.length].focus();
+					candidateItems[(elIdx + 1) % candidateItems.length]?.focus();
 				}
 				if (e.key === kbd.ARROW_UP) {
-					candidateItems[(elIdx - 1 + candidateItems.length) % candidateItems.length].focus();
+					candidateItems[(elIdx - 1 + candidateItems.length) % candidateItems.length]?.focus();
 				}
 				if (e.key === kbd.HOME) {
-					candidateItems[0].focus();
+					candidateItems[0]?.focus();
 				}
 				if (e.key === kbd.END) {
-					candidateItems[candidateItems.length - 1].focus();
+					candidateItems[candidateItems.length - 1]?.focus();
 				}
 			},
 		};
@@ -262,4 +261,3 @@ class Item<Meta extends Record<string, unknown>, Multiple extends boolean = fals
 		};
 	}
 }
-

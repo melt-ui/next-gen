@@ -1,0 +1,67 @@
+---
+title: File Upload
+description: A drag and drop zone for file uploads.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/file-upload.svelte";
+import Features from "@components/features.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 🗂️ Drag and drop support
+- 📎 Multiple file support
+- ✨ File type validation
+- 📏 File size limits
+</Features>
+
+## Usage
+
+<Tabs>
+  <TabItem label="Builder">
+```svelte
+<script lang="ts">
+  import { FileUpload } from "melt/builders";
+
+  const fileUpload = new FileUpload();
+</script>
+
+<input {...fileUpload.input} />
+<div {...fileUpload.dropzone}>
+  {#if fileUpload.isDragging}
+    Drop files here
+  {:else}
+    Click to upload or drag and drop
+  {/if}
+</div>
+```
+  </TabItem>
+
+  <TabItem label="Component">
+```svelte
+<script lang="ts">
+  import { FileUpload } from "melt/components";
+</script>
+
+<FileUpload>
+  {#snippet children(fileUpload)}
+    <input {...fileUpload.input} />
+    <div {...fileUpload.dropzone}>
+      {#if fileUpload.isDragging}
+        Drop files here
+      {:else}
+        Click to upload or drag and drop
+      {/if}
+    </div>
+  {/snippet}
+</FileUpload>
+```
+  </TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="FileUpload" />

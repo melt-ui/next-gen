@@ -43,6 +43,7 @@ export class Synced<T> {
 	}
 
 	set current(value: T) {
+		if (this.current === value) return;
 		if (isFunction(this.#valueArg)) {
 			this.#onChange?.(value);
 			return;
