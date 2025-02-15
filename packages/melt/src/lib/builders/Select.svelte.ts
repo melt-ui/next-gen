@@ -50,7 +50,7 @@ export type SelectProps<T extends string, Multiple extends boolean = false> = Po
 	 * How many time (in ms) the typeahead string is held before it is cleared
 	 * @default 500
 	 */
-	typeaheadTimeout?: MaybeGetter<number>;
+	typeaheadTimeout?: MaybeGetter<number | undefined>;
 };
 
 export class Select<T extends string, Multiple extends boolean = false> extends Popover {

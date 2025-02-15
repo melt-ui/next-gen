@@ -72,7 +72,7 @@ export type TreeProps<Item extends TreeItem, Multiple extends boolean = false> =
 	 * How many time (in ms) the typeahead string is held before it is cleared
 	 * @default 500
 	 */
-	typeaheadTimeout?: MaybeGetter<number>;
+	typeaheadTimeout?: MaybeGetter<number | undefined>;
 };
 
 type Selected<Multiple extends boolean | undefined> = SelectionState<

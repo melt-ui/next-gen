@@ -10,7 +10,7 @@ export type CreateTypeaheadArgs<T extends Item> = {
 	 * How many time (in ms) the typeahead string is held before it is cleared
 	 * @default 500
 	 */
-	timeout?: MaybeGetter<number>;
+	timeout?: MaybeGetter<number | undefined>;
 	getItems: () => T[];
 };
 
