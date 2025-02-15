@@ -1,5 +1,13 @@
 # melt
 
+## 0.14.0
+
+### Minor Changes
+
+- select: add typeahead ([`8dcf65d`](https://github.com/melt-ui/next-gen/commit/8dcf65dc55c0602ca3d874ce4f18d8b549f35fc8))
+
+- select: add aria roles ([`8dcf65d`](https://github.com/melt-ui/next-gen/commit/8dcf65dc55c0602ca3d874ce4f18d8b549f35fc8))
+
 ## 0.13.0
 
 ### Minor Changes
