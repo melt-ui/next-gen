@@ -7,11 +7,11 @@ import { isString } from "$lib/utils/is";
 import { first, last } from "$lib/utils/iterator";
 import { isControlOrMeta } from "$lib/utils/platform";
 import { SelectionState, type MaybeMultiple } from "$lib/utils/selection-state.svelte";
+import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
 import type { FalseIfUndefined } from "$lib/utils/types";
 import { useDebounce } from "runed";
 
 const identifiers = createDataIds("tree", ["root", "item", "group"]);
-const letterRegex = /^[a-zA-Z]$/;
 
 /**
  * Represents a tree item with optional metadata and children
@@ -94,14 +94,38 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 	readonly multiple = $derived(extract(this.#props.multiple, false as Multiple)) as Multiple;
 	/** If `true`, groups (items with children) expand on click */
 	readonly expandOnClick = $derived(extract(this.#props.expandOnClick, true));
+
 	readonly typeaheadTimeout = $derived(extract(this.#props.typeaheadTimeout, 500));
+	readonly typeahead = $derived(
+		createTypeahead({
+			timeout: this.#props.typeaheadTimeout,
+			getItems: () => {
+				const activeEl = document.activeElement;
+				if (!isString(activeEl?.getAttribute(identifiers.item))) return [];
+
+				const visibleChildren = getAllChildren(this, true);
+				return visibleChildren.reduce(
+					(acc, curr) => {
+						if (!curr.el?.innerText) return acc;
+						return [
+							...acc,
+							{
+								child: curr,
+								value: curr.el.innerText as string,
+								current: curr.el.id === activeEl.id,
+							},
+						];
+					},
+					[] as Array<{ child: Child<I>; value: string }>,
+				);
+			},
+		}),
+	);
 
 	#selected: Selected<Multiple>;
 	#expanded: SelectionState<string, true>;
 
 	#id = crypto.randomUUID();
-
-	#typeaheadString = $state("");
 
 	/**
 	 * Creates a new Tree instance
@@ -125,12 +149,6 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 	get items() {
 		return [...this.collection];
 	}
-
-	#clearTypeahead = $derived(
-		useDebounce(() => {
-			this.#typeaheadString = "";
-		}, this.typeaheadTimeout),
-	);
 
 	/**
 	 * Currently selected item(s)
@@ -287,33 +305,6 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 			current = current.next;
 			this.select(current.id);
 		}
-	}
-
-	typeahead(letter: string) {
-		if (!letterRegex.test(letter)) return;
-		this.#typeaheadString += letter;
-		const isStartingTypeahead = this.#typeaheadString.length === 1;
-		this.#clearTypeahead();
-
-		const activeEl = document.activeElement;
-		if (!isString(activeEl?.getAttribute(identifiers.item))) return;
-		const visibleChildren = getAllChildren(this, true);
-
-		const index = visibleChildren.findIndex((c) => c.elId === activeEl.id);
-		const elementsForTypeahead = visibleChildren
-			.filter((c) => c.el?.innerText.toLowerCase().startsWith(this.#typeaheadString.toLowerCase()))
-			.map((c) => ({ c, index: visibleChildren.indexOf(c) }));
-		if (!elementsForTypeahead.length) return;
-
-		// In case you're starting the typeahead, a different element than the first one should be focused.
-		// Otherwise, if the current element matches the typed string
-		const nextEl =
-			elementsForTypeahead.find((e) => {
-				if (isStartingTypeahead) return e.index > index;
-				return e.index >= index;
-			}) ?? elementsForTypeahead[0];
-
-		nextEl?.c.focus();
 	}
 
 	/**
@@ -564,7 +555,8 @@ class Child<I extends TreeItem> {
 								}
 								break;
 							}
-							this.tree.typeahead(e.key);
+							const next = this.tree.typeahead(e.key);
+							next?.child.el?.focus();
 							break;
 						}
 						shouldPrevent = false;

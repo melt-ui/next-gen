@@ -13,6 +13,7 @@ import {
 import { tick } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
 import { Popover, type PopoverProps } from "./Popover.svelte";
+import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
 
 const { dataAttrs, dataSelectors } = createBuilderMetadata("select", [
 	"trigger",
@@ -46,11 +47,10 @@ export type SelectProps<T extends string, Multiple extends boolean = false> = Po
 	onValueChange?: OnMultipleChange<T, Multiple>;
 
 	/**
-	 * If the popover visibility should be controlled by the user.
-	 *
-	 * @default false
+	 * How many time (in ms) the typeahead string is held before it is cleared
+	 * @default 500
 	 */
-	forceVisible?: MaybeGetter<boolean | undefined>;
+	typeaheadTimeout?: MaybeGetter<number>;
 };
 
 export class Select<T extends string, Multiple extends boolean = false> extends Popover {
@@ -62,14 +62,44 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 	multiple = $derived(extract(this.#props.multiple, false as Multiple));
 	highlighted: T | null = $state(null);
 
+	readonly typeaheadTimeout = $derived(extract(this.#props.typeaheadTimeout, 500));
+	readonly typeahead = $derived(
+		createTypeahead({
+			timeout: this.#props.typeaheadTimeout,
+			getItems: () => {
+				return this.#getOptionsEls().reduce(
+					(acc, curr) => {
+						if (!curr.dataset.value) return acc;
+						return [
+							...acc,
+							{
+								value: curr.dataset.value as T,
+								current: curr.dataset.value === this.highlighted,
+							},
+						];
+					},
+					[] as Array<{ value: T; current: boolean }>,
+				);
+			},
+		}),
+	);
+
 	constructor(props: SelectProps<T, Multiple> = {}) {
 		super({
 			...props,
 			onOpenChange: async (open) => {
 				props.onOpenChange?.(open);
 				await tick();
-				if (!open) this.highlighted = null;
-				this.highlighted = this.#value.toArray().at(-1) ?? null;
+				if (!open) {
+					this.highlighted = null;
+					return;
+				}
+
+				if (!this.highlighted) {
+					const lastSelected = this.#value.toArray().at(-1);
+					if (lastSelected) this.highlighted = lastSelected;
+					else this.#highlightFirst();
+				}
 
 				const content = document.getElementById(this.ids.content);
 				if (!content) return;
@@ -106,6 +136,10 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 	get trigger() {
 		return Object.assign(super.trigger, {
 			[dataAttrs.trigger]: "",
+			role: "combobox",
+			"aria-expanded": this.open,
+			"aria-controls": this.ids.content,
+			"aria-owns": this.ids.content,
 			onkeydown: (e: KeyboardEvent) => {
 				const kbdSubset = pick(kbd, "ARROW_DOWN", "ARROW_UP");
 				if (Object.values(kbdSubset).includes(e.key as any)) e.preventDefault();
@@ -133,6 +167,9 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 	get content() {
 		return Object.assign(super.content, {
 			[dataAttrs.content]: "",
+			role: "listbox",
+			"aria-expanded": this.open,
+			"aria-activedescendant": this.highlighted ? this.getOptionId(this.highlighted) : undefined,
 			onkeydown: (e: KeyboardEvent) => {
 				const kbdSubset = pick(
 					kbd,
@@ -176,9 +213,19 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 						});
 						break;
 					}
+					default: {
+						if (!letterRegex.test(e.key)) break;
+						e.preventDefault();
+						const next = this.typeahead(e.key);
+						if (next) this.highlighted = next.value;
+					}
 				}
 			},
 		} as const satisfies HTMLAttributes<HTMLDivElement>);
+	}
+
+	getOptionId(value: T) {
+		return `${this.ids.content}-option-${dataAttr(value)}`;
 	}
 
 	getOption(value: T) {
