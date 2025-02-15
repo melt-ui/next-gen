@@ -549,7 +549,6 @@ class Child<I extends TreeItem> {
 					default: {
 						if (letterRegex.test(e.key)) {
 							if (e.ctrlKey) {
-								console.log(e.key);
 								if (e.key === "a") {
 									this.tree.selectAll();
 								}
