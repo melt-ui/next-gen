@@ -16,13 +16,6 @@ export type Tag = {
 	value: string;
 };
 
-type TagProps = {
-	id: string;
-	value: string;
-	disabled?: boolean;
-	editable?: boolean;
-};
-
 type Blur = 'nothing' | 'add' | 'clear';
 
 export type TagsInputProps = {
@@ -150,7 +143,7 @@ export class TagsInput {
 	#ids = createIds();
 	#inputValue = $state('');
 	#isInvalidInput = $state(false);
-	#editValue = $state('');
+	// #editValue = $state('');
 	#editing = $state<Tag | null>(null);
 	#selected = $state<Tag | null>(null);
 
@@ -164,6 +157,11 @@ export class TagsInput {
 		});
 	}
 
+	/**
+	 * Adds a tag. Returns `true` if the tag was added.
+	 * 
+	 * @param v The string value of the tag that should be added.
+	 */
 	async addTag(v: string) {
 		let workingTag: Tag = { id: '', value: v };
 
@@ -193,6 +191,11 @@ export class TagsInput {
 		return true;
 	}
 
+	/**
+	 * Removes the given tag. Returns `true` if successful.
+	 * 
+	 * @param t The tag to remove.
+	 */
 	async removeTag(t: Tag) {
 		if (this.#remove) {
 			try {
@@ -205,6 +208,22 @@ export class TagsInput {
 		this.#tags.current = this.#tags.current.filter((tag) => tag.id !== t.id);
 
 		return true;
+	}
+
+	/**
+	 * Update a tag.
+	 * 
+	 * @param id - The ID of the tag to update.
+	 * @param newValue - The new value for the tag.
+	 */
+	updateTag(id: string, newValue: string) {
+		if (!this.isInputValid(newValue)) return;
+
+		const idx = this.#tags.current.findIndex((t) => t.id === id);
+		if (idx >= 0) {
+			this.#tags.current[idx]!.value = newValue;
+			this.#escapeEditTag(this.#tags.current[idx] as Tag);
+		}
 	}
 
 	/**
@@ -242,7 +261,10 @@ export class TagsInput {
 			tag,
 			disabled,
 			editable,
-			editId: this.#tagEditId(tag.id)
+			editId: this.#tagEditId(tag.id),
+			escapeEditTag: () => {
+				this.#escapeEditTag(tag);
+			}
 		});
 	}
 
@@ -271,7 +293,7 @@ export class TagsInput {
 		};
 	}
 
-	#setSelectedFromEl(el: Element | null) {
+	#setSelectedFromEl(el: Element | null | undefined) {
 		if (!el) {
 			this.#selected = null;
 			return;
@@ -299,6 +321,12 @@ export class TagsInput {
 
 	#tagEditId(id: string) {
 		return `tag-edit-${id}`;
+	}
+
+	#escapeEditTag(t: Tag) {
+		this.#editing = null;
+		this.#focusInput();
+		this.#selected = t;
 	}
 
 	/**
@@ -506,7 +534,7 @@ export class TagsInput {
 	}
 
 	// Run validation checks and if a validation fails return false immediately
-	isInputValid = (v: string) => {
+	isInputValid(v: string) {
 		if (this.trim) v = v.trim();
 
 		// Tag uniqueness
@@ -537,6 +565,7 @@ type GetTagItemProps = {
 type TagItemProps = {
 	parent: TagsInput;
 	editId: string;
+	escapeEditTag: () => void;
 } & GetTagItemProps;
 
 class TagItem {
@@ -551,6 +580,9 @@ class TagItem {
 	readonly selected = $derived(!this.disabled && this.id === this.#parent.selected?.id);
 	/** Whether the tag item is being edited. */
 	readonly editing = $derived(this.editable && this.#parent.editing?.id === this.id);
+
+	#editValue = $state('');
+	#isInvalidInput = $state(false);
 
 	constructor(props: TagItemProps) {
 		this.#props = props;
@@ -597,14 +629,44 @@ class TagItem {
 	 * The spread attributes for a tag item's edit element.
 	 */
 	get edit() {
+		const oninput: FormEventHandler<HTMLInputElement> = (e) => {
+			this.#editValue = e.currentTarget.value;
+			this.#isInvalidInput = false;
+		};
+
 		return {
 			[dataAttrs.edit]: '',
 			id: this.#props.editId,
 			'aria-hidden': !this.editing,
 			'data-tag-id': this.id,
 			'data-tag-value': this.value,
+			"data-invalid": dataAttr(this.#isInvalidInput),
 			hidden: this.editing ? undefined : '',
 			tabindex: -1,
+			oninput,
+			onkeydown: (e) => {
+				const key = e.key;
+
+				if (key === kbd.ENTER) {
+					e.preventDefault();
+
+					// Do nothing if the value is empty.
+					if (!this.#editValue) return;
+
+					if (!this.#parent.isInputValid(this.#editValue)) {
+						this.#isInvalidInput = true;
+						return;
+					}
+
+					this.#parent.updateTag(this.id, this.#editValue);
+				} else if (key === kbd.ESCAPE) {
+					e.preventDefault();
+					// e.stopImmediatePropagation();
+
+					this.#editValue = this.value;
+					this.#props.escapeEditTag();
+				}
+			},
 			style: this.editing ? styleAttr({
 
 			}) : styleAttr({

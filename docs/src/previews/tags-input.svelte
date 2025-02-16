@@ -27,7 +27,7 @@
 				{...tagsInput.input}
 				type="text"
 				placeholder="Enter tags..."
-				class="min-w-[4.5rem] shrink grow basis-0 border-0 bg-white text-black outline-none focus:!ring-0 data-[invalid]:text-red-500"
+				class="min-w-[4.5rem] shrink grow basis-0 border-0 bg-white text-black outline-none focus:!ring-0 focus-visible:!outline-0 data-[invalid]:text-red-500"
 			/>
 
 			{#if tagsInput.tags.length > 0}
@@ -50,7 +50,7 @@
 
 						<input
 							{...tagItem.edit}
-							class="flex items-center overflow-hidden rounded-md px-1.5 [word-break:break-word] data-[invalid-edit]:focus:!ring-red-500"
+							class="flex items-center overflow-hidden rounded-md px-1.5 [word-break:break-word] focus-visible:!outline-0 data-[invalid-edit]:focus:!ring-red-500"
 						/>
 
 						<!-- <div
