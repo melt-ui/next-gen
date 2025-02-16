@@ -1,0 +1,37 @@
+---
+title: Tags Input
+description: Render tags inside an input, followed by an actual text input.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/tags-input.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- Keyboard navigation
+- Type in the input and press enter to add tags
+- Delete tags
+- Disable everything or disable specific tags
+- Option to only allow unique tags
+</Features>
+
+## Usage
+
+<Tabs>
+	<TabItem label="Builder">
+```svelte
+<script lang="ts">
+	import { TagsInput } from "melt/builders";
+</script>
+```
+	</TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="TagsInput" />
