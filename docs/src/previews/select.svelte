@@ -25,10 +25,11 @@
 </script>
 
 <Preview>
-	<div class="flex justify-center">
+	<div class="mx-auto flex w-[300px] flex-col gap-1">
+		<label for={select.ids.trigger}>Anime</label>
 		<button
 			{...select.trigger}
-			class="mx-auto flex w-[300px] items-center justify-between rounded-xl bg-gray-100 py-2 pl-3 pr-4 text-left text-gray-800
+			class="flex items-center justify-between rounded-xl border border-gray-500 bg-gray-100 py-2 pl-3 pr-4 text-left text-gray-800
 				transition hover:cursor-pointer hover:bg-gray-200
 				active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
 				dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
@@ -42,7 +43,7 @@
 
 		<div
 			{...select.content}
-			class="flex flex-col rounded-xl bg-gray-100 bg-neutral-500 p-2 shadow dark:bg-gray-800"
+			class="flex flex-col rounded-xl border border-gray-500 bg-gray-100 p-2 shadow dark:bg-gray-800"
 		>
 			{#each options as option}
 				<div
