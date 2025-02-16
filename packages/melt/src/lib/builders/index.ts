@@ -11,6 +11,5 @@ export * from "./Slider.svelte";
 export * from "./Tree.svelte";
 export * from "./utils.svelte";
 export * from "./FileUpload.svelte";
-
-
+export * from "./Tooltip.svelte";
 export * from './Select.svelte';
