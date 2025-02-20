@@ -20,10 +20,14 @@ export function makeHullFromElements(els: Array<HTMLElement>): Array<Point> {
 export function pointInPolygon(point: Point, polygon: Polygon) {
 	let inside = false;
 	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-		const xi = polygon[i].x;
-		const yi = polygon[i].y;
-		const xj = polygon[j].x;
-		const yj = polygon[j].y;
+		const pi = polygon[i];
+		const pj = polygon[j];
+		if (!pi || !pj) continue;
+		
+		const xi = pi.x;
+		const yi = pi.y;
+		const xj = pj.x;
+		const yj = pj.y;
 
 		const intersect =
 			yi > point.y !== yj > point.y && point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;

@@ -270,7 +270,7 @@ export class Tooltip {
 				});
 
 				const observer = new MutationObserver((mutations) => untrack(() => {
-					const parent = mutations[0].target;
+					const parent = mutations[0]?.target;
 
 					if (!isHtmlElement(parent)) return;
 

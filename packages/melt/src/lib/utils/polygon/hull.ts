@@ -45,10 +45,12 @@ export function makeHullPresorted<P extends Point>(points: Readonly<Array<P>>): 
 
 	const upperHull: Array<P> = [];
 	for (let i = 0; i < points.length; i++) {
-		const p: P = points[i];
+		const p = points[i];
+		if (!p) continue;
 		while (upperHull.length >= 2) {
-			const q: P = upperHull[upperHull.length - 1];
-			const r: P = upperHull[upperHull.length - 2];
+			const q = upperHull[upperHull.length - 1];
+			const r = upperHull[upperHull.length - 2];
+			if (!q || !r) break;
 			if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) upperHull.pop();
 			else break;
 		}
@@ -58,10 +60,12 @@ export function makeHullPresorted<P extends Point>(points: Readonly<Array<P>>): 
 
 	const lowerHull: Array<P> = [];
 	for (let i = points.length - 1; i >= 0; i--) {
-		const p: P = points[i];
+		const p = points[i];
+		if (!p) continue;
 		while (lowerHull.length >= 2) {
-			const q: P = lowerHull[lowerHull.length - 1];
-			const r: P = lowerHull[lowerHull.length - 2];
+			const q = lowerHull[lowerHull.length - 1];
+			const r = lowerHull[lowerHull.length - 2];
+			if (!q || !r) break;
 			if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) lowerHull.pop();
 			else break;
 		}
@@ -72,6 +76,7 @@ export function makeHullPresorted<P extends Point>(points: Readonly<Array<P>>): 
 	if (
 		upperHull.length == 1 &&
 		lowerHull.length == 1 &&
+		upperHull[0] && lowerHull[0] &&
 		upperHull[0].x == lowerHull[0].x &&
 		upperHull[0].y == lowerHull[0].y
 	)
