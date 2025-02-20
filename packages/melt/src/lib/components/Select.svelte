@@ -1,15 +1,24 @@
-<script lang="ts">
-  import { Select as Builder, type SelectProps } from "../builders/Select.svelte";
-  import { type Snippet } from "svelte";
-  import type { ComponentProps } from "../types";
+<script lang="ts" generics="T extends string, Multiple extends boolean">
+	import { getters } from "$lib/builders";
+	import { type Snippet } from "svelte";
+	import { Select as Builder, type SelectProps } from "../builders/Select.svelte";
+	import type { ComponentProps } from "../types";
 
-  type Props = ComponentProps<SelectProps> & {
-    children: Snippet<[Builder]>;
-  };
+	type Props = Omit<ComponentProps<SelectProps<T, Multiple>>, "multiple"> & {
+		children: Snippet<[Builder<T, Multiple>]>;
+		multiple?: Multiple;
+	};
 
-  let { children, ...rest }: Props = $props();
+	let { value = $bindable(), children, ...rest }: Props = $props();
 
-  const select = new Select({});
+	export const select = new Builder<T, Multiple>({
+		value: () => value as unknown as any,
+		onValueChange(v) {
+			value = v as unknown as any;
+		},
+		...getters({ ...rest }),
+	});
 </script>
 
 {@render children(select)}
+

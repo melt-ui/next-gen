@@ -51,5 +51,5 @@
 }
 
 :focus-visible {
-	outline: 4px solid var(--color-accent-500) !important;
+	outline: 4px solid var(--color-accent-500);
 }

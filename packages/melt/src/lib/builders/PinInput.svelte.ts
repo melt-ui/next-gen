@@ -183,8 +183,9 @@ export class PinInput {
 
 			for (let i = initialIndex; i < lastIndex; i++) {
 				const input = inputs[i];
-				input.value = pasted[i - initialIndex];
-				this.#addCharAtIndex(pasted[i - initialIndex], i);
+				if (!input) continue;
+				input.value = pasted[i - initialIndex] ?? "";
+				this.#addCharAtIndex(pasted[i - initialIndex] ?? "", i);
 				input.focus();
 			}
 			inputs[lastIndex]?.focus();

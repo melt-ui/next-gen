@@ -123,7 +123,7 @@
 	{#each items as item (item.id)}
 		<li
 			{...item.attrs}
-			class="cursor-pointer rounded-sm outline-none first:mt-0 [&:focus-visible>:first-child>div]:ring-4"
+			class="cursor-pointer rounded-sm !outline-none first:mt-0 [&:focus-visible>:first-child>div]:ring-4"
 		>
 			<div class="group py-1" style="padding-left: {depth * 1}rem">
 				<div

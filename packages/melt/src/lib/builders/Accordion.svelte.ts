@@ -234,16 +234,16 @@ class Item<Meta extends Record<string, unknown>, Multiple extends boolean = fals
 				const elIdx = candidateItems.indexOf(el);
 
 				if (e.key === kbd.ARROW_DOWN) {
-					candidateItems[(elIdx + 1) % candidateItems.length].focus();
+					candidateItems[(elIdx + 1) % candidateItems.length]?.focus();
 				}
 				if (e.key === kbd.ARROW_UP) {
-					candidateItems[(elIdx - 1 + candidateItems.length) % candidateItems.length].focus();
+					candidateItems[(elIdx - 1 + candidateItems.length) % candidateItems.length]?.focus();
 				}
 				if (e.key === kbd.HOME) {
-					candidateItems[0].focus();
+					candidateItems[0]?.focus();
 				}
 				if (e.key === kbd.END) {
-					candidateItems[candidateItems.length - 1].focus();
+					candidateItems[candidateItems.length - 1]?.focus();
 				}
 			},
 		};

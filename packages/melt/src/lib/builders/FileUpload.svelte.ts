@@ -179,7 +179,8 @@ export class FileUpload<Multiple extends boolean = false> {
 		if (this.multiple) {
 			this.#selected.addAll(validFiles);
 		} else {
-			this.#selected.add(validFiles[0]);
+			const firstFile = validFiles[0];
+			if (firstFile) this.#selected.add(firstFile);
 		}
 	};
 

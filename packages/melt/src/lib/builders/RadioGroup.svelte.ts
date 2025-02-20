@@ -2,7 +2,7 @@ import { Synced } from "$lib/Synced.svelte";
 import type { Getter, MaybeGetter } from "$lib/types";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
-import { createBuilderMetadata, createDataIds, createIds } from "$lib/utils/identifiers";
+import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 import { getDirectionalKeys, kbd } from "$lib/utils/keyboard";
 import type { HTMLAttributes, HTMLInputAttributes, HTMLLabelAttributes } from "svelte/elements";
@@ -212,7 +212,7 @@ class RadioItem {
 				const dir = style.getPropertyValue("direction") as "ltr" | "rtl";
 				const { nextKey, prevKey } = getDirectionalKeys(dir, this.#group.orientation);
 
-				let itemToFocus: HTMLElement;
+				let itemToFocus: HTMLElement | undefined;
 				switch (e.key) {
 					case nextKey: {
 						e.preventDefault();

@@ -47,8 +47,8 @@ testWithEffect("Should auto infer item type when passing static array", () => {
 	});
 
 	const firstItem = arrTree.items[0];
-	const subItem = firstItem.children[0];
-	expectTypeOf(subItem).toMatchTypeOf<{ id: string; color?: string }>;
+	const subItem = firstItem?.children[0];
+	expectTypeOf(subItem).toMatchTypeOf<{ id: string; color?: string } | undefined>;
 });
 
 testWithEffect("Should auto infer item type when passing getter to array", () => {
@@ -68,8 +68,8 @@ testWithEffect("Should auto infer item type when passing getter to array", () =>
 	});
 
 	const firstItem = arrTree.items[0];
-	const subItem = firstItem.children[0];
-	expectTypeOf(subItem).toMatchTypeOf<{ id: string; color?: string }>;
+	const subItem = firstItem?.children[0];
+	expectTypeOf(subItem).toMatchTypeOf<{ id: string; color?: string } | undefined>;
 });
 
 testWithEffect("Should auto infer item type when passing SvelteSet", () => {
@@ -89,6 +89,6 @@ testWithEffect("Should auto infer item type when passing SvelteSet", () => {
 	});
 
 	const firstItem = arrTree.items[0];
-	const subItem = firstItem.children[0];
-	expectTypeOf(subItem).toMatchTypeOf<{ id: string; color?: string }>;
+	const subItem = firstItem?.children[0];
+	expectTypeOf(subItem).toMatchTypeOf<{ id: string; color?: string } | undefined>;
 });
