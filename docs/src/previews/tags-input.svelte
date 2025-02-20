@@ -5,11 +5,21 @@
 	import Close from "~icons/material-symbols/close-rounded";
 
 	const controls = usePreviewControls({
+		disabled: {
+			defaultValue: false,
+			type: "boolean",
+			label: "Disabled",
+		},
 		blur: {
 			defaultValue: "nothing",
 			type: "select",
 			options: ["nothing", "add", "clear"],
 			label: "Blur",
+		},
+		addOnPaste: {
+			defaultValue: false,
+			type: "boolean",
+			label: "Add on Paste",
 		},
 	});
 
@@ -42,22 +52,22 @@
 							<span class="flex items-center border-r border-white/10 px-1.5">{tag.value}</span>
 							<button
 								{...tagItem.deleteTrigger}
+								aria-label={`remove ${tag.value} tag`}
 								class="enabled:hover:bg-accent-300 flex h-full items-center px-1"
 							>
 								<Close />
 							</button>
 						</div>
 
-						<input
+						<!-- <input
 							{...tagItem.edit}
 							class="flex items-center overflow-hidden rounded-md px-1.5 [word-break:break-word] focus-visible:!outline-0 data-[invalid-edit]:focus:!ring-red-500"
-						/>
+						/> -->
 
-						<!-- <div
-						{...$edit(t)}
-						use:edit
-						class="flex items-center overflow-hidden rounded-md px-1.5 [word-break:break-word] data-[invalid-edit]:focus:!ring-red-500"
-					/> -->
+						<span
+							{...tagItem.edit}
+							class="flex items-center overflow-hidden rounded-md px-1.5 [word-break:break-word] data-[invalid]:text-red-500 data-[invalid-edit]:focus:!ring-red-500"
+						></span>
 					{/each}
 				</div>
 			{/if}

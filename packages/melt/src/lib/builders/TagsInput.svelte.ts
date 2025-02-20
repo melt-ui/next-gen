@@ -6,6 +6,7 @@ import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 import { kbd } from "$lib/utils/keyboard";
 import { nanoid } from "nanoid";
+import { onClickOutside } from "runed";
 import { tick } from "svelte";
 import type { ChangeEventHandler, ClipboardEventHandler, EventHandler, FormEventHandler, HTMLButtonAttributes, HTMLInputAttributes, KeyboardEventHandler } from "svelte/elements";
 
@@ -17,6 +18,11 @@ export type Tag = {
 };
 
 type Blur = 'nothing' | 'add' | 'clear';
+
+/**
+ * Fix https://github.com/melt-ui/melt-ui/issues/1253
+ * 
+ */
 
 export type TagsInputProps = {
 	/**
@@ -122,6 +128,8 @@ export type TagsInputProps = {
 	remove?: (tag: Tag) => (boolean | never) | Promise<boolean | never>;
 };
 
+type FocusInputPosition = 'default' | 'start' | 'end';
+
 export class TagsInput {
 	// Props
 	#props!: TagsInputProps;
@@ -129,11 +137,12 @@ export class TagsInput {
 	readonly placeholder = $derived(extract(this.#props.placeholder, ''));
 	readonly blur = $derived(extract(this.#props.blur, 'nothing'));
 	readonly trim = $derived(extract(this.#props.trim, true));
-	readonly unique = $derived(extract(this.#props.unique, false));
+	readonly unique = $derived(extract(this.#props.unique, true));
 	readonly allowed = $derived(extract(this.#props.allowed, undefined));
 	readonly denied = $derived(extract(this.#props.denied, undefined));
 	readonly maxTags = $derived(extract(this.#props.maxTags, undefined));
 	readonly editable = $derived(extract(this.#props.editable, true));
+	readonly addOnPaste = $derived(extract(this.#props.addOnPaste, false));
 	
 	#add = $derived(this.#props.add);
 	#remove = $derived(this.#props.remove);
@@ -143,7 +152,6 @@ export class TagsInput {
 	#ids = createIds();
 	#inputValue = $state('');
 	#isInvalidInput = $state(false);
-	// #editValue = $state('');
 	#editing = $state<Tag | null>(null);
 	#selected = $state<Tag | null>(null);
 
@@ -211,22 +219,6 @@ export class TagsInput {
 	}
 
 	/**
-	 * Update a tag.
-	 * 
-	 * @param id - The ID of the tag to update.
-	 * @param newValue - The new value for the tag.
-	 */
-	updateTag(id: string, newValue: string) {
-		if (!this.isInputValid(newValue)) return;
-
-		const idx = this.#tags.current.findIndex((t) => t.id === id);
-		if (idx >= 0) {
-			this.#tags.current[idx]!.value = newValue;
-			this.#escapeEditTag(this.#tags.current[idx] as Tag);
-		}
-	}
-
-	/**
 	 * The selected tag.
 	 */
 	get selected() {
@@ -264,6 +256,21 @@ export class TagsInput {
 			editId: this.#tagEditId(tag.id),
 			escapeEditTag: () => {
 				this.#escapeEditTag(tag);
+			},
+			updateTagValue: (newValue: string) => {
+				if (!this.isInputValid(newValue)) return;
+		
+				const idx = this.#tags.current.findIndex((t) => t.id === tag.id);
+				if (idx >= 0) {
+					this.#tags.current[idx]!.value = newValue;
+					this.#escapeEditTag(this.#tags.current[idx] as Tag);
+				}
+			},
+			focusInput: (pos: FocusInputPosition = 'default') => {
+				this.#focusInput(pos);
+			},
+			editTagItem: () => {
+				this.#editTag(tag);
 			}
 		});
 	}
@@ -305,7 +312,7 @@ export class TagsInput {
 		};
 	}
 
-	#focusInput(pos: 'default' | 'start' | 'end' = 'default') {
+	#focusInput(pos: FocusInputPosition = 'default') {
 		const inputEl = document.getElementById(this.#ids.input) as HTMLInputElement;
 		
 		if (!isHtmlElement(inputEl)) return;
@@ -329,6 +336,29 @@ export class TagsInput {
 		this.#selected = t;
 	}
 
+	async #editTag(t: Tag) {
+		// const editEl = document.getElementById(this.#tagEditId(this.#selected.id)) as HTMLInputElement;
+		const editEl = document.getElementById(this.#tagEditId(t.id)) as HTMLSpanElement;
+		if (!editEl) return;
+
+		this.#editing = t;
+		// editEl.value = this.#selected.value;
+		editEl.textContent = t.value;
+
+		await tick();
+		editEl.focus();
+
+		const range = document.createRange();
+		range.selectNodeContents(editEl);
+		range.collapse(false);
+
+		const selection = window.getSelection();
+		if (selection) {
+			selection.removeAllRanges();
+			selection.addRange(range);
+		}
+	}
+
 	/**
 	 * The spread attributes for the root element.
 	 */
@@ -339,9 +369,9 @@ export class TagsInput {
 			"data-invalid": dataAttr(this.#isInvalidInput),
 			'data-disabled': disabledAttr(this.disabled),
 			disabled: disabledAttr(this.disabled),
-			onmousedown: (e: MouseEvent) => {
-				// TODO
-			}
+			// onmousedown: (e: MouseEvent) => {
+			// 	// TODO
+			// }
 		} as const;
 	}
 
@@ -349,13 +379,6 @@ export class TagsInput {
 	 * The spread attributes for the input element.
 	 */
 	get input() {
-		const onchange: ChangeEventHandler<HTMLInputElement> = (e) => {
-			// console.log(e);
-			// this.#inputValue = e.currentTarget.value;
-			// console.log('value:', this.#inputValue);
-			// e.currentTarget.value = '';
-		};
-
 		const onkeydown: KeyboardEventHandler<HTMLInputElement> = async (e) => {
 			const key = e.key;
 
@@ -443,18 +466,7 @@ export class TagsInput {
 					// Start editing this selected tag
 					e.preventDefault();
 
-					console.log('in here');
-
-					const editEl = document.getElementById(this.#tagEditId(this.#selected.id)) as HTMLInputElement;
-					if (!editEl) return;
-
-					this.#editing = this.#selected;
-					editEl.value = this.#selected.value;
-
-					await tick();
-					editEl.focus();
-
-					// TODO...
+					this.#editTag(this.#selected);
 				}
 			} else {
 				if (key === kbd.ENTER) {
@@ -493,8 +505,28 @@ export class TagsInput {
 			this.#isInvalidInput = false;
 		};
 
-		const onpaste: ClipboardEventHandler<HTMLInputElement> = (e) => {
-			// TODO
+		const onpaste: ClipboardEventHandler<HTMLInputElement> = async (e) => {
+			const pastedText = e.clipboardData?.getData('text');
+			if (!pastedText) return;
+
+			// Do nothing when addOnPaste is false
+			if (!this.addOnPaste) return;
+
+			e.preventDefault();
+
+			const newTags = pastedText.split(',');
+
+			addTag: for (let i = 0; i < newTags.length; i++) {
+				const newTag = newTags[i] as string;
+				// Update value with the pasted tag or set invalid
+				if(this.isInputValid(newTag) && (await this.addTag(newTag))) {
+					continue addTag;
+				} else {
+					e.currentTarget.value = newTags.slice(i).join(',');
+					this.#isInvalidInput = true;
+					return;
+				}
+			}
 		};
 
 		const onblur: EventHandler<FocusEvent, HTMLInputElement> = async (e) => {
@@ -528,7 +560,6 @@ export class TagsInput {
 			onblur,
 			onpaste,
 			onkeydown,
-			onchange,
 			oninput
 		} as const satisfies HTMLInputAttributes;
 	}
@@ -566,6 +597,9 @@ type TagItemProps = {
 	parent: TagsInput;
 	editId: string;
 	escapeEditTag: () => void;
+	editTagItem: () => void;
+	updateTagValue: (newValue: string) => void;
+	focusInput: (pos: FocusInputPosition) => void;
 } & GetTagItemProps;
 
 class TagItem {
@@ -584,12 +618,14 @@ class TagItem {
 	#editValue = $state('');
 	#isInvalidInput = $state(false);
 
+	#cancelEditing() {
+		this.#editValue = this.value;
+		this.#props.escapeEditTag();
+	}
+
 	constructor(props: TagItemProps) {
 		this.#props = props;
-
-		$effect(() => {
-			$inspect(this.editing);
-		})
+		this.#editValue = props.tag.value;
 	}
 
 	/**
@@ -606,12 +642,20 @@ class TagItem {
 			hidden: this.editing ? '' : undefined,
 			style: this.editing ? styleAttr({
 				display: 'none'
-			}) : undefined
+			}) : undefined,
+			ondblclick: (e: MouseEvent) => {
+				// Do nothing is the tag item is disabled or is not editable.
+				if (this.disabled || !this.editable) return;
+
+				e.preventDefault();
+				this.#props.editTagItem();
+			}
 		} as const;
 	}
 
 	/**
 	 * The spread attributes for a tag item's delete button.
+	 * Delete buttons require an extra `aria-label` attribute for screen readers.
 	 */
 	get deleteTrigger() {
 		return {
@@ -621,7 +665,10 @@ class TagItem {
 			'data-selected': dataAttr(this.selected),
 			disabled: dataAttr(this.disabled),
 			tabindex: -1,
-			onclick: () => this.#parent.removeTag(this.#props.tag)
+			onclick: () => {
+				this.#parent.removeTag(this.#props.tag);
+				this.#props.focusInput('end');
+			}
 		} as const as HTMLButtonAttributes;
 	}
 
@@ -629,22 +676,36 @@ class TagItem {
 	 * The spread attributes for a tag item's edit element.
 	 */
 	get edit() {
-		const oninput: FormEventHandler<HTMLInputElement> = (e) => {
-			this.#editValue = e.currentTarget.value;
+		const oninput: FormEventHandler<HTMLSpanElement> = (e) => {
+			this.#editValue = e.currentTarget.textContent || '';
 			this.#isInvalidInput = false;
 		};
+
+		// Cancel editing when clicking outside
+		onClickOutside(
+			() => document.getElementById(this.#props.editId),
+			() => {
+				if (this.editing) {
+					this.#cancelEditing();
+				}
+			}
+		);
 
 		return {
 			[dataAttrs.edit]: '',
 			id: this.#props.editId,
 			'aria-hidden': !this.editing,
+			role: "textbox",
+			"aria-multiline": false,
 			'data-tag-id': this.id,
 			'data-tag-value': this.value,
 			"data-invalid": dataAttr(this.#isInvalidInput),
+			contenteditable: this.editing,
+			disabled: dataAttr(this.disabled),
 			hidden: this.editing ? undefined : '',
 			tabindex: -1,
 			oninput,
-			onkeydown: (e) => {
+			onkeydown: (e: KeyboardEvent) => {
 				const key = e.key;
 
 				if (key === kbd.ENTER) {
@@ -653,18 +714,24 @@ class TagItem {
 					// Do nothing if the value is empty.
 					if (!this.#editValue) return;
 
+					// Escape if the value hasn't changed.
+					if (this.#editValue === this.value) {
+						this.#props.escapeEditTag();
+						return;
+					}
+
 					if (!this.#parent.isInputValid(this.#editValue)) {
 						this.#isInvalidInput = true;
 						return;
 					}
 
-					this.#parent.updateTag(this.id, this.#editValue);
+					this.#props.updateTagValue(this.#editValue);
+					this.#props.escapeEditTag();
 				} else if (key === kbd.ESCAPE) {
 					e.preventDefault();
-					// e.stopImmediatePropagation();
+					e.stopImmediatePropagation();
 
-					this.#editValue = this.value;
-					this.#props.escapeEditTag();
+					this.#cancelEditing();
 				}
 			},
 			style: this.editing ? styleAttr({
@@ -672,6 +739,6 @@ class TagItem {
 			}) : styleAttr({
 				display: 'none'
 			})
-		} as const as HTMLInputAttributes;
+		} as const;
 	}
 }
