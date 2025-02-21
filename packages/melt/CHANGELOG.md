@@ -1,5 +1,11 @@
 # melt
 
+## 0.14.1
+
+### Patch Changes
+
+- fix type issues ([`6f73416`](https://github.com/melt-ui/next-gen/commit/6f73416e113801c3aa98d1e8648ea3424df8afb9))
+
 ## 0.14.0
 
 ### Minor Changes
