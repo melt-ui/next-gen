@@ -49,7 +49,7 @@ export type FileUploadProps<Multiple extends boolean = false> = {
 	 * Whether the file upload is disabled
 	 * @default false
 	 */
-	disabled?: MaybeGetter<boolean>;
+	disabled?: MaybeGetter<boolean | undefined>;
 
 	/**
 	 * Custom validate fn. Will be called together with the original validation,
