@@ -2,7 +2,7 @@
 	import { FileUpload, type FileUploadProps } from "../builders/FileUpload.svelte";
 	import { type Snippet } from "svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "$lib/builders";
+	import { getters } from "../builders/utils.svelte";
 
 	type Props = ComponentProps<FileUploadProps<Multiple>> & {
 		children: Snippet<[FileUpload<Multiple>]>;
