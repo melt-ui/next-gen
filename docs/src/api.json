@@ -1009,12 +1009,12 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  disabled: boolean\n  onclick: () => void\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  \"data-melt-collapsible-trigger\": string\n}",
+        "type": "{\n  readonly disabled: boolean\n  readonly onclick: () => void\n  readonly \"data-state\": string\n  readonly \"data-disabled\": \"\" | undefined\n  readonly \"data-melt-collapsible-trigger\": \"\"\n  readonly id: string\n  readonly \"aria-expanded\": boolean\n  readonly \"aria-controls\": string\n}",
         "description": "The spread attributes for the trigger button."
       },
       {
         "name": "content",
-        "type": "{\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  \"data-melt-collapsible-content\": string\n}",
+        "type": "{\n  readonly \"data-state\": string\n  readonly \"data-disabled\": \"\" | undefined\n  readonly \"data-melt-collapsible-content\": \"\"\n  readonly id: string\n}",
         "description": "The spread attributes for the content element."
       }
     ],

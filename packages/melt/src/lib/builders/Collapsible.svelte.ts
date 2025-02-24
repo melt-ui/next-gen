@@ -5,8 +5,7 @@ import { Synced } from "$lib/Synced.svelte";
 import { dataAttr } from "$lib/utils/attribute";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 
-const { dataAttrs, createIds, dataSelectors } = createBuilderMetadata("collapsible", [
-	"root",
+const { dataAttrs, createIds } = createBuilderMetadata("collapsible", [
 	"trigger",
 	"content",
 ]);
@@ -35,6 +34,7 @@ export class Collapsible {
 
 	// State
 	#open: Synced<boolean>;
+	#ids = createIds();
 
 	constructor(props: CollapsibleProps = {}) {
 		this.#props = props;
@@ -69,6 +69,9 @@ export class Collapsible {
 	get trigger() {
 		return {
 			[dataAttrs.trigger]: "",
+			id: this.#ids.trigger,
+			"aria-expanded": this.open,
+			"aria-controls": this.#ids.content,
 			...this.#sharedAttrs,
 			disabled: this.disabled,
 			onclick: () => {
@@ -76,7 +79,7 @@ export class Collapsible {
 
 				this.#open.current = !this.#open.current;
 			},
-		};
+		} as const;
 	}
 
 	/**
@@ -85,7 +88,8 @@ export class Collapsible {
 	get content() {
 		return {
 			[dataAttrs.content]: "",
+			id: this.#ids.content,
 			...this.#sharedAttrs,
-		};
+		} as const;
 	}
 }
