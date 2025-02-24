@@ -10,6 +10,11 @@ import type { HTMLInputAttributes } from "svelte/elements";
 
 const identifiers = createDataIds("pin-input", ["root", "input"]);
 
+export type PinInputError = {
+	method: "paste" | "input";
+	message: string;
+};
+
 export type PinInputProps = {
 	/**
 	 * The value for the Pin Input.
@@ -29,9 +34,32 @@ export type PinInputProps = {
 	onValueChange?: (value: string) => void;
 
 	/**
-	 * Calledwhen the `PinInput` instance is filled.
+	 * Called when the `PinInput` instance is filled.
 	 */
 	onComplete?: (value: string) => void;
+
+	/**
+	 * Override the default behavior when pasting a value.
+	 *
+	 * @param value The pasted value.
+	 *
+	 * @example ```ts
+	 * const pin = new PinInput({
+	 *   onPaste(value) {
+	 *     if (!valid(value)) {
+	 *       // do something
+	 *       return
+	 *     }
+	 *     pin.value = value
+	 *   }
+	 * });
+	 */
+	onPaste?: (value: string) => void;
+
+	/**
+	 * Called when the PinInput encounters an error.
+	 */
+	onError?: (error: PinInputError) => void;
 
 	/**
 	 * The amount of digits in the Pin Input.
@@ -181,12 +209,21 @@ export class PinInput {
 			const initialIndex = pasted.length >= inputs.length ? 0 : focusedIndex;
 			const lastIndex = Math.min(initialIndex + pasted.length, inputs.length);
 
+			const valid = pasted.split("").every((char) => validateInput(char, this.type));
+			if (!valid) {
+				this.#props.onError?.({
+					method: "paste",
+					message: `Input did not match the type ${this.type}`,
+				});
+				return;
+			}
+
 			for (let i = initialIndex; i < lastIndex; i++) {
 				const input = inputs[i];
 				if (!input) continue;
+
 				input.value = pasted[i - initialIndex] ?? "";
 				this.#addCharAtIndex(pasted[i - initialIndex] ?? "", i);
-				input.focus();
 			}
 			inputs[lastIndex]?.focus();
 		};
@@ -274,6 +311,10 @@ export class PinInput {
 				if (inputted.length === 1) {
 					const char = el.value.slice(el.value.length - 1);
 					if (!validateInput(char, this.type)) {
+						this.#props.onError?.({
+							method: "input",
+							message: `Input did not match the type ${this.type}`,
+						});
 						el.value = el.value.slice(0, -1);
 						return;
 					}
@@ -286,7 +327,11 @@ export class PinInput {
 					// Set timeout so deps can change, and canFocus is re-evaluated.
 					setTimeout(() => inputs[currIndex + 1]?.focus());
 				} else {
-					onpaste(inputted);
+					if (this.#props.onPaste) {
+						this.#props.onPaste(inputted);
+					} else {
+						onpaste(inputted);
+					}
 				}
 			},
 			onfocus: () => {
@@ -301,7 +346,11 @@ export class PinInput {
 				console.log(pasted);
 				if (!pasted) return;
 
-				onpaste(pasted);
+				if (this.#props.onPaste) {
+					this.#props.onPaste(pasted);
+				} else {
+					onpaste(pasted);
+				}
 			},
 		} as const satisfies HTMLInputAttributes;
 	}
