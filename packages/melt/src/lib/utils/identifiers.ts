@@ -6,7 +6,7 @@ type DataIds<Name extends string, Parts extends string[]> = {
 };
 
 /**
- * @deprecated use `createBuilderMeMetaData` instead
+ * @deprecated use `createBuilderMetaData` instead
  */
 export function createDataIds<const Name extends string, const Parts extends string[]>(
 	name: Name,

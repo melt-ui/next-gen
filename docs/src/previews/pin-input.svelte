@@ -15,7 +15,7 @@
 			label: "Type",
 			type: "select",
 			options: ["alphanumeric", "numeric", "text"],
-			defaultValue: "numeric",
+			defaultValue: "alphanumeric",
 		},
 		mask: {
 			label: "Mask",
@@ -36,6 +36,9 @@
 
 	const pinInput = new PinInput({
 		...getters(controls),
+		onValueChange(v) {
+			pinInput.value = v.toUpperCase();
+		},
 	});
 </script>
 
@@ -44,7 +47,7 @@
 		{#each pinInput.inputs as input}
 			<input
 				class="focus:border-accent-500 size-12 rounded-xl border-2 border-gray-300 bg-white text-center
-				outline-none transition-all hover:border-gray-400 disabled:cursor-not-allowed
+				outline-none transition hover:border-gray-400 disabled:cursor-not-allowed
 				dark:border-gray-400/50 dark:bg-gray-900 dark:hover:border-gray-400 dark:focus:border-gray-300"
 				{...input}
 			/>

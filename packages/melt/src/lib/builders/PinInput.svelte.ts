@@ -10,6 +10,11 @@ import type { HTMLInputAttributes } from "svelte/elements";
 
 const identifiers = createDataIds("pin-input", ["root", "input"]);
 
+export type PinInputError = {
+	method: "paste" | "input";
+	message: string;
+};
+
 export type PinInputProps = {
 	/**
 	 * The value for the Pin Input.
@@ -39,10 +44,10 @@ export type PinInputProps = {
 	 * @param value The pasted value.
 	 *
 	 * @example ```ts
-	 * let pin = new PinInput({
+	 * const pin = new PinInput({
 	 *   onPaste(value) {
 	 *     if (!valid(value)) {
-	 *       //do something
+	 *       // do something
 	 *       return
 	 *     }
 	 *     pin.value = value
@@ -54,7 +59,7 @@ export type PinInputProps = {
 	/**
 	 * Called when the PinInput encounters an error.
 	 */
-	onError?: (error: Error) => void;
+	onError?: (error: PinInputError) => void;
 
 	/**
 	 * The amount of digits in the Pin Input.
@@ -204,18 +209,23 @@ export class PinInput {
 			const initialIndex = pasted.length >= inputs.length ? 0 : focusedIndex;
 			const lastIndex = Math.min(initialIndex + pasted.length, inputs.length);
 
+			const valid = pasted.split("").every((char) => validateInput(char, this.type));
+			if (!valid) {
+				this.#props.onError?.({
+					method: "paste",
+					message: `Input did not match the type ${this.type}`,
+				});
+				return;
+			}
+
 			for (let i = initialIndex; i < lastIndex; i++) {
 				const input = inputs[i];
-        		if (!input) continue;
-				if (!validateInput(pasted[i - initialIndex] ?? "", this.type)) {
-					this.#props.onError?.(new Error("Invalid input"));
-					break;
-				}
+				if (!input) continue;
+
 				input.value = pasted[i - initialIndex] ?? "";
 				this.#addCharAtIndex(pasted[i - initialIndex] ?? "", i);
-				input.focus();
-				inputs[i + 1]?.focus();
 			}
+			inputs[lastIndex]?.focus();
 		};
 
 		return {
@@ -301,7 +311,10 @@ export class PinInput {
 				if (inputted.length === 1) {
 					const char = el.value.slice(el.value.length - 1);
 					if (!validateInput(char, this.type)) {
-						this.#props.onError?.(new Error("Invalid input"));
+						this.#props.onError?.({
+							method: "input",
+							message: `Input did not match the type ${this.type}`,
+						});
 						el.value = el.value.slice(0, -1);
 						return;
 					}
