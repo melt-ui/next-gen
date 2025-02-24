@@ -1,0 +1,57 @@
+---
+title: Select
+description: Presents a selection of choices to the user, activated by a button.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/select.svelte";
+import Features from "@components/features.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+	- 🎹 Keyboard navigation
+	- 🍃 Multi-selection mode
+	- 🧠 Smart focus management
+	- 💬 Highlight items by typing them out (typeahead)
+</Features>
+
+## Usage
+
+<Tabs>
+  <TabItem label="Builder">
+```svelte
+<script lang="ts">
+  import { Select } from "melt/builders";
+
+  const select = new Select();
+</script>
+
+<div {...select.root}>
+  Select content
+</div>
+```
+  </TabItem>
+
+  <TabItem label="Component">
+```svelte
+<script lang="ts">
+  import { Select } from "melt/components";
+</script>
+
+<Select>
+  {#snippet children(select)}
+    <div {...select.root}>
+      Select content
+    </div>
+  {/snippet}
+</Select>
+```
+  </TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="Select" />

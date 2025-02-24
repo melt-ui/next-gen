@@ -5,11 +5,13 @@
 	"main": "index.js",
 	"scripts": {
 		"dev": "concurrently --kill-others \"pnpm --parallel dev\" \"pnpm watch-and-type\"",
-		"test": "vitest",
+		"test": "pnpm --filter melt test",
+		"check": "pnpm --filter melt check",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"gen:api": "jiti scripts/generate-api.ts",
 		"gen:components": "jiti scripts/generate-components.ts",
+		"create:builder": "jiti scripts/create-builder.ts",
 		"watch-and-type": "jiti scripts/watch-and-type.ts",
 		"build:docs": "pnpm install && pnpm --filter melt build && pnpm --filter @melt-ui/docs build",
 		"release": "changeset publish"
@@ -19,8 +21,12 @@
 	"license": "MIT",
 	"type": "module",
 	"devDependencies": {
+		"@svitejs/changesets-changelog-github-compact": "^1.2.0",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/svelte": "^5.2.6",
 		"@types/eslint": "8.56.10",
 		"@types/glob": "^8.1.0",
+		"@vitest/coverage-v8": "^3.0.5",
 		"chokidar": "^3.6.0",
 		"concurrently": "^8.2.2",
 		"eslint": "^9.0.0",
@@ -41,11 +47,11 @@
 		"tsup": "8.0.2",
 		"typescript": "^5.7.3",
 		"typescript-eslint": "^8.0.0-alpha.20",
-		"vitest": "^1.6.0"
+		"vitest": "^3.0.5"
 	},
 	"engines": {
 		"pnpm": "^9.0.0",
-		"node": ">=18 <21"
+		"node": "^18.0.0 || ^20.0.0 || >=22"
 	},
 	"packageManager": "pnpm@9.14.2",
 	"dependencies": {

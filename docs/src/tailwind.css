@@ -49,3 +49,7 @@
 * {
 	outline-color: var(--color-accent-500);
 }
+
+:focus-visible {
+	outline: 4px solid var(--color-accent-500);
+}

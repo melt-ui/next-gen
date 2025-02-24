@@ -26,6 +26,7 @@ Things I want:
 	- 🍃 Multi-selection mode
 	- 🧠 Smart focus management
 	- 🌳 Optional expand on click
+	- 💬 Highlight items by typing them out (typeahead)
 </Features>
 
 ## Usage
@@ -36,7 +37,8 @@ Things I want:
 <script lang="ts">
 	import { Tree } from "melt/builders";
 
-	const tree = new Tree();
+	const items = [/* ... */]
+	const tree = new Tree({ items });
 </script>
 
 <div {...tree.root}>

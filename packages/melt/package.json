@@ -1,7 +1,7 @@
 {
 	"name": "melt",
 	"type": "module",
-	"version": "0.8.0",
+	"version": "0.14.1",
 	"license": "MIT",
 	"repository": "github:melt-ui/next-gen",
 	"author": "Thomas G. Lopes",
@@ -31,7 +31,7 @@
 		"dev": "pnpm sync && pnpm watch",
 		"test": "vitest",
 		"sync": "svelte-kit sync",
-		"build": "vite build && npm run package",
+		"build": "npm run package",
 		"preview": "vite preview",
 		"package": "svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run package",
@@ -40,12 +40,12 @@
 		"watch": "svelte-kit sync && svelte-package --watch"
 	},
 	"peerDependencies": {
+		"@floating-ui/dom": "^1.6.0",
 		"svelte": "^5.0.0"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "^3.3.1",
 		"@sveltejs/kit": "^2.15.2",
-		"@sveltejs/package": "^2.3.7",
+		"@sveltejs/package": "^2.3.9",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"jsdom": "^24.1.0",
 		"publint": "^0.1.9",
@@ -58,8 +58,9 @@
 	"svelte": "./dist/index.js",
 	"dependencies": {
 		"@floating-ui/dom": "^1.6.13",
+		"jest-axe": "^9.0.0",
 		"nanoid": "^5.0.9",
-		"runed": "^0.23.0"
+		"runed": "^0.23.3"
 	},
 	"publishConfig": {
 		"access": "public"
