@@ -1,5 +1,17 @@
 # melt
 
+## 0.15.0
+
+### Minor Changes
+
+- file-upload: add disabled prop ([`1095cf2`](https://github.com/melt-ui/next-gen/commit/1095cf22683bcf2fb42588beca7ecefc8b742a82))
+
+- fix: collapsible accessibility ([#45](https://github.com/melt-ui/next-gen/pull/45))
+
+### Patch Changes
+
+- fix file upload disabled prop type ([`209270c`](https://github.com/melt-ui/next-gen/commit/209270cb1415d9c94188fcf013eaba7676ac58da))
+
 ## 0.14.1
 
 ### Patch Changes
