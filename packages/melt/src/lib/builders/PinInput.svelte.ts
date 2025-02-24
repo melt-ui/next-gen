@@ -206,8 +206,8 @@ export class PinInput {
 
 			for (let i = initialIndex; i < lastIndex; i++) {
 				const input = inputs[i];
-        if (!input) continue;
-				if (!validateInput(pasted[i - initialIndex], this.type)) {
+        		if (!input) continue;
+				if (!validateInput(pasted[i - initialIndex] ?? "", this.type)) {
 					this.#props.onError?.(new Error("Invalid input"));
 					break;
 				}
