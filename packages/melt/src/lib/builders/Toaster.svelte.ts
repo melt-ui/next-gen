@@ -1,12 +1,18 @@
-import type { HTMLAttributes } from "svelte/elements";
 import type { MaybeGetter } from "$lib/types";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
-import { isHtmlElement, isTouch } from "../utils/is";
+import type { HTMLAttributes } from "svelte/elements";
 import { SvelteMap } from "svelte/reactivity";
-import { onMount } from "svelte";
+import { isHtmlElement, isTouch } from "../utils/is";
 
-const { dataAttrs, createIds } = createBuilderMetadata("toaster", ["root", "content", "title", "description", "close"]);
+const toasterMeta = createBuilderMetadata("toaster", ["root"]);
+
+const toastMeta = createBuilderMetadata("toaster-toast", [
+	"content",
+	"title",
+	"description",
+	"close",
+]);
 
 export type ToasterProps = {
 	/**
@@ -20,25 +26,27 @@ export type ToasterProps = {
 	 * https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live
 	 * @default 'polite'
 	 */
-	type?: MaybeGetter<'assertive' | 'polite' | undefined>;
+	type?: MaybeGetter<"assertive" | "polite" | undefined>;
 
 	/**
 	 * The behaviour when a toast is hovered.
 	 * @default 'pause'
 	 */
-	hover?: MaybeGetter<'pause' | 'pause-all' | null | undefined>;
+	hover?: MaybeGetter<"pause" | "pause-all" | null | undefined>;
 };
 
 export type AddToastProps<T = object> = {
 	/**
 	 * The delay in milliseconds before the toast closes. Set to 0 to disable.
+	 * If `undefined`, uses the `closeDelay` defined in the parent toaster.
 	 */
 	closeDelay?: number;
 
 	/**
 	 * The sensitivity of the toast for accessibility purposes.
+	 * If `undefined`, uses the `type` defined in the parent toaster.
 	 */
-	type?: 'assertive' | 'polite';
+	type?: "assertive" | "polite";
 
 	/**
 	 * The data passed to the toaster.
@@ -46,33 +54,16 @@ export type AddToastProps<T = object> = {
 	data: T;
 };
 
-export type Toast<T = object> = {
-	id: string;
-	ids: {
-		content: string;
-		title: string;
-		description: string;
-	};
-	closeDelay: number;
-	type: 'assertive' | 'polite';
-	data: T;
-	timeout: number | null;
-	createdAt: number;
-	pausedAt?: number;
-	pauseDuration: number;
-	getPercentage: () => number;
-};
-
 export class Toaster<T = object> {
 	// Props
 	#props!: ToasterProps;
+	ids = toasterMeta.createIds();
 	closeDelay = $derived(extract(this.#props.closeDelay, 5000));
-	type = $derived(extract(this.#props.type, 'polite'));
-	hover = $derived(extract(this.#props.hover, 'pause'));
+	type = $derived(extract(this.#props.type, "polite"));
+	hover = $derived(extract(this.#props.hover, "pause"));
 
 	// State
 	#toastsMap = new SvelteMap<string, Toast<T>>();
-	#ids = createIds();
 
 	/** The active toasts. */
 	toasts = $derived(Array.from(this.#toastsMap.values()));
@@ -88,40 +79,17 @@ export class Toaster<T = object> {
 		const propsWithDefaults = {
 			closeDelay: this.closeDelay,
 			type: this.type,
-			...props
+			...props,
 		} satisfies AddToastProps<T>;
 
-		const ids = createIds();
-		
-		const timeout = propsWithDefaults.closeDelay === 0
-			? null
-			: window.setTimeout(() => {
-				this.removeToast(ids.content);
-			}, propsWithDefaults.closeDelay);
+		const id = window.crypto.randomUUID();
 
-		const getPercentage = () => {
-			const { createdAt, pauseDuration, closeDelay, pausedAt } = toast;
-			if (closeDelay === 0) return 0;
-
-			if (pausedAt) {
-				return (100 * (pausedAt - createdAt - pauseDuration)) / closeDelay;
-			} else {
-				const now = performance.now();
-				return (100 * (now - createdAt - pauseDuration)) / closeDelay;
-			}
-		};
-
-		const toast = {
-			id: ids.content,
-			ids,
+		const toast = new Toast({
+			toaster: this,
+			id,
 			...propsWithDefaults,
-			timeout,
-			createdAt: performance.now(),
-			pauseDuration: 0,
-			getPercentage,
-		} as Toast<T>;
-
-		this.#toastsMap.set(ids.content, toast);
+		});
+		this.#toastsMap.set(id, toast);
 
 		return toast;
 	}
@@ -131,7 +99,11 @@ export class Toaster<T = object> {
 	 * @param id The id of the toast.
 	 */
 	removeToast(id: string) {
+		const toast = this.#toastsMap.get(id);
+		if (!toast) return;
+
 		this.#toastsMap.delete(id);
+		toast.cleanup();
 	}
 
 	/**
@@ -143,46 +115,7 @@ export class Toaster<T = object> {
 		const toast = this.#toastsMap.get(id);
 		if (!toast) return;
 
-		this.#toastsMap.set(id, { ...toast, data });
-	}
-
-	/**
-	 * Pauses the clearance timer of a toast.
-	 * @param currentToast The toast.
-	 */
-	pauseToastTimer(currentToast: Toast<T>) {
-		if (currentToast.timeout !== null) {
-			window.clearTimeout(currentToast.timeout);
-		}
-		currentToast.pausedAt = performance.now();
-	}
-
-	/**
-	 * Restarts a toast timer.
-	 * @param currentToast The toast.
-	 */
-	restartToastTimer(currentToast: Toast<T>) {
-		const pausedAt = currentToast.pausedAt ?? currentToast.createdAt;
-		const elapsed = pausedAt - currentToast.createdAt - currentToast.pauseDuration;
-		const remaining = currentToast.closeDelay - elapsed;
-
-		currentToast.timeout = window.setTimeout(() => {
-			this.removeToast(currentToast.id);
-		}, remaining);
-
-		currentToast.pauseDuration += performance.now() - pausedAt;
-		currentToast.pausedAt = undefined;
-	}
-
-	/**
-	 * Returns a ToastItem with the required spread attributes.
-	 * @param toast The toast for which to return a ToastItem.
-	 */
-	getToastFromToaster(toast: Toast<T>) {
-		return new ToastItem({
-			toaster: this,
-			toast
-		});
+		toast.data = data;
 	}
 
 	/**
@@ -191,117 +124,177 @@ export class Toaster<T = object> {
 	get root() {
 		// Show toast root if toasts exist
 		$effect(() => {
-			const el = document.getElementById(this.#ids.root);
-			if (!isHtmlElement(el)) {
+			const el = document.getElementById(this.ids.root);
+			if (!isHtmlElement(el)) return;
+
+			if (!this.toasts.length) {
+				el.hidePopover();
 				return;
 			}
+			el.showPopover();
 
-			if (this.toasts.length > 0) {
-				el.showPopover();
-				
-				const toastEl = document.getElementById(this.toasts[0].ids.content);
-				if (isHtmlElement(toastEl)) toastEl.focus();
-			} else {
-				el.hidePopover();
-			}
+			const toastEl = document.getElementById(this.toasts[0].ids.content);
+			if (isHtmlElement(toastEl)) toastEl.focus();
 		});
 
 		return {
-			[dataAttrs.root]: "",
-			id: this.#ids.root,
-			popover: "manual"
+			[toasterMeta.dataAttrs.root]: "",
+			id: this.ids.root,
+			popover: "manual",
 		} as const;
 	}
 }
 
-type ToastItemProps<T = object> = {
+type ToastProps<T = object> = {
+	/**
+	 * The parent toaster instance
+	 */
 	toaster: Toaster<T>;
-	toast: Toast<T>;
+	/**
+	 * The toast's unique ID.
+	 */
+	id: string;
+	/**
+	 * How many milliseconds the toast will stay open.
+	 */
+	closeDelay: number;
+	/**
+	 * The sensitivity of the toast for accessibility purposes.
+	 * https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live
+	 */
+	type: "assertive" | "polite";
+	/**
+	 * The data that was passed when calling `addToast`
+	 */
+	data: T;
 };
 
-class ToastItem<T = object> {
-	#props!: ToastItemProps<T>;
-	#toaster = $derived(this.#props.toaster);
-	#toast = $derived(this.#props.toast);
-
+class Toast<T = object> {
+	/** Props */
+	#props!: ToastProps<T>;
+	readonly toaster = $derived(this.#props.toaster);
+	readonly id = $derived(this.#props.id);
 	/** The original data you passed to the `addToast` function. */
-	readonly data = $derived(this.#props.toast.data);
-	readonly closeDelay = $derived(this.#toast.closeDelay);
+	data: T = $state() as T;
+	readonly closeDelay = $derived(this.#props.closeDelay);
+	readonly type = $derived(this.#props.type);
+
+	/** State */
+	ids = toastMeta.createIds();
 	#percentage = $state(0);
+	readonly createdAt: number;
+	pausedAt: number | undefined = $state();
+	pauseDuration = $state(0);
+	timeout: number | undefined;
+	#frame: number | undefined;
+
+	constructor(props: ToastProps<T>) {
+		this.#props = props;
+		this.data = props.data;
+		this.createdAt = performance.now();
+
+		if (!this.closeDelay) return;
+
+		this.reset();
+
+		const updatePercentage = () => {
+			this.#percentage = this.#getPercentage();
+			this.#frame = requestAnimationFrame(updatePercentage);
+		};
+		this.#frame = requestAnimationFrame(updatePercentage);
+	}
+
+	#getPercentage() {
+		if (this.closeDelay === 0) return 0;
+
+		if (this.pausedAt) {
+			return (100 * (this.pausedAt - this.createdAt - this.pauseDuration)) / this.closeDelay;
+		} else {
+			const now = performance.now();
+			return (100 * (now - this.createdAt - this.pauseDuration)) / this.closeDelay;
+		}
+	}
 
 	/** Get the toast timer percentage. */
 	get percentage() {
 		return this.#percentage;
 	}
 
+	/** Remove toast. */
+	readonly removeSelf = () => {
+		this.toaster.removeToast(this.id);
+	};
+
+	/** @internal */
+	readonly cleanup = () => {
+		window.cancelAnimationFrame(this.#frame!);
+	};
+
 	/** Pause toast timer. */
-	readonly pauseToastTimer = () => {
-		if (this.#toast.closeDelay === 0) return;
-		this.#toaster.pauseToastTimer(this.#toast);
-	}
+	readonly pause = () => {
+		if (this.closeDelay === 0) return;
+		window.clearTimeout(this.timeout);
+		this.pausedAt = performance.now();
+	};
 
-	/** Restart toast timer. */
-	readonly restartToastTimer = () => {
-		if (this.#toast.closeDelay === 0) return;
-		this.#toaster.restartToastTimer(this.#toast);
-	}
+	/** Reset toast timer. */
+	readonly reset = () => {
+		if (this.closeDelay === 0) return;
+		window.clearTimeout(this.timeout);
 
-	constructor(props: ToastItemProps<T>) {
-		this.#props = props;
+		this.timeout = window.setTimeout(() => {
+			this.removeSelf();
+		}, this.closeDelay);
+	};
 
-		onMount(() => {
-			if (this.#toast.closeDelay === 0) return;
+	/** Resume toast timer */
+	readonly resume = () => {
+		const pausedAt = this.pausedAt ?? this.createdAt;
+		const elapsed = pausedAt - this.createdAt - this.pauseDuration;
+		const remaining = this.closeDelay - elapsed;
 
-			let frame: number;
-			const updatePercentage = () => {
-				this.#percentage = this.#toast.getPercentage();
-				frame = requestAnimationFrame(updatePercentage);
-			};
+		this.timeout = window.setTimeout(() => {
+			this.removeSelf();
+		}, remaining);
 
-			frame = requestAnimationFrame(updatePercentage);
-
-			return () => {
-				cancelAnimationFrame(frame);
-			};
-		});
-	}
+		this.pauseDuration += performance.now() - pausedAt;
+		this.pausedAt = undefined;
+	};
 
 	/**
 	 * Spread attributes for a toast's content (wrapper) element.
 	 */
 	get content() {
 		return {
-			[dataAttrs.content]: "",
-			id: this.#toast.id,
-			role: 'alert',
-			'aria-labelledby': this.#toast.ids.title,
-			'aria-describedby': this.#toast.ids.description,
-			'aria-live': this.#toast.type ?? this.#toaster.type,
+			[toastMeta.dataAttrs.content]: "",
+			id: this.ids.content,
+			role: "alert",
+			"aria-labelledby": this.ids.title,
+			"aria-describedby": this.ids.description,
+			"aria-live": this.type ?? this.toaster.type,
 			tabindex: -1,
 			onpointerenter: (e: PointerEvent) => {
 				if (isTouch(e)) return;
 
-				if (this.#toaster.hover === 'pause') {
-					this.pauseToastTimer();
-				} else if (this.#toaster.hover === 'pause-all') {
-					for (const currentToast of this.#toaster.toasts) {
-						if (currentToast.closeDelay === 0) continue;
-						this.#toaster.pauseToastTimer(currentToast);
+				if (this.toaster.hover === "pause") {
+					this.pause();
+				} else if (this.toaster.hover === "pause-all") {
+					for (const toast of this.toaster.toasts) {
+						toast.pause();
 					}
 				}
 			},
 			onpointerleave: (e: PointerEvent) => {
 				if (isTouch(e)) return;
 
-				if (this.#toaster.hover === 'pause') {
-					this.restartToastTimer();
-				} else if (this.#toaster.hover === 'pause-all') {
-					for (const currentToast of this.#toaster.toasts) {
-						if (currentToast.closeDelay === 0) continue;
-						this.#toaster.restartToastTimer(currentToast);
+				if (this.toaster.hover === "pause") {
+					this.resume();
+				} else if (this.toaster.hover === "pause-all") {
+					for (const toast of this.toaster.toasts) {
+						toast.resume();
 					}
 				}
-			}
+			},
 		} as const;
 	}
 
@@ -309,14 +302,14 @@ class ToastItem<T = object> {
 	 * Spread attributes for a toast's title element.
 	 */
 	get title() {
-		return { id: this.#toast.ids.title };
+		return { id: this.ids.title };
 	}
 
 	/**
 	 * Soread attributes for a toast's description element.
 	 */
 	get description() {
-		return { id: this.#toast.ids.description };
+		return { id: this.ids.description };
 	}
 
 	/**
@@ -324,10 +317,10 @@ class ToastItem<T = object> {
 	 */
 	get close() {
 		return {
-			[dataAttrs.close]: "",
+			[toastMeta.dataAttrs.close]: "",
 			onclick: () => {
-				this.#toaster.removeToast(this.#toast.id);
-			}
+				this.removeSelf();
+			},
 		} as const satisfies HTMLAttributes<HTMLButtonElement>;
 	}
 }

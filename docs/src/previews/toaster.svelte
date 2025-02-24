@@ -76,8 +76,7 @@
 		<div
 			class="fixed right-0 top-0 m-4 flex flex-col items-end gap-4 text-left md:bottom-0 md:top-auto"
 		>
-			{#each toaster.toasts as t (t.id)}
-				{@const toast = toaster.getToastFromToaster(t)}
+			{#each toaster.toasts as toast (toast.id)}
 				{@const progress = new Progress({ value: () => toast.percentage })}
 
 				<div
