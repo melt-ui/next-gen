@@ -2,7 +2,7 @@
 	import { Popover as Builder, type PopoverProps } from "../builders/Popover.svelte";
 	import { type Snippet } from "svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "$lib/builders";
+	import { getters } from "../builders";
 
 	type Props = ComponentProps<PopoverProps> & {
 		children: Snippet<[Builder]>;

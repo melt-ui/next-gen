@@ -81,6 +81,7 @@ export class Toaster<T = object> {
 			type: this.type,
 			...props,
 		} satisfies AddToastProps<T>;
+		console.log(propsWithDefaults);
 
 		const id = window.crypto.randomUUID();
 
@@ -133,8 +134,8 @@ export class Toaster<T = object> {
 			}
 			el.showPopover();
 
-			const toastEl = document.getElementById(this.toasts[0].ids.content);
-			if (isHtmlElement(toastEl)) toastEl.focus();
+			// const toastEl = document.getElementById(this.toasts[0].ids.content);
+			// if (isHtmlElement(toastEl)) toastEl.focus();
 		});
 
 		return {
@@ -249,6 +250,7 @@ class Toast<T = object> {
 
 	/** Resume toast timer */
 	readonly resume = () => {
+		if (this.closeDelay === 0) return;
 		const pausedAt = this.pausedAt ?? this.createdAt;
 		const elapsed = pausedAt - this.createdAt - this.pauseDuration;
 		const remaining = this.closeDelay - elapsed;
