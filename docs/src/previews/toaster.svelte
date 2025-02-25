@@ -6,6 +6,7 @@
 	import { Progress } from "melt/components";
 	import Close from "~icons/material-symbols/close-rounded";
 	import { onMount } from "svelte";
+	import { Previous } from "runed";
 
 	const controls = usePreviewControls({
 		hover: {
@@ -18,7 +19,7 @@
 			type: "number",
 			min: 0,
 			max: 10000,
-			defaultValue: 0,
+			defaultValue: 3000,
 			label: "Close Delay",
 		},
 	});
@@ -54,13 +55,8 @@
 	function addRandomToast() {
 		toaster.addToast({
 			data: toastData[Math.floor(Math.random() * toastData.length)],
-			// closeDelay: 0,
 		});
 	}
-
-	onMount(() => {
-		[...new Array(2)].forEach(addRandomToast);
-	});
 </script>
 
 <Preview class="text-center">
@@ -69,61 +65,59 @@
 				transition-all hover:cursor-pointer hover:bg-gray-200
 				active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
 				dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
-		on:click={addRandomToast}
+		onclick={addRandomToast}
 	>
 		Show Toast
 	</button>
 
-	<div {...toaster.root} class="fixed !bottom-0 !right-4 flex w-[300px] flex-col bg-red-500/0">
-		{#each toaster.toasts as toast, i (toast.id)}
+	<div
+		{...toaster.root}
+		class="fixed !bottom-4 !right-4 flex w-[300px] flex-col"
+		style:--toasts={Math.min(toaster.toasts.length, 3)}
+	>
+		{#each toaster.toasts as toast (toast.id)}
 			<div
-				class="w-full pb-2"
+				class="relative flex h-[--toast-height] w-full flex-col justify-center rounded-xl bg-gray-800 px-4 text-left transition"
 				{...toast.content}
 				in:fly={{ y: 60, opacity: 0.9 }}
 				out:fly={{ y: 20 }}
 			>
-				<div class="relative rounded-xl bg-gray-500 px-4 py-4 transition">
-					<div class="flex flex-col text-left">
-						<h3 {...toast.title} class="whitespace-nowrap text-sm font-medium">
-							{toast.data.title}
-						</h3>
+				<h3 {...toast.title} class="whitespace-nowrap text-sm font-medium">
+					{toast.data.title}
+				</h3>
 
-						{#if toast.data.description}
-							<div {...toast.description} class="text-sm text-gray-700 dark:text-gray-300">
-								{toast.data.description}
-							</div>
-						{/if}
+				{#if toast.data.description}
+					<div {...toast.description} class="text-sm text-gray-700 dark:text-gray-300">
+						{toast.data.description}
 					</div>
+				{/if}
 
-					<button
-						{...toast.close}
-						aria-label="dismiss toast"
-						class="absolute right-1 top-1 bg-transparent text-gray-300 hover:text-gray-100"
-					>
-						<Close class="h-3.5 w-3.5" />
-					</button>
 
-					{#if toast.closeDelay !== 0}
-						<div class="absolute bottom-0 left-0 right-0">
-							<Progress value={toast.percentage}>
-								{#snippet children(progress)}
+				<button
+					{...toast.close}
+					aria-label="dismiss toast"
+					class="absolute right-1 top-1 bg-transparent text-gray-300 hover:text-gray-100"
+				>
+					<Close class="h-3.5 w-3.5" />
+				</button>
+
+				{#if toast.closeDelay !== 0}
+					<div class="absolute bottom-4 right-4 h-[4px] w-[30px] overflow-hidden rounded-full">
+						<Progress value={toast.percentage}>
+							{#snippet children(progress)}
+								<div {...progress.root} class="relative h-full w-full overflow-hidden bg-gray-950">
 									<div
-										{...progress.root}
-										class="relative h-[2px] w-full overflow-hidden bg-transparent"
-									>
-										<div
-											{...progress.progress}
-											class="h-full w-full translate-x-[var(--progress)]"
-											class:bg-green-500={toast.data.variant === "success"}
-											class:bg-orange-500={toast.data.variant === "warning"}
-											class:bg-red-500={toast.data.variant === "error"}
-										></div>
-									</div>
-								{/snippet}
-							</Progress>
-						</div>
-					{/if}
-				</div>
+										{...progress.progress}
+										class="h-full w-full -translate-x-[var(--progress)]"
+										class:bg-green-400={toast.data.variant === "success"}
+										class:bg-orange-400={toast.data.variant === "warning"}
+										class:bg-red-500={toast.data.variant === "error"}
+									></div>
+								</div>
+							{/snippet}
+						</Progress>
+					</div>
+				{/if}
 			</div>
 		{/each}
 	</div>
@@ -135,9 +129,27 @@
 	}
 
 	[data-melt-toaster-root] {
-		height: 100%;
-		pointer-events: none;
-		overflow: hidden;
+		--gap: 0.75rem;
+		--hover-offset: 1rem;
+		--toast-height: 5rem;
+		--hidden-offset: 0.75rem;
+
+		--hidden-toasts: calc(var(--toasts) - 1);
+
+		overflow: visible;
+		display: grid;
+		grid-template-rows: var(--toast-height) repeat(var(--hidden-toasts), var(--hidden-offset));
+		grid-template-columns: 1fr;
+		gap: 0;
+		background: unset;
+		padding: 0;
+	}
+
+	[data-melt-toaster-root]:hover {
+		grid-template-rows: var(--hidden-offset) var(--toast-height) repeat(
+				var(--hidden-toasts),
+				calc(var(--toast-height) + var(--gap))
+			);
 	}
 
 	[data-melt-toaster-toast-content] {
@@ -145,7 +157,7 @@
 		pointer-events: auto;
 		bottom: 0;
 		left: 0;
-		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.25);
 
 		transform-origin: 50% 0%;
 		transition: all 350ms ease;
@@ -155,19 +167,19 @@
 		z-index: 1;
 		scale: 0.925;
 		opacity: 0;
-		translate: 0 -2.25rem;
+		translate: 0 calc(-3 * var(--hidden-offset));
 	}
 
 	[data-melt-toaster-toast-content]:nth-last-child(-n + 3) {
 		z-index: 2;
 		scale: 0.95;
-		translate: 0 -1.5rem;
+		translate: 0 calc(-2 * var(--hidden-offset));
 	}
 
 	[data-melt-toaster-toast-content]:nth-last-child(-n + 2) {
 		z-index: 3;
 		scale: 0.975;
-		translate: 0 -0.75rem;
+		translate: 0 calc(-1 * var(--hidden-offset));
 	}
 
 	[data-melt-toaster-toast-content]:nth-last-child(-n + 1) {
@@ -178,15 +190,17 @@
 
 	[data-melt-toaster-root]:hover [data-melt-toaster-toast-content]:nth-last-child(-n + 3) {
 		scale: 1;
-		translate: 0 calc(-200% - 0.5rem);
+		--toast-gap: calc(calc(var(--gap) * 2) + var(--hover-offset));
+		translate: 0 calc(-200% - var(--toast-gap));
 	}
 
 	[data-melt-toaster-root]:hover [data-melt-toaster-toast-content]:nth-last-child(-n + 2) {
 		scale: 1;
-		translate: 0 calc(-100% - 0.25rem);
+		--toast-gap: calc(calc(var(--gap) * 1) + var(--hover-offset));
+		translate: 0 calc(-100% - var(--toast-gap));
 	}
 
 	[data-melt-toaster-root]:hover [data-melt-toaster-toast-content]:nth-last-child(-n + 1) {
-		translate: 0 0;
+		translate: 0 calc(-1 * var(--hover-offset));
 	}
 </style>
