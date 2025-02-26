@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { fade, fly, scale } from "svelte/transition";
+	import { fly } from "svelte/transition";
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import Preview from "@components/preview.svelte";
 	import { Toaster, getters } from "melt/builders";
 	import { Progress } from "melt/components";
 	import Close from "~icons/material-symbols/close-rounded";
-	import { onMount } from "svelte";
-	import { Previous } from "runed";
 
 	const controls = usePreviewControls({
 		hover: {
@@ -77,7 +75,7 @@
 	>
 		{#each toaster.toasts as toast, i (toast.id)}
 			<div
-				class="relative flex h-[--toast-height] w-full flex-col justify-center rounded-lg bg-gray-800 px-4 text-left transition"
+				class="relative flex h-[--toast-height] w-full flex-col justify-center rounded-xl bg-gray-800 px-4 text-left transition"
 				{...toast.content}
 				style:--n={toaster.toasts.length - i}
 				in:fly={{ y: 60, opacity: 0.9 }}
@@ -88,7 +86,7 @@
 				</h3>
 
 				{#if toast.data.description}
-					<div {...toast.description} class="text-sm text-gray-700 dark:text-gray-300">
+					<div {...toast.description} class="text-xs text-gray-700 dark:text-gray-300">
 						{toast.data.description}
 						{toast.pauseDuration}
 					</div>
