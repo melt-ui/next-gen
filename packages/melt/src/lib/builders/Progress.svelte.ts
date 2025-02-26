@@ -9,14 +9,14 @@ const dataIds = createDataIds("progress", ["root", "progress"]);
 export type ProgressProps = {
 	/**
 	 * The value for the progress.
-	 * 
+	 *
 	 * @default undefined
 	 */
 	value?: MaybeGetter<number | undefined>;
 
 	/**
 	 * The maximum value of the progress.
-	 * 
+	 *
 	 * @deafult 100
 	 */
 	max?: MaybeGetter<number | undefined>;
@@ -40,7 +40,7 @@ export class Progress {
 		this.#value = new Synced({
 			value: props.value,
 			onChange: props.onValueChange,
-			defaultValue: 0
+			defaultValue: 0,
 		});
 	}
 
@@ -57,16 +57,16 @@ export class Progress {
 	 */
 	get root() {
 		return {
-			[dataIds.root]: '',
+			[dataIds.root]: "",
 			value: this.#value.current,
 			max: this.max,
-			role: 'meter',
-			'aria-valuemin': 0,
-			'aria-valuemax': this.max,
-			'aria-valuenow': this.#value.current,
-			'data-value': this.#value.current,
-			'data-state': this.#value.current === this.max ? 'complete' : 'loading',
-			'data-max': this.max,
+			role: "meter",
+			"aria-valuemin": 0,
+			"aria-valuemax": this.max,
+			"aria-valuenow": this.#value.current,
+			"data-value": this.#value.current,
+			"data-state": this.#value.current === this.max ? "complete" : "loading",
+			"data-max": this.max,
 		};
 	}
 
@@ -77,10 +77,12 @@ export class Progress {
 	 */
 	get progress() {
 		return {
-			[dataIds.progress]: '',
+			[dataIds.progress]: "",
 			style: styleAttr({
-				'--progress': `${100 - (100 * (this.#value.current ?? 0)) / (this.max ?? 1)}%`
-			})
-		}
+				"--progress": `${100 - (100 * (this.#value.current ?? 0)) / (this.max ?? 1)}%`,
+				"--neg-progress": `-${100 - (100 * (this.#value.current ?? 0)) / (this.max ?? 1)}%`,
+			}),
+		};
 	}
 }
+

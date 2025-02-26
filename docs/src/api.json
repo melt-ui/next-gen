@@ -363,6 +363,81 @@
     ],
     "propsAlt": "export type ToggleProps = {\n  /**\n   * The value for the Toggle.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  value?: MaybeGetter<boolean>;\n  /**\n   * Called when the value is supposed to change.\n   */\n  onValueChange?: (value: boolean) => void;\n\n  /**\n   * If `true`, prevents the user from interacting with the input.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n};"
   },
+  "Toaster": {
+    "constructorProps": [
+      {
+        "name": "closeDelay",
+        "type": "MaybeGetter<number | undefined>",
+        "description": "The delay in milliseconds before the toast closes. Set to 0 to disable.",
+        "defaultValue": "5000",
+        "optional": true
+      },
+      {
+        "name": "type",
+        "type": "MaybeGetter<\"assertive\" | \"polite\" | undefined>",
+        "description": "The sensitivity of the toast for accessibility purposes.\nhttps://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live",
+        "defaultValue": "'polite'",
+        "optional": true
+      },
+      {
+        "name": "hover",
+        "type": "MaybeGetter<\"pause\" | \"pause-all\" | null | undefined>",
+        "description": "The behaviour when a toast is hovered.",
+        "defaultValue": "'pause'",
+        "optional": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "addToast",
+        "type": "(props: AddToastProps<T>) => Toast<T>",
+        "description": "Adds a toast."
+      },
+      {
+        "name": "removeToast",
+        "type": "(id: string) => void",
+        "description": "Removes the toast with the specified ID.\n@param id The id of the toast."
+      },
+      {
+        "name": "updateToast",
+        "type": "(id: string, data: T) => void",
+        "description": "Updates a toast's data.\n@param id The id of the toast.\n@param data The updated data."
+      }
+    ],
+    "properties": [
+      {
+        "name": "ids",
+        "type": "{ root: string }",
+        "description": ""
+      },
+      {
+        "name": "closeDelay",
+        "type": "number",
+        "description": ""
+      },
+      {
+        "name": "type",
+        "type": "\"assertive\" | \"polite\"",
+        "description": ""
+      },
+      {
+        "name": "hover",
+        "type": "\"pause\" | \"pause-all\"",
+        "description": ""
+      },
+      {
+        "name": "toasts",
+        "type": "Toast<T>[]",
+        "description": "The active toasts."
+      },
+      {
+        "name": "root",
+        "type": "{\n  readonly \"data-melt-toaster-root\": \"\"\n  readonly id: string\n  readonly popover: \"manual\"\n}",
+        "description": "Spread attributes for the container of the toasts."
+      }
+    ],
+    "propsAlt": "export type ToasterProps = {\n  /**\n   * The delay in milliseconds before the toast closes. Set to 0 to disable.\n   * @default 5000\n   */\n  closeDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * The sensitivity of the toast for accessibility purposes.\n   * https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live\n   * @default 'polite'\n   */\n  type?: MaybeGetter<\"assertive\" | \"polite\" | undefined>;\n\n  /**\n   * The behaviour when a toast is hovered.\n   * @default 'pause'\n   */\n  hover?: MaybeGetter<\"pause\" | \"pause-all\" | null | undefined>;\n};"
+  },
   "Tabs": {
     "constructorProps": [
       {
@@ -798,11 +873,11 @@
       },
       {
         "name": "progress",
-        "type": "{\n  \"data-melt-progress-progress\": string\n  style: `--progress: ${string}`\n}",
+        "type": "{\n  \"data-melt-progress-progress\": string\n  style: `--progress: ${string}; --neg-progress: ${string}`\n}",
         "description": "Spread attributes for the Progress percentage element.\nProvides a --progress CSS variable that can be used to style the progress:\n`transform: translateX(calc(var(--progress) * -1));`"
       }
     ],
-    "propsAlt": "export type ProgressProps = {\n  /**\n   * The value for the progress.\n   * \n   * @default undefined\n   */\n  value?: MaybeGetter<number | undefined>;\n\n  /**\n   * The maximum value of the progress.\n   * \n   * @deafult 100\n   */\n  max?: MaybeGetter<number | undefined>;\n\n  /**\n   * The callback invoked when the value of the progress changes.\n   */\n  onValueChange?: (value: number) => void;\n};"
+    "propsAlt": "export type ProgressProps = {\n  /**\n   * The value for the progress.\n   *\n   * @default undefined\n   */\n  value?: MaybeGetter<number | undefined>;\n\n  /**\n   * The maximum value of the progress.\n   *\n   * @deafult 100\n   */\n  max?: MaybeGetter<number | undefined>;\n\n  /**\n   * The callback invoked when the value of the progress changes.\n   */\n  onValueChange?: (value: number) => void;\n};"
   },
   "Popover": {
     "constructorProps": [
@@ -893,7 +968,19 @@
       {
         "name": "onComplete",
         "type": "((value: string) => void) | undefined",
-        "description": "Calledwhen the `PinInput` instance is filled.",
+        "description": "Called when the `PinInput` instance is filled.",
+        "optional": true
+      },
+      {
+        "name": "onPaste",
+        "type": "((value: string) => void) | undefined",
+        "description": "Override the default behavior when pasting a value.",
+        "optional": true
+      },
+      {
+        "name": "onError",
+        "type": "((error: PinInputError) => void) | undefined",
+        "description": "Called when the PinInput encounters an error.",
         "optional": true
       },
       {
@@ -992,7 +1079,7 @@
         "description": "An array of props that should be spread to the input elements."
       }
     ],
-    "propsAlt": "export type PinInputProps = {\n  /**\n   * The value for the Pin Input.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default ''\n   */\n  value?: MaybeGetter<string | undefined>;\n  /**\n   * Called when the `PinInput` instance tries to change the value.\n   */\n  onValueChange?: (value: string) => void;\n\n  /**\n   * Calledwhen the `PinInput` instance is filled.\n   */\n  onComplete?: (value: string) => void;\n\n  /**\n   * The amount of digits in the Pin Input.\n   *\n   * @default 4\n   */\n  maxLength?: MaybeGetter<number | undefined>;\n  /**\n   * An optional placeholder to display when the input is empty.\n   *\n   * @default '○'\n   */\n  placeholder?: MaybeGetter<string | undefined>;\n\n  /**\n   * If `true`, prevents the user from interacting with the input.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the input should be masked like a password.\n   *\n   * @default false\n   */\n  mask?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * What characters the input accepts.\n   *\n   * @default 'text'\n   */\n  type?: MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>;\n\n  /**\n   * If `true`, allows pasting values from the clipboard.\n   *\n   * @default true\n   */\n  allowPaste?: MaybeGetter<boolean | undefined>;\n};"
+    "propsAlt": "export type PinInputProps = {\n  /**\n   * The value for the Pin Input.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default ''\n   */\n  value?: MaybeGetter<string | undefined>;\n  /**\n   * Called when the `PinInput` instance tries to change the value.\n   */\n  onValueChange?: (value: string) => void;\n\n  /**\n   * Called when the `PinInput` instance is filled.\n   */\n  onComplete?: (value: string) => void;\n\n  /**\n   * Override the default behavior when pasting a value.\n   *\n   * @param value The pasted value.\n   *\n   * @example ```ts\n   * const pin = new PinInput({\n   *   onPaste(value) {\n   *     if (!valid(value)) {\n   *       // do something\n   *       return\n   *     }\n   *     pin.value = value\n   *   }\n   * });\n   */\n  onPaste?: (value: string) => void;\n\n  /**\n   * Called when the PinInput encounters an error.\n   */\n  onError?: (error: PinInputError) => void;\n\n  /**\n   * The amount of digits in the Pin Input.\n   *\n   * @default 4\n   */\n  maxLength?: MaybeGetter<number | undefined>;\n  /**\n   * An optional placeholder to display when the input is empty.\n   *\n   * @default '○'\n   */\n  placeholder?: MaybeGetter<string | undefined>;\n\n  /**\n   * If `true`, prevents the user from interacting with the input.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the input should be masked like a password.\n   *\n   * @default false\n   */\n  mask?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * What characters the input accepts.\n   *\n   * @default 'text'\n   */\n  type?: MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>;\n\n  /**\n   * If `true`, allows pasting values from the clipboard.\n   *\n   * @default true\n   */\n  allowPaste?: MaybeGetter<boolean | undefined>;\n};"
   },
   "FileUpload": {
     "constructorProps": [
@@ -1026,6 +1113,13 @@
         "type": "MaybeGetter<number | undefined>",
         "description": "Maximum file size in bytes",
         "defaultValue": "undefined",
+        "optional": true
+      },
+      {
+        "name": "disabled",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "Whether the file upload is disabled",
+        "defaultValue": "false",
         "optional": true
       },
       {
@@ -1076,6 +1170,11 @@
         "description": ""
       },
       {
+        "name": "disabled",
+        "type": "boolean",
+        "description": ""
+      },
+      {
         "name": "isDragging",
         "type": "boolean",
         "description": ""
@@ -1087,21 +1186,21 @@
       },
       {
         "name": "dropzone",
-        "type": "{\n  readonly \"data-melt-fileupload-dropzone\": \"\"\n  readonly \"data-dragging\": \"\" | undefined\n  readonly ondragenter: (e: DragEvent) => void\n  readonly ondragleave: (e: DragEvent) => void\n  readonly ondragover: (e: DragEvent) => void\n  readonly ondrop: (e: DragEvent) => void\n  readonly onclick: () => void\n}",
+        "type": "{\n  readonly \"data-melt-fileupload-dropzone\": \"\"\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-disabled\": \"\" | undefined\n  readonly ondragenter: (e: DragEvent) => void\n  readonly ondragleave: (e: DragEvent) => void\n  readonly ondragover: (e: DragEvent) => void\n  readonly ondrop: (e: DragEvent) => void\n  readonly onclick: () => void\n}",
         "description": "The dropzone element, where you can drag files into, or click to open the file picker."
       },
       {
         "name": "input",
-        "type": "{\n  readonly \"data-melt-fileupload-input\": \"\"\n  readonly id: string\n  readonly type: \"file\"\n  readonly accept: string | undefined\n  readonly multiple: Multiple\n  readonly style: \"display: none;\"\n  readonly onchange: (e: Event) => void\n}",
+        "type": "{\n  readonly \"data-melt-fileupload-input\": \"\"\n  readonly id: string\n  readonly type: \"file\"\n  readonly accept: string | undefined\n  readonly multiple: Multiple\n  readonly style: \"display: none;\"\n  readonly disabled: boolean\n  readonly onchange: (e: Event) => void\n}",
         "description": "The hidden file input element."
       },
       {
         "name": "trigger",
-        "type": "{ readonly onclick: () => void }",
+        "type": "{\n  readonly \"data-disabled\": \"\" | undefined\n  readonly onclick: () => void\n}",
         "description": "An optional trigger element, which can be used to open the file picker."
       }
     ],
-    "propsAlt": "export type FileUploadProps<Multiple extends boolean = false> = {\n  /**\n   * The currently selected files.\n   */\n  selected?: MaybeMultiple<File, Multiple>;\n\n  /**\n   * Callback fired when selected files change\n   */\n  onSelectedChange?: (files: Multiple extends true ? Set<File> : File | undefined) => void;\n\n  /**\n   * Whether to accept multiple files\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The accepted file types. Can be a MIME type, a MIME group, or a file extension.\n   * Separate multiple types with a comma.\n   * @example 'image/jpeg'\n   * @example 'image/*'\n   * @example '.png, .jpg, .jpeg'\n   */\n  accept?: MaybeGetter<string | undefined>;\n\n  /**\n   * Maximum file size in bytes\n   * @default undefined\n   */\n  maxSize?: MaybeGetter<number | undefined>;\n\n  /**\n   * Custom validate fn. Will be called together with the original validation,\n   * which takes into account the `accept` and `maxSize` props.\n   */\n  validate?: (file: File) => boolean;\n\n  /**\n   * Callback fired when a file fails validation\n   */\n  onError?: (error: FileUploadError) => void;\n\n  /**\n   * Callback fired when a file is accepted\n   */\n  onAccept?: (file: File) => void;\n};"
+    "propsAlt": "export type FileUploadProps<Multiple extends boolean = false> = {\n  /**\n   * The currently selected files.\n   */\n  selected?: MaybeMultiple<File, Multiple>;\n\n  /**\n   * Callback fired when selected files change\n   */\n  onSelectedChange?: (files: Multiple extends true ? Set<File> : File | undefined) => void;\n\n  /**\n   * Whether to accept multiple files\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The accepted file types. Can be a MIME type, a MIME group, or a file extension.\n   * Separate multiple types with a comma.\n   * @example 'image/jpeg'\n   * @example 'image/*'\n   * @example '.png, .jpg, .jpeg'\n   */\n  accept?: MaybeGetter<string | undefined>;\n\n  /**\n   * Maximum file size in bytes\n   * @default undefined\n   */\n  maxSize?: MaybeGetter<number | undefined>;\n\n  /**\n   * Whether the file upload is disabled\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Custom validate fn. Will be called together with the original validation,\n   * which takes into account the `accept` and `maxSize` props.\n   */\n  validate?: (file: File) => boolean;\n\n  /**\n   * Callback fired when a file fails validation\n   */\n  onError?: (error: FileUploadError) => void;\n\n  /**\n   * Callback fired when a file is accepted\n   */\n  onAccept?: (file: File) => void;\n};"
   },
   "Collapsible": {
     "constructorProps": [
@@ -1138,12 +1237,12 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  disabled: boolean\n  onclick: () => void\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  \"data-melt-collapsible-trigger\": string\n}",
+        "type": "{\n  readonly disabled: boolean\n  readonly onclick: () => void\n  readonly \"data-state\": string\n  readonly \"data-disabled\": \"\" | undefined\n  readonly \"data-melt-collapsible-trigger\": \"\"\n  readonly id: string\n  readonly \"aria-expanded\": boolean\n  readonly \"aria-controls\": string\n}",
         "description": "The spread attributes for the trigger button."
       },
       {
         "name": "content",
-        "type": "{\n  \"data-state\": string\n  \"data-disabled\": \"\" | undefined\n  \"data-melt-collapsible-content\": string\n}",
+        "type": "{\n  readonly \"data-state\": string\n  readonly \"data-disabled\": \"\" | undefined\n  readonly \"data-melt-collapsible-content\": \"\"\n  readonly id: string\n}",
         "description": "The spread attributes for the content element."
       }
     ],

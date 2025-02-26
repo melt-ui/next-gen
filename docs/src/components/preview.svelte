@@ -114,7 +114,17 @@
 					{:else if control.type === "number"}
 						<input
 							type="number"
-							bind:value={values[key] as number}
+							bind:value={() => values[key] as number,
+							(v: number) => {
+								// Make sure that inputed values don't go outside the specified min/max values.
+								if (control.min && v < control.min) {
+									values[key] = control.min;
+								} else if (control.max && v > control.max) {
+									values[key] = control.max;
+								} else {
+									values[key] = v;
+								}
+							}}
 							min={control.min}
 							max={control.max}
 							class="self-stretch rounded-md px-1 py-0.5 dark:bg-gray-900"
