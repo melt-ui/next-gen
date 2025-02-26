@@ -42,8 +42,7 @@ The first step is to create a `Toaster` component that will be used to render to
 </script>
 
 <div {...toaster.root}>
-	{#each toaster.toasts as t (t.id)}
-		{@const toast = toaster.getToastFromToaster(t)}
+	{#each toaster.toasts as toast (toast.id)}
 
 		<div {...toast.content}>
 			<h3 {...toast.title}>{toast.data.title}</h3>

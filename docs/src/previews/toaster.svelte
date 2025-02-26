@@ -73,12 +73,13 @@
 	<div
 		{...toaster.root}
 		class="fixed !bottom-4 !right-4 flex w-[300px] flex-col"
-		style:--toasts={Math.min(toaster.toasts.length, 3)}
+		style:--toasts={toaster.toasts.length}
 	>
-		{#each toaster.toasts as toast (toast.id)}
+		{#each toaster.toasts as toast, i (toast.id)}
 			<div
-				class="relative flex h-[--toast-height] w-full flex-col justify-center rounded-xl bg-gray-800 px-4 text-left transition"
+				class="relative flex h-[--toast-height] w-full flex-col justify-center rounded-lg bg-gray-800 px-4 text-left transition"
 				{...toast.content}
+				style:--n={toaster.toasts.length - i}
 				in:fly={{ y: 60, opacity: 0.9 }}
 				out:fly={{ y: 20 }}
 			>
@@ -131,7 +132,7 @@
 	[data-melt-toaster-root] {
 		--gap: 0.75rem;
 		--hover-offset: 1rem;
-		--toast-height: 5rem;
+		--toast-height: 4rem;
 		--hidden-offset: 0.75rem;
 
 		--hidden-toasts: calc(var(--toasts) - 1);
@@ -188,19 +189,11 @@
 		translate: 0;
 	}
 
-	[data-melt-toaster-root]:hover [data-melt-toaster-toast-content]:nth-last-child(-n + 3) {
+	[data-melt-toaster-root]:hover [data-melt-toaster-toast-content] {
 		scale: 1;
-		--toast-gap: calc(calc(var(--gap) * 2) + var(--hover-offset));
-		translate: 0 calc(-200% - var(--toast-gap));
-	}
-
-	[data-melt-toaster-root]:hover [data-melt-toaster-toast-content]:nth-last-child(-n + 2) {
-		scale: 1;
-		--toast-gap: calc(calc(var(--gap) * 1) + var(--hover-offset));
-		translate: 0 calc(-100% - var(--toast-gap));
-	}
-
-	[data-melt-toaster-root]:hover [data-melt-toaster-toast-content]:nth-last-child(-n + 1) {
-		translate: 0 calc(-1 * var(--hover-offset));
+		opacity: 1;
+		--toast-gap: calc(calc(var(--gap) * var(--n)) + var(--hover-offset));
+		--percentage: calc(-100% * calc(var(--n) - 1));
+		translate: 0 calc(var(--percentage) - var(--toast-gap));
 	}
 </style>
