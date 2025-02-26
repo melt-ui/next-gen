@@ -54,7 +54,6 @@
 
 		transition: 0.3s;
 		transition-property: opacity, transform;
-		transform-origin: var(--melt-popover-content-transform-origin, center);
 	}
 
 	[data-melt-popover-content][data-open] {
