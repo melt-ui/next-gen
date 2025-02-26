@@ -4,6 +4,7 @@ import { createBuilderMetadata } from "$lib/utils/identifiers";
 import type { HTMLAttributes } from "svelte/elements";
 import { SvelteMap } from "svelte/reactivity";
 import { isHtmlElement, isTouch } from "../utils/is";
+import { AnimationFrames } from "$lib/utils/animation-frames.svelte";
 
 const toasterMeta = createBuilderMetadata("toaster", ["root"]);
 
@@ -81,7 +82,6 @@ export class Toaster<T = object> {
 			type: this.type,
 			...props,
 		} satisfies AddToastProps<T>;
-		console.log(propsWithDefaults);
 
 		const id = window.crypto.randomUUID();
 
@@ -133,9 +133,6 @@ export class Toaster<T = object> {
 				return;
 			}
 			el.showPopover();
-
-			// const toastEl = document.getElementById(this.toasts[0].ids.content);
-			// if (isHtmlElement(toastEl)) toastEl.focus();
 		});
 
 		return {
@@ -182,12 +179,10 @@ class Toast<T = object> {
 
 	/** State */
 	ids = toastMeta.createIds();
-	#percentage = $state(0);
 	readonly createdAt: number;
-	pausedAt: number | undefined = $state();
-	pauseDuration = $state(0);
-	timeout: number | undefined;
-	#frame: number | undefined;
+	#frames: AnimationFrames | undefined;
+	timeElapsed = $state(0);
+	readonly percentage = $derived((100 * this.timeElapsed) / this.closeDelay);
 
 	constructor(props: ToastProps<T>) {
 		this.#props = props;
@@ -196,29 +191,12 @@ class Toast<T = object> {
 
 		if (!this.closeDelay) return;
 
-		this.reset();
-
-		const updatePercentage = () => {
-			this.#percentage = this.#getPercentage();
-			this.#frame = requestAnimationFrame(updatePercentage);
-		};
-		this.#frame = requestAnimationFrame(updatePercentage);
-	}
-
-	#getPercentage() {
-		if (this.closeDelay === 0) return 0;
-
-		if (this.pausedAt) {
-			return (100 * (this.pausedAt - this.createdAt - this.pauseDuration)) / this.closeDelay;
-		} else {
-			const now = performance.now();
-			return (100 * (now - this.createdAt - this.pauseDuration)) / this.closeDelay;
-		}
-	}
-
-	/** Get the toast timer percentage. */
-	get percentage() {
-		return this.#percentage;
+		this.#frames = new AnimationFrames(({ delta }) => {
+			this.timeElapsed += delta;
+			if (this.timeElapsed > this.closeDelay) {
+				this.removeSelf();
+			}
+		});
 	}
 
 	/** Remove toast. */
@@ -228,39 +206,23 @@ class Toast<T = object> {
 
 	/** @internal */
 	readonly cleanup = () => {
-		window.cancelAnimationFrame(this.#frame!);
+		this.#frames?.stop();
 	};
 
 	/** Pause toast timer. */
 	readonly pause = () => {
-		if (this.closeDelay === 0) return;
-		window.clearTimeout(this.timeout);
-		this.pausedAt = performance.now();
+		this.#frames?.stop();
 	};
 
 	/** Reset toast timer. */
 	readonly reset = () => {
-		if (this.closeDelay === 0) return;
-		window.clearTimeout(this.timeout);
-
-		this.timeout = window.setTimeout(() => {
-			this.removeSelf();
-		}, this.closeDelay);
+		this.timeElapsed = 0;
+		this.#frames?.start();
 	};
 
 	/** Resume toast timer */
 	readonly resume = () => {
-		if (this.closeDelay === 0) return;
-		const pausedAt = this.pausedAt ?? this.createdAt;
-		const elapsed = pausedAt - this.createdAt - this.pauseDuration;
-		const remaining = this.closeDelay - elapsed;
-
-		this.timeout = window.setTimeout(() => {
-			this.removeSelf();
-		}, remaining);
-
-		this.pauseDuration += performance.now() - pausedAt;
-		this.pausedAt = undefined;
+		this.#frames?.start();
 	};
 
 	/**

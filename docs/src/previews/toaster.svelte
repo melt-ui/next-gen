@@ -89,9 +89,9 @@
 				{#if toast.data.description}
 					<div {...toast.description} class="text-sm text-gray-700 dark:text-gray-300">
 						{toast.data.description}
+						{toast.pauseDuration}
 					</div>
 				{/if}
-
 
 				<button
 					{...toast.close}
