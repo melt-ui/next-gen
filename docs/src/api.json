@@ -234,6 +234,81 @@
     ],
     "propsAlt": "export type ToggleProps = {\n  /**\n   * The value for the Toggle.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  value?: MaybeGetter<boolean>;\n  /**\n   * Called when the value is supposed to change.\n   */\n  onValueChange?: (value: boolean) => void;\n\n  /**\n   * If `true`, prevents the user from interacting with the input.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n};"
   },
+  "Toaster": {
+    "constructorProps": [
+      {
+        "name": "closeDelay",
+        "type": "MaybeGetter<number | undefined>",
+        "description": "The delay in milliseconds before the toast closes. Set to 0 to disable.",
+        "defaultValue": "5000",
+        "optional": true
+      },
+      {
+        "name": "type",
+        "type": "MaybeGetter<\"assertive\" | \"polite\" | undefined>",
+        "description": "The sensitivity of the toast for accessibility purposes.\nhttps://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live",
+        "defaultValue": "'polite'",
+        "optional": true
+      },
+      {
+        "name": "hover",
+        "type": "MaybeGetter<\"pause\" | \"pause-all\" | null | undefined>",
+        "description": "The behaviour when a toast is hovered.",
+        "defaultValue": "'pause'",
+        "optional": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "addToast",
+        "type": "(props: AddToastProps<T>) => Toast<T>",
+        "description": "Adds a toast."
+      },
+      {
+        "name": "removeToast",
+        "type": "(id: string) => void",
+        "description": "Removes the toast with the specified ID.\n@param id The id of the toast."
+      },
+      {
+        "name": "updateToast",
+        "type": "(id: string, data: T) => void",
+        "description": "Updates a toast's data.\n@param id The id of the toast.\n@param data The updated data."
+      }
+    ],
+    "properties": [
+      {
+        "name": "ids",
+        "type": "{ root: string }",
+        "description": ""
+      },
+      {
+        "name": "closeDelay",
+        "type": "number",
+        "description": ""
+      },
+      {
+        "name": "type",
+        "type": "\"assertive\" | \"polite\"",
+        "description": ""
+      },
+      {
+        "name": "hover",
+        "type": "\"pause\" | \"pause-all\"",
+        "description": ""
+      },
+      {
+        "name": "toasts",
+        "type": "Toast<T>[]",
+        "description": "The active toasts."
+      },
+      {
+        "name": "root",
+        "type": "{\n  readonly \"data-melt-toaster-root\": \"\"\n  readonly id: string\n  readonly popover: \"manual\"\n}",
+        "description": "Spread attributes for the container of the toasts."
+      }
+    ],
+    "propsAlt": "export type ToasterProps = {\n  /**\n   * The delay in milliseconds before the toast closes. Set to 0 to disable.\n   * @default 5000\n   */\n  closeDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * The sensitivity of the toast for accessibility purposes.\n   * https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live\n   * @default 'polite'\n   */\n  type?: MaybeGetter<\"assertive\" | \"polite\" | undefined>;\n\n  /**\n   * The behaviour when a toast is hovered.\n   * @default 'pause'\n   */\n  hover?: MaybeGetter<\"pause\" | \"pause-all\" | null | undefined>;\n};"
+  },
   "Tabs": {
     "constructorProps": [
       {
@@ -669,11 +744,11 @@
       },
       {
         "name": "progress",
-        "type": "{\n  \"data-melt-progress-progress\": string\n  style: `--progress: ${string}`\n}",
+        "type": "{\n  \"data-melt-progress-progress\": string\n  style: `--progress: ${string}; --neg-progress: ${string}`\n}",
         "description": "Spread attributes for the Progress percentage element.\nProvides a --progress CSS variable that can be used to style the progress:\n`transform: translateX(calc(var(--progress) * -1));`"
       }
     ],
-    "propsAlt": "export type ProgressProps = {\n  /**\n   * The value for the progress.\n   * \n   * @default undefined\n   */\n  value?: MaybeGetter<number | undefined>;\n\n  /**\n   * The maximum value of the progress.\n   * \n   * @deafult 100\n   */\n  max?: MaybeGetter<number | undefined>;\n\n  /**\n   * The callback invoked when the value of the progress changes.\n   */\n  onValueChange?: (value: number) => void;\n};"
+    "propsAlt": "export type ProgressProps = {\n  /**\n   * The value for the progress.\n   *\n   * @default undefined\n   */\n  value?: MaybeGetter<number | undefined>;\n\n  /**\n   * The maximum value of the progress.\n   *\n   * @deafult 100\n   */\n  max?: MaybeGetter<number | undefined>;\n\n  /**\n   * The callback invoked when the value of the progress changes.\n   */\n  onValueChange?: (value: number) => void;\n};"
   },
   "Popover": {
     "constructorProps": [
