@@ -59,9 +59,9 @@
 
 <Preview class="text-center">
 	<button
-		class="mx-auto block rounded-xl bg-gray-100 px-4 py-2 font-semibold text-gray-800
-				transition-all hover:cursor-pointer hover:bg-gray-200
-				active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
+		class="mx-auto block rounded-xl bg-gray-600 px-4 py-2 font-semibold text-white
+				transition-all hover:cursor-pointer hover:bg-gray-500
+				active:bg-gray-400 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
 				dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
 		onclick={addRandomToast}
 	>
@@ -75,7 +75,7 @@
 	>
 		{#each toaster.toasts as toast, i (toast.id)}
 			<div
-				class="relative flex h-[--toast-height] w-full flex-col justify-center rounded-xl bg-gray-800 px-4 text-left transition"
+				class="relative flex h-[--toast-height] w-full flex-col justify-center rounded-xl bg-white px-4 text-left transition dark:bg-gray-800"
 				{...toast.content}
 				style:--n={toaster.toasts.length - i}
 				in:fly={{ y: 60, opacity: 0.9 }}
@@ -88,14 +88,13 @@
 				{#if toast.data.description}
 					<div {...toast.description} class="text-xs text-gray-700 dark:text-gray-300">
 						{toast.data.description}
-						{toast.pauseDuration}
 					</div>
 				{/if}
 
 				<button
 					{...toast.close}
 					aria-label="dismiss toast"
-					class="absolute right-1 top-1 bg-transparent text-gray-300 hover:text-gray-100"
+					class="absolute right-1 top-1 bg-transparent text-gray-300 hover:text-gray-400 dark:hover:text-gray-100"
 				>
 					<Close class="h-3.5 w-3.5" />
 				</button>
@@ -104,7 +103,10 @@
 					<div class="absolute bottom-4 right-4 h-[4px] w-[30px] overflow-hidden rounded-full">
 						<Progress value={toast.percentage}>
 							{#snippet children(progress)}
-								<div {...progress.root} class="relative h-full w-full overflow-hidden bg-gray-950">
+								<div
+									{...progress.root}
+									class="relative h-full w-full overflow-hidden bg-gray-200 dark:bg-gray-950"
+								>
 									<div
 										{...progress.progress}
 										class="h-full w-full -translate-x-[var(--progress)]"
@@ -156,10 +158,14 @@
 		pointer-events: auto;
 		bottom: 0;
 		left: 0;
-		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.25);
+		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 
 		transform-origin: 50% 0%;
 		transition: all 350ms ease;
+	}
+
+	:global([data-theme="dark"] [data-melt-toaster-toast-content]) {
+		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
 	}
 
 	[data-melt-toaster-toast-content]:nth-last-child(n + 4) {
