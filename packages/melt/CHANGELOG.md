@@ -1,5 +1,13 @@
 # melt
 
+## 0.16.0
+
+### Minor Changes
+
+- feat: add toasts ([#26](https://github.com/melt-ui/next-gen/pull/26))
+
+- pin-input: add onPaste and onError ([#42](https://github.com/melt-ui/next-gen/pull/42))
+
 ## 0.15.0
 
 ### Minor Changes
