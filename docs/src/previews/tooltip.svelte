@@ -2,20 +2,9 @@
 	import Preview from "@components/preview.svelte";
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import { Tooltip, getters } from "melt/builders";
-	import { Tooltip as TooltipComponent } from "melt/components";
-	import PhPlus from "~icons/ph/plus";
+	import PhChefHatFill from "~icons/ph/chef-hat-fill";
 
 	let controls = usePreviewControls({
-		open: {
-			label: "Open",
-			type: "boolean",
-			defaultValue: false,
-		},
-		forceVisible: {
-			label: "Force visible",
-			type: "boolean",
-			defaultValue: false,
-		},
 		closeOnPointerDown: {
 			label: "Close on pointer down",
 			type: "boolean",
@@ -30,12 +19,12 @@
 			label: "Placement",
 			type: "select",
 			options: ["top", "bottom", "left", "right"],
-			defaultValue: "bottom"
+			defaultValue: "top",
 		},
 		openDelay: {
 			label: "Open delay",
 			type: "number",
-			defaultValue: 1000,
+			defaultValue: 100,
 		},
 		closeDelay: {
 			label: "Close delay",
@@ -48,39 +37,25 @@
 
 	const tooltip = new Tooltip({
 		...getters(controls),
-		open: () => controls.open,
-		onOpenChange: (v) => (controls.open = v),
+		forceVisible: true,
 		computePositionOptions: () => computePositionOptions,
 	});
 </script>
 
 <Preview>
-	<button 
-		type="button" class="mx-auto block rounded-full text-gray-900 h-9 w-9
-			hover:text-accent-700 hover:dark:text-accent-400 transition-colors 
-			hover:bg-gray-200 p-0 text-sm font-medium focus-visible:ring
-			focus-visible:ring-gray-400 focus-visible:ring-offset-2 bg-white" 
-		aria-label="Add" 
+	<button
+		type="button"
+		class="mx-auto grid size-12 place-items-center rounded-xl text-white transition
+		dark:bg-gray-800 dark:hover:bg-gray-700 dark:active:bg-gray-600"
+		aria-label="Add"
 		{...tooltip.trigger}
 	>
-		<PhPlus class="size-4 m-auto block" aria-label="Plus"></PhPlus>
+		<PhChefHatFill aria-label="Plus"></PhChefHatFill>
 	</button>
 
-	<div {...tooltip.content} class="rounded-lg bg-white shadow-xl p-0">
-		<div {...tooltip.arrow}></div>
-		<TooltipComponent {...controls} open={false} {computePositionOptions}>
-			{#snippet children(tooltip2)}
-				<p class="px-4 py-1 text-gray-700" {...tooltip2.trigger}>
-					Add item to library
-				</p>
-				<div {...tooltip2.content} class="rounded-lg bg-white shadow-xl backdrop-blur p-0">
-					<div {...tooltip2.arrow}></div>
-					<p class="px-4 py-1 text-gray-700">
-						You didn't expect that, did you?
-					</p>
-				</div>
-			{/snippet}
-		</TooltipComponent>
+	<div {...tooltip.content} class="rounded-xl bg-white p-0 shadow-xl dark:bg-gray-800">
+		<div {...tooltip.arrow} class="rounded-tl"></div>
+		<p class="px-4 py-1 text-gray-700 dark:text-white">Let us cook!</p>
 	</div>
 </Preview>
 
@@ -106,3 +81,4 @@
 		transform: scale(1);
 	}
 </style>
+

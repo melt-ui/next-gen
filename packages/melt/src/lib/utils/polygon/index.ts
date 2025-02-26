@@ -1,6 +1,6 @@
 export * from "./hull";
 
-import { makeHull, type Point, type Polygon } from "./hull";
+import { computeConvexHull, type Point, type Polygon } from "./hull";
 
 export function getPointsFromEl(el: HTMLElement): Array<Point> {
 	const rect = el.getBoundingClientRect();
@@ -12,9 +12,9 @@ export function getPointsFromEl(el: HTMLElement): Array<Point> {
 	];
 }
 
-export function makeHullFromElements(els: Array<HTMLElement>): Array<Point> {
+export function computeConvexHullFromElements(els: Array<HTMLElement>): Array<Point> {
 	const points = els.flatMap((el) => getPointsFromEl(el));
-	return makeHull(points);
+	return computeConvexHull(points);
 }
 
 export function pointInPolygon(point: Point, polygon: Polygon) {
@@ -23,7 +23,7 @@ export function pointInPolygon(point: Point, polygon: Polygon) {
 		const pi = polygon[i];
 		const pj = polygon[j];
 		if (!pi || !pj) continue;
-		
+
 		const xi = pi.x;
 		const yi = pi.y;
 		const xj = pj.x;

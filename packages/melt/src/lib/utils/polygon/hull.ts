@@ -1,93 +1,106 @@
-/*
- * Convex hull algorithm - Library (TypeScript)
- *
- * Copyright (c) 2021 Project Nayuki
- * https://www.nayuki.io/page/convex-hull-algorithm
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program (see COPYING.txt and COPYING.LESSER.txt).
- * If not, see <http://www.gnu.org/licenses/>.
- */
-
 export interface Point {
 	x: number;
 	y: number;
 }
-
 export type Polygon = Array<Point>;
 
-// Returns a new array of points representing the convex hull of
-// the given set of points. The convex hull excludes collinear points.
-// This algorithm runs in O(n log n) time.
-export function makeHull<P extends Point>(points: Readonly<Array<P>>): Array<P> {
-	const newPoints: Array<P> = points.slice();
-	newPoints.sort(POINT_COMPARATOR);
-	return makeHullPresorted(newPoints);
+// Computes the convex hull of a set of points using an O(n log n) algorithm
+export function computeConvexHull<P extends Point>(points: Readonly<Array<P>>): Array<P> {
+	// Create a copy and sort points
+	const sortedPoints: Array<P> = [...points].sort(comparePoints);
+	return computeConvexHullSorted(sortedPoints);
 }
 
-// Returns the convex hull, assuming that each points[i] <= points[i + 1]. Runs in O(n) time.
-export function makeHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P> {
-	if (points.length <= 1) return points.slice();
-
-	// Andrew's monotone chain algorithm. Positive y coordinates correspond to "up"
-	// as per the mathematical convention, instead of "down" as per the computer
-	// graphics convention. This doesn't affect the correctness of the result.
-
-	const upperHull: Array<P> = [];
-	for (let i = 0; i < points.length; i++) {
-		const p = points[i];
-		if (!p) continue;
-		while (upperHull.length >= 2) {
-			const q = upperHull[upperHull.length - 1];
-			const r = upperHull[upperHull.length - 2];
-			if (!q || !r) break;
-			if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) upperHull.pop();
-			else break;
-		}
-		upperHull.push(p);
+// Computes the convex hull assuming points are already sorted by x-coordinate
+// This implementation runs in O(n) time
+export function computeConvexHullSorted<P extends Point>(points: Readonly<Array<P>>): Array<P> {
+	// Handle edge cases
+	if (points.length <= 1) {
+		return [...points];
 	}
-	upperHull.pop();
 
-	const lowerHull: Array<P> = [];
+	// Implement Andrew's monotone chain algorithm
+	// Process points to create the top part of the hull
+	const topChain: Array<P> = [];
+
+	for (const currentPoint of points) {
+		// Remove points that make a non-right turn
+		while (topChain.length >= 2) {
+			const p1 = topChain[topChain.length - 1];
+			const p2 = topChain[topChain.length - 2];
+
+			if (!p1 || !p2) break;
+
+			// Check if we need to remove the middle point using cross product
+			const crossProduct =
+				(p1.x - p2.x) * (currentPoint.y - p2.y) - (p1.y - p2.y) * (currentPoint.x - p2.x);
+
+			if (crossProduct < 0) break;
+			topChain.pop();
+		}
+
+		topChain.push(currentPoint);
+	}
+
+	// Remove the last point as it will be added in the bottom chain
+	if (topChain.length > 0) {
+		topChain.pop();
+	}
+
+	// Process points in reverse to create the bottom part of the hull
+	const bottomChain: Array<P> = [];
+
 	for (let i = points.length - 1; i >= 0; i--) {
-		const p = points[i];
-		if (!p) continue;
-		while (lowerHull.length >= 2) {
-			const q = lowerHull[lowerHull.length - 1];
-			const r = lowerHull[lowerHull.length - 2];
-			if (!q || !r) break;
-			if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) lowerHull.pop();
-			else break;
-		}
-		lowerHull.push(p);
-	}
-	lowerHull.pop();
+		const currentPoint = points[i];
+		if (!currentPoint) continue;
 
-	if (
-		upperHull.length == 1 &&
-		lowerHull.length == 1 &&
-		upperHull[0] && lowerHull[0] &&
-		upperHull[0].x == lowerHull[0].x &&
-		upperHull[0].y == lowerHull[0].y
-	)
-		return upperHull;
-	else return upperHull.concat(lowerHull);
+		// Remove points that make a non-right turn
+		while (bottomChain.length >= 2) {
+			const p1 = bottomChain[bottomChain.length - 1];
+			const p2 = bottomChain[bottomChain.length - 2];
+
+			if (!p1 || !p2) break;
+
+			// Check if we need to remove the middle point
+			if ((p1.x - p2.x) * (currentPoint.y - p2.y) - (p1.y - p2.y) * (currentPoint.x - p2.x) < 0)
+				break;
+			bottomChain.pop();
+		}
+
+		bottomChain.push(currentPoint);
+	}
+
+	// Remove the last point to avoid duplication
+	if (bottomChain.length > 0) {
+		bottomChain.pop();
+	}
+
+	// Handle special case with only one point
+	if (topChain.length === 1 && bottomChain.length === 1) {
+		const topPoint = topChain[0];
+		const bottomPoint = bottomChain[0];
+
+		if (topPoint && bottomPoint && topPoint.x === bottomPoint.x && topPoint.y === bottomPoint.y) {
+			return topChain;
+		}
+	}
+
+	// Combine the two chains to form the complete hull
+	return [...topChain, ...bottomChain];
 }
 
-export function POINT_COMPARATOR(a: Point, b: Point): number {
-	if (a.x < b.x) return -1;
-	else if (a.x > b.x) return +1;
-	else if (a.y < b.y) return -1;
-	else if (a.y > b.y) return +1;
-	else return 0;
+// Comparator function for sorting points
+export function comparePoints(a: Point, b: Point): number {
+	// First sort by x-coordinate
+	if (a.x !== b.x) {
+		return a.x < b.x ? -1 : 1;
+	}
+
+	// If x-coordinates are equal, sort by y-coordinate
+	if (a.y !== b.y) {
+		return a.y < b.y ? -1 : 1;
+	}
+
+	// Points are equal
+	return 0;
 }
