@@ -299,7 +299,7 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-trigger\": \"\"\n  readonly id: string\n  readonly popovertarget: string\n  readonly \"aria-describedby\": string\n  readonly \"data-state\": \"open\" | \"closed\"\n  readonly onclick: (\n    e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },\n  ) => void\n  readonly onpointerdown: () => void\n  readonly onpointerenter: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLButtonElement },\n  ) => void\n  readonly onpointerleave: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLButtonElement },\n  ) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-trigger\": \"\"\n  readonly id: string\n  readonly popovertarget: string\n  readonly \"aria-describedby\": string\n  readonly \"data-open\": \"\" | undefined\n  readonly onclick: (\n    e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },\n  ) => void\n  readonly onpointerdown: () => void\n  readonly onpointerenter: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLButtonElement },\n  ) => void\n  readonly onpointerleave: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLButtonElement },\n  ) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}",
         "description": ""
       },
       {
@@ -309,7 +309,7 @@
       },
       {
         "name": "arrow",
-        "type": "{\n  readonly \"data-melt-tooltip-arrow\": \"\"\n  readonly id: string\n  readonly \"data-arrow\": \"\"\n  readonly style: `position: absolute; width: var(--arrow-size, ${number}px); height: var(--arrow-size, ${number}px);`\n}",
+        "type": "{\n  readonly \"data-melt-tooltip-arrow\": \"\"\n  readonly id: string\n  readonly \"data-arrow\": \"\"\n  readonly \"data-open\": \"\" | undefined\n  readonly style: `position: absolute; width: var(--arrow-size, ${number}px); height: var(--arrow-size, ${number}px);`\n}",
         "description": ""
       }
     ],

@@ -189,7 +189,7 @@ export class Tooltip {
 			id: this.#ids.trigger,
 			popovertarget: this.#ids.content,
 			"aria-describedby": this.#ids.content,
-			"data-state": this.open ? "open" : "closed",
+			"data-open": dataAttr(this.open),
 			onclick: (e) => {
 				// Prevents default popover behaviour
 				e.preventDefault();
@@ -349,6 +349,7 @@ export class Tooltip {
 			[dataAttrs.arrow]: "",
 			id: this.#ids.arrow,
 			"data-arrow": "",
+			"data-open": dataAttr(this.open),
 			style: `position: absolute; width: var(--arrow-size, ${this.arrowSize}px); height: var(--arrow-size, ${this.arrowSize}px);`,
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}

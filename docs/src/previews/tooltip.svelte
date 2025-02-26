@@ -71,7 +71,6 @@
 
 		transition: 0.3s;
 		transition-property: opacity, transform;
-		transform-origin: var(--melt-popover-content-transform-origin, center);
 	}
 
 	[data-melt-tooltip-content][data-open] {
