@@ -1,5 +1,11 @@
 # melt
 
+## 0.17.0
+
+### Minor Changes
+
+- add tooltip ([#56](https://github.com/melt-ui/next-gen/pull/56))
+
 ## 0.16.0
 
 ### Minor Changes
