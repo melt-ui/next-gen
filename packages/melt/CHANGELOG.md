@@ -1,5 +1,11 @@
 # melt
 
+## 0.17.1
+
+### Patch Changes
+
+- update npm keywords ([`e459b29`](https://github.com/melt-ui/next-gen/commit/e459b29a4e79d4c8a8e3342ca730472a301c9b58))
+
 ## 0.17.0
 
 ### Minor Changes
