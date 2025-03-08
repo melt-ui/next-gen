@@ -1,0 +1,54 @@
+---
+title: Combobox
+description: A description of the Combobox component.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/combobox.svelte";
+import Features from "@components/features.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 💪 It works
+</Features>
+
+## Usage
+
+<Tabs>
+  <TabItem label="Builder">
+```svelte
+<script lang="ts">
+  import { Combobox } from "melt/builders";
+
+  const combobox = new Combobox();
+</script>
+
+<div {...combobox.root}>
+  Combobox content
+</div>
+```
+  </TabItem>
+
+  <TabItem label="Component">
+```svelte
+<script lang="ts">
+  import { Combobox } from "melt/components";
+</script>
+
+<Combobox>
+  {#snippet children(combobox)}
+    <div {...combobox.root}>
+      Combobox content
+    </div>
+  {/snippet}
+</Combobox>
+```
+  </TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="Combobox" />

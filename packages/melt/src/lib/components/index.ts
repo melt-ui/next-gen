@@ -13,3 +13,4 @@ export { default as Toggle } from "./Toggle.svelte";
 
 
 export * from './Select.svelte';
+export * from './Combobox.svelte';

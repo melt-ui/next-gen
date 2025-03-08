@@ -14,3 +14,5 @@ export * from "./Toggle.svelte";
 export * from "./Tooltip.svelte";
 export * from "./Tree.svelte";
 export * from "./utils.svelte";
+
+export * from './Combobox.svelte';
