@@ -27,6 +27,14 @@
 		"!dist/**/*.test.*",
 		"dist"
 	],
+	"keywords": [
+		"svelte",
+		"UI",
+		"melt",
+		"headless",
+		"component",
+		"library"
+	],
 	"scripts": {
 		"dev": "pnpm sync && pnpm watch",
 		"test": "vitest",
