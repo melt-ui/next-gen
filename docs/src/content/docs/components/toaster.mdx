@@ -86,6 +86,8 @@ Finally, you can use the exported `addToast` helper function to add a toast from
 <button {onclick}>Create</button>
 ```
 
+> ⚠️  By default, some browsers add the `inset` property to elements with the `popover` attribute. This includes the `toaster.root` element. Be sure to set `inset: unset` if you do not wish for that!
+
 ## API Reference
 
 <ApiTable entry="Toaster" />
