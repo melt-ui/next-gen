@@ -1,5 +1,11 @@
 # melt
 
+## 0.17.2
+
+### Patch Changes
+
+- fix data highlighted attr in select ([`bf1830c`](https://github.com/melt-ui/next-gen/commit/bf1830c6c865ede0cece1c397303292ea349c8f6))
+
 ## 0.17.1
 
 ### Patch Changes
