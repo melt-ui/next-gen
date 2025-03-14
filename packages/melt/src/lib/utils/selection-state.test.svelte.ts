@@ -45,7 +45,7 @@ describe("alt-selection-state", () => {
 		expect(state.current).toEqual(new SvelteSet(["1", "2"]));
 	});
 
-	testWithEffect("controlled single", () => {
+	testWithEffect("controlled single", async () => {
 		let value = $state<string | undefined>("1");
 		const state = new SelectionState({
 			multiple: false,
@@ -58,9 +58,13 @@ describe("alt-selection-state", () => {
 		state.add("2");
 		expect(state.current).toBe("2");
 		expect(value).toBe("2");
+
+		await new Promise((res) => setTimeout(res, 100));
+		expect(state.current).toBe("2");
+		expect(value).toBe("2");
 	});
 
-	testWithEffect("controlled multiple", () => {
+	testWithEffect("controlled multiple", async () => {
 		let value = $state<string[] | undefined>(["1"]);
 		const state = new SelectionState({
 			multiple: true,
@@ -71,6 +75,10 @@ describe("alt-selection-state", () => {
 		});
 		expect(state.current).toEqual(new SvelteSet(["1"]));
 		state.add("2");
+		expect(state.current).toEqual(new SvelteSet(["1", "2"]));
+		expect(value).toEqual(["1", "2"]);
+
+		await new Promise((res) => setTimeout(res, 100));
 		expect(state.current).toEqual(new SvelteSet(["1", "2"]));
 		expect(value).toEqual(["1", "2"]);
 	});

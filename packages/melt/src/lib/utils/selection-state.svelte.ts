@@ -156,6 +156,22 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 	}
 
 	/**
+	 * Sets the current selection value(s)
+	 * @param value - The new selection value(s)
+	 */
+	set current(value: SelectionStateValue<T, Multiple>) {
+		this.onChange(value);
+		if (this.isControlled) return;
+
+		this.#internal_set.clear();
+		if (isSvelteSet(value)) {
+			value.forEach((v) => this.#internal_set.add(v as T));
+		} else if (value !== undefined) {
+			this.#internal_set.add(value as T);
+		}
+	}
+
+	/**
 	 * Manipulates the selection set through a callback
 	 * @param cb - Callback function that receives the selection set for manipulation
 	 * @internal
@@ -176,22 +192,6 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 	onChange(value: SelectionStateValue<T, Multiple>) {
 		if (!this.#props.onChange) return;
 		this.#props.onChange(value);
-	}
-
-	/**
-	 * Sets the current selection value(s)
-	 * @param value - The new selection value(s)
-	 */
-	set current(value: SelectionStateValue<T, Multiple>) {
-		this.onChange(value);
-		if (this.isControlled) return;
-
-		this.#internal_set.clear();
-		if (isSvelteSet(value)) {
-			value.forEach((v) => this.#internal_set.add(v as T));
-		} else if (value !== undefined) {
-			this.#internal_set.add(value as T);
-		}
 	}
 
 	/**
@@ -279,7 +279,7 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 			if (set.has(item)) {
 				set.delete(item);
 			} else {
-				this.add(item);
+				set.add(item);
 			}
 		});
 	}

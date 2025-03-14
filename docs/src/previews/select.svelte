@@ -9,11 +9,6 @@
 
 	const controls = usePreviewControls({});
 
-	const select = new Select({
-		forceVisible: true,
-		sameWidth: true,
-	});
-
 	const options = [
 		"Bleach",
 		"Dan da Dan",
@@ -21,7 +16,19 @@
 		"Jujutsu Kaisen",
 		"Attack on Titan",
 		"Death Note",
-	];
+	] as const;
+	type Option = (typeof options)[number];
+
+	let value = $state<Option>(options[0]);
+	const select = new Select<Option>({
+		value: () => value,
+		onValueChange(v) {
+			if (!v) return;
+			value = v;
+		},
+		forceVisible: true,
+		sameWidth: true,
+	});
 </script>
 
 <Preview>
