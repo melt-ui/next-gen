@@ -234,7 +234,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 			"data-value": dataAttr(value),
 			"aria-hidden": this.open ? undefined : true,
 			"aria-selected": this.#value.has(value),
-			"data-highlighted": this.highlighted === value,
+			"data-highlighted": dataAttr(this.highlighted === value),
 			role: "option",
 			onmouseover: () => {
 				this.highlighted = value;
