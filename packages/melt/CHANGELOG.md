@@ -1,5 +1,11 @@
 # melt
 
+## 0.17.3
+
+### Patch Changes
+
+- fix selection state controlled usage ([`5febe53`](https://github.com/melt-ui/next-gen/commit/5febe53514b7be6313de8e0726268aacd84f2fe1))
+
 ## 0.17.2
 
 ### Patch Changes
