@@ -1,5 +1,15 @@
 # melt
 
+## 0.17.5
+
+### Patch Changes
+
+- tooltip: only call useFloating when content open (fixes [#70](https://github.com/melt-ui/next-gen/issues/70)) ([#71](https://github.com/melt-ui/next-gen/pull/71))
+
+- slider: allow setting values outside of step programatically (fixes [#68](https://github.com/melt-ui/next-gen/issues/68)) ([`19a8576`](https://github.com/melt-ui/next-gen/commit/19a8576dce15894462517f862a59e75d0bedbe93))
+
+- tooltip: allow using if statements with content (fixes [#69](https://github.com/melt-ui/next-gen/issues/69)) ([`b9b6a54`](https://github.com/melt-ui/next-gen/commit/b9b6a548bd79aab43dc0cc04c0d182023636325e))
+
 ## 0.17.4
 
 ### Patch Changes
