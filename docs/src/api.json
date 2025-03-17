@@ -463,10 +463,9 @@
       },
       {
         "name": "value",
-        "type": "MaybeGetter<T | undefined>",
-        "description": "The default value for `tabs.value`\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that `tabs.value` only changes when the getter returns a new value.\n\nIf omitted, it will use the first tab as default.",
-        "defaultValue": "undefined",
-        "optional": true
+        "type": "MaybeGetter<T>",
+        "description": "The default value for `tabs.value`\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that `tabs.value` only changes when the getter returns a new value.",
+        "optional": false
       },
       {
         "name": "onValueChange",
@@ -514,7 +513,7 @@
         "description": "The attributes for the list that contains the tab triggers."
       }
     ],
-    "propsAlt": "export type TabsProps<T extends string = string> = {\n  /**\n   * If `true`, the value will be changed whenever a trigger is focused.\n   *\n   * @default true\n   */\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\n  /**\n   * If the the trigger selection should loop when navigating with the arrow keys.\n   *\n   * @default true\n   */\n  loop?: MaybeGetter<boolean | undefined>;\n  /**\n   * The orientation of the tabs.\n   *\n   * @default \"horizontal\"\n   */\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\n  /**\n   * The default value for `tabs.value`\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that `tabs.value` only changes when the getter returns a new value.\n   *\n   * If omitted, it will use the first tab as default.\n   *\n   * @default undefined\n   */\n  value?: MaybeGetter<T | undefined>;\n  /**\n   * Called when the `Tabs` instance tries to change the active tab.\n   */\n  onValueChange?: (active: T) => void;\n};"
+    "propsAlt": "export type TabsProps<T extends string = string> = {\n  /**\n   * If `true`, the value will be changed whenever a trigger is focused.\n   *\n   * @default true\n   */\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\n  /**\n   * If the the trigger selection should loop when navigating with the arrow keys.\n   *\n   * @default true\n   */\n  loop?: MaybeGetter<boolean | undefined>;\n  /**\n   * The orientation of the tabs.\n   *\n   * @default \"horizontal\"\n   */\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\n  /**\n   * The default value for `tabs.value`\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that `tabs.value` only changes when the getter returns a new value.\n   *\n   */\n  value: MaybeGetter<T>;\n  /**\n   * Called when the `Tabs` instance tries to change the active tab.\n   */\n  onValueChange?: (active: T) => void;\n};"
   },
   "Slider": {
     "constructorProps": [

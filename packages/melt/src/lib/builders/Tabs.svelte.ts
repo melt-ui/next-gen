@@ -35,11 +35,8 @@ export type TabsProps<T extends string = string> = {
 	 * When passing a getter, it will be used as source of truth,
 	 * meaning that `tabs.value` only changes when the getter returns a new value.
 	 *
-	 * If omitted, it will use the first tab as default.
-	 *
-	 * @default undefined
 	 */
-	value?: MaybeGetter<T | undefined>;
+	value: MaybeGetter<T>;
 	/**
 	 * Called when the `Tabs` instance tries to change the active tab.
 	 */
@@ -55,13 +52,10 @@ export class Tabs<T extends string = string> {
 	readonly loop = $derived(extract(this.#props.loop, true));
 	readonly orientation = $derived(extract(this.#props.orientation, "horizontal"));
 
-	constructor(props: TabsProps<T> = {}) {
+	constructor(props: TabsProps<T>) {
 		this.#props = props;
 		this.#value = new Synced<T>({
-			// We automatically set the value when it initializes.
-			// This is a bit of a lie though, as it can be undefined
-			// if no tabs were given.
-			value: props.value as T,
+			value: props.value,
 			onChange: props.onValueChange,
 		});
 	}
@@ -95,10 +89,6 @@ export class Tabs<T extends string = string> {
 
 	/** Gets the attributes and listeners for a tab trigger. Requires an identifying tab value. */
 	getTrigger(value: T) {
-		if (this.value === undefined) {
-			this.value = value;
-		}
-
 		return {
 			[identifiers.trigger]: value,
 			"data-active": dataAttr(this.value === value),
