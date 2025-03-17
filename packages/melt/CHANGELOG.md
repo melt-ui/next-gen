@@ -1,5 +1,11 @@
 # melt
 
+## 0.17.8
+
+### Patch Changes
+
+- select: change sameWidth default ([`58bbc1e`](https://github.com/melt-ui/next-gen/commit/58bbc1e44ea68f64be9929ce5bcab1da5160e753))
+
 ## 0.17.7
 
 ### Patch Changes
