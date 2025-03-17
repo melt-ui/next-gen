@@ -160,12 +160,18 @@ export class PinInput {
 	}
 
 	set value(value: string) {
+		const prev = this.#value.current;
 		this.#value.current = value;
 		// set values in inputs
 		const inputs = this.#getInputEls();
 		inputs.forEach((input, index) => {
 			input.value = value[index] ?? "";
 		});
+
+		const completed = prev.length !== value.length && value.length === this.maxLength;
+		if (completed) {
+			this.#props.onComplete?.(value);
+		}
 	}
 
 	/** The root element's props. */

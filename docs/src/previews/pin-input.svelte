@@ -39,6 +39,9 @@
 		onValueChange(v) {
 			pinInput.value = v.toUpperCase();
 		},
+		onComplete(v) {
+			console.log("Yay!", v);
+		},
 	});
 </script>
 
