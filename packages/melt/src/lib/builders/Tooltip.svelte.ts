@@ -223,7 +223,7 @@ export class Tooltip {
 			const triggerEl = document.getElementById(this.#ids.trigger);
 			const contentEl = document.getElementById(this.#ids.content);
 
-			if (!triggerEl || !contentEl) return;
+			if (!triggerEl || !contentEl || !this.open) return;
 
 			useFloating(
 				() => triggerEl,
