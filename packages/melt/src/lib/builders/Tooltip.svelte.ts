@@ -1,18 +1,18 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
+import { dataAttr } from "$lib/utils/attribute";
+import { addEventListener } from "$lib/utils/event";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
-import { untrack } from "svelte";
-import type { ComputePositionConfig } from "@floating-ui/dom";
-import type { HTMLAttributes, HTMLButtonAttributes } from "svelte/elements";
-import { on } from "svelte/events";
-import { computeConvexHullFromElements } from "$lib/utils/polygon";
 import { isPointerInGraceArea } from "$lib/utils/pointer";
-import { useEventListener, watch } from "runed";
-import { dataAttr } from "$lib/utils/attribute";
+import { computeConvexHullFromElements } from "$lib/utils/polygon";
 import { useFloating } from "$lib/utils/use-floating.svelte";
-import { addEventListener } from "$lib/utils/event";
+import type { ComputePositionConfig } from "@floating-ui/dom";
+import { useEventListener, watch } from "runed";
+import { untrack } from "svelte";
+import type { HTMLAttributes } from "svelte/elements";
+import { on } from "svelte/events";
 
 const { createIds, dataAttrs, dataSelectors } = createBuilderMetadata("tooltip", [
 	"trigger",
@@ -350,9 +350,6 @@ export class Tooltip {
 	}
 
 	#openTooltip(reason: OpenReason) {
-		const contentEl = document.getElementById(this.#ids.content);
-		if (!isHtmlElement(contentEl)) return;
-
 		if (this.#closeTimeout) {
 			window.clearTimeout(this.#closeTimeout);
 			this.#closeTimeout = null;
