@@ -1,5 +1,11 @@
 # melt
 
+## 0.17.6
+
+### Patch Changes
+
+- pin-input: fix onComplete never being called (fixes [#78](https://github.com/melt-ui/next-gen/issues/78)) ([`cd988b5`](https://github.com/melt-ui/next-gen/commit/cd988b50070517499985100f256a75eb1ff8346b))
+
 ## 0.17.5
 
 ### Patch Changes
