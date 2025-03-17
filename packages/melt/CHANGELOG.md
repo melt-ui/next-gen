@@ -1,5 +1,11 @@
 # melt
 
+## 0.17.7
+
+### Patch Changes
+
+- tabs: fix unsafe mutation (fixes [#53](https://github.com/melt-ui/next-gen/issues/53)) ([`180d340`](https://github.com/melt-ui/next-gen/commit/180d3406236a28e99f78510a9c0ad9cc4f733ad1))
+
 ## 0.17.6
 
 ### Patch Changes
