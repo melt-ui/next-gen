@@ -187,13 +187,8 @@ export class Tooltip {
 		return {
 			[dataAttrs.trigger]: "",
 			id: this.#ids.trigger,
-			popovertarget: this.#ids.content,
 			"aria-describedby": this.#ids.content,
 			"data-open": dataAttr(this.open),
-			onclick: (e) => {
-				// Prevents default popover behaviour
-				e.preventDefault();
-			},
 			onpointerdown: () => {
 				if (!this.closeOnPointerDown) return;
 
@@ -220,7 +215,7 @@ export class Tooltip {
 			},
 			onblur: () => this.#closeTooltip(true),
 			...this.#sharedProps,
-		} as const satisfies HTMLButtonAttributes;
+		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
 	get content() {
@@ -412,4 +407,3 @@ export class Tooltip {
 		}
 	}
 }
-
