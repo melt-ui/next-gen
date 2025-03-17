@@ -1,5 +1,11 @@
 # melt
 
+## 0.17.4
+
+### Patch Changes
+
+- tooltip: remove button restriction (fixes [#81](https://github.com/melt-ui/next-gen/issues/81)) ([`7f92215`](https://github.com/melt-ui/next-gen/commit/7f922157d0a6bc49a4748b9d8aabb3b9af631f86))
+
 ## 0.17.3
 
 ### Patch Changes
