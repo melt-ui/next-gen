@@ -583,6 +583,11 @@
         "description": ""
       },
       {
+        "name": "ids",
+        "type": "{ root: string; thumb: string }",
+        "description": ""
+      },
+      {
         "name": "value",
         "type": "number",
         "description": "The value of the slider."
@@ -594,11 +599,11 @@
       },
       {
         "name": "thumb",
-        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-melt-slider-thumb\": \"\"\n  readonly tabindex: 0\n}",
+        "type": "{\n  readonly \"data-dragging\": \"\" | undefined\n  readonly \"data-value\": number\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-melt-slider-thumb\": \"\"\n  readonly id: string\n  readonly tabindex: 0\n}",
         "description": "The slider's thumb, positioned at the end of the range."
       }
     ],
-    "propsAlt": "export type SliderProps = {\n  /**\n   * The minimum value of the slider.\n   *\n   * @default 0\n   */\n  min?: MaybeGetter<number | undefined>;\n  /**\n   * The maximum value of the slider.\n   *\n   * @default 100\n   */\n  max?: MaybeGetter<number | undefined>;\n  /**\n   * The orientation of the slider.\n   *\n   * @default \"horizontal\"\n   */\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\n\n  /**\n   * The step size of the slider.\n   *\n   * @default 1\n   */\n  step?: MaybeGetter<number | undefined>;\n  /**\n   * The default value for `tabs.value`\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that `tabs.value` only changes when the getter returns a new value.\n   *\n   * If omitted, it will use the first tab as default.\n   *\n   * @default undefined\n   */\n  value?: MaybeGetter<number | undefined>;\n  /**\n   * Called when the `Slider` instance tries to change the active tab.\n   */\n  onValueChange?: (active: number) => void;\n};"
+    "propsAlt": "export type SliderProps = {\n  /**\n   * The minimum value of the slider.\n   *\n   * @default 0\n   */\n  min?: MaybeGetter<number | undefined>;\n  /**\n   * The maximum value of the slider.\n   *\n   * @default 100\n   */\n  max?: MaybeGetter<number | undefined>;\n  /**\n   * The orientation of the slider.\n   *\n   * @default \"horizontal\"\n   */\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\n\n  /**\n   * The step size of the slider.\n   *\n   * @default 1\n   */\n  step?: MaybeGetter<number | undefined>;\n\n  /**\n   * The default value for `tabs.value`\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that `tabs.value` only changes when the getter returns a new value.\n   *\n   * If omitted, it will use the first tab as default.\n   *\n   * @default undefined\n   */\n  value?: MaybeGetter<number | undefined>;\n  /**\n   * Called when the `Slider` instance tries to change the active tab.\n   */\n  onValueChange?: (active: number) => void;\n};"
   },
   "Select": {
     "constructorProps": [

@@ -4,10 +4,10 @@ import { clamp } from "$lib/utils/number";
 import { useEventListener } from "runed";
 import { Synced } from "../Synced.svelte";
 import type { MaybeGetter } from "../types";
-import { createDataIds, createIds } from "../utils/identifiers";
+import { createBuilderMetadata } from "../utils/identifiers";
 import { isHtmlElement } from "../utils/is";
 
-const dataIds = createDataIds("slider", ["root", "track", "thumb", "range"]);
+const { createIds, dataAttrs } = createBuilderMetadata("slider", ["root", "thumb"]);
 
 export type SliderProps = {
 	/**
@@ -35,6 +35,7 @@ export type SliderProps = {
 	 * @default 1
 	 */
 	step?: MaybeGetter<number | undefined>;
+
 	/**
 	 * The default value for `tabs.value`
 	 *
@@ -62,7 +63,7 @@ export class Slider {
 
 	/* State */
 	#value: Synced<number>;
-	#ids = createIds(dataIds);
+	ids = createIds();
 	#mouseDown = false;
 	#dragging = false;
 	#mouseDownAt: null | number = null;
@@ -74,11 +75,6 @@ export class Slider {
 			onChange: props.onValueChange,
 			defaultValue: 0,
 		});
-
-		$effect.pre(() => {
-			const valueFixedToStep = Math.round(this.#value.current / this.step) * this.step;
-			this.#value.current = clamp(this.min, valueFixedToStep, this.max);
-		});
 	}
 
 	/** The value of the slider. */
@@ -87,8 +83,7 @@ export class Slider {
 	}
 
 	set value(value: number) {
-		const valueFixedToStep = Math.round(value / this.step) * this.step;
-		this.#value.current = clamp(this.min, valueFixedToStep, this.max);
+		this.#value.current = value;
 	}
 
 	get #percentage() {
@@ -98,7 +93,7 @@ export class Slider {
 
 	#commit(e: PointerEvent) {
 		this.#dragging = typeof this.#mouseDownAt === "number" && e.timeStamp - this.#mouseDownAt > 50;
-		const el = document.getElementById(this.#ids.root);
+		const el = document.getElementById(this.ids.root);
 		if (!isHtmlElement(el)) return;
 		e.preventDefault();
 
@@ -111,7 +106,7 @@ export class Slider {
 			percentage = clamp(0, e.clientX - elRect.left, elRect.width) / elRect.width;
 		}
 
-		this.value = this.min + percentage * (this.max - this.min);
+		this.value = getValueFixedToStep(this.min + percentage * (this.max - this.min), this.step);
 	}
 
 	get #sharedProps() {
@@ -157,12 +152,13 @@ export class Slider {
 			}),
 			tabindex: 0,
 			role: "slider",
-			[dataIds.root]: "",
-			id: this.#ids.root,
+			[dataAttrs.root]: "",
+			id: this.ids.root,
 			onpointerdown: (e: PointerEvent) => {
 				this.#mouseDown = true;
 				this.#mouseDownAt = e.timeStamp;
 				this.#commit(e);
+				document.getElementById(this.ids.thumb)?.focus();
 			},
 			onkeydown: (e: KeyboardEvent) => {
 				switch (e.key) {
@@ -200,9 +196,14 @@ export class Slider {
 	/** The slider's thumb, positioned at the end of the range. */
 	get thumb() {
 		return {
-			[dataIds.thumb]: "",
+			[dataAttrs.thumb]: "",
+			id: this.ids.thumb,
 			tabindex: 0,
 			...this.#sharedProps,
 		} as const;
 	}
+}
+
+function getValueFixedToStep(value: number, step: number) {
+	return Math.round(value / step) * step;
 }
