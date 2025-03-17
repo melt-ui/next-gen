@@ -21,7 +21,10 @@ const { dataAttrs, dataSelectors } = createBuilderMetadata("select", [
 	"option",
 ]);
 
-export type SelectProps<T extends string, Multiple extends boolean = false> = PopoverProps & {
+export type SelectProps<T extends string, Multiple extends boolean = false> = Omit<
+	PopoverProps,
+	"sameWidth"
+> & {
 	/**
 	 * If `true`, multiple options can be selected at the same time.
 	 *
@@ -51,6 +54,13 @@ export type SelectProps<T extends string, Multiple extends boolean = false> = Po
 	 * @default 500
 	 */
 	typeaheadTimeout?: MaybeGetter<number | undefined>;
+
+	/**
+	 * If the content should have the same width as the trigger
+	 *
+	 * @default true
+	 */
+	sameWidth?: MaybeGetter<boolean | undefined>;
 };
 
 export class Select<T extends string, Multiple extends boolean = false> extends Popover {
@@ -86,6 +96,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 
 	constructor(props: SelectProps<T, Multiple> = {}) {
 		super({
+			sameWidth: true,
 			...props,
 			onOpenChange: async (open) => {
 				props.onOpenChange?.(open);

@@ -26,11 +26,30 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 <script lang="ts">
   import { Select } from "melt/builders";
 
-  const select = new Select();
+	const options = [
+		"Bleach",
+		"Dan da Dan",
+		"Re: Zero",
+		"Jujutsu Kaisen",
+		"Attack on Titan",
+		"Death Note",
+	] as const;
+	type Option = (typeof options)[number];
+
+  const select = new Select<Option>();
 </script>
 
-<div {...select.root}>
-  Select content
+<label for={select.ids.trigger}>Anime</label>
+<button	{...select.trigger}>
+	{select.value ?? "Select an anime"}
+</button>
+
+<div {...select.content}>
+	{#each options as option}
+		<div {...select.getOption(option)}>
+			{option}
+		</div>
+	{/each}
 </div>
 ```
   </TabItem>
@@ -39,13 +58,32 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 ```svelte
 <script lang="ts">
   import { Select } from "melt/components";
+
+	const options = [
+		"Bleach",
+		"Dan da Dan",
+		"Re: Zero",
+		"Jujutsu Kaisen",
+		"Attack on Titan",
+		"Death Note",
+	] as const;
+	type Option = (typeof options)[number];
 </script>
 
 <Select>
   {#snippet children(select)}
-    <div {...select.root}>
-      Select content
-    </div>
+		<label for={select.ids.trigger}>Anime</label>
+		<button	{...select.trigger}>
+			{select.value ?? "Select an anime"}
+		</button>
+
+		<div {...select.content}>
+			{#each options as option}
+				<div {...select.getOption(option)}>
+					{option}
+				</div>
+			{/each}
+		</div>
   {/snippet}
 </Select>
 ```

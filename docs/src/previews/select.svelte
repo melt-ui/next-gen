@@ -2,10 +2,9 @@
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import Preview from "@components/preview.svelte";
 	import { Select } from "melt/builders";
-	import ChevronDown from "~icons/lucide/chevron-down";
-	import Check from "~icons/lucide/check";
 	import AlphabetJapanese from "~icons/hugeicons/alphabet-japanese";
-	import { fade } from "svelte/transition";
+	import Check from "~icons/lucide/check";
+	import ChevronDown from "~icons/lucide/chevron-down";
 
 	const controls = usePreviewControls({});
 
@@ -27,7 +26,6 @@
 			value = v;
 		},
 		forceVisible: true,
-		sameWidth: true,
 	});
 </script>
 
