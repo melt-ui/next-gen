@@ -1,15 +1,24 @@
-<script lang="ts">
-  import { Combobox as Builder, type ComboboxProps } from "../builders/Combobox.svelte";
-  import { type Snippet } from "svelte";
-  import type { ComponentProps } from "../types";
+<script lang="ts" generics="T extends string, Multiple extends boolean">
+	import { getters } from "../builders/utils.svelte";
+	import { type Snippet } from "svelte";
+	import { Combobox as Builder, type ComboboxProps } from "../builders/Combobox.svelte";
+	import type { ComponentProps } from "../types";
 
-  type Props = ComponentProps<ComboboxProps> & {
-    children: Snippet<[Builder]>;
-  };
+	type Props = Omit<ComponentProps<ComboboxProps<T, Multiple>>, "multiple"> & {
+		children: Snippet<[Builder<T, Multiple>]>;
+		multiple?: Multiple;
+	};
 
-  let { children, ...rest }: Props = $props();
+	let { value = $bindable(), children, ...rest }: Props = $props();
 
-  const combobox = new Combobox({});
+	export const select = new Builder<T, Multiple>({
+		value: () => value as unknown as any,
+		onValueChange(v) {
+			value = v as unknown as any;
+		},
+		...getters({ ...rest }),
+	});
 </script>
 
-{@render children(combobox)}
+{@render children(select)}
+

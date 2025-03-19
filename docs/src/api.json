@@ -1249,13 +1249,6 @@
         "optional": true
       },
       {
-        "name": "sameWidth",
-        "type": "any",
-        "description": "If the popover should have the same width as the trigger",
-        "defaultValue": "false",
-        "optional": true
-      },
-      {
         "name": "onOpenChange",
         "type": "any",
         "description": "Called when the value is supposed to change.",
@@ -1355,12 +1348,12 @@
       },
       {
         "name": "input",
-        "type": "never",
+        "type": "{\n  readonly \"data-melt-combobox-input\": \"\"\n  readonly id: string\n  readonly role: \"combobox\"\n  readonly \"aria-expanded\": boolean\n  readonly \"aria-controls\": string\n  readonly \"aria-owns\": string\n  readonly onclick: undefined\n  readonly value: string\n  readonly oninput: (e: Event) => void\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onfocusout: () => Promise<void>\n  readonly popovertarget: string\n}",
         "description": ""
       },
       {
         "name": "trigger",
-        "type": "{\n  \"data-melt-combobox-trigger\": string\n  id: string\n  onclick: () => void\n}",
+        "type": "{\n  onfocusout: () => Promise<void>\n  \"data-melt-combobox-trigger\": string\n  id: string\n  onclick: () => void\n}",
         "description": ""
       },
       {
@@ -1369,7 +1362,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type ComboboxProps<T extends string, Multiple extends boolean = false> = Omit<\n  PopoverProps,\n  \"closeOnEscape\" | \"closeOnOutsideClick\"\n> & {\n  /**\n   * If `true`, multiple options can be selected at the same time.\n   *\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The value for the Select.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  value?: MaybeMultiple<T, Multiple>;\n  /**\n   * Called when the value is supposed to change.\n   */\n  onValueChange?: OnMultipleChange<T, Multiple>;\n};"
+    "propsAlt": "export type ComboboxProps<T extends string, Multiple extends boolean = false> = Omit<\n  PopoverProps,\n  \"closeOnEscape\" | \"closeOnOutsideClick\" | \"sameWidth\"\n> & {\n  /**\n   * If `true`, multiple options can be selected at the same time.\n   *\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The value for the Select.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  value?: MaybeMultiple<T, Multiple>;\n  /**\n   * Called when the value is supposed to change.\n   */\n  onValueChange?: OnMultipleChange<T, Multiple>;\n};"
   },
   "Collapsible": {
     "constructorProps": [

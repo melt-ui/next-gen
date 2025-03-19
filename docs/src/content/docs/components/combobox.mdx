@@ -1,6 +1,6 @@
 ---
 title: Combobox
-description: A description of the Combobox component.
+description: Presents a selection of choices to the user, filtered by a text input.
 ---
 import ApiTable from "@components/api-table.astro";
 import Preview from "@previews/combobox.svelte";
@@ -24,13 +24,36 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
   <TabItem label="Builder">
 ```svelte
 <script lang="ts">
-  import { Combobox } from "melt/builders";
+	import { Combobox } from "melt/builders";
 
-  const combobox = new Combobox();
+	const options = [	/* ... */	] as const;
+	type Option = (typeof options)[number];
+
+	const combobox = new Combobox<Option>();
+
+	const filtered = $derived.by(() => {
+		if (!combobox.touched) return options;
+		return options.filter((o) =>
+			o.toLowerCase().includes(combobox.inputValue.trim().toLowerCase()),
+		);
+	});
 </script>
 
-<div {...combobox.root}>
-  Combobox content
+<label for={combobox.ids.input}>Favorite Character</label>
+<input {...combobox.input} />
+<button {...combobox.trigger}>open</button>
+
+<div {...combobox.content}>
+	{#each filtered as option (option)}
+		<div {...combobox.getOption(option)}>
+			{option}
+			{#if combobox.isSelected(option)}
+				✓
+			{/if}
+		</div>
+	{:else}
+		<span>No results found</span>
+	{/each}
 </div>
 ```
   </TabItem>
@@ -38,14 +61,38 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
   <TabItem label="Component">
 ```svelte
 <script lang="ts">
-  import { Combobox } from "melt/components";
+	import { Combobox } from "melt/components";
+	import { Combobox as ComboboxInstance } from "melt/builders";
+
+	const options = [	/* ... */	] as const;
+	type Option = (typeof options)[number];
+
+	function getFiltered(combobox: ComboboxInstance<string>) {
+		if (!combobox.touched) return options;
+		return options.filter((o) =>
+			o.toLowerCase().includes(combobox.inputValue.trim().toLowerCase()),
+		);
+	};
 </script>
 
 <Combobox>
   {#snippet children(combobox)}
-    <div {...combobox.root}>
-      Combobox content
-    </div>
+		<label for={combobox.ids.input}>Favorite Character</label>
+		<input {...combobox.input} />
+		<button {...combobox.trigger}>open</button>
+
+		<div {...combobox.content}>
+			{#each getFiltered(combobox) as option (option)}
+				<div {...combobox.getOption(option)}>
+					{option}
+					{#if combobox.isSelected(option)}
+						✓
+					{/if}
+				</div>
+			{:else}
+				<span>No results found</span>
+			{/each}
+		</div>
   {/snippet}
 </Combobox>
 ```

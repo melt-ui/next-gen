@@ -1,5 +1,5 @@
 <script lang="ts" generics="T extends string, Multiple extends boolean">
-	import { getters } from "$lib/builders";
+	import { getters } from "../builders/utils.svelte";
 	import { type Snippet } from "svelte";
 	import { Select as Builder, type SelectProps } from "../builders/Select.svelte";
 	import type { ComponentProps } from "../types";
@@ -21,4 +21,3 @@
 </script>
 
 {@render children(select)}
-

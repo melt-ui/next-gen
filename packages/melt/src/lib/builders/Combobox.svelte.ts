@@ -24,7 +24,7 @@ const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("combobox"
 
 export type ComboboxProps<T extends string, Multiple extends boolean = false> = Omit<
 	PopoverProps,
-	"closeOnEscape" | "closeOnOutsideClick"
+	"closeOnEscape" | "closeOnOutsideClick" | "sameWidth"
 > & {
 	/**
 	 * If `true`, multiple options can be selected at the same time.
@@ -67,6 +67,7 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 	constructor(props: ComboboxProps<T, Multiple> = {}) {
 		super({
 			...props,
+			sameWidth: true,
 			closeOnOutsideClick: (el) => {
 				const triggerEl = document.getElementById(this.ids.trigger);
 				if (triggerEl && isNode(el) && triggerEl.contains(el)) return false;
@@ -141,7 +142,9 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 	}
 
 	get input() {
-		return Object.assign(super.getInvoker(), {
+		// using object.assign breaks types here
+		return {
+			...super.getInvoker(),
 			[dataAttrs.input]: "",
 			id: this.ids.input,
 			role: "combobox",
@@ -217,7 +220,7 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 					}
 				}
 			},
-		} as const satisfies HTMLInputAttributes);
+		} as const satisfies HTMLInputAttributes;
 	}
 
 	get trigger() {
@@ -228,6 +231,7 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 				this.open = !this.open;
 				document.getElementById(this.ids.input)?.focus();
 			},
+			...super.sharedProps,
 		};
 	}
 

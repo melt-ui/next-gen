@@ -116,6 +116,20 @@ export class BasePopover {
 		this.#open.current = value;
 	}
 
+	#shouldClose(el: Node) {
+		const closeOnOutsideClick = this.#props.closeOnOutsideClick;
+
+		if (closeOnOutsideClick === false) return false;
+
+		if (isFunction(closeOnOutsideClick)) {
+			return isCloseOnOutsideClickCheck(closeOnOutsideClick)
+				? closeOnOutsideClick(el as HTMLElement) // Pass target if it's the correct type
+				: closeOnOutsideClick(); // Otherwise, call without arguments
+		}
+
+		return true;
+	}
+
 	protected get sharedProps() {
 		return {
 			onfocusout: async () => {
@@ -123,12 +137,16 @@ export class BasePopover {
 				const contentEl = document.getElementById(this.ids.popover);
 				const triggerEl = document.getElementById(this.ids.invoker);
 
+				const activeEl = document.activeElement;
 				if (
-					contentEl?.contains(document.activeElement) ||
-					triggerEl?.contains(document.activeElement)
+					!activeEl ||
+					contentEl?.contains(activeEl) ||
+					triggerEl?.contains(activeEl) ||
+					!this.#shouldClose(activeEl) // Hack, we should probably have a focusOut prop
 				) {
 					return;
 				}
+
 				this.open = false;
 			},
 		};
@@ -285,25 +303,13 @@ export class BasePopover {
 
 				if (!contentEl || !triggerEl) return; // Exit if elements are missing
 
-				const target = e.target as HTMLElement;
+				const target = e.target as Node;
 				const isInsideContent = contentEl.contains(target);
 				const isInsideTrigger = triggerEl.contains(target);
 
 				if (isInsideContent || isInsideTrigger) return; // Exit if clicked inside
 
-				const closeOnOutsideClick = this.#props.closeOnOutsideClick;
-
-				if (closeOnOutsideClick === false) return; // Exit if close is disabled
-
-				if (isFunction(closeOnOutsideClick)) {
-					const shouldClose = isCloseOnOutsideClickCheck(closeOnOutsideClick)
-						? closeOnOutsideClick(target) // Pass target if it's the correct type
-						: closeOnOutsideClick(); // Otherwise, call without arguments
-
-					if (!shouldClose) return; // Exit if the function returns false
-				}
-
-				this.open = false; // Finally, close the popover
+				if (this.#shouldClose(target)) this.open = false;
 			},
 		);
 

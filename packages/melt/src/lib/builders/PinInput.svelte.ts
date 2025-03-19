@@ -349,7 +349,6 @@ export class PinInput {
 			onpaste: (e) => {
 				e.preventDefault();
 				const pasted = e.clipboardData?.getData("text");
-				console.log(pasted);
 				if (!pasted) return;
 
 				if (this.#props.onPaste) {

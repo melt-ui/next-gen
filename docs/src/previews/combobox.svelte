@@ -28,11 +28,11 @@
 		"Luffy",
 		"Goku",
 		"Eren Jaeger",
-	];
+	] as const;
+	type Option = (typeof options)[number];
 
-	const combobox = new Combobox({
+	const combobox = new Combobox<Option, boolean>({
 		forceVisible: true,
-		sameWidth: true,
 		...getters(controls),
 	});
 
@@ -46,14 +46,12 @@
 
 <Preview>
 	<div class="mx-auto flex w-[300px] flex-col gap-1">
-		<label for={combobox.ids.trigger}>
-			<p>Favorite Character</p>
-		</label>
+		<label for={combobox.ids.input}>Favorite Character</label>
 		<div class="relative text-left text-gray-800 transition dark:text-gray-200">
 			<AlphabetJapanese class="abs-y-center absolute left-3 shrink-0" />
 			<input
 				{...combobox.input}
-				class="w-full rounded-xl border border-gray-500 bg-gray-100 bg-red-500 py-2 pl-9 text-left
+				class="w-full rounded-xl border border-gray-500 bg-gray-100 py-2 pl-9 text-left
 					focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
 					dark:bg-gray-900"
 				type="text"
@@ -120,4 +118,3 @@
 		transform: scale(1);
 	}
 </style>
-
