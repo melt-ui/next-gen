@@ -1,5 +1,19 @@
 # melt
 
+## 0.18.0
+
+### Minor Changes
+
+- popover: add closeOnEscape and closeOnOutsideClick props ([`ac8c51a`](https://github.com/melt-ui/next-gen/commit/ac8c51ae3218f960b525775f0f366e212586b097))
+
+- select: add valueAsString and isSelected methods ([`ac8c51a`](https://github.com/melt-ui/next-gen/commit/ac8c51ae3218f960b525775f0f366e212586b097))
+
+- add combobox (closes #77) ([`ac8c51a`](https://github.com/melt-ui/next-gen/commit/ac8c51ae3218f960b525775f0f366e212586b097))
+
+### Patch Changes
+
+- select: fix component export (closes #89) ([`5044c01`](https://github.com/melt-ui/next-gen/commit/5044c0144278cc35abba7af241022f250a337032))
+
 ## 0.17.8
 
 ### Patch Changes
