@@ -279,6 +279,7 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 			if (set.has(item)) {
 				set.delete(item);
 			} else {
+				if (!this.isMultiple) set.clear();
 				set.add(item);
 			}
 		});
