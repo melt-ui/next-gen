@@ -1,5 +1,11 @@
 # melt
 
+## 0.18.2
+
+### Patch Changes
+
+- file upload: fix input bug ([`20b8a42`](https://github.com/melt-ui/next-gen/commit/20b8a426c80b6f6f329db97814c2f326931f44ea))
+
 ## 0.18.1
 
 ### Patch Changes
