@@ -1176,6 +1176,13 @@
         "type": "((file: File) => void) | undefined",
         "description": "Callback fired when a file is accepted",
         "optional": true
+      },
+      {
+        "name": "avoidDuplicates",
+        "type": "boolean | undefined",
+        "description": "If true, checks the files contents to avoid duplicate.\nIt's performance is not tested in large files, so by default its set to false.",
+        "defaultValue": "false",
+        "optional": true
       }
     ],
     "methods": [
@@ -1188,6 +1195,11 @@
         "name": "remove",
         "type": "(file: File) => void",
         "description": "Removes a file from the selection"
+      },
+      {
+        "name": "has",
+        "type": "(file: File) => Promise<boolean>",
+        "description": ""
       }
     ],
     "properties": [
@@ -1208,6 +1220,11 @@
       },
       {
         "name": "disabled",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "avoidDuplicates",
         "type": "boolean",
         "description": ""
       },
@@ -1237,7 +1254,7 @@
         "description": "An optional trigger element, which can be used to open the file picker."
       }
     ],
-    "propsAlt": "export type FileUploadProps<Multiple extends boolean = false> = {\n  /**\n   * The currently selected files.\n   */\n  selected?: MaybeMultiple<File, Multiple>;\n\n  /**\n   * Callback fired when selected files change\n   */\n  onSelectedChange?: (files: Multiple extends true ? Set<File> : File | undefined) => void;\n\n  /**\n   * Whether to accept multiple files\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The accepted file types. Can be a MIME type, a MIME group, or a file extension.\n   * Separate multiple types with a comma.\n   * @example 'image/jpeg'\n   * @example 'image/*'\n   * @example '.png, .jpg, .jpeg'\n   */\n  accept?: MaybeGetter<string | undefined>;\n\n  /**\n   * Maximum file size in bytes\n   * @default undefined\n   */\n  maxSize?: MaybeGetter<number | undefined>;\n\n  /**\n   * Whether the file upload is disabled\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Custom validate fn. Will be called together with the original validation,\n   * which takes into account the `accept` and `maxSize` props.\n   */\n  validate?: (file: File) => boolean;\n\n  /**\n   * Callback fired when a file fails validation\n   */\n  onError?: (error: FileUploadError) => void;\n\n  /**\n   * Callback fired when a file is accepted\n   */\n  onAccept?: (file: File) => void;\n};"
+    "propsAlt": "export type FileUploadProps<Multiple extends boolean = false> = {\n  /**\n   * The currently selected files.\n   */\n  selected?: MaybeMultiple<File, Multiple>;\n\n  /**\n   * Callback fired when selected files change\n   */\n  onSelectedChange?: (files: Multiple extends true ? Set<File> : File | undefined) => void;\n\n  /**\n   * Whether to accept multiple files\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The accepted file types. Can be a MIME type, a MIME group, or a file extension.\n   * Separate multiple types with a comma.\n   * @example 'image/jpeg'\n   * @example 'image/*'\n   * @example '.png, .jpg, .jpeg'\n   */\n  accept?: MaybeGetter<string | undefined>;\n\n  /**\n   * Maximum file size in bytes\n   * @default undefined\n   */\n  maxSize?: MaybeGetter<number | undefined>;\n\n  /**\n   * Whether the file upload is disabled\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Custom validate fn. Will be called together with the original validation,\n   * which takes into account the `accept` and `maxSize` props.\n   */\n  validate?: (file: File) => boolean;\n\n  /**\n   * Callback fired when a file fails validation\n   */\n  onError?: (error: FileUploadError) => void;\n\n  /**\n   * Callback fired when a file is accepted\n   */\n  onAccept?: (file: File) => void;\n\n  /**\n   * If true, checks the files contents to avoid duplicate.\n   * It's performance is not tested in large files, so by default its set to false.\n   *\n   * @default false\n   */\n  avoidDuplicates?: boolean;\n};"
   },
   "Combobox": {
     "constructorProps": [

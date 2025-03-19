@@ -6,16 +6,15 @@
 	import XIcon from "~icons/tabler/x";
 	import { SvelteSet } from "svelte/reactivity";
 
-	type Controls = {
-		multiple: boolean;
-		accept: string;
-		maxSize: number;
-	};
-
 	const controls = usePreviewControls({
 		multiple: {
 			type: "boolean",
 			label: "Multiple files",
+			defaultValue: true,
+		},
+		avoidDuplicates: {
+			type: "boolean",
+			label: "Avoid duplicates",
 			defaultValue: true,
 		},
 		accept: {
@@ -28,7 +27,7 @@
 			label: "Max size (bytes)",
 			defaultValue: 5 * 1024 * 1024, // 5MB
 		},
-	}) as Controls;
+	});
 
 	const fileUpload = new FileUpload({
 		...getters(controls),

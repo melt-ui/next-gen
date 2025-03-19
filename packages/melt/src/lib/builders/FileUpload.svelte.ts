@@ -1,6 +1,7 @@
 import type { MaybeGetter, MaybeMultiple } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
+import { areFilesEqual } from "$lib/utils/file";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { SelectionState } from "$lib/utils/selection-state.svelte";
 import { watch } from "runed";
@@ -66,6 +67,14 @@ export type FileUploadProps<Multiple extends boolean = false> = {
 	 * Callback fired when a file is accepted
 	 */
 	onAccept?: (file: File) => void;
+
+	/**
+	 * If true, checks the files contents to avoid duplicate.
+	 * It's performance is not tested in large files, so by default its set to false.
+	 *
+	 * @default false
+	 */
+	avoidDuplicates?: MaybeGetter<boolean | undefined>;
 };
 
 export class FileUpload<Multiple extends boolean = false> {
@@ -74,6 +83,7 @@ export class FileUpload<Multiple extends boolean = false> {
 	readonly accept = $derived(extract(this.#props.accept, undefined));
 	readonly maxSize = $derived(extract(this.#props.maxSize, undefined));
 	readonly disabled = $derived(extract(this.#props.disabled, false));
+	readonly avoidDuplicates = $derived(extract(this.#props.avoidDuplicates, false));
 
 	/* State */
 	#isDragging = $state(false);
@@ -122,13 +132,22 @@ export class FileUpload<Multiple extends boolean = false> {
 		this.#selected.delete(file);
 	}
 
-	#handleFiles = (files: FileList | null) => {
+	async has(file: File) {
+		const files = this.#selected.toArray();
+		const promises = files.map((f) => areFilesEqual(f, file));
+		const results = await Promise.all(promises);
+		return results.some(Boolean);
+	}
+
+	#handleFiles = async (files: FileList | null) => {
 		if (!files) return;
 
 		const fileArray = Array.from(files);
 		const validFiles: File[] = [];
 
 		for (const file of fileArray) {
+			if (this.avoidDuplicates && (await this.has(file))) continue;
+
 			// Check file type if accept is specified
 			if (this.accept) {
 				const acceptTypes = this.accept.split(",").map((t) => t.trim());
@@ -242,12 +261,12 @@ export class FileUpload<Multiple extends boolean = false> {
 	/** The hidden file input element. */
 	get input() {
 		watch(
-			() => this.#selected,
-			(s) => {
+			() => $state.snapshot(this.#selected.toArray()),
+			() => {
 				const input = document.getElementById(this.#ids.input) as HTMLInputElement;
 				if (!input) return;
 
-				const set = s.toSet();
+				const set = this.#selected.toSet();
 				const dt = new DataTransfer();
 				for (const file of set) {
 					dt.items.add(file);
@@ -268,7 +287,9 @@ export class FileUpload<Multiple extends boolean = false> {
 			onchange: (e: Event) => {
 				if (this.disabled) return;
 				const input = e.target as HTMLInputElement;
-				this.#handleFiles(input.files);
+				const files = input.files;
+				input.files = null;
+				this.#handleFiles(files);
 			},
 		} as const;
 	}
