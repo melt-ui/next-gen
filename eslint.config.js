@@ -23,6 +23,7 @@ export default [
 				},
 			],
 			"@typescript-eslint/no-this-alias": "off",
+			"@typescript-eslint/no-explicit-any": "off",
 		},
 	}),
 	...svelte.configs["flat/recommended"],

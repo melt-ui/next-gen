@@ -143,7 +143,7 @@
 								<div class="anime-grid">
 									{@render media("Attack on Titan", "/previews/aot.jpg")}
 									{@render media("JJK", "/previews/nah-id-win.jpg")}
-									{@render media("Demon Slayer", "/previews/demon-slayer.webp")}
+									{@render media("Solo Leveling", "/previews/sung-jinwoo.jpg")}
 									{@render media("Berserk", "/previews/berserk.avif")}
 								</div>
 							{:else if id === "Games"}

@@ -3,8 +3,8 @@ import type { MaybeGetter } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
 import { addEventListener } from "$lib/utils/event";
 import { extract } from "$lib/utils/extract";
-import { createDataIds, createIds } from "$lib/utils/identifiers";
-import { isHtmlElement } from "$lib/utils/is";
+import { createDataIds } from "$lib/utils/identifiers";
+import { isFunction, isHtmlElement } from "$lib/utils/is";
 import { deepMerge } from "$lib/utils/merge";
 import {
 	autoUpdate,
@@ -16,10 +16,18 @@ import {
 	type ComputePositionConfig,
 	type Placement,
 } from "@floating-ui/dom";
+import { nanoid } from "nanoid";
 import { useEventListener } from "runed";
 import type { HTMLAttributes } from "svelte/elements";
 
 const dataIds = createDataIds("popover", ["trigger", "content"]);
+
+type CloseOnOutsideClickCheck = (el: Element | Window | Document) => boolean;
+type CloseOnOutsideClickProp = MaybeGetter<boolean | undefined> | CloseOnOutsideClickCheck;
+
+export const isCloseOnOutsideClickCheck = (
+	value: CloseOnOutsideClickProp,
+): value is CloseOnOutsideClickCheck => isFunction(value) && value.length === 1;
 
 export type PopoverProps = {
 	/**
@@ -60,15 +68,33 @@ export type PopoverProps = {
 	 * @default false
 	 */
 	sameWidth?: MaybeGetter<boolean | undefined>;
+
+	/**
+	 * If the popover should close when clicking escape.
+	 *
+	 * @default true
+	 */
+	closeOnEscape?: MaybeGetter<boolean | undefined>;
+
+	/**
+	 * If the popover should close when clicking outside.
+	 * Alternatively, accepts a function that receives the clicked element,
+	 * and returns if the popover should close.
+	 *
+	 * @default true
+	 */
+	closeOnOutsideClick?: CloseOnOutsideClickProp;
 };
 
-export class Popover {
-	ids = createIds(dataIds);
+export class BasePopover {
+	ids = $state({ invoker: nanoid(), popover: nanoid() });
 
 	/* Props */
 	#props!: PopoverProps;
 	forceVisible = $derived(extract(this.#props.forceVisible, false));
 	computePositionOptions = $derived(extract(this.#props.computePositionOptions, {}));
+	closeOnEscape = $derived(extract(this.#props.closeOnEscape, true));
+	sameWidth = $derived(extract(this.#props.sameWidth, false));
 
 	/* State */
 	#open!: Synced<boolean>;
@@ -90,12 +116,12 @@ export class Popover {
 		this.#open.current = value;
 	}
 
-	get #sharedProps() {
+	protected get sharedProps() {
 		return {
 			onfocusout: async () => {
 				await new Promise((r) => setTimeout(r));
-				const contentEl = document.getElementById(this.ids.content);
-				const triggerEl = document.getElementById(this.ids.trigger);
+				const contentEl = document.getElementById(this.ids.popover);
+				const triggerEl = document.getElementById(this.ids.invoker);
 
 				if (
 					contentEl?.contains(document.activeElement) ||
@@ -109,23 +135,22 @@ export class Popover {
 	}
 
 	/** The trigger that toggles the value. */
-	get trigger() {
+	protected getInvoker() {
 		return {
-			[dataIds.trigger]: "",
-			id: this.ids.trigger,
-			popovertarget: this.ids.content,
+			id: this.ids.invoker,
+			popovertarget: this.ids.popover,
 			onclick: (e: Event) => {
 				e.preventDefault();
 				this.open = !this.open;
 			},
-			...this.#sharedProps,
+			...this.sharedProps,
 		} as const;
 	}
 
-	get content() {
+	protected getPopover() {
 		// Show and hide popover based on open state
 		$effect(() => {
-			const el = document.getElementById(this.ids.content);
+			const el = document.getElementById(this.ids.popover);
 			if (!isHtmlElement(el)) {
 				return;
 			}
@@ -161,8 +186,8 @@ export class Popover {
 
 		// Floating UI
 		const compute = () => {
-			const contentEl = document.getElementById(this.ids.content);
-			const triggerEl = document.getElementById(this.ids.trigger);
+			const contentEl = document.getElementById(this.ids.popover);
+			const triggerEl = document.getElementById(this.ids.invoker);
 			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
 				return;
 			}
@@ -172,7 +197,7 @@ export class Popover {
 					shift(),
 					flip(),
 					offset({ mainAxis: 8 }),
-					this.#props.sameWidth
+					this.sameWidth
 						? size({
 								apply({ rects, elements }) {
 									Object.assign(elements.floating?.style ?? {}, {
@@ -219,8 +244,8 @@ export class Popover {
 		};
 
 		$effect(() => {
-			const contentEl = document.getElementById(this.ids.content);
-			const triggerEl = document.getElementById(this.ids.trigger);
+			const contentEl = document.getElementById(this.ids.popover);
+			const triggerEl = document.getElementById(this.ids.invoker);
 			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
 				return;
 			}
@@ -232,7 +257,8 @@ export class Popover {
 			() => document,
 			"keydown",
 			(e) => {
-				const el = document.getElementById(this.ids.content);
+				if (!this.closeOnEscape) return;
+				const el = document.getElementById(this.ids.popover);
 				if (e.key !== "Escape" || !this.open || !isHtmlElement(el)) return;
 				e.preventDefault();
 				const openPopovers = [...el.querySelectorAll("[popover]")].filter((child) => {
@@ -252,22 +278,37 @@ export class Popover {
 			() => document,
 			"click",
 			(e) => {
-				const contentEl = document.getElementById(this.ids.content);
-				const triggerEl = document.getElementById(this.ids.trigger);
+				if (!this.open) return; // Exit early if not open
 
-				if (
-					this.open &&
-					!contentEl?.contains(e.target as Node) &&
-					!triggerEl?.contains(e.target as Node)
-				) {
-					this.open = false;
+				const contentEl = document.getElementById(this.ids.popover);
+				const triggerEl = document.getElementById(this.ids.invoker);
+
+				if (!contentEl || !triggerEl) return; // Exit if elements are missing
+
+				const target = e.target as HTMLElement;
+				const isInsideContent = contentEl.contains(target);
+				const isInsideTrigger = triggerEl.contains(target);
+
+				if (isInsideContent || isInsideTrigger) return; // Exit if clicked inside
+
+				const closeOnOutsideClick = this.#props.closeOnOutsideClick;
+
+				if (closeOnOutsideClick === false) return; // Exit if close is disabled
+
+				if (isFunction(closeOnOutsideClick)) {
+					const shouldClose = isCloseOnOutsideClickCheck(closeOnOutsideClick)
+						? closeOnOutsideClick(target) // Pass target if it's the correct type
+						: closeOnOutsideClick(); // Otherwise, call without arguments
+
+					if (!shouldClose) return; // Exit if the function returns false
 				}
+
+				this.open = false; // Finally, close the popover
 			},
 		);
 
 		return {
-			[dataIds.content]: "",
-			id: this.ids.content,
+			id: this.ids.popover,
 			popover: "manual",
 			ontoggle: (e) => {
 				const newOpen = e.newState === "open";
@@ -279,8 +320,36 @@ export class Popover {
 			tabindex: -1,
 			inert: !this.open,
 			"data-open": dataAttr(this.open),
-			...this.#sharedProps,
+			...this.sharedProps,
 		} as const satisfies HTMLAttributes<HTMLElement>;
+	}
+
+	// IDEA: separate content and floating ui to achieve transitions without requiring
+	// force visible or custom esc and click outside handlers!
+}
+
+export class Popover extends BasePopover {
+	declare ids: BasePopover["ids"] & {
+		trigger: string;
+		content: string;
+	};
+
+	constructor(props: PopoverProps = {}) {
+		super({ ...props });
+		this.ids = { ...this.ids, trigger: this.ids.invoker, content: this.ids.popover };
+	}
+
+	/** The trigger that toggles the value. */
+	get trigger() {
+		return Object.assign(this.getInvoker(), {
+			[dataIds.trigger]: "",
+		});
+	}
+
+	get content() {
+		return Object.assign(this.getPopover(), {
+			[dataIds.content]: "",
+		});
 	}
 
 	// IDEA: separate content and floating ui to achieve transitions without requiring

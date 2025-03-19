@@ -2,7 +2,7 @@ import type { MaybeGetter } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
-import { isHtmlElement } from "$lib/utils/is";
+import { isHtmlElement, isHtmlInputElement, isNode } from "$lib/utils/is";
 import { kbd } from "$lib/utils/keyboard";
 import { pick } from "$lib/utils/object";
 import {
@@ -10,18 +10,22 @@ import {
 	type MaybeMultiple,
 	type OnMultipleChange,
 } from "$lib/utils/selection-state.svelte";
+import { letterRegex } from "$lib/utils/typeahead.svelte";
 import { tick } from "svelte";
-import type { HTMLAttributes } from "svelte/elements";
-import { Popover, type PopoverProps } from "./Popover.svelte";
-import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
+import type { HTMLAttributes, HTMLInputAttributes } from "svelte/elements";
+import { BasePopover, type PopoverProps } from "./Popover.svelte";
 
-const { dataAttrs, dataSelectors } = createBuilderMetadata("select", [
+const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("combobox", [
+	"input",
 	"trigger",
 	"content",
 	"option",
 ]);
 
-export type SelectProps<T extends string, Multiple extends boolean = false> = PopoverProps & {
+export type ComboboxProps<T extends string, Multiple extends boolean = false> = Omit<
+	PopoverProps,
+	"closeOnEscape" | "closeOnOutsideClick"
+> & {
 	/**
 	 * If `true`, multiple options can be selected at the same time.
 	 *
@@ -45,49 +49,32 @@ export type SelectProps<T extends string, Multiple extends boolean = false> = Po
 	 * Called when the value is supposed to change.
 	 */
 	onValueChange?: OnMultipleChange<T, Multiple>;
-
-	/**
-	 * How many time (in ms) the typeahead string is held before it is cleared
-	 * @default 500
-	 */
-	typeaheadTimeout?: MaybeGetter<number | undefined>;
 };
 
-export class Select<T extends string, Multiple extends boolean = false> extends Popover {
+export class Combobox<T extends string, Multiple extends boolean = false> extends BasePopover {
 	/* Props */
-	#props!: SelectProps<T, Multiple>;
+	#props!: ComboboxProps<T, Multiple>;
 
 	/* State */
 	#value!: SelectionState<T, Multiple>;
+	inputValue = $state("");
 	multiple = $derived(extract(this.#props.multiple, false as Multiple));
 	highlighted: T | null = $state(null);
+	touched = $state(false);
 
-	readonly typeaheadTimeout = $derived(extract(this.#props.typeaheadTimeout, 500));
-	readonly typeahead = $derived(
-		createTypeahead({
-			timeout: this.#props.typeaheadTimeout,
-			getItems: () => {
-				return this.#getOptionsEls().reduce(
-					(acc, curr) => {
-						if (!curr.dataset.value) return acc;
-						return [
-							...acc,
-							{
-								value: curr.dataset.value as T,
-								current: curr.dataset.value === this.highlighted,
-							},
-						];
-					},
-					[] as Array<{ value: T; current: boolean }>,
-				);
-			},
-		}),
-	);
+	declare ids: ReturnType<typeof createIds> & BasePopover["ids"];
 
-	constructor(props: SelectProps<T, Multiple> = {}) {
+	constructor(props: ComboboxProps<T, Multiple> = {}) {
 		super({
 			...props,
+			closeOnOutsideClick: (el) => {
+				const triggerEl = document.getElementById(this.ids.trigger);
+				if (triggerEl && isNode(el) && triggerEl.contains(el)) return false;
+				return true;
+			},
+			closeOnEscape: () => this.open,
 			onOpenChange: async (open) => {
+				this.touched = false;
 				props.onOpenChange?.(open);
 				await tick();
 				if (!open) {
@@ -95,15 +82,16 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 					return;
 				}
 
-				if (!this.highlighted) {
+				tick().then(() => {
+					if (this.highlighted) return;
 					const lastSelected = this.#value.toArray().at(-1);
 					if (lastSelected) this.highlighted = lastSelected;
 					else this.#highlightFirst();
-				}
+				});
 
-				const content = document.getElementById(this.ids.content);
-				if (!content) return;
-				content.focus();
+				// const content = document.getElementById(this.ids.content);
+				// if (!content) return;
+				// content.focus();
 			},
 		});
 
@@ -111,8 +99,17 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		this.#value = new SelectionState({
 			value: props.value,
 			onChange: props.onValueChange,
-			multiple: this.multiple,
+			multiple: props.multiple,
 		});
+
+		const oldIds = this.ids;
+		const newIds = createIds();
+		this.ids = {
+			...oldIds,
+			input: oldIds.invoker,
+			content: oldIds.popover,
+			trigger: newIds.trigger,
+		};
 	}
 
 	get value() {
@@ -123,104 +120,123 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		this.#value.current = value;
 	}
 
-	#select(value: T) {
-		this.#value.toggle(value);
-		if (this.multiple) return;
-
-		this.open = false;
-		tick().then(() => {
-			document.getElementById(this.ids.trigger)?.focus();
-		});
+	get valueAsString() {
+		return this.#value.toArray().join(", ");
 	}
 
-	get trigger() {
-		return Object.assign(super.trigger, {
-			[dataAttrs.trigger]: "",
+	isSelected = (value: T) => {
+		return this.#value.has(value);
+	};
+
+	select(value: T) {
+		this.#value.toggle(value);
+		if (this.multiple) {
+			this.inputValue = "";
+			return;
+		}
+
+		this.inputValue = this.valueAsString;
+
+		this.open = false;
+	}
+
+	get input() {
+		return Object.assign(super.getInvoker(), {
+			[dataAttrs.input]: "",
+			id: this.ids.input,
 			role: "combobox",
 			"aria-expanded": this.open,
 			"aria-controls": this.ids.content,
 			"aria-owns": this.ids.content,
+			onclick: undefined,
+			value: this.inputValue,
+			oninput: (e: Event) => {
+				const input = e.currentTarget;
+				if (!isHtmlInputElement(input)) return;
+				this.open = true;
+				this.inputValue = input.value;
+				tick().then(() => this.#highlightFirst());
+				this.touched = true;
+			},
 			onkeydown: (e: KeyboardEvent) => {
-				const kbdSubset = pick(kbd, "ARROW_DOWN", "ARROW_UP");
-				if (Object.values(kbdSubset).includes(e.key as any)) e.preventDefault();
+				if (this.open) {
+					const kbdSubset = pick(kbd, "ARROW_DOWN", "ARROW_UP", "ESCAPE", "ENTER");
+					if (Object.values(kbdSubset).includes(e.key as any)) e.preventDefault();
 
-				switch (e.key) {
-					case kbdSubset.ARROW_DOWN: {
-						this.open = true;
-						tick().then(() => {
-							if (!this.value) this.#highlightFirst();
-						});
-						break;
+					switch (e.key) {
+						case kbdSubset.ARROW_DOWN: {
+							this.#highlightNext();
+							break;
+						}
+						case kbdSubset.ARROW_UP: {
+							this.#highlightPrev();
+							break;
+						}
+						case kbdSubset.ESCAPE: {
+							this.open = false;
+							break;
+						}
+						case kbdSubset.ENTER: {
+							if (this.highlighted === null) return;
+							this.select(this.highlighted);
+							if (!this.multiple) this.open = false;
+							break;
+						}
 					}
-					case kbdSubset.ARROW_UP: {
-						this.open = true;
-						tick().then(() => {
-							if (!this.value) this.#highlightLast();
-						});
-						break;
+				} else {
+					const kbdSubset = pick(kbd, "ARROW_DOWN", "ARROW_UP", "ESCAPE");
+					if (Object.values(kbdSubset).includes(e.key as any)) e.preventDefault();
+					else if (letterRegex.test(e.key)) this.open = true;
+
+					switch (e.key) {
+						case kbdSubset.ARROW_DOWN: {
+							if (this.open) {
+								return this.#highlightNext();
+							}
+							this.open = true;
+							tick().then(() => {
+								if (!this.value) this.#highlightFirst();
+							});
+							break;
+						}
+						case kbdSubset.ARROW_UP: {
+							if (this.open) {
+								return this.#highlightNext();
+							}
+							this.open = true;
+							tick().then(() => {
+								if (!this.value) this.#highlightLast();
+							});
+							break;
+						}
+						case kbdSubset.ESCAPE: {
+							this.#value.clear();
+							this.inputValue = "";
+							break;
+						}
 					}
 				}
 			},
-		});
+		} as const satisfies HTMLInputAttributes);
+	}
+
+	get trigger() {
+		return {
+			[dataAttrs.trigger]: "",
+			id: this.ids.trigger,
+			onclick: () => {
+				this.open = !this.open;
+				document.getElementById(this.ids.input)?.focus();
+			},
+		};
 	}
 
 	get content() {
-		return Object.assign(super.content, {
+		return Object.assign(super.getPopover(), {
 			[dataAttrs.content]: "",
 			role: "listbox",
 			"aria-expanded": this.open,
 			"aria-activedescendant": this.highlighted ? this.getOptionId(this.highlighted) : undefined,
-			onkeydown: (e: KeyboardEvent) => {
-				const kbdSubset = pick(
-					kbd,
-					"HOME",
-					"END",
-					"ARROW_DOWN",
-					"ARROW_UP",
-					"ESCAPE",
-					"ENTER",
-					"SPACE",
-				);
-				if (Object.values(kbdSubset).includes(e.key as any)) e.preventDefault();
-
-				switch (e.key) {
-					case kbdSubset.HOME: {
-						this.#highlightFirst();
-						break;
-					}
-					case kbdSubset.END: {
-						this.#highlightLast();
-						break;
-					}
-					case kbdSubset.ARROW_DOWN: {
-						this.#highlightNext();
-						break;
-					}
-					case kbdSubset.ARROW_UP: {
-						this.#highlightPrev();
-						break;
-					}
-					case kbdSubset.SPACE:
-					case kbdSubset.ENTER: {
-						if (!this.highlighted) break;
-						this.#select(this.highlighted);
-						break;
-					}
-					case kbdSubset.ESCAPE: {
-						this.open = false;
-						tick().then(() => {
-							document.getElementById(this.ids.trigger)?.focus();
-						});
-						break;
-					}
-					default: {
-						if (!letterRegex.test(e.key)) break;
-						e.preventDefault();
-						const next = this.typeahead(e.key);
-						if (next) this.highlighted = next.value;
-					}
-				}
-			},
 		} as const satisfies HTMLAttributes<HTMLDivElement>);
 	}
 
@@ -240,7 +256,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 				this.highlighted = value;
 			},
 			onclick: () => {
-				this.#select(value);
+				this.select(value);
 			},
 		} as const satisfies HTMLAttributes<HTMLDivElement>;
 	}
@@ -282,4 +298,3 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		if (last) this.#highlight(last);
 	}
 }
-

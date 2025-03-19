@@ -1,14 +1,26 @@
 <script lang="ts">
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import Preview from "@components/preview.svelte";
-	import { Select } from "melt/builders";
+	import { getters, Select } from "melt/builders";
 	import AlphabetJapanese from "~icons/hugeicons/alphabet-japanese";
 	import Check from "~icons/lucide/check";
 	import ChevronDown from "~icons/lucide/chevron-down";
 
-	const controls = usePreviewControls({});
+	const controls = usePreviewControls({
+		multiple: {
+			type: "boolean",
+			defaultValue: false,
+			label: "Multiple",
+		},
+		disabled: {
+			type: "boolean",
+			defaultValue: false,
+			label: "Disabled",
+		},
+	});
 
 	const options = [
+		"Solo Leveling",
 		"Bleach",
 		"Dan da Dan",
 		"Re: Zero",
@@ -18,14 +30,9 @@
 	] as const;
 	type Option = (typeof options)[number];
 
-	let value = $state<Option>(options[0]);
-	const select = new Select<Option>({
-		value: () => value,
-		onValueChange(v) {
-			if (!v) return;
-			value = v;
-		},
+	const select = new Select<Option, boolean>({
 		forceVisible: true,
+		...getters(controls),
 	});
 </script>
 
@@ -34,16 +41,16 @@
 		<label for={select.ids.trigger}>Anime</label>
 		<button
 			{...select.trigger}
-			class="flex items-center justify-between rounded-xl border border-gray-500 bg-gray-100 py-2 pl-3 pr-4 text-left text-gray-800
+			class="flex items-center justify-between overflow-hidden rounded-xl border border-gray-500 bg-gray-100 py-2 pl-3 pr-4 text-left text-gray-800
 				transition hover:cursor-pointer hover:bg-gray-200
 				active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
 				dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
 		>
-			<div class="inline-flex items-center gap-2">
-				<AlphabetJapanese />
-				<span>{select.value ?? "Select an anime"}</span>
+			<div class="inline-flex items-center gap-2 overflow-hidden">
+				<AlphabetJapanese class="shrink-0" />
+				<span class="truncate">{select.valueAsString || "Select an anime"}</span>
 			</div>
-			<ChevronDown />
+			<ChevronDown class="shrink-0" />
 		</button>
 
 		<div
@@ -60,7 +67,7 @@
 					]}
 				>
 					<span>{option}</span>
-					{#if select.value === option}
+					{#if select.isSelected(option)}
 						<Check class="text-accent-300 font-bold" />
 					{/if}
 				</div>
@@ -75,7 +82,7 @@
 		pointer-events: none;
 		opacity: 0;
 
-		transform: scale(0.95);
+		transform: scale(0.975);
 
 		transition: 0.2s;
 		transition-property: opacity, transform;

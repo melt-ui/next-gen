@@ -10,12 +10,12 @@ import {
 	type MaybeMultiple,
 	type OnMultipleChange,
 } from "$lib/utils/selection-state.svelte";
+import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
 import { tick } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
-import { Popover, type PopoverProps } from "./Popover.svelte";
-import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
+import { BasePopover, type PopoverProps } from "./Popover.svelte";
 
-const { dataAttrs, dataSelectors } = createBuilderMetadata("select", [
+const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("select", [
 	"trigger",
 	"content",
 	"option",
@@ -63,7 +63,7 @@ export type SelectProps<T extends string, Multiple extends boolean = false> = Om
 	sameWidth?: MaybeGetter<boolean | undefined>;
 };
 
-export class Select<T extends string, Multiple extends boolean = false> extends Popover {
+export class Select<T extends string, Multiple extends boolean = false> extends BasePopover {
 	/* Props */
 	#props!: SelectProps<T, Multiple>;
 
@@ -71,6 +71,8 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 	#value!: SelectionState<T, Multiple>;
 	multiple = $derived(extract(this.#props.multiple, false as Multiple));
 	highlighted: T | null = $state(null);
+
+	declare ids: ReturnType<typeof createIds> & BasePopover["ids"];
 
 	readonly typeaheadTimeout = $derived(extract(this.#props.typeaheadTimeout, 500));
 	readonly typeahead = $derived(
@@ -122,8 +124,17 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		this.#value = new SelectionState({
 			value: props.value,
 			onChange: props.onValueChange,
-			multiple: this.multiple,
+			multiple: props.multiple,
 		});
+
+		const oldIds = this.ids;
+		const newIds = createIds();
+		this.ids = {
+			...oldIds,
+			trigger: oldIds.invoker,
+			content: oldIds.popover,
+			option: newIds.option,
+		};
 	}
 
 	get value() {
@@ -134,7 +145,15 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		this.#value.current = value;
 	}
 
-	#select(value: T) {
+	get valueAsString() {
+		return this.#value.toArray().join(", ");
+	}
+
+	isSelected = (value: T) => {
+		return this.#value.has(value);
+	};
+
+	select = (value: T) => {
 		this.#value.toggle(value);
 		if (this.multiple) return;
 
@@ -142,10 +161,10 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		tick().then(() => {
 			document.getElementById(this.ids.trigger)?.focus();
 		});
-	}
+	};
 
 	get trigger() {
-		return Object.assign(super.trigger, {
+		return Object.assign(super.getInvoker(), {
 			[dataAttrs.trigger]: "",
 			role: "combobox",
 			"aria-expanded": this.open,
@@ -176,7 +195,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 	}
 
 	get content() {
-		return Object.assign(super.content, {
+		return Object.assign(super.getPopover(), {
 			[dataAttrs.content]: "",
 			role: "listbox",
 			"aria-expanded": this.open,
@@ -214,7 +233,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 					case kbdSubset.SPACE:
 					case kbdSubset.ENTER: {
 						if (!this.highlighted) break;
-						this.#select(this.highlighted);
+						this.select(this.highlighted);
 						break;
 					}
 					case kbdSubset.ESCAPE: {
@@ -251,7 +270,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 				this.highlighted = value;
 			},
 			onclick: () => {
-				this.#select(value);
+				this.select(value);
 			},
 		} as const satisfies HTMLAttributes<HTMLDivElement>;
 	}

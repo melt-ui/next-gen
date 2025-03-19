@@ -53,3 +53,8 @@
 :focus-visible {
 	outline: 4px solid var(--color-accent-500);
 }
+
+.abs-y-center {
+	top: 50%;
+	@apply -translate-y-1/2;
+}
