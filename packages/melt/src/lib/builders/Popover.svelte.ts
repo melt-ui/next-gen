@@ -22,8 +22,8 @@ import type { HTMLAttributes } from "svelte/elements";
 
 const dataIds = createDataIds("popover", ["trigger", "content"]);
 
-type CloseOnOutsideClickCheck = (el: Element | Window | Document) => boolean;
-type CloseOnOutsideClickProp = MaybeGetter<boolean | undefined> | CloseOnOutsideClickCheck;
+export type CloseOnOutsideClickCheck = (el: Element | Window | Document) => boolean;
+type CloseOnOutsideClickProp = MaybeGetter<boolean | CloseOnOutsideClickCheck | undefined>;
 
 export const isCloseOnOutsideClickCheck = (
 	value: CloseOnOutsideClickProp,
@@ -95,6 +95,7 @@ export class BasePopover {
 	computePositionOptions = $derived(extract(this.#props.computePositionOptions, {}));
 	closeOnEscape = $derived(extract(this.#props.closeOnEscape, true));
 	sameWidth = $derived(extract(this.#props.sameWidth, false));
+	closeOnOutsideClick = $derived(extract(this.#props.closeOnOutsideClick, true));
 
 	/* State */
 	#open!: Synced<boolean>;
@@ -117,14 +118,12 @@ export class BasePopover {
 	}
 
 	#shouldClose(el: Node) {
-		const closeOnOutsideClick = this.#props.closeOnOutsideClick;
+		if (this.closeOnOutsideClick === false) return false;
 
-		if (closeOnOutsideClick === false) return false;
-
-		if (isFunction(closeOnOutsideClick)) {
-			return isCloseOnOutsideClickCheck(closeOnOutsideClick)
-				? closeOnOutsideClick(el as HTMLElement) // Pass target if it's the correct type
-				: closeOnOutsideClick(); // Otherwise, call without arguments
+		if (isFunction(this.closeOnOutsideClick)) {
+			return isCloseOnOutsideClickCheck(this.closeOnOutsideClick)
+				? this.closeOnOutsideClick(el as HTMLElement) // Pass target if it's the correct type
+				: this.closeOnOutsideClick(); // Otherwise, call without arguments
 		}
 
 		return true;

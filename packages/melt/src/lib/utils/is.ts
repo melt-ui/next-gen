@@ -16,6 +16,10 @@ export function isFunction(value: unknown): value is (...args: unknown[]) => unk
 	return typeof value === "function";
 }
 
+export function isGetter(value: unknown): value is () => unknown {
+	return isFunction(value) && value.length === 0;
+}
+
 export function isSvelteSet(value: unknown): value is SvelteSet<unknown> {
 	return value instanceof SvelteSet;
 }
