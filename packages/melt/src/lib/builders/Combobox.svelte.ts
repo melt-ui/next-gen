@@ -80,6 +80,9 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 				await tick();
 				if (!open) {
 					this.highlighted = null;
+					if (!this.multiple) {
+						this.inputValue = this.valueAsString ?? "";
+					}
 					return;
 				}
 
