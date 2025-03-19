@@ -2,4 +2,4 @@
 "melt": minor
 ---
 
-add combobox
+add combobox (closes #77)
