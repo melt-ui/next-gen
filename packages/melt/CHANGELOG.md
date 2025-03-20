@@ -1,5 +1,13 @@
 # melt
 
+## 0.18.4
+
+### Patch Changes
+
+- toast: remove tracking effect dep ([`264b528`](https://github.com/melt-ui/next-gen/commit/264b528bffc9bab4b057bc42f07bc3111583fcac))
+
+- fix add toast export in toaster ([`264b528`](https://github.com/melt-ui/next-gen/commit/264b528bffc9bab4b057bc42f07bc3111583fcac))
+
 ## 0.18.3
 
 ### Patch Changes
