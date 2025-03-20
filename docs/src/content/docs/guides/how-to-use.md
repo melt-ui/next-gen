@@ -141,7 +141,7 @@ Melt is a low-level UI library. It provides a powerful API, but with it comes a 
 A common practice is to create a higher-level component that is built from Melt's primitives. This makes it easier to understand and use the library,
 and you can re-use your own styles and definitions.
 
-For example, here's an eample of a styled pin-input.
+For example, here's an example of a styled pin-input.
 
 ```svelte
 <script lang="ts">
