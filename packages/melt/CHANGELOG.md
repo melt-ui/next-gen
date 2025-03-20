@@ -1,5 +1,11 @@
 # melt
 
+## 0.18.3
+
+### Patch Changes
+
+- avoid popover errors like a madman ([`26d8a09`](https://github.com/melt-ui/next-gen/commit/26d8a0937d2661cfefdc0ad100814e4a6818f435))
+
 ## 0.18.2
 
 ### Patch Changes
