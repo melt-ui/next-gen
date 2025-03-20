@@ -6,6 +6,7 @@ import { extract } from "$lib/utils/extract";
 import { createDataIds } from "$lib/utils/identifiers";
 import { isFunction, isHtmlElement } from "$lib/utils/is";
 import { deepMerge } from "$lib/utils/merge";
+import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
 import {
 	autoUpdate,
 	computePosition,
@@ -180,24 +181,24 @@ export class BasePopover {
 					: undefined;
 
 				if (!isHtmlElement(parent)) {
-					el.showPopover();
+					safelyShowPopover(el);
 					return;
 				}
 
-				if (parent.dataset.open !== undefined) el.showPopover();
+				if (parent.dataset.open !== undefined) safelyShowPopover(el);
 
 				return addEventListener(parent, "toggle", async (e) => {
 					await new Promise((r) => setTimeout(r));
 
 					const isOpen = e.newState === "open";
 					if (isOpen) {
-						el.showPopover();
+						safelyShowPopover(el);
 					} else {
-						el.hidePopover();
+						safelyHidePopover(el);
 					}
 				});
 			} else {
-				el.hidePopover();
+				safelyHidePopover(el);
 			}
 		});
 

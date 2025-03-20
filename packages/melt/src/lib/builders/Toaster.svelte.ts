@@ -5,6 +5,7 @@ import type { HTMLAttributes } from "svelte/elements";
 import { SvelteMap } from "svelte/reactivity";
 import { isHtmlElement, isTouch } from "../utils/is";
 import { AnimationFrames } from "$lib/utils/animation-frames.svelte";
+import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
 
 const toasterMeta = createBuilderMetadata("toaster", ["root"]);
 
@@ -129,10 +130,10 @@ export class Toaster<T = object> {
 			if (!isHtmlElement(el)) return;
 
 			if (!this.toasts.length) {
-				el.hidePopover();
+				safelyHidePopover(el);
 				return;
 			}
-			el.showPopover();
+			safelyShowPopover(el);
 		});
 
 		return {

@@ -7,6 +7,7 @@ import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 import { isPointerInGraceArea } from "$lib/utils/pointer";
 import { computeConvexHullFromElements } from "$lib/utils/polygon";
+import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
 import { useFloating } from "$lib/utils/use-floating.svelte";
 import type { ComputePositionConfig } from "@floating-ui/dom";
 import { useEventListener, watch } from "runed";
@@ -239,7 +240,7 @@ export class Tooltip {
 			if (!triggerEl || !contentEl) return;
 
 			if (!this.isVisible) {
-				contentEl.hidePopover();
+				safelyHidePopover(contentEl);
 				return () => (this.#isPointerInsideContent = false);
 			}
 
@@ -250,20 +251,20 @@ export class Tooltip {
 				: undefined;
 
 			if (!isHtmlElement(parent)) {
-				contentEl.showPopover();
+				safelyShowPopover(contentEl);
 				return;
 			}
 
-			if (parent.dataset.open !== undefined) contentEl.showPopover();
+			if (parent.dataset.open !== undefined) safelyShowPopover(contentEl);
 
 			const toggleUnsub = addEventListener(parent, "toggle", async (e) => {
 				await new Promise((r) => setTimeout(r));
 
 				const isOpen = e.newState === "open";
 				if (isOpen) {
-					contentEl.showPopover();
+					safelyShowPopover(contentEl);
 				} else {
-					contentEl.hidePopover();
+					safelyHidePopover(contentEl);
 				}
 			});
 
