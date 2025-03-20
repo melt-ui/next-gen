@@ -6,6 +6,7 @@ import { SvelteMap } from "svelte/reactivity";
 import { isHtmlElement, isTouch } from "../utils/is";
 import { AnimationFrames } from "$lib/utils/animation-frames.svelte";
 import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
+import { watch } from "runed";
 
 const toasterMeta = createBuilderMetadata("toaster", ["root"]);
 
@@ -70,6 +71,8 @@ export class Toaster<T = object> {
 	/** The active toasts. */
 	toasts = $derived(Array.from(this.#toastsMap.values()));
 
+	#subscribers = 0;
+
 	constructor(props: ToasterProps = {}) {
 		this.#props = props;
 	}
@@ -77,7 +80,7 @@ export class Toaster<T = object> {
 	/**
 	 * Adds a toast.
 	 */
-	addToast(props: AddToastProps<T>) {
+	addToast = (props: AddToastProps<T>) => {
 		const propsWithDefaults = {
 			closeDelay: this.closeDelay,
 			type: this.type,
@@ -94,47 +97,61 @@ export class Toaster<T = object> {
 		this.#toastsMap.set(id, toast);
 
 		return toast;
-	}
+	};
 
 	/**
 	 * Removes the toast with the specified ID.
 	 * @param id The id of the toast.
 	 */
-	removeToast(id: string) {
+	removeToast = (id: string) => {
 		const toast = this.#toastsMap.get(id);
 		if (!toast) return;
 
 		this.#toastsMap.delete(id);
 		toast.cleanup();
-	}
+	};
 
 	/**
 	 * Updates a toast's data.
 	 * @param id The id of the toast.
 	 * @param data The updated data.
 	 */
-	updateToast(id: string, data: T) {
+	updateToast = (id: string, data: T) => {
 		const toast = this.#toastsMap.get(id);
 		if (!toast) return;
 
 		toast.data = data;
-	}
+	};
 
 	/**
 	 * Spread attributes for the container of the toasts.
 	 */
 	get root() {
-		// Show toast root if toasts exist
-		$effect(() => {
-			const el = document.getElementById(this.ids.root);
-			if (!isHtmlElement(el)) return;
+		if ($effect.tracking()) {
+			this.#subscribers++;
+			$effect(() => {
+				return () => {
+					this.#subscribers--;
+				};
+			});
 
-			if (!this.toasts.length) {
-				safelyHidePopover(el);
-				return;
-			}
-			safelyShowPopover(el);
-		});
+			watch(
+				() => this.#subscribers,
+				(s) => {
+					if (s !== 1) return;
+					$effect(() => {
+						const el = document.getElementById(this.ids.root);
+						if (!isHtmlElement(el)) return;
+
+						if (!this.toasts.length) {
+							safelyHidePopover(el);
+							return;
+						}
+						safelyShowPopover(el);
+					});
+				},
+			);
+		}
 
 		return {
 			[toasterMeta.dataAttrs.root]: "",
