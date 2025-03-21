@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Collapsible as Builder, type CollapsibleProps } from "../builders/Collapsible.svelte";
+	import { getters } from "$lib/utils/getters.svelte.js";
 	import { type Snippet } from "svelte";
+	import { Collapsible as Builder, type CollapsibleProps } from "../builders/Collapsible.svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "../builders";
 
 	type Props = ComponentProps<CollapsibleProps> & {
 		children: Snippet<[Builder]>;

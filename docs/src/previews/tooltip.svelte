@@ -1,7 +1,8 @@
 <script lang="ts">
-	import Preview from "@components/preview.svelte";
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
-	import { Tooltip, getters } from "melt/builders";
+	import Preview from "@components/preview.svelte";
+	import { getters } from "melt";
+	import { Tooltip } from "melt/builders";
 	import PhChefHatFill from "~icons/ph/chef-hat-fill";
 
 	let controls = usePreviewControls({

@@ -1,7 +1,8 @@
 <script lang="ts">
-	import Preview from "@components/preview.svelte";
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
-	import { getters, Slider } from "melt/builders";
+	import Preview from "@components/preview.svelte";
+	import { getters } from "melt";
+	import { Slider } from "melt/builders";
 
 	const controls = usePreviewControls({
 		step: { type: "number", label: "Step", defaultValue: 1 },

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import Preview from "@components/preview.svelte";
-	import { getters, Select } from "melt/builders";
+	import { getters } from "melt";
+	import { Select } from "melt/builders";
 	import AlphabetJapanese from "~icons/hugeicons/alphabet-japanese";
 	import Check from "~icons/lucide/check";
 	import ChevronDown from "~icons/lucide/chevron-down";

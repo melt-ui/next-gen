@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Progress as Builder, type ProgressProps } from "../builders/Progress.svelte";
+	import { getters } from "$lib/utils/getters.svelte.js";
 	import { type Snippet } from "svelte";
+	import { Progress as Builder, type ProgressProps } from "../builders/Progress.svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "$lib/builders/utils.svelte";
 
 	type Props = ComponentProps<ProgressProps> & {
 		children: Snippet<[Builder]>;

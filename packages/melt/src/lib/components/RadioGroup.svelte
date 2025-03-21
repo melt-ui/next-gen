@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { RadioGroup as Builder, type RadioGroupProps } from "../builders/RadioGroup.svelte";
+	import { getters } from "$lib/utils/getters.svelte.js";
 	import { type Snippet } from "svelte";
+	import { RadioGroup as Builder, type RadioGroupProps } from "../builders/RadioGroup.svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "$lib/builders";
 
 	type Props = ComponentProps<RadioGroupProps> & {
 		children: Snippet<[Builder]>;

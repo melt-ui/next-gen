@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { fly } from "svelte/transition";
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import Preview from "@components/preview.svelte";
-	import { Toaster, getters } from "melt/builders";
+	import { getters } from "melt";
+	import { Toaster } from "melt/builders";
 	import { Progress } from "melt/components";
+	import { fly } from "svelte/transition";
 	import Close from "~icons/material-symbols/close-rounded";
 
 	const controls = usePreviewControls({

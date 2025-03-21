@@ -1,5 +1,5 @@
 <script lang="ts" generics="T extends string, Multiple extends boolean">
-	import { getters } from "../builders/utils.svelte";
+	import { getters } from "$lib/utils/getters.svelte.js";
 	import { type Snippet } from "svelte";
 	import { Combobox as Builder, type ComboboxProps } from "../builders/Combobox.svelte";
 	import type { ComponentProps } from "../types";
@@ -21,4 +21,3 @@
 </script>
 
 {@render children(select)}
-

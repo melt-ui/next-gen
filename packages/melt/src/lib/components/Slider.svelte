@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Slider as Builder, type SliderProps } from "../builders/Slider.svelte";
+	import { getters } from "$lib/utils/getters.svelte.js";
 	import { type Snippet } from "svelte";
+	import { Slider as Builder, type SliderProps } from "../builders/Slider.svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "../builders/utils.svelte";
 
 	type Props = ComponentProps<SliderProps> & {
 		children: Snippet<[Builder]>;

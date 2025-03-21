@@ -1,13 +1,13 @@
 <script lang="ts">
-	import Preview from "@components/preview.svelte";
+	import Motion from "@components/motion.svelte";
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
-	import { Tree, getters, type TreeItem } from "melt/builders";
+	import Preview from "@components/preview.svelte";
+	import { getters } from "melt";
+	import { Tree, type TreeItem } from "melt/builders";
 	import JavaScript from "~icons/devicon/javascript";
 	import Svelte from "~icons/devicon/svelte";
-	import FolderOpen from "~icons/ph/folder-open-fill";
 	import Folder from "~icons/ph/folder-fill";
-	import Motion from "@components/motion.svelte";
-
+	import FolderOpen from "~icons/ph/folder-open-fill";
 	const controls = usePreviewControls({
 		multiple: {
 			type: "boolean",

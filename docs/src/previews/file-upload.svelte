@@ -1,10 +1,11 @@
 <script lang="ts">
-	import Preview from "@components/preview.svelte";
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
-	import { FileUpload, getters } from "melt/builders";
+	import Preview from "@components/preview.svelte";
+	import { getters } from "melt";
+	import { FileUpload } from "melt/builders";
+	import { SvelteSet } from "svelte/reactivity";
 	import UploadIcon from "~icons/tabler/cloud-upload";
 	import XIcon from "~icons/tabler/x";
-	import { SvelteSet } from "svelte/reactivity";
 
 	const controls = usePreviewControls({
 		multiple: {

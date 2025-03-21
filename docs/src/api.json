@@ -1,9 +1,4 @@
 {
-  "utils": {
-    "constructorProps": [],
-    "methods": [],
-    "properties": []
-  },
   "Tree": {
     "constructorProps": [
       {

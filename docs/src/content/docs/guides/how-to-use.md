@@ -78,6 +78,30 @@ able to use the `bind:` directive.
 
 Its more straight-forward to use, but can be a bit more verbose on the template, so Melt offers both APIs.
 
+## Merging attributes
+
+With Melt's spread syntax, you're adding attributes to your elements. But this brings a potential problem.
+
+```svelte
+<button {...popover.trigger} onclick={() => console.log("hi")}>
+    Press me!
+</button>
+```
+
+The code above will make it so the popover never shows up. Why? Because the `onclick` defined at the end is overriding the one that comes from `popover.trigger`
+
+To deal with this, Melt provides a `mergeAttrs` utility, allowing both event handlers to be called successfully.
+
+```svelte
+<button
+	{...mergeAttrs(popover.trigger, {
+		onclick: () => console.log("hi"),
+	})}
+>
+	Press me!
+</button>
+```
+
 ## Controlled vs Uncontrolled
 
 Melt's builders and components, by default, have inner state, that's not dictated by an outside source of truth.
@@ -145,8 +169,8 @@ For example, here's an example of a styled pin-input.
 
 ```svelte
 <script lang="ts">
-	import type { ComponentProps } from "melt";
-	import { getters, PinInput, type PinInputProps } from "melt/builders";
+	import { type ComponentProps, getters } from "melt";
+	import { PinInput, type PinInputProps } from "melt/builders";
 
 	type Props = ComponentProps<PinInputProps>;
 	let { value = $bindable(""), ...rest }: Props = $props();

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Tabs as Builder, type TabsProps } from "../builders/Tabs.svelte";
+	import { getters } from "$lib/utils/getters.svelte.js";
 	import { type Snippet } from "svelte";
+	import { Tabs as Builder, type TabsProps } from "../builders/Tabs.svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "../builders/utils.svelte";
 
 	type Props = ComponentProps<TabsProps> & {
 		children: Snippet<[Builder]>;
