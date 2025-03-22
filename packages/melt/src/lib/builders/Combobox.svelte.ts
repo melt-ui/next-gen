@@ -282,15 +282,19 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 
 	#highlightNext() {
 		const options = this.#getOptionsEls();
-		const current = options.find((o) => o.dataset.value === this.highlighted);
-		const next = current?.nextElementSibling ?? options[0];
+		const next = options.find((_, index, options) => {
+			const current = options.at((index - 1) % options.length);
+			return current?.dataset.value === this.highlighted;
+		});
 		if (isHtmlElement(next)) this.#highlight(next);
 	}
 
 	#highlightPrev() {
 		const options = this.#getOptionsEls();
-		const current = options.find((o) => o.dataset.value === this.highlighted);
-		const prev = current?.previousElementSibling ?? options.at(-1);
+		const prev = options.find((_, index, options) => {
+			const current = options.at((index + 1) % options.length);
+			return current?.dataset.value === this.highlighted;
+		});
 		if (isHtmlElement(prev)) this.#highlight(prev);
 	}
 
