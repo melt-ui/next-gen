@@ -1,5 +1,13 @@
 # melt
 
+## 0.19.0
+
+### Minor Changes
+
+- change import of getters from melt/builders to melt ([`61c32ed`](https://github.com/melt-ui/next-gen/commit/61c32ed396f1af4bada368f05c7464750282844d))
+
+- add mergeAttrs helper ([`61c32ed`](https://github.com/melt-ui/next-gen/commit/61c32ed396f1af4bada368f05c7464750282844d))
+
 ## 0.18.4
 
 ### Patch Changes
