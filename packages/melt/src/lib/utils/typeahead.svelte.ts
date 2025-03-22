@@ -1,9 +1,8 @@
 import type { MaybeGetter } from "$lib/types";
 import { useDebounce } from "runed";
 import { extract } from "./extract";
-import { isString } from "./is";
 
-type Item = { value: string; current?: boolean };
+type Item = { value: string; typeahead?: string; current?: boolean };
 
 export type CreateTypeaheadArgs<T extends Item> = {
 	/**
@@ -36,7 +35,8 @@ export function createTypeahead<T extends Item>(args: CreateTypeaheadArgs<T>) {
 		const index = items.findIndex((item) => item.current);
 		const itemsForTypeahead = items
 			.filter((item) => {
-				return item.value.toLowerCase().startsWith(value);
+				const searchValue = item.typeahead ?? item.value;
+				return searchValue.toLowerCase().startsWith(value);
 			})
 			.map((item) => ({ item, index: items.indexOf(item) }));
 		if (!itemsForTypeahead.length) return;
