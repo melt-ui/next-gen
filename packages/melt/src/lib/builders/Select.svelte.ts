@@ -291,7 +291,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		const options = this.#getOptionsEls();
 		const next = options.find((_, index, options) => {
 			const current = options.at((index - 1) % options.length);
-			return current?.dataset.value === this.highlighted;
+			return current!.dataset.value === this.highlighted;
 		});
 		if (isHtmlElement(next)) this.#highlight(next);
 	}
@@ -300,7 +300,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		const options = this.#getOptionsEls();
 		const prev = options.find((_, index, options) => {
 			const current = options.at((index + 1) % options.length);
-			return current?.dataset.value === this.highlighted;
+			return current!.dataset.value === this.highlighted;
 		});
 		if (isHtmlElement(prev)) this.#highlight(prev);
 	}
