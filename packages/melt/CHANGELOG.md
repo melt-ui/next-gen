@@ -1,5 +1,11 @@
 # melt
 
+## 0.20.1
+
+### Patch Changes
+
+- fix sameWidth regressio ([`9ddae90`](https://github.com/melt-ui/next-gen/commit/9ddae90c4273e5783e576a58ff2e01681e3dca38))
+
 ## 0.20.0
 
 ### Minor Changes
