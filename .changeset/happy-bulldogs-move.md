@@ -1,5 +1,0 @@
----
-"melt": patch
----
-
-fix mergeAttrs
