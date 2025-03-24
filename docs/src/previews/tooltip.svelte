@@ -34,12 +34,14 @@
 		},
 	});
 
-	const computePositionOptions = $derived({ placement: controls.placement });
+	const computePositionOptions = $derived({
+		computePosition: { placement: controls.placement },
+	});
 
 	const tooltip = new Tooltip({
 		...getters(controls),
 		forceVisible: true,
-		computePositionOptions: () => computePositionOptions,
+		floatingConfig: () => computePositionOptions,
 	});
 </script>
 
