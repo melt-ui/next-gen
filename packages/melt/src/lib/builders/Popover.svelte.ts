@@ -5,8 +5,13 @@ import { addEventListener } from "$lib/utils/event";
 import { extract } from "$lib/utils/extract";
 import { createDataIds } from "$lib/utils/identifiers";
 import { isFunction, isHtmlElement } from "$lib/utils/is";
+import { deepMerge } from "$lib/utils/merge";
 import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
-import { useFloating, type UseFloatingArgs } from "$lib/utils/use-floating.svelte";
+import {
+	useFloating,
+	type UseFloatingArgs,
+	type UseFloatingConfig,
+} from "$lib/utils/use-floating.svelte";
 import { nanoid } from "nanoid";
 import { useEventListener } from "runed";
 import type { HTMLAttributes } from "svelte/elements";
@@ -84,6 +89,12 @@ export class BasePopover {
 	closeOnEscape = $derived(extract(this.#props.closeOnEscape, true));
 	sameWidth = $derived(extract(this.#props.sameWidth, false));
 	closeOnOutsideClick = $derived(extract(this.#props.closeOnOutsideClick, true));
+	floatingConfig = $derived.by(() => {
+		const config = extract(this.#props.floatingConfig, {} as UseFloatingConfig);
+		const sameWidth = extract(this.#props.sameWidth, false);
+		const merged = deepMerge(config, { sameWidth });
+		return merged;
+	});
 
 	/* State */
 	#open!: Synced<boolean>;
@@ -199,7 +210,7 @@ export class BasePopover {
 			useFloating({
 				node: () => triggerEl,
 				floating: () => contentEl,
-				config: this.#props.floatingConfig,
+				config: () => this.floatingConfig,
 			});
 		});
 

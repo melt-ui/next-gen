@@ -13,6 +13,7 @@ import {
 	type FlipOptions,
 	type ArrowOptions,
 	type OffsetOptions,
+	size,
 } from "@floating-ui/dom";
 import { isHtmlElement } from "./is";
 import { deepMerge } from "./merge";
@@ -35,6 +36,7 @@ export type UseFloatingConfig = {
 	flip?: FlipOptions;
 	arrow?: ArrowOptions;
 	offset?: OffsetOptions;
+	sameWidth?: boolean;
 };
 
 /** All the parameters UseFloating returns */
@@ -66,6 +68,16 @@ export function useFloating(args: UseFloatingArgs) {
 						? config.offset
 						: { mainAxis: 8 + arrowOffset, ...config.offset },
 				),
+				config.sameWidth
+					? size({
+							apply({ rects, elements }) {
+								Object.assign(elements.floating?.style ?? {}, {
+									width: `${rects.reference.width}px`,
+									minWidth: `${rects.reference.width}px`,
+								});
+							},
+						})
+					: undefined,
 			],
 		};
 

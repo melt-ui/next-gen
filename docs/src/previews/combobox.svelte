@@ -26,7 +26,6 @@
 		"Guts",
 		"Light Yagami",
 		"Naruto Uzumaki",
-		"Luffy",
 		"Goku",
 		"Eren Jaeger",
 	] as const;
