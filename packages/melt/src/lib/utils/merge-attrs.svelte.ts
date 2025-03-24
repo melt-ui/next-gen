@@ -1,4 +1,5 @@
 import type { HTMLAttributes } from "svelte/elements";
+import { isFunction, isString } from "./is";
 
 // Source: https://stackoverflow.com/questions/51603250/typescript-3-parameter-list-intersection-type/51604379#51604379
 type TupleTypes<T> = { [P in keyof T]: T[P] } extends { [key: number]: infer V }
@@ -52,8 +53,8 @@ export function executeCallbacks<T extends unknown[]>(
  * Given a list of attribute objects, merges them into a single object.
  * - Automatically composes event handlers (e.g. `onclick`, `oninput`, etc.)
  * - Chains regular functions with the same name so they are called in order
- * - Merges class strings with `clsx`
- * - Handles a bug with Sve te where setting the `hidden` attribute to `false` doesn't remove it
+ * - Handles a bug with Svelte where setting the `hidden` attribute to `false` doesn't remove it
+ * - Merges style attributes
  * - Overrides other values with the last one
  */
 export function mergeAttrs<T extends HTMLAttributes<HTMLElement>[]>(
@@ -67,18 +68,17 @@ export function mergeAttrs<T extends HTMLAttributes<HTMLElement>[]>(
 			const a = result[key];
 			const b: unknown = key in props ? props[key as any] : undefined;
 
-			const aIsFunction = typeof a === "function";
-			const bIsFunction = typeof b === "function";
-
 			// compose event handlers
-			if (aIsFunction && typeof bIsFunction && isEventHandler(key)) {
+			if (isFunction(a) && isFunction(b) && isEventHandler(key)) {
 				// handle merging of event handlers
 				const aHandler = a as EventListener;
 				const bHandler = b as EventListener;
 				result[key] = composeHandlers(aHandler, bHandler);
-			} else if (aIsFunction && bIsFunction) {
+			} else if (isFunction(a) && isFunction(b)) {
 				// chain non-event handler functions
 				result[key] = executeCallbacks(a, b);
+			} else if (isString(a) && isString(b) && key === "style") {
+				result[key] = [a, b].join(";");
 			} else {
 				// override other values
 				result[key] = b !== undefined ? b : a;
@@ -88,13 +88,11 @@ export function mergeAttrs<T extends HTMLAttributes<HTMLElement>[]>(
 
 	// handle weird svelte bug where `hidden` is not removed when set to `false`
 	if (result.hidden !== true) {
-		result.hidden = undefined;
 		delete result.hidden;
 	}
 
 	// handle weird svelte bug where `disabled` is not removed when set to `false`
 	if (result.disabled !== true) {
-		result.disabled = undefined;
 		delete result.disabled;
 	}
 
