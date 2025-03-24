@@ -1,5 +1,13 @@
 # melt
 
+## 0.20.0
+
+### Minor Changes
+
+- popover (and others that depend on it): change floating ui usage ([#99](https://github.com/melt-ui/next-gen/pull/99))
+
+- tooltip: allow more control for floating ui ([#99](https://github.com/melt-ui/next-gen/pull/99))
+
 ## 0.19.0
 
 ### Minor Changes
