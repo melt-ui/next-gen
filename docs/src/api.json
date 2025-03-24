@@ -225,9 +225,9 @@
         "optional": true
       },
       {
-        "name": "computePositionOptions",
-        "type": "Elements; }) => Promisable<Platform | undefined; }> | undefined>",
-        "description": "Options to be passed to Floating UI's `computePosition`",
+        "name": "floatingConfig",
+        "type": "UseFloatingConfig | undefined>",
+        "description": "Config to be passed to `useFloating`",
         "optional": true
       },
       {
@@ -247,11 +247,6 @@
     ],
     "methods": [],
     "properties": [
-      {
-        "name": "computePositionOptions",
-        "type": "{} | Partial<{ placement?: Elements; }) => Promisable<Platform | undefined; }>",
-        "description": ""
-      },
       {
         "name": "closeOnPointerDown",
         "type": "boolean",
@@ -308,7 +303,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type TooltipProps = {\n  /**\n   * If the Tooltip is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * Size of tooltip arrow in pixels.\n   *\n   * @default 8\n   */\n  arrowSize?: MaybeGetter<number | undefined>;\n\n  /**\n   * If `true`, tooltip will close if trigger is pressed.\n   *\n   * @default true\n   */\n  closeOnPointerDown?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Tooltip open delay in milliseconds.\n   *\n   * @default 1000\n   */\n  openDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * Tooltip close delay in milliseconds.\n   *\n   * @default 0\n   */\n  closeDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * Options to be passed to Floating UI's `computePosition`\n   *\n   * @see https://floating-ui.com/docs/computePosition\n   */\n  computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;\n\n  /**\n   * If the popover visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If `true`, leaving trigger will close the tooltip.\n   *\n   * @default false\n   */\n  disableHoverableContent?: MaybeGetter<boolean | undefined>;\n};"
+    "propsAlt": "export type TooltipProps = {\n  /**\n   * If the Tooltip is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * Size of tooltip arrow in pixels.\n   *\n   * @default 8\n   */\n  arrowSize?: MaybeGetter<number | undefined>;\n\n  /**\n   * If `true`, tooltip will close if trigger is pressed.\n   *\n   * @default true\n   */\n  closeOnPointerDown?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Tooltip open delay in milliseconds.\n   *\n   * @default 1000\n   */\n  openDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * Tooltip close delay in milliseconds.\n   *\n   * @default 0\n   */\n  closeDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * Config to be passed to `useFloating`\n   */\n  floatingConfig?: UseFloatingArgs[\"config\"];\n\n  /**\n   * If the popover visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If `true`, leaving trigger will close the tooltip.\n   *\n   * @default false\n   */\n  disableHoverableContent?: MaybeGetter<boolean | undefined>;\n};"
   },
   "Toggle": {
     "constructorProps": [
@@ -621,9 +616,9 @@
         "optional": true
       },
       {
-        "name": "computePositionOptions",
+        "name": "floatingConfig",
         "type": "any",
-        "description": "Options to be passed to Floating UI's `computePosition`",
+        "description": "Config to be passed to `useFloating`",
         "optional": true
       },
       {
@@ -934,9 +929,9 @@
         "optional": true
       },
       {
-        "name": "computePositionOptions",
-        "type": "Elements; }) => Promisable<Platform | undefined; }> | undefined>",
-        "description": "Options to be passed to Floating UI's `computePosition`",
+        "name": "floatingConfig",
+        "type": "UseFloatingConfig | undefined>",
+        "description": "Config to be passed to `useFloating`",
         "optional": true
       },
       {
@@ -979,7 +974,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type PopoverProps = {\n  /**\n   * If the Popover is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * If the popover visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Options to be passed to Floating UI's `computePosition`\n   *\n   * @see https://floating-ui.com/docs/computePosition\n   */\n  computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;\n\n  /**\n   * If the popover should have the same width as the trigger\n   *\n   * @default false\n   */\n  sameWidth?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the popover should close when clicking escape.\n   *\n   * @default true\n   */\n  closeOnEscape?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the popover should close when clicking outside.\n   * Alternatively, accepts a function that receives the clicked element,\n   * and returns if the popover should close.\n   *\n   * @default true\n   */\n  closeOnOutsideClick?: CloseOnOutsideClickProp;\n};"
+    "propsAlt": "export type PopoverProps = {\n  /**\n   * If the Popover is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * If the popover visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Config to be passed to `useFloating`\n   */\n  floatingConfig?: UseFloatingArgs[\"config\"];\n\n  /**\n   * If the popover should have the same width as the trigger\n   *\n   * @default false\n   */\n  sameWidth?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the popover should close when clicking escape.\n   *\n   * @default true\n   */\n  closeOnEscape?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the popover should close when clicking outside.\n   * Alternatively, accepts a function that receives the clicked element,\n   * and returns if the popover should close.\n   *\n   * @default true\n   */\n  closeOnOutsideClick?: CloseOnOutsideClickProp;\n};"
   },
   "PinInput": {
     "constructorProps": [
@@ -1273,9 +1268,9 @@
         "optional": true
       },
       {
-        "name": "computePositionOptions",
+        "name": "floatingConfig",
         "type": "any",
-        "description": "Options to be passed to Floating UI's `computePosition`",
+        "description": "Config to be passed to `useFloating`",
         "optional": true
       },
       {

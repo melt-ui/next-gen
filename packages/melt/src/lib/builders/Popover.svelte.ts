@@ -5,18 +5,8 @@ import { addEventListener } from "$lib/utils/event";
 import { extract } from "$lib/utils/extract";
 import { createDataIds } from "$lib/utils/identifiers";
 import { isFunction, isHtmlElement } from "$lib/utils/is";
-import { deepMerge } from "$lib/utils/merge";
 import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
-import {
-	autoUpdate,
-	computePosition,
-	flip,
-	offset,
-	shift,
-	size,
-	type ComputePositionConfig,
-	type Placement,
-} from "@floating-ui/dom";
+import { useFloating, type UseFloatingArgs } from "$lib/utils/use-floating.svelte";
 import { nanoid } from "nanoid";
 import { useEventListener } from "runed";
 import type { HTMLAttributes } from "svelte/elements";
@@ -57,11 +47,9 @@ export type PopoverProps = {
 	forceVisible?: MaybeGetter<boolean | undefined>;
 
 	/**
-	 * Options to be passed to Floating UI's `computePosition`
-	 *
-	 * @see https://floating-ui.com/docs/computePosition
+	 * Config to be passed to `useFloating`
 	 */
-	computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;
+	floatingConfig?: UseFloatingArgs["config"];
 
 	/**
 	 * If the popover should have the same width as the trigger
@@ -93,7 +81,6 @@ export class BasePopover {
 	/* Props */
 	#props!: PopoverProps;
 	forceVisible = $derived(extract(this.#props.forceVisible, false));
-	computePositionOptions = $derived(extract(this.#props.computePositionOptions, {}));
 	closeOnEscape = $derived(extract(this.#props.closeOnEscape, true));
 	sameWidth = $derived(extract(this.#props.sameWidth, false));
 	closeOnOutsideClick = $derived(extract(this.#props.closeOnOutsideClick, true));
@@ -202,73 +189,18 @@ export class BasePopover {
 			}
 		});
 
-		// Floating UI
-		const compute = () => {
-			const contentEl = document.getElementById(this.ids.popover);
-			const triggerEl = document.getElementById(this.ids.invoker);
-			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
-				return;
-			}
-
-			const baseOptions: Partial<ComputePositionConfig> = {
-				middleware: [
-					shift(),
-					flip(),
-					offset({ mainAxis: 8 }),
-					this.sameWidth
-						? size({
-								apply({ rects, elements }) {
-									Object.assign(elements.floating?.style ?? {}, {
-										width: `${rects.reference.width}px`,
-										minWidth: `${rects.reference.width}px`,
-									});
-								},
-							})
-						: undefined,
-				],
-			};
-			computePosition(
-				triggerEl,
-				contentEl,
-				deepMerge(baseOptions, this.computePositionOptions),
-			).then(({ x, y, placement }) => {
-				const transformOriginMap: Record<Placement, string> = {
-					top: "bottom center",
-					"top-start": "bottom left",
-					"top-end": "bottom right",
-
-					bottom: "top center",
-					"bottom-start": "top left",
-					"bottom-end": "top right",
-
-					left: "center center",
-					"left-start": "top left",
-					"left-end": "bottom left",
-
-					right: "center center",
-					"right-start": "top right",
-					"right-end": "bottom right",
-				};
-
-				Object.assign(contentEl.style, {
-					left: `${x}px`,
-					top: `${y}px`,
-					position: "absolute",
-				});
-				contentEl.style.transformOrigin = transformOriginMap[placement];
-
-				contentEl.dataset.side = placement;
-			});
-		};
-
 		$effect(() => {
 			const contentEl = document.getElementById(this.ids.popover);
 			const triggerEl = document.getElementById(this.ids.invoker);
-			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
+			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl) || !this.open) {
 				return;
 			}
 
-			return autoUpdate(triggerEl, contentEl, compute);
+			useFloating({
+				node: () => triggerEl,
+				floating: () => contentEl,
+				config: this.#props.floatingConfig,
+			});
 		});
 
 		useEventListener(

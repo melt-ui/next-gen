@@ -8,8 +8,7 @@ import { isHtmlElement } from "$lib/utils/is";
 import { isPointerInGraceArea } from "$lib/utils/pointer";
 import { computeConvexHullFromElements } from "$lib/utils/polygon";
 import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
-import { useFloating } from "$lib/utils/use-floating.svelte";
-import type { ComputePositionConfig } from "@floating-ui/dom";
+import { useFloating, type UseFloatingArgs } from "$lib/utils/use-floating.svelte";
 import { useEventListener, watch } from "runed";
 import { untrack } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
@@ -70,11 +69,9 @@ export type TooltipProps = {
 	closeDelay?: MaybeGetter<number | undefined>;
 
 	/**
-	 * Options to be passed to Floating UI's `computePosition`
-	 *
-	 * @see https://floating-ui.com/docs/computePosition
+	 * Config to be passed to `useFloating`
 	 */
-	computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;
+	floatingConfig?: UseFloatingArgs["config"];
 
 	/**
 	 * If the popover visibility should be controlled by the user.
@@ -96,7 +93,6 @@ export class Tooltip {
 
 	/** Props */
 	#props!: TooltipProps;
-	computePositionOptions = $derived(extract(this.#props.computePositionOptions, {}));
 	closeOnPointerDown = $derived(extract(this.#props.closeOnPointerDown, true));
 	openDelay = $derived(extract(this.#props.openDelay, 1000));
 	closeDelay = $derived(extract(this.#props.closeDelay, 0));
@@ -226,11 +222,11 @@ export class Tooltip {
 
 			if (!triggerEl || !contentEl || !this.open) return;
 
-			useFloating(
-				() => triggerEl,
-				() => contentEl,
-				this.computePositionOptions,
-			);
+			useFloating({
+				node: () => triggerEl,
+				floating: () => contentEl,
+				config: this.#props.floatingConfig,
+			});
 		});
 
 		$effect(() => {
