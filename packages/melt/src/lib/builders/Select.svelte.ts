@@ -259,11 +259,11 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		return `${this.ids.content}-option-${dataAttr(value)}`;
 	}
 
-	getOption(value: T, typeahead?: { typeahead: string }) {
+	getOption(value: T, options?: { typeahead: string }) {
 		return {
 			[dataAttrs.option]: "",
 			"data-value": dataAttr(value),
-			"data-typeahead": dataAttr(typeahead?.typeahead),
+			"data-typeahead": dataAttr(options?.typeahead),
 			"aria-hidden": this.open ? undefined : true,
 			"aria-selected": this.#value.has(value),
 			"data-highlighted": dataAttr(this.highlighted === value),
