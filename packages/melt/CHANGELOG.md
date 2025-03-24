@@ -1,5 +1,11 @@
 # melt
 
+## 0.20.2
+
+### Patch Changes
+
+- fix mergeAttrs ([`c2ec4b7`](https://github.com/melt-ui/next-gen/commit/c2ec4b71147fc6aacf3976afc292fe397422c45c))
+
 ## 0.20.1
 
 ### Patch Changes
