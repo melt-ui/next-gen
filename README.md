@@ -5,7 +5,7 @@
 [![](https://img.shields.io/npm/v/melt?style=flat)](https://www.npmjs.com/package/melt)
 ![npm](https://img.shields.io/npm/dw/melt?style=flat&color=orange)
 
-[![](https://img.shields.io/github/actions/workflow/status/melt-ui/next-gen/ci.yaml?style=flat)](https://github.com/melt-ui/next-gen/actions/workflows/ci.yaml)
+[![](https://img.shields.io/github/actions/workflow/status/melt-ui/next-gen/ci.yml?style=flat)](https://github.com/melt-ui/next-gen/actions/workflows/ci.yml)
 ![](https://img.shields.io/github/license/melt-ui/next-gen?style=flat)
 [![](https://dcbadge.vercel.app/api/server/2QDjZkYunf?style=flat)](https://melt-ui.com/discord)
 
