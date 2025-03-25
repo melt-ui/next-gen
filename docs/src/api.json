@@ -197,13 +197,6 @@
         "optional": true
       },
       {
-        "name": "arrowSize",
-        "type": "MaybeGetter<number | undefined>",
-        "description": "Size of tooltip arrow in pixels.",
-        "defaultValue": "8",
-        "optional": true
-      },
-      {
         "name": "closeOnPointerDown",
         "type": "MaybeGetter<boolean | undefined>",
         "description": "If `true`, tooltip will close if trigger is pressed.",
@@ -268,11 +261,6 @@
         "description": ""
       },
       {
-        "name": "arrowSize",
-        "type": "number",
-        "description": ""
-      },
-      {
         "name": "forceVisible",
         "type": "boolean",
         "description": ""
@@ -299,11 +287,11 @@
       },
       {
         "name": "arrow",
-        "type": "{\n  readonly \"data-melt-tooltip-arrow\": \"\"\n  readonly id: string\n  readonly \"data-arrow\": \"\"\n  readonly \"data-open\": \"\" | undefined\n  readonly style: `position: absolute; width: var(--arrow-size, ${number}px); height: var(--arrow-size, ${number}px);`\n}",
+        "type": "{\n  readonly \"data-melt-tooltip-arrow\": \"\"\n  readonly id: string\n  readonly \"data-arrow\": \"\"\n  readonly \"aria-hidden\": true\n  readonly \"data-open\": \"\" | undefined\n}",
         "description": ""
       }
     ],
-    "propsAlt": "export type TooltipProps = {\n  /**\n   * If the Tooltip is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * Size of tooltip arrow in pixels.\n   *\n   * @default 8\n   */\n  arrowSize?: MaybeGetter<number | undefined>;\n\n  /**\n   * If `true`, tooltip will close if trigger is pressed.\n   *\n   * @default true\n   */\n  closeOnPointerDown?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Tooltip open delay in milliseconds.\n   *\n   * @default 1000\n   */\n  openDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * Tooltip close delay in milliseconds.\n   *\n   * @default 0\n   */\n  closeDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * Config to be passed to `useFloating`\n   */\n  floatingConfig?: UseFloatingArgs[\"config\"];\n\n  /**\n   * If the popover visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If `true`, leaving trigger will close the tooltip.\n   *\n   * @default false\n   */\n  disableHoverableContent?: MaybeGetter<boolean | undefined>;\n};"
+    "propsAlt": "export type TooltipProps = {\n  /**\n   * If the Tooltip is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * If `true`, tooltip will close if trigger is pressed.\n   *\n   * @default true\n   */\n  closeOnPointerDown?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Tooltip open delay in milliseconds.\n   *\n   * @default 1000\n   */\n  openDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * Tooltip close delay in milliseconds.\n   *\n   * @default 0\n   */\n  closeDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * Config to be passed to `useFloating`\n   */\n  floatingConfig?: UseFloatingArgs[\"config\"];\n\n  /**\n   * If the popover visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If `true`, leaving trigger will close the tooltip.\n   *\n   * @default false\n   */\n  disableHoverableContent?: MaybeGetter<boolean | undefined>;\n};"
   },
   "Toggle": {
     "constructorProps": [
@@ -372,7 +360,7 @@
       {
         "name": "hover",
         "type": "MaybeGetter<\"pause\" | \"pause-all\" | null | undefined>",
-        "description": "The behaviour when a toast is hovered.",
+        "description": "The behaviour when a toast is hovered.\nPass in `null` to disable.",
         "defaultValue": "'pause'",
         "optional": true
       }
@@ -396,7 +384,7 @@
       },
       {
         "name": "hover",
-        "type": "\"pause\" | \"pause-all\"",
+        "type": "\"pause\" | \"pause-all\" | null",
         "description": ""
       },
       {
@@ -425,7 +413,7 @@
         "description": "Spread attributes for the container of the toasts."
       }
     ],
-    "propsAlt": "export type ToasterProps = {\n  /**\n   * The delay in milliseconds before the toast closes. Set to 0 to disable.\n   * @default 5000\n   */\n  closeDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * The sensitivity of the toast for accessibility purposes.\n   * https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live\n   * @default 'polite'\n   */\n  type?: MaybeGetter<\"assertive\" | \"polite\" | undefined>;\n\n  /**\n   * The behaviour when a toast is hovered.\n   * @default 'pause'\n   */\n  hover?: MaybeGetter<\"pause\" | \"pause-all\" | null | undefined>;\n};"
+    "propsAlt": "export type ToasterProps = {\n  /**\n   * The delay in milliseconds before the toast closes. Set to 0 to disable.\n   * @default 5000\n   */\n  closeDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * The sensitivity of the toast for accessibility purposes.\n   * https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live\n   * @default 'polite'\n   */\n  type?: MaybeGetter<\"assertive\" | \"polite\" | undefined>;\n\n  /**\n   * The behaviour when a toast is hovered.\n   * Pass in `null` to disable.\n   *\n   * @default 'pause'\n   */\n  hover?: MaybeGetter<\"pause\" | \"pause-all\" | null | undefined>;\n};"
   },
   "Tabs": {
     "constructorProps": [
@@ -685,7 +673,7 @@
     "properties": [
       {
         "name": "multiple",
-        "type": "Multiple extends null | undefined\n  ? Multiple | undefined\n  : Multiple | Exclude<Multiple, null | undefined>",
+        "type": "Multiple",
         "description": ""
       },
       {
@@ -1319,7 +1307,7 @@
       },
       {
         "name": "multiple",
-        "type": "Multiple extends null | undefined\n  ? Multiple | undefined\n  : Multiple | Exclude<Multiple, null | undefined>",
+        "type": "Multiple",
         "description": ""
       },
       {
@@ -1527,7 +1515,7 @@
     "properties": [
       {
         "name": "multiple",
-        "type": "Multiple extends null | undefined\n  ? Multiple | undefined\n  : Multiple | Exclude<Multiple, null | undefined>",
+        "type": "Multiple",
         "description": ""
       },
       {

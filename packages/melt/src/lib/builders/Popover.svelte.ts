@@ -3,7 +3,7 @@ import type { MaybeGetter } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
 import { addEventListener } from "$lib/utils/event";
 import { extract } from "$lib/utils/extract";
-import { createDataIds } from "$lib/utils/identifiers";
+import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isFunction, isHtmlElement } from "$lib/utils/is";
 import { deepMerge } from "$lib/utils/merge";
 import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
@@ -16,7 +16,11 @@ import { nanoid } from "nanoid";
 import { useEventListener } from "runed";
 import type { HTMLAttributes } from "svelte/elements";
 
-const dataIds = createDataIds("popover", ["trigger", "content"]);
+const { dataAttrs, dataSelectors } = createBuilderMetadata("popover", [
+	"trigger",
+	"content",
+	"arrow",
+]);
 
 export type CloseOnOutsideClickCheck = (el: Element | Window | Document) => boolean;
 type CloseOnOutsideClickProp = MaybeGetter<boolean | CloseOnOutsideClickCheck | undefined>;
@@ -175,7 +179,7 @@ export class BasePopover {
 				// Check if there's a parent popover. If so, only open if the parent's open.
 				// This is to guarantee correct layering.
 				const parent = isHtmlElement(el.parentNode)
-					? el.parentNode.closest(`[${dataIds.content}]`)
+					? el.parentNode.closest(dataSelectors.content)
 					: undefined;
 
 				if (!isHtmlElement(parent)) {
@@ -225,7 +229,7 @@ export class BasePopover {
 				const openPopovers = [...el.querySelectorAll("[popover]")].filter((child) => {
 					if (!isHtmlElement(child)) return false;
 					// If child is a Melt popover, check if it's open
-					if (child.matches(`[${dataIds.content}]`)) return child.dataset.open !== undefined;
+					if (child.matches(dataSelectors.content)) return child.dataset.open !== undefined;
 					return child.matches(":popover-open");
 				});
 
@@ -273,6 +277,15 @@ export class BasePopover {
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
+	get arrow() {
+		return {
+			[dataAttrs.arrow]: "",
+			"data-arrow": "",
+			"aria-hidden": true,
+			"data-open": dataAttr(this.open),
+		} as const satisfies HTMLAttributes<HTMLElement>;
+	}
+
 	// IDEA: separate content and floating ui to achieve transitions without requiring
 	// force visible or custom esc and click outside handlers!
 }
@@ -291,13 +304,13 @@ export class Popover extends BasePopover {
 	/** The trigger that toggles the value. */
 	get trigger() {
 		return Object.assign(this.getInvoker(), {
-			[dataIds.trigger]: "",
+			[dataAttrs.trigger]: "",
 		});
 	}
 
 	get content() {
 		return Object.assign(this.getPopover(), {
-			[dataIds.content]: "",
+			[dataAttrs.content]: "",
 		});
 	}
 

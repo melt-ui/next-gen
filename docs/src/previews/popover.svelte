@@ -2,6 +2,15 @@
 	import Preview from "@components/preview.svelte";
 	import { Popover as PopoverComponent } from "melt/components";
 	import { Popover } from "melt/builders";
+	import { usePreviewControls } from "@components/preview-ctx.svelte";
+
+	const controls = usePreviewControls({
+		arrow: {
+			label: "Show arrow",
+			type: "boolean",
+			defaultValue: false,
+		},
+	});
 
 	const popover = new Popover({
 		forceVisible: true,
@@ -19,7 +28,13 @@
 		psst...
 	</button>
 
-	<div class="w-[260px] rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800" {...popover.content}>
+	<div
+		class="w-[260px] overflow-visible rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800"
+		{...popover.content}
+	>
+		{#if controls.arrow}
+			<div {...popover.arrow} class="rounded-tl size-2"></div>
+		{/if}
 		<p class="text-center font-semibold">Can I tell you a secret?</p>
 
 		<div class="mt-4 flex items-center justify-center gap-4">

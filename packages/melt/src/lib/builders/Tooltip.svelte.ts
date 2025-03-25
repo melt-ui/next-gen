@@ -41,13 +41,6 @@ export type TooltipProps = {
 	onOpenChange?: (value: boolean) => void;
 
 	/**
-	 * Size of tooltip arrow in pixels.
-	 *
-	 * @default 8
-	 */
-	arrowSize?: MaybeGetter<number | undefined>;
-
-	/**
 	 * If `true`, tooltip will close if trigger is pressed.
 	 *
 	 * @default true
@@ -97,7 +90,6 @@ export class Tooltip {
 	openDelay = $derived(extract(this.#props.openDelay, 1000));
 	closeDelay = $derived(extract(this.#props.closeDelay, 0));
 	disableHoverableContent = $derived(extract(this.#props.disableHoverableContent, false));
-	arrowSize = $derived(extract(this.#props.arrowSize, 8));
 	forceVisible = $derived(extract(this.#props.forceVisible, false));
 
 	/** State */
@@ -341,8 +333,8 @@ export class Tooltip {
 			[dataAttrs.arrow]: "",
 			id: this.#ids.arrow,
 			"data-arrow": "",
+			"aria-hidden": true,
 			"data-open": dataAttr(this.open),
-			style: `position: absolute; width: var(--arrow-size, ${this.arrowSize}px); height: var(--arrow-size, ${this.arrowSize}px);`,
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
