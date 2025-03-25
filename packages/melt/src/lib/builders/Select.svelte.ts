@@ -86,6 +86,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 							...acc,
 							{
 								value: curr.dataset.value as T,
+								typeahead: curr.dataset.typeahead,
 								current: curr.dataset.value === this.highlighted,
 							},
 						];
@@ -258,10 +259,11 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		return `${this.ids.content}-option-${dataAttr(value)}`;
 	}
 
-	getOption(value: T) {
+	getOption(value: T, options?: { typeahead: string }) {
 		return {
 			[dataAttrs.option]: "",
 			"data-value": dataAttr(value),
+			"data-typeahead": dataAttr(options?.typeahead),
 			"aria-hidden": this.open ? undefined : true,
 			"aria-selected": this.#value.has(value),
 			"data-highlighted": dataAttr(this.highlighted === value),
