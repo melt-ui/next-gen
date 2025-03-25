@@ -105,7 +105,7 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 
 	isControlled = $derived(isSvelteSet(this.#props.value) || isFunction(this.#props.value));
 	isMultiple = $derived(
-		extract<boolean | undefined, false>(this.#props.multiple, false),
+		extract<boolean | undefined>(this.#props.multiple, false),
 	) as Multiple;
 
 	constructor(props: SelectionStateProps<T, Multiple>) {
