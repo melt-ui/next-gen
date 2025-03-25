@@ -683,7 +683,7 @@
       },
       {
         "name": "getOption",
-        "type": "(\n  value: T,\n  typeahead?: { typeahead: string } | undefined,\n) => {\n  readonly \"data-melt-select-option\": \"\"\n  readonly \"data-value\": DataReturn<T>\n  readonly \"data-typeahead\": string | undefined\n  readonly \"aria-hidden\": true | undefined\n  readonly \"aria-selected\": boolean\n  readonly \"data-highlighted\": \"\" | undefined\n  readonly role: \"option\"\n  readonly onmouseover: () => void\n  readonly onclick: () => void\n}",
+        "type": "(\n  value: T,\n  options?: { typeahead: string } | undefined,\n) => {\n  readonly \"data-melt-select-option\": \"\"\n  readonly \"data-value\": DataReturn<T>\n  readonly \"data-typeahead\": string | undefined\n  readonly \"aria-hidden\": true | undefined\n  readonly \"aria-selected\": boolean\n  readonly \"data-highlighted\": \"\" | undefined\n  readonly role: \"option\"\n  readonly onmouseover: () => void\n  readonly onclick: () => void\n}",
         "description": ""
       }
     ],
