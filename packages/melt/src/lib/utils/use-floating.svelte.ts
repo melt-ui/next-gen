@@ -14,8 +14,9 @@ import {
 	type ArrowOptions,
 	type OffsetOptions,
 	size,
+	type ComputePositionReturn,
 } from "@floating-ui/dom";
-import { isHtmlElement } from "./is";
+import { isFunction, isHtmlElement } from "./is";
 import { deepMerge } from "./merge";
 import { extract } from "./extract";
 
@@ -25,6 +26,14 @@ const ARROW_TRANSFORM = {
 	top: "rotate(225deg)",
 	right: "rotate(315deg)",
 };
+
+export type FloatingApply = (el?: HTMLElement) => void;
+export type ArrowApply = (el?: HTMLElement) => void;
+export type OnComputeArgs = ComputePositionReturn & {
+	floatingApply: FloatingApply;
+	arrowApply: ArrowApply;
+};
+export type OnCompute = (args: OnComputeArgs) => void;
 
 /**
  * Config for UseFloating. You may pass in options to the underlying Floating UI
@@ -37,6 +46,14 @@ export type UseFloatingConfig = {
 	arrow?: ArrowOptions;
 	offset?: OffsetOptions;
 	sameWidth?: boolean;
+	/**
+	 * Use a custom function when `computePosition` is returned.
+	 *
+	 * This will override default behaviour! If you want to add
+	 * functionality while keeping the original intact, just call
+	 * `floatingApply` and `arrowApply` respectively.
+	 */
+	onCompute?: OnCompute;
 };
 
 /** All the parameters UseFloating returns */
@@ -82,42 +99,48 @@ export function useFloating(args: UseFloatingArgs) {
 		};
 
 		computePosition(nodeEl, floatingEl, deepMerge(baseOptions, config.computePosition ?? {})).then(
-			({ x, y, placement, middlewareData, strategy }) => {
-				const transformOriginMap: Record<Placement, string> = {
-					top: "bottom center",
-					"top-start": "bottom left",
-					"top-end": "bottom right",
+			(returned) => {
+				const { x, y, placement, middlewareData, strategy } = returned;
 
-					bottom: "top center",
-					"bottom-start": "top left",
-					"bottom-end": "top right",
+				const floatingApply: FloatingApply = (el = floatingEl) => {
+					const transformOriginMap: Record<Placement, string> = {
+						top: "bottom center",
+						"top-start": "bottom left",
+						"top-end": "bottom right",
 
-					left: "center center",
-					"left-start": "top left",
-					"left-end": "bottom left",
+						bottom: "top center",
+						"bottom-start": "top left",
+						"bottom-end": "top right",
 
-					right: "center center",
-					"right-start": "top right",
-					"right-end": "bottom right",
+						left: "center center",
+						"left-start": "top left",
+						"left-end": "bottom left",
+
+						right: "center center",
+						"right-start": "top right",
+						"right-end": "bottom right",
+					};
+
+					Object.assign(el.style, {
+						position: strategy,
+						left: `${x}px`,
+						top: `${y}px`,
+					});
+
+					const [side, align = "center"] = placement.split("-");
+
+					el.style.transformOrigin = transformOriginMap[placement];
+					el.dataset.side = side;
+					el.dataset.align = align;
 				};
 
-				Object.assign(floatingEl.style, {
-					position: strategy,
-					left: `${x}px`,
-					top: `${y}px`,
-				});
-
-				const [side, align = "center"] = placement.split("-");
-
-				floatingEl.style.transformOrigin = transformOriginMap[placement];
-				floatingEl.dataset.side = side;
-				floatingEl.dataset.align = align;
-
-				if (isHtmlElement(arrowEl) && middlewareData.arrow) {
+				const arrowApply: ArrowApply = (el = undefined) => {
+					const actualEl = el ?? arrowEl;
+					if (!isHtmlElement(actualEl) || !middlewareData.arrow) return;
 					const { x, y } = middlewareData.arrow;
 					const dir = placement.split("-")[0] as "top" | "bottom" | "left" | "right";
 
-					Object.assign(arrowEl.style, {
+					Object.assign(actualEl.style, {
 						position: "absolute",
 						left: x ? `${x}px` : "",
 						top: y ? `${y}px` : "",
@@ -127,8 +150,17 @@ export function useFloating(args: UseFloatingArgs) {
 						zIndex: "inherit",
 					});
 
-					arrowEl.dataset.side = dir;
+					actualEl.dataset.side = dir;
+				};
+
+				if (isFunction(config.onCompute)) {
+					config.onCompute({...returned, arrowApply, floatingApply})
+				} else {
+					floatingApply()
+					arrowApply()
 				}
+
+
 			},
 		);
 	};
