@@ -1,5 +1,11 @@
 # melt
 
+## 0.21.0
+
+### Minor Changes
+
+- extract: allow null values ([`fac8005`](https://github.com/melt-ui/next-gen/commit/fac800538dd55ef32f73bc6d3ab708f45f1a3522))
+
 ## 0.20.2
 
 ### Patch Changes
