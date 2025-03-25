@@ -1,5 +1,15 @@
 # melt
 
+## 0.23.0
+
+### Minor Changes
+
+- select: allow alternate option typeahead strings ([#98](https://github.com/melt-ui/next-gen/pull/98))
+
+### Patch Changes
+
+- allow options in Select and Combobox to not be DOM-sequential ([#97](https://github.com/melt-ui/next-gen/pull/97))
+
 ## 0.22.1
 
 ### Patch Changes
