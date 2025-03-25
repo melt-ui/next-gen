@@ -1,7 +1,7 @@
 {
 	"name": "melt",
 	"type": "module",
-	"version": "0.20.2",
+	"version": "0.21.0",
 	"license": "MIT",
 	"repository": "github:melt-ui/next-gen",
 	"author": "Thomas G. Lopes",
