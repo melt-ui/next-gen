@@ -1,5 +1,15 @@
 # melt
 
+## 0.22.0
+
+### Minor Changes
+
+- allow full control of floating ui ([`55251ba`](https://github.com/melt-ui/next-gen/commit/55251ba41484bc597854c427b4f000121fd5b80f))
+
+- remove arrowSize from tooltip ([`499e030`](https://github.com/melt-ui/next-gen/commit/499e030710b2c3f1878bd5598880a816033a7319))
+
+- add arrow to popover elements ([`499e030`](https://github.com/melt-ui/next-gen/commit/499e030710b2c3f1878bd5598880a816033a7319))
+
 ## 0.21.0
 
 ### Minor Changes
