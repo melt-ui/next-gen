@@ -33,6 +33,8 @@ export type ToasterProps = {
 
 	/**
 	 * The behaviour when a toast is hovered.
+	 * Pass in `null` to disable.
+	 *
 	 * @default 'pause'
 	 */
 	hover?: MaybeGetter<"pause" | "pause-all" | null | undefined>;
