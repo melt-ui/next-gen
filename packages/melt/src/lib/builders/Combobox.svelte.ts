@@ -14,6 +14,7 @@ import { letterRegex } from "$lib/utils/typeahead.svelte";
 import { tick } from "svelte";
 import type { HTMLAttributes, HTMLInputAttributes } from "svelte/elements";
 import { BasePopover, type PopoverProps } from "./Popover.svelte";
+import { findNext, findPrev } from "$lib/utils/array";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("combobox", [
 	"input",
@@ -282,19 +283,13 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 
 	#highlightNext() {
 		const options = this.#getOptionsEls();
-		const next = options.find((_, index, options) => {
-			const current = options.at((index - 1) % options.length);
-			return current!.dataset.value === this.highlighted;
-		});
+		const next = findNext(options, (o) => o.dataset.value === this.highlighted);
 		if (isHtmlElement(next)) this.#highlight(next);
 	}
 
 	#highlightPrev() {
 		const options = this.#getOptionsEls();
-		const prev = options.find((_, index, options) => {
-			const current = options.at((index + 1) % options.length);
-			return current!.dataset.value === this.highlighted;
-		});
+		const prev = findPrev(options, (o) => o.dataset.value === this.highlighted);
 		if (isHtmlElement(prev)) this.#highlight(prev);
 	}
 

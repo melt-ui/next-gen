@@ -6,9 +6,9 @@ import { isHtmlElement } from "$lib/utils/is";
 import { kbd } from "$lib/utils/keyboard";
 import { pick } from "$lib/utils/object";
 import {
-    SelectionState,
-    type MaybeMultiple,
-    type OnMultipleChange,
+	SelectionState,
+	type MaybeMultiple,
+	type OnMultipleChange,
 } from "$lib/utils/selection-state.svelte";
 import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
 import { tick } from "svelte";
@@ -288,24 +288,17 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		this.highlighted = el.dataset.value as T;
 	}
 
+	#highlightNext() {
+		const options = this.#getOptionsEls();
+		const next = findNext(options, (o) => o.dataset.value === this.highlighted);
+		if (isHtmlElement(next)) this.#highlight(next);
+	}
 
-#highlightNext() {
-  const options = this.#getOptionsEls();
-  const next = findNext(
-    options,
-    (o) => o.dataset.value === this.highlighted
-  );
-  if (isHtmlElement(next)) this.#highlight(next);
-}
-
-#highlightPrev() {
-  const options = this.#getOptionsEls();
-  const prev = findPrev(
-    options,
-    (o) => o.dataset.value === this.highlighted
-  );
-  if (isHtmlElement(prev)) this.#highlight(prev);
-}
+	#highlightPrev() {
+		const options = this.#getOptionsEls();
+		const prev = findPrev(options, (o) => o.dataset.value === this.highlighted);
+		if (isHtmlElement(prev)) this.#highlight(prev);
+	}
 
 	#highlightFirst() {
 		const first = this.#getOptionsEls()[0];
