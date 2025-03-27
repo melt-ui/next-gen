@@ -1,5 +1,11 @@
 # melt
 
+## 0.23.1
+
+### Patch Changes
+
+- select: fix selecting value toggle ([`5ae8d18`](https://github.com/melt-ui/next-gen/commit/5ae8d1833cd68b7ba680bd53dd110f77cfa56d8a))
+
 ## 0.23.0
 
 ### Minor Changes
