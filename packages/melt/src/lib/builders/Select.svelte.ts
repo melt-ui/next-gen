@@ -156,8 +156,11 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 	};
 
 	select = (value: T) => {
-		this.#value.toggle(value);
-		if (this.multiple) return;
+		if (this.multiple) {
+			this.#value.toggle(value);
+			return;
+		}
+		this.#value.add(value);
 
 		this.open = false;
 		tick().then(() => {
@@ -248,6 +251,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 					default: {
 						if (!letterRegex.test(e.key)) break;
 						e.preventDefault();
+						e.stopPropagation();
 						const next = this.typeahead(e.key);
 						if (next) this.highlighted = next.value;
 					}
