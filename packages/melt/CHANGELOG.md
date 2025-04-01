@@ -1,5 +1,11 @@
 # melt
 
+## 0.28.0
+
+### Minor Changes
+
+- combobox: nah id fix it (changed onSelect behaviour) ([`39ea38a`](https://github.com/melt-ui/next-gen/commit/39ea38ab5254e6f0693fc08d218fbb467da3a8f8))
+
 ## 0.27.2
 
 ### Patch Changes
