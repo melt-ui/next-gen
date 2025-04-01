@@ -1,5 +1,11 @@
 # melt
 
+## 0.24.1
+
+### Patch Changes
+
+- select,combobox: fix types ([`f7e9687`](https://github.com/melt-ui/next-gen/commit/f7e96877e7485ceb6d96270b5c1683168daf5aee))
+
 ## 0.24.0
 
 ### Minor Changes
