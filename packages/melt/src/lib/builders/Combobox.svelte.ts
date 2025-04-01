@@ -311,6 +311,7 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 	 */
 	getOption(value: T, onSelect?: () => void) {
 		return {
+			id: this.getOptionId(value),
 			[dataAttrs.option]: "",
 			"data-value": dataAttr(value),
 			"aria-hidden": this.open ? undefined : true,
