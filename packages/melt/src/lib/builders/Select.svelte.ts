@@ -15,6 +15,7 @@ import { tick } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
 import { BasePopover, type PopoverProps } from "./Popover.svelte";
 import { findNext, findPrev } from "$lib/utils/array";
+import { Synced } from "$lib/Synced.svelte";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("select", [
 	"trigger",
@@ -51,6 +52,16 @@ export type SelectProps<T extends string, Multiple extends boolean = false> = Om
 	onValueChange?: OnMultipleChange<T, Multiple>;
 
 	/**
+	 * The currently highlighted value.
+	 */
+	highlighted?: MaybeGetter<T | null | undefined>;
+
+	/**
+	 * Called when the highlighted value changes.
+	 */
+	onHighlightChange?: (highlighted: T | null) => void;
+
+	/**
 	 * How many time (in ms) the typeahead string is held before it is cleared
 	 * @default 500
 	 */
@@ -81,7 +92,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 
 	/* State */
 	#value!: SelectionState<T, Multiple>;
-	highlighted: T | null = $state(null);
+	#highlighted: Synced<T | null>;
 
 	declare ids: ReturnType<typeof createIds> & BasePopover["ids"];
 
@@ -139,6 +150,12 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 			multiple: props.multiple,
 		});
 
+		this.#highlighted = new Synced({
+			value: props.highlighted,
+			onChange: props.onHighlightChange,
+			defaultValue: null,
+		});
+
 		const oldIds = this.ids;
 		const newIds = createIds();
 		this.ids = {
@@ -155,6 +172,14 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 
 	set value(value) {
 		this.#value.current = value;
+	}
+
+	get highlighted() {
+		return this.#highlighted.current;
+	}
+
+	set highlighted(v) {
+		this.#highlighted.current = v;
 	}
 
 	get valueAsString() {

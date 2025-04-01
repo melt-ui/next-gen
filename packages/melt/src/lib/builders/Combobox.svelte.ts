@@ -15,6 +15,7 @@ import { tick } from "svelte";
 import type { HTMLAttributes, HTMLInputAttributes } from "svelte/elements";
 import { BasePopover, type PopoverProps } from "./Popover.svelte";
 import { findNext, findPrev } from "$lib/utils/array";
+import { Synced } from "$lib/Synced.svelte";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("combobox", [
 	"input",
@@ -35,7 +36,7 @@ export type ComboboxProps<T extends string, Multiple extends boolean = false> = 
 	multiple?: MaybeGetter<Multiple | undefined>;
 
 	/**
-	 * The value for the Select.
+	 * The value for the Combobox.
 	 *
 	 * When passing a getter, it will be used as source of truth,
 	 * meaning that the value only changes when the getter returns a new value.
@@ -50,6 +51,16 @@ export type ComboboxProps<T extends string, Multiple extends boolean = false> = 
 	 * Called when the value is supposed to change.
 	 */
 	onValueChange?: OnMultipleChange<T, Multiple>;
+
+	/**
+	 * The currently highlighted value.
+	 */
+	highlighted?: MaybeGetter<T | null | undefined>;
+
+	/**
+	 * Called when the highlighted value changes.
+	 */
+	onHighlightChange?: (highlighted: T | null) => void;
 
 	/**
 	 * Determines behavior when scrolling items into view.
@@ -77,7 +88,7 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 	/* State */
 	#value!: SelectionState<T, Multiple>;
 	inputValue = $state("");
-	highlighted: T | null = $state(null);
+	#highlighted: Synced<T | null>;
 	touched = $state(false);
 
 	declare ids: ReturnType<typeof createIds> & BasePopover["ids"];
@@ -124,6 +135,12 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 			multiple: props.multiple,
 		});
 
+		this.#highlighted = new Synced({
+			value: props.highlighted,
+			onChange: props.onHighlightChange,
+			defaultValue: null,
+		});
+
 		const oldIds = this.ids;
 		const newIds = createIds();
 		this.ids = {
@@ -140,6 +157,14 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 
 	set value(value) {
 		this.#value.current = value;
+	}
+
+	get highlighted() {
+		return this.#highlighted.current;
+	}
+
+	set highlighted(v) {
+		this.#highlighted.current = v;
 	}
 
 	get valueAsString() {
