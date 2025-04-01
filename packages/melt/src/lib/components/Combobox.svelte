@@ -9,12 +9,16 @@
 		multiple?: Multiple;
 	};
 
-	let { value = $bindable(), children, ...rest }: Props = $props();
+	let { value = $bindable(), highlighted = $bindable(), children, ...rest }: Props = $props();
 
 	export const select = new Builder<T, Multiple>({
 		value: () => value as unknown as any,
 		onValueChange(v) {
 			value = v as unknown as any;
+		},
+		highlighted: () => highlighted as unknown as any,
+		onHighlightChange(v) {
+			highlighted = v as unknown as any;
 		},
 		...getters({ ...rest }),
 	});
