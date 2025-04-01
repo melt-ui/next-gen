@@ -16,6 +16,7 @@ import type { HTMLAttributes, HTMLInputAttributes } from "svelte/elements";
 import { BasePopover, type PopoverProps } from "./Popover.svelte";
 import { findNext, findPrev } from "$lib/utils/array";
 import { Synced } from "$lib/Synced.svelte";
+import { safeEffect } from "$lib/utils/effect.svelte";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("combobox", [
 	"input",
@@ -90,6 +91,7 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 	inputValue = $state("");
 	#highlighted: Synced<T | null>;
 	touched = $state(false);
+	onSelectMap = new Map<T, () => void>();
 
 	declare ids: ReturnType<typeof createIds> & BasePopover["ids"];
 
@@ -177,6 +179,10 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 
 	select(value: T) {
 		this.#value.toggle(value);
+		if (this.isSelected(value)) {
+			this.onSelectMap.get(value)?.();
+		}
+
 		if (this.multiple) {
 			this.inputValue = "";
 			return;
@@ -310,6 +316,13 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 	 * @returns The attributes for the option element.
 	 */
 	getOption(value: T, onSelect?: () => void) {
+		safeEffect(() => {
+			if (onSelect) this.onSelectMap.set(value, onSelect);
+			return () => {
+				this.onSelectMap.delete(value);
+			};
+		});
+
 		return {
 			id: this.getOptionId(value),
 			[dataAttrs.option]: "",
@@ -322,7 +335,6 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 				this.highlighted = value;
 			},
 			onclick: () => {
-				if (onSelect) return onSelect();
 				this.select(value);
 			},
 		} as const satisfies HTMLAttributes<HTMLDivElement>;

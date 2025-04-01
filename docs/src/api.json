@@ -1411,6 +1411,11 @@
         "description": ""
       },
       {
+        "name": "onSelectMap",
+        "type": "Map<T, () => void>",
+        "description": ""
+      },
+      {
         "name": "ids",
         "type": "{\n  trigger: string\n  content: string\n  option: string\n  input: string\n} & { invoker: string; popover: string }",
         "description": ""
