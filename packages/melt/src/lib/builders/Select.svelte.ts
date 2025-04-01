@@ -70,7 +70,7 @@ export type SelectProps<T extends string, Multiple extends boolean = false> = Om
 	 * @default "nearest"
 	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block
 	 */
-	scrollAlignment?: MaybeGetter<"nearest" | "center" | null>;
+	scrollAlignment?: MaybeGetter<"nearest" | "center" | null | undefined>;
 };
 
 export class Select<T extends string, Multiple extends boolean = false> extends BasePopover {
