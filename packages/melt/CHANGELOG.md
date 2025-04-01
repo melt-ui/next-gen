@@ -1,5 +1,11 @@
 # melt
 
+## 0.24.2
+
+### Patch Changes
+
+- combobox: fix highlighted data attr ([`5f2cd6a`](https://github.com/melt-ui/next-gen/commit/5f2cd6aa781e309ebf08ae7d80450b6aff5110fb))
+
 ## 0.24.1
 
 ### Patch Changes
