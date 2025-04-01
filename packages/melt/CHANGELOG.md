@@ -1,5 +1,11 @@
 # melt
 
+## 0.26.0
+
+### Minor Changes
+
+- select,combobox: highlight control ([`52f0aef`](https://github.com/melt-ui/next-gen/commit/52f0aef95ba0ed908ee81117360616ed9dc0755f))
+
 ## 0.25.0
 
 ### Minor Changes
