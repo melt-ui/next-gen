@@ -50,16 +50,26 @@ export type ComboboxProps<T extends string, Multiple extends boolean = false> = 
 	 * Called when the value is supposed to change.
 	 */
 	onValueChange?: OnMultipleChange<T, Multiple>;
+
+	/**
+	 * Determines behavior when scrolling items into view.
+	 * Set to null to disable auto-scrolling.
+	 *
+	 * @default "nearest"
+	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block
+	 */
+	scrollAlignment?: MaybeGetter<"nearest" | "center" | null>;
 };
 
 export class Combobox<T extends string, Multiple extends boolean = false> extends BasePopover {
 	/* Props */
 	#props!: ComboboxProps<T, Multiple>;
+	multiple = $derived(extract(this.#props.multiple, false as Multiple));
+	scrollAlignment = $derived(extract(this.#props.scrollAlignment, "nearest"));
 
 	/* State */
 	#value!: SelectionState<T, Multiple>;
 	inputValue = $state("");
-	multiple = $derived(extract(this.#props.multiple, false as Multiple));
 	highlighted: T | null = $state(null);
 	touched = $state(false);
 
@@ -279,6 +289,10 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 	#highlight(el: HTMLElement) {
 		if (!el.dataset.value) return;
 		this.highlighted = el.dataset.value as T;
+
+		if (this.scrollAlignment !== null) {
+			el.scrollIntoView({ block: this.scrollAlignment });
+		}
 	}
 
 	#highlightNext() {
