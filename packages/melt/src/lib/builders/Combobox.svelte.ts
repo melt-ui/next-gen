@@ -294,7 +294,13 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 		return `${this.ids.content}-option-${dataAttr(value)}`;
 	}
 
-	getOption(value: T) {
+	/**
+	 * Gets the attributes for the option element.
+	 * @param value The value of the option.
+	 * @param onSelect An optional callback to call when the option is selected, overriding the default behavior.
+	 * @returns The attributes for the option element.
+	 */
+	getOption(value: T, onSelect?: () => void) {
 		return {
 			[dataAttrs.option]: "",
 			"data-value": dataAttr(value),
@@ -306,6 +312,7 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 				this.highlighted = value;
 			},
 			onclick: () => {
+				if (onSelect) return onSelect();
 				this.select(value);
 			},
 		} as const satisfies HTMLAttributes<HTMLDivElement>;
