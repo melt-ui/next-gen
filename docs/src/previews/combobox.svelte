@@ -20,15 +20,45 @@
 		},
 	});
 
-	const options = [
-		"Sung Jinwoo",
-		"Ichigo Kurosaki",
-		"Guts",
-		"Light Yagami",
-		"Naruto Uzumaki",
-		"Goku",
-		"Eren Jaeger",
-	] as const;
+	const options = (
+		[
+			"Sung Jinwoo",
+			"Ichigo Kurosaki",
+			"Guts",
+			"Light Yagami",
+			"Naruto Uzumaki",
+			"Goku",
+			"Eren Jaeger",
+			"Monkey D. Luffy",
+			"Seto Kaiba",
+			"Spike Spiegel",
+			"Edward Elric",
+			"Levi Ackerman",
+			"Natsu Dragneel",
+			"Gon Freecss",
+			"Killua Zoldyck",
+			"Lelouch Lamperouge",
+			"Kira",
+			"Saitama",
+			"Vegeta",
+			"Hisoka Morow",
+			"Itachi Uchiha",
+			"Kakashi Hatake",
+			"Roronoa Zoro",
+			"Ken Kaneki",
+			"Meliodas",
+			"Tanjiro Kamado",
+			"Alucard",
+			"Roy Mustang",
+			"L Lawliet",
+			"Yami Sukehiro",
+			"Satoru Gojo",
+			"Mob",
+			"Yusuke Urameshi",
+			"Jotaro Kujo",
+			"Dio Brando",
+		] as const
+	).toSorted();
 	type Option = (typeof options)[number];
 
 	const combobox = new Combobox<Option, boolean>({
@@ -75,13 +105,13 @@
 
 		<div
 			{...combobox.content}
-			class="flex flex-col rounded-xl border border-gray-500 bg-gray-100 p-2 shadow dark:bg-gray-800"
+			class="flex max-h-96 flex-col rounded-xl border border-gray-500 bg-gray-100 p-2 shadow dark:bg-gray-800"
 		>
 			{#each filtered as option (option)}
 				<div
 					{...combobox.getOption(option)}
 					class={[
-						"relative flex items-center justify-between rounded-xl py-2 pl-8 pr-2",
+						"relative flex scroll-m-2 items-center justify-between rounded-xl py-2 pl-8 pr-2",
 						combobox.highlighted === option && "bg-gray-700",
 						combobox.value === option && "font-semibold",
 					]}
