@@ -1,5 +1,11 @@
 # melt
 
+## 0.27.2
+
+### Patch Changes
+
+- combobox: fix onselect ([`170d257`](https://github.com/melt-ui/next-gen/commit/170d2573461d633583eb12b0be4840bedffefdb4))
+
 ## 0.27.1
 
 ### Patch Changes
