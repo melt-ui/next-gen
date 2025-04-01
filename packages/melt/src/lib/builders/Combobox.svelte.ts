@@ -59,6 +59,13 @@ export type ComboboxProps<T extends string, Multiple extends boolean = false> = 
 	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block
 	 */
 	scrollAlignment?: MaybeGetter<"nearest" | "center" | null | undefined>;
+
+	/**
+	 * If the content should have the same width as the trigger
+	 *
+	 * @default true
+	 */
+	sameWidth?: MaybeGetter<boolean | undefined>;
 };
 
 export class Combobox<T extends string, Multiple extends boolean = false> extends BasePopover {
@@ -77,8 +84,8 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 
 	constructor(props: ComboboxProps<T, Multiple> = {}) {
 		super({
-			...props,
 			sameWidth: true,
+			...props,
 			closeOnOutsideClick: (el) => {
 				const triggerEl = document.getElementById(this.ids.trigger);
 				if (triggerEl && isNode(el) && triggerEl.contains(el)) return false;

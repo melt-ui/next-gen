@@ -94,9 +94,9 @@ export class BasePopover {
 	sameWidth = $derived(extract(this.#props.sameWidth, false));
 	closeOnOutsideClick = $derived(extract(this.#props.closeOnOutsideClick, true));
 	floatingConfig = $derived.by(() => {
-		const config = extract(this.#props.floatingConfig, {} as UseFloatingConfig);
-		const sameWidth = extract(this.#props.sameWidth, false);
-		const merged = deepMerge(config, { sameWidth });
+		const config = extract(this.#props.floatingConfig, {} satisfies UseFloatingConfig);
+		const sameWidth = extract(this.#props.sameWidth);
+		const merged = deepMerge(config, sameWidth !== undefined ? { sameWidth } : {});
 		return merged;
 	});
 
