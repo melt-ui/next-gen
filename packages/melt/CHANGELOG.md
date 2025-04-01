@@ -1,5 +1,11 @@
 # melt
 
+## 0.25.0
+
+### Minor Changes
+
+- combobox: sameWidth prop ([`b7455ce`](https://github.com/melt-ui/next-gen/commit/b7455ceb9ce6f52225da5040d364e1c7fcbe0b49))
+
 ## 0.24.2
 
 ### Patch Changes
