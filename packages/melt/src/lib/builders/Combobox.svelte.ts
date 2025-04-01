@@ -178,10 +178,13 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 	};
 
 	select(value: T) {
-		this.#value.toggle(value);
-		if (this.isSelected(value)) {
-			this.onSelectMap.get(value)?.();
+		const onSelect = this.onSelectMap.get(value);
+		if (!this.isSelected(value) && onSelect) {
+			onSelect();
+			return;
 		}
+
+		this.#value.toggle(value);
 
 		if (this.multiple) {
 			this.inputValue = "";
@@ -234,7 +237,6 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 						case kbdSubset.ENTER: {
 							if (this.highlighted === null) return;
 							this.select(this.highlighted);
-							if (!this.multiple) this.open = false;
 							break;
 						}
 					}
