@@ -1339,6 +1339,11 @@
         "description": ""
       },
       {
+        "name": "scrollIntoView",
+        "type": "(value?: T | undefined) => void",
+        "description": ""
+      },
+      {
         "name": "getOptionId",
         "type": "(value: T) => string",
         "description": ""
@@ -1347,6 +1352,41 @@
         "name": "getOption",
         "type": "(\n  value: T,\n  onSelect?: (() => void) | undefined,\n) => {\n  readonly \"data-melt-combobox-option\": \"\"\n  readonly \"data-value\": DataReturn<T>\n  readonly \"aria-hidden\": true | undefined\n  readonly \"aria-selected\": boolean\n  readonly \"data-highlighted\": \"\" | undefined\n  readonly role: \"option\"\n  readonly onmouseover: () => void\n  readonly onclick: () => void\n}",
         "description": "Gets the attributes for the option element.\n@param value The value of the option.\n@param onSelect An optional callback to call when the option is selected, overriding the default behavior.\n@returns The attributes for the option element."
+      },
+      {
+        "name": "getOptionsEls",
+        "type": "() => HTMLElement[]",
+        "description": ""
+      },
+      {
+        "name": "getOptions",
+        "type": "() => T[]",
+        "description": ""
+      },
+      {
+        "name": "highlight",
+        "type": "(value: T) => void",
+        "description": ""
+      },
+      {
+        "name": "highlightNext",
+        "type": "() => void",
+        "description": ""
+      },
+      {
+        "name": "highlightPrev",
+        "type": "() => void",
+        "description": ""
+      },
+      {
+        "name": "highlightFirst",
+        "type": "() => void",
+        "description": ""
+      },
+      {
+        "name": "highlightLast",
+        "type": "() => void",
+        "description": ""
       }
     ],
     "properties": [

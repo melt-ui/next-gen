@@ -118,8 +118,8 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 				tick().then(() => {
 					if (this.highlighted) return;
 					const lastSelected = this.#value.toArray().at(-1);
-					if (lastSelected) this.highlighted = lastSelected;
-					else this.#highlightFirst();
+					if (lastSelected) this.highlight(lastSelected);
+					else this.highlightFirst();
 				});
 
 				// const content = document.getElementById(this.ids.content);
@@ -204,7 +204,7 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 				if (!isHtmlInputElement(input)) return;
 				this.open = true;
 				this.inputValue = input.value;
-				tick().then(() => this.#highlightFirst());
+				tick().then(() => this.highlightFirst());
 				this.touched = true;
 			},
 			onkeydown: (e: KeyboardEvent) => {
@@ -214,11 +214,11 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 
 					switch (e.key) {
 						case kbdSubset.ARROW_DOWN: {
-							this.#highlightNext();
+							this.highlightNext();
 							break;
 						}
 						case kbdSubset.ARROW_UP: {
-							this.#highlightPrev();
+							this.highlightPrev();
 							break;
 						}
 						case kbdSubset.ESCAPE: {
@@ -240,21 +240,21 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 					switch (e.key) {
 						case kbdSubset.ARROW_DOWN: {
 							if (this.open) {
-								return this.#highlightNext();
+								return this.highlightNext();
 							}
 							this.open = true;
 							tick().then(() => {
-								if (!this.value) this.#highlightFirst();
+								if (!this.value) this.highlightFirst();
 							});
 							break;
 						}
 						case kbdSubset.ARROW_UP: {
 							if (this.open) {
-								return this.#highlightNext();
+								return this.highlightNext();
 							}
 							this.open = true;
 							tick().then(() => {
-								if (!this.value) this.#highlightLast();
+								if (!this.value) this.highlightLast();
 							});
 							break;
 						}
@@ -290,6 +290,15 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 		} as const satisfies HTMLAttributes<HTMLDivElement>);
 	}
 
+	scrollIntoView(value?: T) {
+		if (this.scrollAlignment === null) return;
+		const v = value ?? this.highlighted;
+		if (!v) return;
+		const id = this.getOptionId(v);
+		const el = document.getElementById(id);
+		if (el) el.scrollIntoView({ block: this.scrollAlignment });
+	}
+
 	getOptionId(value: T) {
 		return `${this.ids.content}-option-${dataAttr(value)}`;
 	}
@@ -318,42 +327,42 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 		} as const satisfies HTMLAttributes<HTMLDivElement>;
 	}
 
-	#getOptionsEls(): HTMLElement[] {
+	getOptionsEls(): HTMLElement[] {
 		const contentEl = document.getElementById(this.ids.content);
 		if (!contentEl) return [];
 
 		return [...contentEl.querySelectorAll(dataSelectors.option)].filter(isHtmlElement);
 	}
 
-	#highlight(el: HTMLElement) {
-		if (!el.dataset.value) return;
-		this.highlighted = el.dataset.value as T;
-
-		if (this.scrollAlignment !== null) {
-			el.scrollIntoView({ block: this.scrollAlignment });
-		}
+	getOptions(): T[] {
+		const els = this.getOptionsEls();
+		return els.map((el) => el.dataset.value as T);
 	}
 
-	#highlightNext() {
-		const options = this.#getOptionsEls();
-		const next = findNext(options, (o) => o.dataset.value === this.highlighted);
-		if (isHtmlElement(next)) this.#highlight(next);
+	highlight(value: T) {
+		this.highlighted = value;
+		this.scrollIntoView(value);
 	}
 
-	#highlightPrev() {
-		const options = this.#getOptionsEls();
-		const prev = findPrev(options, (o) => o.dataset.value === this.highlighted);
-		if (isHtmlElement(prev)) this.#highlight(prev);
+	highlightNext() {
+		const options = this.getOptions();
+		const next = findNext(options, (v) => v === this.highlighted);
+		if (next !== undefined) this.highlight(next);
 	}
 
-	#highlightFirst() {
-		const first = this.#getOptionsEls()[0];
-		if (first) this.#highlight(first);
+	highlightPrev() {
+		const options = this.getOptions();
+		const prev = findPrev(options, (v) => v === this.highlighted);
+		if (prev !== undefined) this.highlight(prev);
 	}
 
-	#highlightLast() {
-		const last = this.#getOptionsEls().at(-1);
+	highlightFirst() {
+		const first = this.getOptions()[0];
+		if (first) this.highlight(first);
+	}
 
-		if (last) this.#highlight(last);
+	highlightLast() {
+		const last = this.getOptions().at(-1);
+		if (last) this.highlight(last);
 	}
 }
