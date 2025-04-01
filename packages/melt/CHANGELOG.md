@@ -1,5 +1,13 @@
 # melt
 
+## 0.27.0
+
+### Minor Changes
+
+- combobox: expose highlight api ([`d18e4c9`](https://github.com/melt-ui/next-gen/commit/d18e4c9496f5bd55237f2615934f62e4e19d2f07))
+
+- combobox: onselect for options ([`a68444a`](https://github.com/melt-ui/next-gen/commit/a68444a8bc4913b0025c1fd3807db9148c167cf9))
+
 ## 0.26.1
 
 ### Patch Changes
