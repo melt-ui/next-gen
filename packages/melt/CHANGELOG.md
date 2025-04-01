@@ -1,5 +1,11 @@
 # melt
 
+## 0.24.0
+
+### Minor Changes
+
+- select,combobox: add autoscroll ([`fa6883c`](https://github.com/melt-ui/next-gen/commit/fa6883c700d92bb95ade0ba714c42f55fa1a4f83))
+
 ## 0.23.1
 
 ### Patch Changes
