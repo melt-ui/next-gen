@@ -1,5 +1,11 @@
 # melt
 
+## 0.27.1
+
+### Patch Changes
+
+- combobox: fix missing id in option ([`e308e52`](https://github.com/melt-ui/next-gen/commit/e308e52c08d2dafc35df10991c67317d2802495e))
+
 ## 0.27.0
 
 ### Minor Changes
