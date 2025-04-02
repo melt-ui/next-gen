@@ -6,9 +6,10 @@ import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 import { isPointerInGraceArea } from "$lib/utils/pointer";
-import { computeConvexHullFromElements } from "$lib/utils/polygon";
+import { computeConvexHull, getPointsFromEl } from "$lib/utils/polygon";
 import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
 import { useFloating, type UseFloatingArgs } from "$lib/utils/use-floating.svelte";
+import type { ComputePositionReturn } from "@floating-ui/dom";
 import { useEventListener, watch } from "runed";
 import { untrack } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
@@ -91,6 +92,7 @@ export class Tooltip {
 	closeDelay = $derived(extract(this.#props.closeDelay, 0));
 	disableHoverableContent = $derived(extract(this.#props.disableHoverableContent, false));
 	forceVisible = $derived(extract(this.#props.forceVisible, false));
+	floatingConfig = $derived(extract(this.#props.floatingConfig));
 
 	/** State */
 	isVisible = $derived(this.open || this.forceVisible);
@@ -102,6 +104,46 @@ export class Tooltip {
 	#isMouseInTooltipArea: boolean = $state(false);
 	#openTimeout: number | null = $state(null);
 	#closeTimeout: number | null = $state(null);
+	#floatingData = $state<ComputePositionReturn>();
+
+	get graceAreaPolygon() {
+		const contentEl = document.getElementById(this.#ids.content);
+		const triggerEl = document.getElementById(this.#ids.trigger);
+		if (!contentEl || !triggerEl) {
+			return [];
+		}
+
+		const PADDING = 6;
+		const [tl, tr, br, bl] = getPointsFromEl(triggerEl);
+		const contentPoints = this.disableHoverableContent ? [] : getPointsFromEl(contentEl);
+		const placement = this.#floatingData?.placement;
+
+		const points = [...contentPoints];
+		if (placement?.startsWith("top")) {
+			points.push(tl, tr);
+		} else if (placement?.startsWith("right")) {
+			points.push(tr, br);
+		} else if (placement?.startsWith("bottom")) {
+			points.push(br, bl);
+		} else {
+			points.push(bl, tl);
+		}
+
+		const withPadding = points.reduce(
+			(acc, point) => {
+				return [
+					...acc,
+					{ x: point.x + PADDING, y: point.y + PADDING },
+					{ x: point.x + PADDING, y: point.y - PADDING },
+					{ x: point.x - PADDING, y: point.y + PADDING },
+					{ x: point.x - PADDING, y: point.y - PADDING },
+				];
+			},
+			[] as { x: number; y: number }[],
+		);
+
+		return computeConvexHull(withPadding);
+	}
 
 	constructor(props: TooltipProps = {}) {
 		this.#open = new Synced({
@@ -122,8 +164,33 @@ export class Tooltip {
 					return;
 				}
 
-				const polygonElements = this.disableHoverableContent ? [triggerEl] : [triggerEl, contentEl];
-				const polygon = computeConvexHullFromElements(polygonElements);
+				const polygon = this.graceAreaPolygon;
+
+				// DEBUG PURPOSES ONLY.
+				// Draw the polygon on the screen
+				// const debugEl = document.createElement("div");
+				// debugEl.style.position = "fixed";
+				// debugEl.style.pointerEvents = "none";
+				// debugEl.style.zIndex = "9999";
+				// debugEl.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+				// debugEl.style.border = "1px solid red";
+				//
+				// const points = polygon.map((p) => `${p.x}px ${p.y}px`).join(", ");
+				// debugEl.style.clipPath = `polygon(${points})`;
+				//
+				// debugEl.style.width = "100vw";
+				// debugEl.style.height = "100vh";
+				// debugEl.style.left = "0";
+				// debugEl.style.top = "0";
+				//
+				// document.body.appendChild(debugEl);
+				//
+				// // Clean up previous debug element if any
+				// const prevDebug = document.querySelector("[data-melt-tooltip-debug]");
+				// if (prevDebug) prevDebug.remove();
+				//
+				// debugEl.setAttribute("data-melt-tooltip-debug", "");
+				// DEBUG END
 
 				this.#isMouseInTooltipArea =
 					this.#isPointerInsideContent ||
@@ -185,7 +252,7 @@ export class Tooltip {
 				this.#clickedTrigger = true;
 				this.#stopOpening();
 			},
-			onpointerenter: (e) => {
+			onpointermove: (e) => {
 				this.#isPointerInsideTrigger = true;
 				if (e.pointerType === "touch") return;
 
@@ -217,7 +284,18 @@ export class Tooltip {
 			useFloating({
 				node: () => triggerEl,
 				floating: () => contentEl,
-				config: this.#props.floatingConfig,
+				config: {
+					...this.floatingConfig,
+					onCompute: ({ floatingApply, arrowApply, ...data }) => {
+						this.#floatingData = data;
+						if (this.floatingConfig?.onCompute) {
+							this.floatingConfig.onCompute({ floatingApply, arrowApply, ...data });
+						} else {
+							floatingApply();
+							arrowApply();
+						}
+					},
+				},
 			});
 		});
 

@@ -5,10 +5,10 @@ import { computeConvexHull, type Point, type Polygon } from "./hull";
 export function getPointsFromEl(el: HTMLElement): Array<Point> {
 	const rect = el.getBoundingClientRect();
 	return [
-		{ x: rect.left, y: rect.top },
-		{ x: rect.right, y: rect.top },
-		{ x: rect.right, y: rect.bottom },
-		{ x: rect.left, y: rect.bottom },
+		{ x: rect.left, y: rect.top }, // tl
+		{ x: rect.right, y: rect.top }, // tr
+		{ x: rect.right, y: rect.bottom }, // br
+		{ x: rect.left, y: rect.bottom }, // bl
 	];
 }
 

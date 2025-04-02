@@ -19,6 +19,7 @@ import {
 import { isFunction, isHtmlElement } from "./is";
 import { deepMerge } from "./merge";
 import { extract } from "./extract";
+import { getters } from "./getters.svelte";
 
 const ARROW_TRANSFORM = {
 	bottom: "rotate(45deg)",
@@ -67,6 +68,7 @@ export function useFloating(args: UseFloatingArgs) {
 	const nodeEl = $derived(extract(args.node));
 	const floatingEl = $derived(extract(args.floating));
 	const config = $derived(extract(args.config, {} as UseFloatingConfig));
+	let data = $state<ComputePositionReturn>();
 
 	const compute = () => {
 		const arrowEl = floatingEl.querySelector("[data-arrow]");
@@ -100,6 +102,7 @@ export function useFloating(args: UseFloatingArgs) {
 
 		computePosition(nodeEl, floatingEl, deepMerge(baseOptions, config.computePosition ?? {})).then(
 			(returned) => {
+				data = returned;
 				const { x, y, placement, middlewareData, strategy } = returned;
 
 				const floatingApply: FloatingApply = (el = floatingEl) => {
@@ -154,13 +157,11 @@ export function useFloating(args: UseFloatingArgs) {
 				};
 
 				if (isFunction(config.onCompute)) {
-					config.onCompute({...returned, arrowApply, floatingApply})
+					config.onCompute({ ...returned, arrowApply, floatingApply });
 				} else {
-					floatingApply()
-					arrowApply()
+					floatingApply();
+					arrowApply();
 				}
-
-
 			},
 		);
 	};
@@ -168,4 +169,10 @@ export function useFloating(args: UseFloatingArgs) {
 	$effect(() => {
 		return autoUpdate(nodeEl, floatingEl, compute);
 	});
+
+	return {
+		get data() {
+			return data;
+		},
+	};
 }
