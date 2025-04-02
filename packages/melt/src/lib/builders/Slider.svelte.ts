@@ -83,7 +83,7 @@ export class Slider {
 	}
 
 	set value(value: number) {
-		this.#value.current = value;
+		this.#value.current = clamp(this.min, value, this.max);
 	}
 
 	get #percentage() {
