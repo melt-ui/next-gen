@@ -1,5 +1,13 @@
 # melt
 
+## 0.28.1
+
+### Patch Changes
+
+- tooltip: improve grace area ([`43f6919`](https://github.com/melt-ui/next-gen/commit/43f691921fc9ec970051702fc2266af42f55c5bf))
+
+- slider: fix arrow keys making slider overflow ([`38e9a94`](https://github.com/melt-ui/next-gen/commit/38e9a946e5a0ce8656dc2a59b88c38243e554b6a))
+
 ## 0.28.0
 
 ### Minor Changes
