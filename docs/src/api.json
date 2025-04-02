@@ -287,7 +287,7 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-trigger\": \"\"\n  readonly id: string\n  readonly \"aria-describedby\": string\n  readonly \"data-open\": \"\" | undefined\n  readonly onpointerdown: () => void\n  readonly onpointermove: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onpointerleave: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-trigger\": \"\"\n  readonly id: string\n  readonly \"aria-describedby\": string\n  readonly \"data-open\": \"\" | undefined\n  readonly onpointerdown: () => void\n  readonly onpointerenter: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onpointermove: () => void\n  readonly onpointerleave: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}",
         "description": ""
       },
       {

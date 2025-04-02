@@ -253,11 +253,14 @@ export class Tooltip {
 				this.#clickedTrigger = true;
 				this.#stopOpening();
 			},
-			onpointermove: (e) => {
+			onpointerenter: (e) => {
 				this.#isPointerInsideTrigger = true;
 				if (e.pointerType === "touch") return;
 
 				this.#openTooltip("pointer");
+			},
+			onpointermove: () => {
+				this.#isPointerInsideTrigger = true;
 			},
 			onpointerleave: (e) => {
 				this.#isPointerInsideTrigger = false;
