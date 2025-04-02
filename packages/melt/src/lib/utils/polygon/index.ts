@@ -2,7 +2,7 @@ export * from "./hull";
 
 import { computeConvexHull, type Point, type Polygon } from "./hull";
 
-export function getPointsFromEl(el: HTMLElement): Array<Point> {
+export function getPointsFromEl(el: HTMLElement): [Point, Point, Point, Point] {
 	const rect = el.getBoundingClientRect();
 	return [
 		{ x: rect.left, y: rect.top }, // tl

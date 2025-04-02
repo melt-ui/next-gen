@@ -6,7 +6,7 @@ import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 import { isPointerInGraceArea } from "$lib/utils/pointer";
-import { computeConvexHull, getPointsFromEl, type Point } from "$lib/utils/polygon";
+import { computeConvexHull, getPointsFromEl } from "$lib/utils/polygon";
 import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
 import { useFloating, type UseFloatingArgs } from "$lib/utils/use-floating.svelte";
 import type { ComputePositionReturn } from "@floating-ui/dom";
@@ -119,9 +119,6 @@ export class Tooltip {
 		const placement = this.#floatingData?.placement;
 
 		const points = [...contentPoints];
-		if (!tl || !tr || !br || !bl) {
-			throw new Error("This should never happen, but TS is wacko");
-		}
 
 		if (placement?.startsWith("top")) {
 			points.push(tl, tr);
