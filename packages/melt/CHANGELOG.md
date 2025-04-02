@@ -1,5 +1,11 @@
 # melt
 
+## 0.28.2
+
+### Patch Changes
+
+- tooltip: fix pointerDown regression ([`8b568ae`](https://github.com/melt-ui/next-gen/commit/8b568ae19976757784c13d0e12d12888cae71485))
+
 ## 0.28.1
 
 ### Patch Changes
