@@ -2,4 +2,4 @@
 "melt": minor
 ---
 
-expose AccordionItem class
+expose AccordionItem class (fixes #123)
