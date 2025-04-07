@@ -1598,7 +1598,7 @@
     "methods": [
       {
         "name": "getItem",
-        "type": "<Meta extends Record<string, unknown>>(\n  item: AccordionItem<Meta>,\n) => Item<Meta, Multiple>",
+        "type": "<Meta extends Record<string, unknown>>(\n  item: AccordionItemMeta<Meta>,\n) => AccordionItem<Meta, Multiple>",
         "description": "Returns an Item class with the necessary\nspread attributes for an accordion item.\n@param item"
       },
       {

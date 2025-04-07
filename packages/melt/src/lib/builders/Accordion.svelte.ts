@@ -15,7 +15,7 @@ const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("accordion
 	"content",
 ]);
 
-export type AccordionItem<Meta extends Record<string, unknown> = Record<never, never>> = {
+export type AccordionItemMeta<Meta extends Record<string, unknown> = Record<never, never>> = {
 	/** Unique identifier for the accordion item. */
 	id: string;
 	/** Disables the accordion item. */
@@ -103,8 +103,8 @@ export class Accordion<Multiple extends boolean = false> {
 	 * spread attributes for an accordion item.
 	 * @param item
 	 */
-	getItem<Meta extends Record<string, unknown>>(item: AccordionItem<Meta>) {
-		return new Item({
+	getItem<Meta extends Record<string, unknown>>(item: AccordionItemMeta<Meta>) {
+		return new AccordionItem({
 			accordion: this,
 			item,
 			rootId: this.#ids.root,
@@ -153,14 +153,17 @@ export class Accordion<Multiple extends boolean = false> {
 	}
 }
 
-type ItemProps<Meta extends Record<string, unknown>, Multiple extends boolean = false> = {
+export type AccordionItemProps<
+	Meta extends Record<string, unknown>,
+	Multiple extends boolean = false,
+> = {
 	accordion: Accordion<Multiple>;
-	item: AccordionItem<Meta>;
+	item: AccordionItemMeta<Meta>;
 	rootId: string;
 };
 
-class Item<Meta extends Record<string, unknown>, Multiple extends boolean = false> {
-	#props!: ItemProps<Meta, Multiple>;
+export class AccordionItem<Meta extends Record<string, unknown>, Multiple extends boolean = false> {
+	#props!: AccordionItemProps<Meta, Multiple>;
 	readonly item = $derived(this.#props.item);
 	#accordion = $derived(this.#props.accordion);
 	#rootId = $derived(this.#props.rootId);
@@ -176,7 +179,7 @@ class Item<Meta extends Record<string, unknown>, Multiple extends boolean = fals
 	/** Toggles the expanded state of this item. */
 	toggleExpanded = () => this.#accordion.toggleExpanded(this.item.id);
 
-	constructor(props: ItemProps<Meta, Multiple>) {
+	constructor(props: AccordionItemProps<Meta, Multiple>) {
 		this.#props = props;
 	}
 
