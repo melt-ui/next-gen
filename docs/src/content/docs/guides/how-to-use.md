@@ -83,9 +83,7 @@ Its more straight-forward to use, but can be a bit more verbose on the template,
 With Melt's spread syntax, you're adding attributes to your elements. But this brings a potential problem.
 
 ```svelte
-<button {...popover.trigger} onclick={() => console.log("hi")}>
-    Press me!
-</button>
+<button {...popover.trigger} onclick={() => console.log("hi")}> Press me! </button>
 ```
 
 The code above will make it so the popover never shows up. Why? Because the `onclick` defined at the end is overriding the one that comes from `popover.trigger`
@@ -142,6 +140,7 @@ However, in most cases you do want to change `isEnabled` whenever `toggle.trigge
 ```svelte
 <script lang="ts">
 	import { Toggle } from "melt/builders";
+	import { ToggleComponent } from "melt/components";
 
 	let isEnabled = $state(false);
 
@@ -152,6 +151,11 @@ However, in most cases you do want to change `isEnabled` whenever `toggle.trigge
 		},
 	});
 </script>
+
+<!-- Similar to: -->
+<ToggleComponent bind:value={isEnabled}>
+<!-- Or -->
+<ToggleComponent bind:value={() => isEnabled, (v) => isEnabled = v}>
 ```
 
 This basically mimics how `Toggle` works under the hood. Why whould you want this then?
