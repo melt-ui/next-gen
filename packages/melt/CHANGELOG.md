@@ -1,5 +1,15 @@
 # melt
 
+## 0.29.0
+
+### Minor Changes
+
+- expose AccordionItem class (fixes [#123](https://github.com/melt-ui/next-gen/issues/123)) ([`9d357e7`](https://github.com/melt-ui/next-gen/commit/9d357e7290fd1720005da26306ff2c12803196e9))
+
+### Patch Changes
+
+- fix selection state triggering onChange with no changes (fixes [#124](https://github.com/melt-ui/next-gen/issues/124)) ([`2db5f57`](https://github.com/melt-ui/next-gen/commit/2db5f57d2f51333ee7a267809690f933c83f5d76))
+
 ## 0.28.2
 
 ### Patch Changes
