@@ -66,6 +66,7 @@
 	"svelte": "./dist/index.js",
 	"dependencies": {
 		"@floating-ui/dom": "^1.6.13",
+		"dequal": "^2.0.3",
 		"jest-axe": "^9.0.0",
 		"nanoid": "^5.0.9",
 		"runed": "^0.23.3"

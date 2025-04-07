@@ -4,6 +4,7 @@ import { extract } from "./extract";
 import { first, forEach, last } from "./iterator";
 import { isFunction, isIterable, isSvelteSet } from "./is";
 import { watch } from "runed";
+import { dequal } from "dequal";
 
 /**
  * Internal type for the multiple flag constraint
@@ -104,9 +105,7 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 	#internal_set = new SvelteSet<T>();
 
 	isControlled = $derived(isSvelteSet(this.#props.value) || isFunction(this.#props.value));
-	isMultiple = $derived(
-		extract<boolean | undefined>(this.#props.multiple, false),
-	) as Multiple;
+	isMultiple = $derived(extract<boolean | undefined>(this.#props.multiple, false)) as Multiple;
 
 	constructor(props: SelectionStateProps<T, Multiple>) {
 		this.#props = props;
@@ -178,9 +177,11 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 	 */
 	manipulate(cb: (set: SvelteSet<T>) => void) {
 		const set = this.isControlled ? toSet<T>(this.current as T | Iterable<T>) : this.#internal_set;
+		const prevValue = $state.snapshot(this.isMultiple ? set : toSingle<T>(set));
 		cb(set);
 
 		const newValue = this.isMultiple ? set : toSingle<T>(set);
+		if (dequal(prevValue, $state.snapshot(newValue))) return;
 		this.onChange(newValue as SelectionStateValue<T, Multiple>);
 	}
 

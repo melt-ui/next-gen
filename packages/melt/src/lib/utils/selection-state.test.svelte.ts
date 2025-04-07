@@ -1,8 +1,7 @@
-import { describe, expect } from "vitest";
-import { testWithEffect } from "./test.svelte";
-import { SelectionState } from "./selection-state.svelte";
 import { SvelteSet } from "svelte/reactivity";
-import { tick } from "svelte";
+import { describe, expect } from "vitest";
+import { SelectionState } from "./selection-state.svelte";
+import { testWithEffect } from "./test.svelte";
 
 describe("alt-selection-state", () => {
 	testWithEffect("uncontrolled single", () => {
