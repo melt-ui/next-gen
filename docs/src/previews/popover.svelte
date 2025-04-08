@@ -33,7 +33,7 @@
 		{...popover.content}
 	>
 		{#if controls.arrow}
-			<div {...popover.arrow} class="rounded-tl size-2"></div>
+			<div {...popover.arrow} class="size-2 rounded-tl"></div>
 		{/if}
 		<p class="text-center font-semibold">Can I tell you a secret?</p>
 

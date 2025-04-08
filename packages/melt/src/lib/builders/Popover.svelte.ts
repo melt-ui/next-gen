@@ -1,12 +1,11 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
-import { addEventListener } from "$lib/utils/event";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isFunction, isHtmlElement } from "$lib/utils/is";
 import { deepMerge } from "$lib/utils/merge";
-import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
+import { autoOpenPopover, safelyHidePopover } from "$lib/utils/popover.svelte";
 import {
 	useFloating,
 	type UseFloatingArgs,
@@ -169,36 +168,15 @@ export class BasePopover {
 
 	protected getPopover() {
 		// Show and hide popover based on open state
+		const isVisible = $derived(this.open || this.forceVisible);
 		$effect(() => {
 			const el = document.getElementById(this.ids.popover);
 			if (!isHtmlElement(el)) {
 				return;
 			}
 
-			if (this.open || this.forceVisible) {
-				// Check if there's a parent popover. If so, only open if the parent's open.
-				// This is to guarantee correct layering.
-				const parent = isHtmlElement(el.parentNode)
-					? el.parentNode.closest(dataSelectors.content)
-					: undefined;
-
-				if (!isHtmlElement(parent)) {
-					safelyShowPopover(el);
-					return;
-				}
-
-				if (parent.dataset.open !== undefined) safelyShowPopover(el);
-
-				return addEventListener(parent, "toggle", async (e) => {
-					await new Promise((r) => setTimeout(r));
-
-					const isOpen = e.newState === "open";
-					if (isOpen) {
-						safelyShowPopover(el);
-					} else {
-						safelyHidePopover(el);
-					}
-				});
+			if (isVisible) {
+				return autoOpenPopover({ el });
 			} else {
 				safelyHidePopover(el);
 			}

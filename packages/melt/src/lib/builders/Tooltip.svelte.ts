@@ -1,17 +1,15 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
-import { addEventListener } from "$lib/utils/event";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 import { isPointerInGraceArea } from "$lib/utils/pointer";
 import { computeConvexHull, getPointsFromEl } from "$lib/utils/polygon";
-import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
+import { autoOpenPopover, safelyHidePopover } from "$lib/utils/popover.svelte.js";
 import { useFloating, type UseFloatingArgs } from "$lib/utils/use-floating.svelte";
 import type { ComputePositionReturn } from "@floating-ui/dom";
 import { useEventListener, watch } from "runed";
-import { untrack } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
 import { on } from "svelte/events";
 
@@ -314,50 +312,7 @@ export class Tooltip {
 				return () => (this.#isPointerInsideContent = false);
 			}
 
-			// Check if there's a parent tooltip. If so, only open if the parent's open.
-			// This is to guarantee correct layering.
-			const parent = isHtmlElement(contentEl.parentNode)
-				? contentEl.parentNode.closest(dataSelectors.content)
-				: undefined;
-
-			if (!isHtmlElement(parent)) {
-				safelyShowPopover(contentEl);
-				return;
-			}
-
-			if (parent.dataset.open !== undefined) safelyShowPopover(contentEl);
-
-			const toggleUnsub = addEventListener(parent, "toggle", async (e) => {
-				await new Promise((r) => setTimeout(r));
-
-				const isOpen = e.newState === "open";
-				if (isOpen) {
-					safelyShowPopover(contentEl);
-				} else {
-					safelyHidePopover(contentEl);
-				}
-			});
-
-			const observer = new MutationObserver((mutations) =>
-				untrack(() => {
-					const parent = mutations[0]?.target;
-
-					if (!isHtmlElement(parent)) return;
-
-					if (parent.inert && this.open) {
-						this.#closeTooltip();
-					}
-				}),
-			);
-
-			observer.observe(parent, {
-				attributes: true,
-			});
-
-			return () => {
-				toggleUnsub();
-				observer.disconnect();
-			};
+			return autoOpenPopover({ el: contentEl });
 		});
 
 		useEventListener(
