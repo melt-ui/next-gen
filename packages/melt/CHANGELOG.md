@@ -1,5 +1,11 @@
 # melt
 
+## 0.29.1
+
+### Patch Changes
+
+- tooltip, popover, select, combobox: improve popover attr handling ([`dbb0345`](https://github.com/melt-ui/next-gen/commit/dbb03455cbb54418580bc615d86d60937d9bc223))
+
 ## 0.29.0
 
 ### Minor Changes
