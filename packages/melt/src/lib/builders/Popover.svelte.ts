@@ -5,7 +5,7 @@ import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isFunction, isHtmlElement } from "$lib/utils/is";
 import { deepMerge } from "$lib/utils/merge";
-import { autoOpenPopover, safelyHidePopover } from "$lib/utils/popover.svelte";
+import { autoOpenPopover, safelyHidePopover } from "$lib/utils/popover";
 import {
 	useFloating,
 	type UseFloatingArgs,

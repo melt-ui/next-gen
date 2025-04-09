@@ -6,7 +6,7 @@ import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 import { isPointerInGraceArea } from "$lib/utils/pointer";
 import { computeConvexHull, getPointsFromEl } from "$lib/utils/polygon";
-import { autoOpenPopover, safelyHidePopover } from "$lib/utils/popover.svelte.js";
+import { autoOpenPopover, safelyHidePopover } from "$lib/utils/popover.js";
 import { useFloating, type UseFloatingArgs } from "$lib/utils/use-floating.svelte";
 import type { ComputePositionReturn } from "@floating-ui/dom";
 import { useEventListener, watch } from "runed";
