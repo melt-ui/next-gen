@@ -1,5 +1,11 @@
 # melt
 
+## 0.29.2
+
+### Patch Changes
+
+- popover: fix focus out ([`33ace3a`](https://github.com/melt-ui/next-gen/commit/33ace3a031099a456d7e6e115fc7b12f3b1c8c16))
+
 ## 0.29.1
 
 ### Patch Changes
