@@ -238,7 +238,6 @@ export class BasePopover {
 			() => document,
 			"click",
 			(e) => {
-				console.log("hey");
 				if (!this.open) return; // Exit early if not open
 
 				const contentEl = document.getElementById(this.ids.popover);
