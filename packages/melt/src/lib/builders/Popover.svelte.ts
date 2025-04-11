@@ -13,6 +13,7 @@ import {
 } from "$lib/utils/use-floating.svelte";
 import { nanoid } from "nanoid";
 import { useEventListener } from "runed";
+import { tick } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
 
 const { dataAttrs, dataSelectors } = createBuilderMetadata("popover", [
@@ -132,25 +133,41 @@ export class BasePopover {
 	}
 
 	protected get sharedProps() {
+		// Track the last focused element before any potential deletion
+		let lastFocusedElement: Element | null = null;
+
 		return {
-			onfocusout: async () => {
-				await new Promise((r) => setTimeout(r));
+			onfocus: (event: FocusEvent) => {
+				// Update our tracked element whenever focus happens
+				lastFocusedElement = event.target as Element;
+			},
+
+			onfocusout: async (event: FocusEvent) => {
+				await new Promise((r) => setTimeout(r, 0));
+
 				const contentEl = document.getElementById(this.ids.popover);
 				const triggerEl = document.getElementById(this.ids.invoker);
+				const relatedTarget = event.relatedTarget as Element | null;
 
-				const activeEl = document.activeElement;
+				// Use the related target from the event when possible
+				const newFocusElement = relatedTarget || document.activeElement;
+
+				// If we can't determine where focus went, use our tracked element
+				const targetElement =
+					newFocusElement === document.body ? lastFocusedElement : newFocusElement;
+
 				if (
-					!activeEl ||
-					contentEl?.contains(activeEl) ||
-					triggerEl?.contains(activeEl) ||
-					!this.#shouldClose(activeEl) // Hack, we should probably have a focusOut prop
+					!targetElement ||
+					contentEl?.contains(targetElement) ||
+					triggerEl?.contains(targetElement) ||
+					!this.#shouldClose(targetElement)
 				) {
 					return;
 				}
 
 				this.open = false;
 			},
-		};
+		} satisfies HTMLAttributes<HTMLElement>;
 	}
 
 	/** The trigger that toggles the value. */
@@ -221,6 +238,7 @@ export class BasePopover {
 			() => document,
 			"click",
 			(e) => {
+				console.log("hey");
 				if (!this.open) return; // Exit early if not open
 
 				const contentEl = document.getElementById(this.ids.popover);
