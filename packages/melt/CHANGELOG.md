@@ -1,5 +1,11 @@
 # melt
 
+## 0.29.3
+
+### Patch Changes
+
+- remove console log ([`1ebf74f`](https://github.com/melt-ui/next-gen/commit/1ebf74f977171e9ae4a88ae64fa5ad75e10dbba4))
+
 ## 0.29.2
 
 ### Patch Changes
