@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import Preview from "@components/preview.svelte";
-	import { TagsInput, getters } from "melt/builders";
+	import { getters } from "melt";
+	import { TagsInput } from "melt/builders";
 	import Close from "~icons/material-symbols/close-rounded";
 
 	const controls = usePreviewControls({
@@ -30,14 +31,14 @@
 	<div class="flex flex-col items-start justify-center gap-2">
 		<div
 			{...tagsInput.root}
-			class="text-accent-700 focus-within:ring-accent-400 flex min-w-[280px] max-w-[400px] flex-col flex-wrap gap-2.5 rounded-md bg-white px-3
-		  py-2 focus-within:ring"
+			class="text-accent-700 focus-within:ring-accent-400 flex min-w-[280px] max-w-[400px] flex-col flex-wrap gap-2.5 rounded-md border border-gray-500
+		  bg-gray-100 px-3 py-2 focus-within:ring dark:bg-gray-900 dark:text-gray-200"
 		>
 			<input
 				{...tagsInput.input}
 				type="text"
 				placeholder="Enter tags..."
-				class="min-w-[4.5rem] shrink grow basis-0 border-0 bg-white text-black outline-none focus:!ring-0 focus-visible:!outline-0 data-[invalid]:text-red-500"
+				class="w-full min-w-[4.5rem] shrink grow rounded-xl bg-transparent text-left focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50"
 			/>
 
 			{#if tagsInput.tags.length > 0}
@@ -53,16 +54,11 @@
 							<button
 								{...tagItem.deleteTrigger}
 								aria-label={`remove ${tag.value} tag`}
-								class="enabled:hover:bg-accent-300 flex h-full items-center px-1"
+								class="flex h-full cursor-pointer items-center px-1 enabled:hover:opacity-90"
 							>
 								<Close />
 							</button>
 						</div>
-
-						<!-- <input
-							{...tagItem.edit}
-							class="flex items-center overflow-hidden rounded-md px-1.5 [word-break:break-word] focus-visible:!outline-0 data-[invalid-edit]:focus:!ring-red-500"
-						/> -->
 
 						<span
 							{...tagItem.edit}
