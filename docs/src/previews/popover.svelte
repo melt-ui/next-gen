@@ -2,6 +2,15 @@
 	import Preview from "@components/preview.svelte";
 	import { Popover as PopoverComponent } from "melt/components";
 	import { Popover } from "melt/builders";
+	import { usePreviewControls } from "@components/preview-ctx.svelte";
+
+	const controls = usePreviewControls({
+		arrow: {
+			label: "Show arrow",
+			type: "boolean",
+			defaultValue: false,
+		},
+	});
 
 	const popover = new Popover({
 		forceVisible: true,
@@ -10,8 +19,8 @@
 
 <Preview>
 	<button
-		class="mx-auto block rounded-xl bg-gray-100 px-4 py-2 text-gray-800
-				transition hover:cursor-pointer hover:bg-gray-200
+		class="mx-auto block rounded-xl bg-gray-100 px-4 py-2 font-semibold text-gray-800
+				transition-all hover:cursor-pointer hover:bg-gray-200
 				active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
 				dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
 		{...popover.trigger}
@@ -19,7 +28,13 @@
 		psst...
 	</button>
 
-	<div class="w-[260px] rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800" {...popover.content}>
+	<div
+		class="w-[260px] overflow-visible rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800"
+		{...popover.content}
+	>
+		{#if controls.arrow}
+			<div {...popover.arrow} class="size-2 rounded-tl"></div>
+		{/if}
 		<p class="text-center font-semibold">Can I tell you a secret?</p>
 
 		<div class="mt-4 flex items-center justify-center gap-4">
@@ -54,7 +69,6 @@
 
 		transition: 0.3s;
 		transition-property: opacity, transform;
-		transform-origin: var(--melt-popover-content-transform-origin, center);
 	}
 
 	[data-melt-popover-content][data-open] {

@@ -1,0 +1,93 @@
+---
+title: Toaster
+description: A succinct message that is displayed temporarily.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/toaster.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+
+## Features
+
+<Features>
+	- 🕐 Automatically closes
+	- ⏯️ Pause closing on hover (single, all, none)
+</Features>
+
+## Usage
+
+Unlike most builders, the toast is not component-based. Instead, it provides a global functionality that can be accessed from anywhere in your application. To accomplish this, it is recommended that you create a global component that is called on the root of your application.
+
+The first step is to create a `Toaster` component that will be used to render toast notifications. We can take advantage of [Svelte context module](https://svelte.dev/docs/svelte/svelte-files#script-module) to create the template for the toast notifications and expose the helper function so it can be used in other components.
+
+```svelte
+<script lang="ts" module>
+	// Define your toast data.
+	type ToastData = {
+		title: string;
+		description: string;
+	};
+
+	const toaster = new Toaster<ToastData>();
+
+	export const addToast = toaster.addToast;
+</script>
+
+<script lang="ts">
+	import { Toaster } from "melt/builders";
+</script>
+
+<div {...toaster.root}>
+	{#each toaster.toasts as toast (toast.id)}
+
+		<div {...toast.content}>
+			<h3 {...toast.title}>{toast.data.title}</h3>
+			<div {...toast.description}>{toast.data.description}</div>
+			<button {...toast.close} aria-label="dismiss alert">X</button>
+		</div>
+	{/each}
+</div>
+```
+
+This component should be added to your root `+layout.svelte` or `App.svelte` component.
+
+```svelte
+<script>
+	import Toaster from '$lib/Toaster.svelte'
+
+	let { children } = $props();
+</script>
+
+<Toaster />
+
+{@render children()}
+```
+
+Finally, you can use the exported `addToast` helper function to add a toast from any component of the application.
+
+```svelte
+<script lang="ts">
+	import { addToast } from '$lib/Toaster.svelte'
+
+	function onclick() {
+		addToast({
+			data: {
+				title: 'Success',
+				description: 'The resource was created!'
+			}
+		})
+	}
+</script>
+
+<button {onclick}>Create</button>
+```
+
+> ⚠️  By default, some browsers add the `inset` property to elements with the `popover` attribute. This includes the `toaster.root` element. Be sure to set `inset: unset` if you do not wish for that!
+
+## API Reference
+
+<ApiTable entry="Toaster" />

@@ -80,6 +80,16 @@ export default defineConfig({
 					],
 				},
 			],
+			head: [
+				{
+					tag: "script",
+					attrs: {
+						src: "https://umami.thomas.rocks/script.js",
+						"data-website-id": "5a576ec6-f2d5-448e-88bc-75d88e6b9890",
+						defer: true,
+					},
+				},
+			],
 		}),
 		tailwind({
 			// Disable the default base styles:

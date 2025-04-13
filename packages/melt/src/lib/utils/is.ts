@@ -4,8 +4,20 @@ export function isHtmlElement(element: unknown): element is HTMLElement {
 	return element instanceof HTMLElement;
 }
 
+export function isElement(element: unknown): element is Element {
+	return element instanceof Element;
+}
+
+export function isNode(element: unknown): element is Node {
+	return element instanceof Node;
+}
+
 export function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
 	return typeof value === "function";
+}
+
+export function isGetter(value: unknown): value is () => unknown {
+	return isFunction(value) && value.length === 0;
 }
 
 export function isSvelteSet(value: unknown): value is SvelteSet<unknown> {
@@ -26,4 +38,8 @@ export function isHtmlInputElement(element: unknown): element is HTMLInputElemen
 
 export function isString(value: unknown): value is string {
 	return typeof value === "string";
+}
+
+export function isTouch(event: PointerEvent): boolean {
+	return event.pointerType === "touch";
 }

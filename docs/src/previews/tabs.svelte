@@ -92,10 +92,10 @@
 					{...tabs.getTrigger(id)}
 				>
 					<div
-						class="group-focus-visible:ring-accent-600 overflow-clip rounded-full px-4 py-1
-						transition group-focus-visible:ring-4 
-						group-[&:not([data-active]):hover]:bg-gray-200 dark:group-[&:not([data-active]):hover]:bg-white/10 
-						group-data-[active]:bg-accent-500 group-data-[active]:text-white dark:group-data-[active]:bg-white dark:group-data-[active]:text-black"
+						class="group-focus-visible:ring-accent-600 group-data-[active]:bg-accent-500 overflow-clip rounded-full px-4
+						py-1 transition
+						group-focus-visible:ring-4 group-[&:not([data-active]):hover]:bg-gray-200
+						group-data-[active]:text-white dark:group-[&:not([data-active]):hover]:bg-white/10 dark:group-data-[active]:bg-white dark:group-data-[active]:text-black"
 					>
 						{id}
 					</div>
@@ -143,7 +143,7 @@
 								<div class="anime-grid">
 									{@render media("Attack on Titan", "/previews/aot.jpg")}
 									{@render media("JJK", "/previews/nah-id-win.jpg")}
-									{@render media("Demon Slayer", "/previews/demon-slayer.webp")}
+									{@render media("Solo Leveling", "/previews/sung-jinwoo.jpg")}
 									{@render media("Berserk", "/previews/berserk.avif")}
 								</div>
 							{:else if id === "Games"}

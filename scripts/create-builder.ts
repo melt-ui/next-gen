@@ -173,6 +173,15 @@ async function updateBarrelFile(directory: string, exportName: string) {
 	console.log(`Updated ${indexPath}`);
 }
 
+async function updateComponentBarrelFile(directory: string, exportName: string) {
+	const indexPath = path.join(directory, "index.ts");
+	const content = await fs.readFile(indexPath, "utf-8");
+	const newContent =
+		content + `\nexport { default as ${exportName} } from './${exportName}.svelte';`;
+	await fs.writeFile(indexPath, newContent);
+	console.log(`Updated ${indexPath}`);
+}
+
 async function main() {
 	const basePath = process.cwd();
 	const builderPath = path.join(
@@ -198,7 +207,7 @@ async function main() {
 
 	// Update barrel files
 	await updateBarrelFile("packages/melt/src/lib/builders", formattedName);
-	await updateBarrelFile("packages/melt/src/lib/components", formattedName);
+	await updateComponentBarrelFile("packages/melt/src/lib/components", formattedName);
 
 	console.log("Done! 🎉");
 }

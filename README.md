@@ -1,30 +1,71 @@
-# Melt Next
+![](static/banner.png)
 
-Next generation of Melt UI.
+[Melt UI](https://next.melt-ui.com/) is a set of headless, accessible component builders for Svelte.
 
-Focus on simplicity and flexibility. Ships builders, but also components powered by builders.
-Use `asChild` to get complete control over the component and its elements.
-Alternatively, just use the returned builder instance from the component.
+[![](https://img.shields.io/npm/v/melt?style=flat)](https://www.npmjs.com/package/melt)
+![npm](https://img.shields.io/npm/dw/melt?style=flat&color=orange)
 
-Controlled usage in builders, in components, everywhere.
+[![](https://img.shields.io/github/actions/workflow/status/melt-ui/next-gen/ci.yml?style=flat)](https://github.com/melt-ui/next-gen/actions/workflows/ci.yml)
+![](https://img.shields.io/github/license/melt-ui/next-gen?style=flat)
+[![](https://dcbadge.vercel.app/api/server/2QDjZkYunf?style=flat)](https://melt-ui.com/discord)
 
-This is not an agnostic implementation. Let's leverage the best of runes.
+## About
 
-Keep it simple. No super advanced examples or extra features. Just well documented components.
-The future comes afterwards.
+Melt UI is meant to be used as a base for your own styles and components. It offers:
 
-## TODO
+- Uncoupled builders that can be attached to any element/component
+- Typescript and [SvelteKit](https://kit.svelte.dev/) support out-of-the-box
+- Strict adherence to [WAI-ARIA guidelines](https://www.w3.org/WAI/ARIA/apg/)
+- Easy to use examples and documentation
+- A high emphasis on accessibility, extensibility, quality and consistency
 
-- [x] Auto API reference for builders
-- [ ] Auto API reference for components
-- [ ] Auto changelog (?)
-- [ ] Tests for utilities
-- [ ] Tests for components
-- [x] Good docs structure
-- [ ] Automatically check if returned types are valid HTML attributes
-- [ ] Use inert for focus trapping, also solves scrollbar issues
-- [ ] Deal with things like:
+## Getting started
 
-```html
-<div {...tabs.trigger}>{@render trigger()}</div>
-```
+Read our [docs](https://next.melt-ui.com/guides/installation) for more info.
+
+## Contributing
+
+**Contributions are welcome and encouraged!**
+
+Melt UI is under active development. Currently planned features can be found in the
+[issues tab](https://github.com/melt-ui/next-gen/issues), alongside bug reports.
+
+We work on this project on a volunteer basis in our free time. If you notice something that hasn't
+been implemented yet or could be improved, do consider contributing to the project! The goal is to
+enhance the experience of building with Svelte and improve the ecosystem for everyone.
+
+Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
+
+## Sponsors
+
+<p align="center">
+  <a href="https://github.com/sponsors/tglide">
+    <img src='https://github.com/tglide/sponsors/blob/main/sponsors.svg?raw=true' alt="Logos from Sponsors" />
+  </a>
+</p>
+
+## Community
+
+Melt UI is an open-source project built by the community for the community. It wouldn't be possible
+if it wasn't for the work of some amazing people.
+
+[![Contributors](https://contrib.rocks/image?repo=melt-ui/next-gen)](<[https://github.com/codemaniac-sahil/news-webapp-api](https://github.com/melt-ui/next-gen)https://github.com/melt-ui/next-gen/graphs/contributors>)
+
+### Discord
+
+Got any questions? Want to talk to the maintainers?
+
+Our [Discord community](https://melt-ui.com/discord) is a great place to get in touch with us, and
+we'd love to have you there.
+
+<a href="https://melt-ui.com/discord" alt="Melt UI Discord community">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://invidget.switchblade.xyz/2QDjZkYunf">
+  <img alt="Melt UI Discord community" src="https://invidget.switchblade.xyz/2QDjZkYunf?theme=light">
+</picture>
+</a>
+
+## Similar projects
+
+Looking for more? Check out the
+[other component library projects available for Svelte](https://sveltesociety.dev/components#design-systems).

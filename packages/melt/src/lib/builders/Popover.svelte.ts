@@ -1,25 +1,33 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
-import { addEventListener } from "$lib/utils/event";
 import { extract } from "$lib/utils/extract";
-import { createDataIds, createIds } from "$lib/utils/identifiers";
-import { isHtmlElement } from "$lib/utils/is";
+import { createBuilderMetadata } from "$lib/utils/identifiers";
+import { isFunction, isHtmlElement } from "$lib/utils/is";
 import { deepMerge } from "$lib/utils/merge";
+import { autoOpenPopover, safelyHidePopover } from "$lib/utils/popover";
 import {
-	autoUpdate,
-	computePosition,
-	flip,
-	offset,
-	shift,
-	size,
-	type ComputePositionConfig,
-	type Placement,
-} from "@floating-ui/dom";
+	useFloating,
+	type UseFloatingArgs,
+	type UseFloatingConfig,
+} from "$lib/utils/use-floating.svelte";
+import { nanoid } from "nanoid";
 import { useEventListener } from "runed";
+import { tick } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
 
-const dataIds = createDataIds("popover", ["trigger", "content"]);
+const { dataAttrs, dataSelectors } = createBuilderMetadata("popover", [
+	"trigger",
+	"content",
+	"arrow",
+]);
+
+export type CloseOnOutsideClickCheck = (el: Element | Window | Document) => boolean;
+type CloseOnOutsideClickProp = MaybeGetter<boolean | CloseOnOutsideClickCheck | undefined>;
+
+export const isCloseOnOutsideClickCheck = (
+	value: CloseOnOutsideClickProp,
+): value is CloseOnOutsideClickCheck => isFunction(value) && value.length === 1;
 
 export type PopoverProps = {
 	/**
@@ -48,11 +56,9 @@ export type PopoverProps = {
 	forceVisible?: MaybeGetter<boolean | undefined>;
 
 	/**
-	 * Options to be passed to Floating UI's `computePosition`
-	 *
-	 * @see https://floating-ui.com/docs/computePosition
+	 * Config to be passed to `useFloating`
 	 */
-	computePositionOptions?: MaybeGetter<Partial<ComputePositionConfig> | undefined>;
+	floatingConfig?: UseFloatingArgs["config"];
 
 	/**
 	 * If the popover should have the same width as the trigger
@@ -60,15 +66,39 @@ export type PopoverProps = {
 	 * @default false
 	 */
 	sameWidth?: MaybeGetter<boolean | undefined>;
+
+	/**
+	 * If the popover should close when clicking escape.
+	 *
+	 * @default true
+	 */
+	closeOnEscape?: MaybeGetter<boolean | undefined>;
+
+	/**
+	 * If the popover should close when clicking outside.
+	 * Alternatively, accepts a function that receives the clicked element,
+	 * and returns if the popover should close.
+	 *
+	 * @default true
+	 */
+	closeOnOutsideClick?: CloseOnOutsideClickProp;
 };
 
-export class Popover {
-	ids = createIds(dataIds);
+export class BasePopover {
+	ids = $state({ invoker: nanoid(), popover: nanoid() });
 
 	/* Props */
 	#props!: PopoverProps;
 	forceVisible = $derived(extract(this.#props.forceVisible, false));
-	computePositionOptions = $derived(extract(this.#props.computePositionOptions, {}));
+	closeOnEscape = $derived(extract(this.#props.closeOnEscape, true));
+	sameWidth = $derived(extract(this.#props.sameWidth, false));
+	closeOnOutsideClick = $derived(extract(this.#props.closeOnOutsideClick, true));
+	floatingConfig = $derived.by(() => {
+		const config = extract(this.#props.floatingConfig, {} satisfies UseFloatingConfig);
+		const sameWidth = extract(this.#props.sameWidth);
+		const merged = deepMerge(config, sameWidth !== undefined ? { sameWidth } : {});
+		return merged;
+	});
 
 	/* State */
 	#open!: Synced<boolean>;
@@ -90,155 +120,111 @@ export class Popover {
 		this.#open.current = value;
 	}
 
-	get #sharedProps() {
+	#shouldClose(el: Node) {
+		if (this.closeOnOutsideClick === false) return false;
+
+		if (isFunction(this.closeOnOutsideClick)) {
+			return isCloseOnOutsideClickCheck(this.closeOnOutsideClick)
+				? this.closeOnOutsideClick(el as HTMLElement) // Pass target if it's the correct type
+				: this.closeOnOutsideClick(); // Otherwise, call without arguments
+		}
+
+		return true;
+	}
+
+	protected get sharedProps() {
+		// Track the last focused element before any potential deletion
+		let lastFocusedElement: Element | null = null;
+
 		return {
-			onfocusout: async () => {
-				await new Promise((r) => setTimeout(r));
-				const contentEl = document.getElementById(this.ids.content);
-				const triggerEl = document.getElementById(this.ids.trigger);
+			onfocus: (event: FocusEvent) => {
+				// Update our tracked element whenever focus happens
+				lastFocusedElement = event.target as Element;
+			},
+
+			onfocusout: async (event: FocusEvent) => {
+				await new Promise((r) => setTimeout(r, 0));
+
+				const contentEl = document.getElementById(this.ids.popover);
+				const triggerEl = document.getElementById(this.ids.invoker);
+				const relatedTarget = event.relatedTarget as Element | null;
+
+				// Use the related target from the event when possible
+				const newFocusElement = relatedTarget || document.activeElement;
+
+				// If we can't determine where focus went, use our tracked element
+				const targetElement =
+					newFocusElement === document.body ? lastFocusedElement : newFocusElement;
 
 				if (
-					contentEl?.contains(document.activeElement) ||
-					triggerEl?.contains(document.activeElement)
+					!targetElement ||
+					contentEl?.contains(targetElement) ||
+					triggerEl?.contains(targetElement) ||
+					!this.#shouldClose(targetElement)
 				) {
 					return;
 				}
+
 				this.open = false;
 			},
-		};
+		} satisfies HTMLAttributes<HTMLElement>;
 	}
 
 	/** The trigger that toggles the value. */
-	get trigger() {
+	protected getInvoker() {
 		return {
-			[dataIds.trigger]: "",
-			id: this.ids.trigger,
-			popovertarget: this.ids.content,
+			id: this.ids.invoker,
+			popovertarget: this.ids.popover,
 			onclick: (e: Event) => {
 				e.preventDefault();
 				this.open = !this.open;
 			},
-			...this.#sharedProps,
+			...this.sharedProps,
 		} as const;
 	}
 
-	get content() {
+	protected getPopover() {
 		// Show and hide popover based on open state
+		const isVisible = $derived(this.open || this.forceVisible);
 		$effect(() => {
-			const el = document.getElementById(this.ids.content);
+			const el = document.getElementById(this.ids.popover);
 			if (!isHtmlElement(el)) {
 				return;
 			}
 
-			if (this.open || this.forceVisible) {
-				// Check if there's a parent popover. If so, only open if the parent's open.
-				// This is to guarantee correct layering.
-				const parent = isHtmlElement(el.parentNode)
-					? el.parentNode.closest(`[${dataIds.content}]`)
-					: undefined;
-
-				if (!isHtmlElement(parent)) {
-					el.showPopover();
-					return;
-				}
-
-				if (parent.dataset.open !== undefined) el.showPopover();
-
-				return addEventListener(parent, "toggle", async (e) => {
-					await new Promise((r) => setTimeout(r));
-
-					const isOpen = e.newState === "open";
-					if (isOpen) {
-						el.showPopover();
-					} else {
-						el.hidePopover();
-					}
-				});
+			if (isVisible) {
+				return autoOpenPopover({ el });
 			} else {
-				el.hidePopover();
+				safelyHidePopover(el);
 			}
 		});
 
-		// Floating UI
-		const compute = () => {
-			const contentEl = document.getElementById(this.ids.content);
-			const triggerEl = document.getElementById(this.ids.trigger);
-			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
-				return;
-			}
-
-			const baseOptions: Partial<ComputePositionConfig> = {
-				middleware: [
-					shift(),
-					flip(),
-					offset({ mainAxis: 8 }),
-					this.#props.sameWidth
-						? size({
-								apply({ rects, elements }) {
-									Object.assign(elements.floating?.style ?? {}, {
-										width: `${rects.reference.width}px`,
-										minWidth: `${rects.reference.width}px`,
-									});
-								},
-							})
-						: undefined,
-				],
-			};
-			computePosition(
-				triggerEl,
-				contentEl,
-				deepMerge(baseOptions, this.computePositionOptions),
-			).then(({ x, y, placement }) => {
-				const transformOriginMap: Record<Placement, string> = {
-					top: "bottom center",
-					"top-start": "bottom left",
-					"top-end": "bottom right",
-
-					bottom: "top center",
-					"bottom-start": "top left",
-					"bottom-end": "top right",
-
-					left: "center center",
-					"left-start": "top left",
-					"left-end": "bottom left",
-
-					right: "center center",
-					"right-start": "top right",
-					"right-end": "bottom right",
-				};
-
-				Object.assign(contentEl.style, {
-					left: `${x}px`,
-					top: `${y}px`,
-					position: "absolute",
-				});
-				contentEl.style.transformOrigin = transformOriginMap[placement];
-
-				contentEl.dataset.side = placement;
-			});
-		};
-
 		$effect(() => {
-			const contentEl = document.getElementById(this.ids.content);
-			const triggerEl = document.getElementById(this.ids.trigger);
-			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl)) {
+			const contentEl = document.getElementById(this.ids.popover);
+			const triggerEl = document.getElementById(this.ids.invoker);
+			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl) || !this.open) {
 				return;
 			}
 
-			return autoUpdate(triggerEl, contentEl, compute);
+			useFloating({
+				node: () => triggerEl,
+				floating: () => contentEl,
+				config: () => this.floatingConfig,
+			});
 		});
 
 		useEventListener(
 			() => document,
 			"keydown",
 			(e) => {
-				const el = document.getElementById(this.ids.content);
+				if (!this.closeOnEscape) return;
+				const el = document.getElementById(this.ids.popover);
 				if (e.key !== "Escape" || !this.open || !isHtmlElement(el)) return;
 				e.preventDefault();
 				const openPopovers = [...el.querySelectorAll("[popover]")].filter((child) => {
 					if (!isHtmlElement(child)) return false;
 					// If child is a Melt popover, check if it's open
-					if (child.matches(`[${dataIds.content}]`)) return child.dataset.open !== undefined;
+					if (child.matches(dataSelectors.content)) return child.dataset.open !== undefined;
 					return child.matches(":popover-open");
 				});
 
@@ -252,22 +238,25 @@ export class Popover {
 			() => document,
 			"click",
 			(e) => {
-				const contentEl = document.getElementById(this.ids.content);
-				const triggerEl = document.getElementById(this.ids.trigger);
+				if (!this.open) return; // Exit early if not open
 
-				if (
-					this.open &&
-					!contentEl?.contains(e.target as Node) &&
-					!triggerEl?.contains(e.target as Node)
-				) {
-					this.open = false;
-				}
+				const contentEl = document.getElementById(this.ids.popover);
+				const triggerEl = document.getElementById(this.ids.invoker);
+
+				if (!contentEl || !triggerEl) return; // Exit if elements are missing
+
+				const target = e.target as Node;
+				const isInsideContent = contentEl.contains(target);
+				const isInsideTrigger = triggerEl.contains(target);
+
+				if (isInsideContent || isInsideTrigger) return; // Exit if clicked inside
+
+				if (this.#shouldClose(target)) this.open = false;
 			},
 		);
 
 		return {
-			[dataIds.content]: "",
-			id: this.ids.content,
+			id: this.ids.popover,
 			popover: "manual",
 			ontoggle: (e) => {
 				const newOpen = e.newState === "open";
@@ -279,8 +268,45 @@ export class Popover {
 			tabindex: -1,
 			inert: !this.open,
 			"data-open": dataAttr(this.open),
-			...this.#sharedProps,
+			...this.sharedProps,
 		} as const satisfies HTMLAttributes<HTMLElement>;
+	}
+
+	get arrow() {
+		return {
+			[dataAttrs.arrow]: "",
+			"data-arrow": "",
+			"aria-hidden": true,
+			"data-open": dataAttr(this.open),
+		} as const satisfies HTMLAttributes<HTMLElement>;
+	}
+
+	// IDEA: separate content and floating ui to achieve transitions without requiring
+	// force visible or custom esc and click outside handlers!
+}
+
+export class Popover extends BasePopover {
+	declare ids: BasePopover["ids"] & {
+		trigger: string;
+		content: string;
+	};
+
+	constructor(props: PopoverProps = {}) {
+		super({ ...props });
+		this.ids = { ...this.ids, trigger: this.ids.invoker, content: this.ids.popover };
+	}
+
+	/** The trigger that toggles the value. */
+	get trigger() {
+		return Object.assign(this.getInvoker(), {
+			[dataAttrs.trigger]: "",
+		});
+	}
+
+	get content() {
+		return Object.assign(this.getPopover(), {
+			[dataAttrs.content]: "",
+		});
 	}
 
 	// IDEA: separate content and floating ui to achieve transitions without requiring

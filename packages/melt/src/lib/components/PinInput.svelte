@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { PinInput as Builder, type PinInputProps } from "../builders/PinInput.svelte";
+	import { getters } from "$lib/utils/getters.svelte.js";
 	import { type Snippet } from "svelte";
+	import { PinInput as Builder, type PinInputProps } from "../builders/PinInput.svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "$lib/builders/utils.svelte";
 
 	type Props = ComponentProps<PinInputProps> & {
 		children: Snippet<[Builder]>;

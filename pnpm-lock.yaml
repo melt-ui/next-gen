@@ -163,6 +163,9 @@ importers:
       '@floating-ui/dom':
         specifier: ^1.6.13
         version: 1.6.13
+      dequal:
+        specifier: ^2.0.3
+        version: 2.0.3
       jest-axe:
         specifier: ^9.0.0
         version: 9.0.0

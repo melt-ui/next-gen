@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { slide } from "svelte/transition";
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import Preview from "@components/preview.svelte";
-	import { Accordion, getters, type AccordionItem } from "melt/builders";
+	import { getters } from "melt";
+	import { Accordion, type AccordionItem } from "melt/builders";
+	import { slide } from "svelte/transition";
 
 	const controls = usePreviewControls({
 		multiple: {

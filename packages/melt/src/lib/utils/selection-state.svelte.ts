@@ -4,6 +4,7 @@ import { extract } from "./extract";
 import { first, forEach, last } from "./iterator";
 import { isFunction, isIterable, isSvelteSet } from "./is";
 import { watch } from "runed";
+import { dequal } from "dequal";
 
 /**
  * Internal type for the multiple flag constraint
@@ -104,9 +105,7 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 	#internal_set = new SvelteSet<T>();
 
 	isControlled = $derived(isSvelteSet(this.#props.value) || isFunction(this.#props.value));
-	isMultiple = $derived(
-		extract<boolean | undefined, false>(this.#props.multiple, false),
-	) as Multiple;
+	isMultiple = $derived(extract<boolean | undefined>(this.#props.multiple, false)) as Multiple;
 
 	constructor(props: SelectionStateProps<T, Multiple>) {
 		this.#props = props;
@@ -156,29 +155,6 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 	}
 
 	/**
-	 * Manipulates the selection set through a callback
-	 * @param cb - Callback function that receives the selection set for manipulation
-	 * @internal
-	 */
-	manipulate(cb: (set: SvelteSet<T>) => void) {
-		const set = this.isControlled ? toSet<T>(this.current as T | Iterable<T>) : this.#internal_set;
-		cb(set);
-
-		const newValue = this.isMultiple ? set : toSingle<T>(set);
-		this.onChange(newValue as SelectionStateValue<T, Multiple>);
-	}
-
-	/**
-	 * Triggers the onChange callback with the current selection
-	 * @param value - The current selection value(s)
-	 * @internal
-	 */
-	onChange(value: SelectionStateValue<T, Multiple>) {
-		if (!this.#props.onChange) return;
-		this.#props.onChange(value);
-	}
-
-	/**
 	 * Sets the current selection value(s)
 	 * @param value - The new selection value(s)
 	 */
@@ -192,6 +168,31 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 		} else if (value !== undefined) {
 			this.#internal_set.add(value as T);
 		}
+	}
+
+	/**
+	 * Manipulates the selection set through a callback
+	 * @param cb - Callback function that receives the selection set for manipulation
+	 * @internal
+	 */
+	manipulate(cb: (set: SvelteSet<T>) => void) {
+		const set = this.isControlled ? toSet<T>(this.current as T | Iterable<T>) : this.#internal_set;
+		const prevValue = $state.snapshot(this.isMultiple ? set : toSingle<T>(set));
+		cb(set);
+
+		const newValue = this.isMultiple ? set : toSingle<T>(set);
+		if (dequal(prevValue, $state.snapshot(newValue))) return;
+		this.onChange(newValue as SelectionStateValue<T, Multiple>);
+	}
+
+	/**
+	 * Triggers the onChange callback with the current selection
+	 * @param value - The current selection value(s)
+	 * @internal
+	 */
+	onChange(value: SelectionStateValue<T, Multiple>) {
+		if (!this.#props.onChange) return;
+		this.#props.onChange(value);
 	}
 
 	/**
@@ -279,7 +280,8 @@ export class SelectionState<T, Multiple extends _multiple_extends = _multiple_de
 			if (set.has(item)) {
 				set.delete(item);
 			} else {
-				this.add(item);
+				if (!this.isMultiple) set.clear();
+				set.add(item);
 			}
 		});
 	}

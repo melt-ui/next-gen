@@ -16,7 +16,14 @@
 		"build:docs": "pnpm install && pnpm --filter melt build && pnpm --filter @melt-ui/docs build",
 		"release": "changeset publish"
 	},
-	"keywords": [],
+	"keywords": [
+		"svelte",
+		"UI",
+		"melt",
+		"headless",
+		"component",
+		"library"
+	],
 	"author": "",
 	"license": "MIT",
 	"type": "module",

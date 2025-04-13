@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Popover as Builder, type PopoverProps } from "../builders/Popover.svelte";
+	import { getters } from "$lib/utils/getters.svelte.js";
 	import { type Snippet } from "svelte";
+	import { Popover as Builder, type PopoverProps } from "../builders/Popover.svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "$lib/builders";
 
 	type Props = ComponentProps<PopoverProps> & {
 		children: Snippet<[Builder]>;

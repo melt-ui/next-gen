@@ -1,6 +1,7 @@
 import type { MaybeGetter, MaybeMultiple } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
+import { areFilesEqual } from "$lib/utils/file";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { SelectionState } from "$lib/utils/selection-state.svelte";
 import { watch } from "runed";
@@ -46,6 +47,12 @@ export type FileUploadProps<Multiple extends boolean = false> = {
 	maxSize?: MaybeGetter<number | undefined>;
 
 	/**
+	 * Whether the file upload is disabled
+	 * @default false
+	 */
+	disabled?: MaybeGetter<boolean | undefined>;
+
+	/**
 	 * Custom validate fn. Will be called together with the original validation,
 	 * which takes into account the `accept` and `maxSize` props.
 	 */
@@ -60,6 +67,14 @@ export type FileUploadProps<Multiple extends boolean = false> = {
 	 * Callback fired when a file is accepted
 	 */
 	onAccept?: (file: File) => void;
+
+	/**
+	 * If true, checks the files contents to avoid duplicate.
+	 * It's performance is not tested in large files, so by default its set to false.
+	 *
+	 * @default false
+	 */
+	avoidDuplicates?: MaybeGetter<boolean | undefined>;
 };
 
 export class FileUpload<Multiple extends boolean = false> {
@@ -67,6 +82,8 @@ export class FileUpload<Multiple extends boolean = false> {
 	readonly multiple = $derived(extract(this.#props.multiple, false as Multiple)) as Multiple;
 	readonly accept = $derived(extract(this.#props.accept, undefined));
 	readonly maxSize = $derived(extract(this.#props.maxSize, undefined));
+	readonly disabled = $derived(extract(this.#props.disabled, false));
+	readonly avoidDuplicates = $derived(extract(this.#props.avoidDuplicates, false));
 
 	/* State */
 	#isDragging = $state(false);
@@ -115,13 +132,22 @@ export class FileUpload<Multiple extends boolean = false> {
 		this.#selected.delete(file);
 	}
 
-	#handleFiles = (files: FileList | null) => {
+	async has(file: File) {
+		const files = this.#selected.toArray();
+		const promises = files.map((f) => areFilesEqual(f, file));
+		const results = await Promise.all(promises);
+		return results.some(Boolean);
+	}
+
+	#handleFiles = async (files: FileList | null) => {
 		if (!files) return;
 
 		const fileArray = Array.from(files);
 		const validFiles: File[] = [];
 
 		for (const file of fileArray) {
+			if (this.avoidDuplicates && (await this.has(file))) continue;
+
 			// Check file type if accept is specified
 			if (this.accept) {
 				const acceptTypes = this.accept.split(",").map((t) => t.trim());
@@ -189,13 +215,16 @@ export class FileUpload<Multiple extends boolean = false> {
 		return {
 			[dataAttrs.dropzone]: "",
 			"data-dragging": dataAttr(this.#isDragging),
+			"data-disabled": dataAttr(this.disabled),
 			ondragenter: (e: DragEvent) => {
+				if (this.disabled) return;
 				e.preventDefault();
 				if (!this.#isDragging) {
 					this.#isDragging = true;
 				}
 			},
 			ondragleave: (e: DragEvent) => {
+				if (this.disabled) return;
 				e.preventDefault();
 				// Check if we're actually leaving the dropzone
 				const relatedTarget = e.relatedTarget as Node | null;
@@ -208,9 +237,11 @@ export class FileUpload<Multiple extends boolean = false> {
 				}
 			},
 			ondragover: (e: DragEvent) => {
+				if (this.disabled) return;
 				e.preventDefault();
 			},
 			ondrop: (e: DragEvent) => {
+				if (this.disabled) return;
 				e.preventDefault();
 				this.#isDragging = false;
 				if (e.dataTransfer?.files) {
@@ -218,6 +249,7 @@ export class FileUpload<Multiple extends boolean = false> {
 				}
 			},
 			onclick: () => {
+				if (this.disabled) return;
 				const input = document.getElementById(this.#ids.input) as HTMLInputElement;
 				if (input) {
 					input.click();
@@ -229,12 +261,12 @@ export class FileUpload<Multiple extends boolean = false> {
 	/** The hidden file input element. */
 	get input() {
 		watch(
-			() => this.#selected,
-			(s) => {
+			() => $state.snapshot(this.#selected.toArray()),
+			() => {
 				const input = document.getElementById(this.#ids.input) as HTMLInputElement;
 				if (!input) return;
 
-				const set = s.toSet();
+				const set = this.#selected.toSet();
 				const dt = new DataTransfer();
 				for (const file of set) {
 					dt.items.add(file);
@@ -251,9 +283,13 @@ export class FileUpload<Multiple extends boolean = false> {
 			accept: this.accept,
 			multiple: this.multiple,
 			style: "display: none;",
+			disabled: this.disabled,
 			onchange: (e: Event) => {
+				if (this.disabled) return;
 				const input = e.target as HTMLInputElement;
-				this.#handleFiles(input.files);
+				const files = input.files;
+				input.files = null;
+				this.#handleFiles(files);
 			},
 		} as const;
 	}
@@ -261,7 +297,9 @@ export class FileUpload<Multiple extends boolean = false> {
 	/** An optional trigger element, which can be used to open the file picker. */
 	get trigger() {
 		return {
+			"data-disabled": dataAttr(this.disabled),
 			onclick: () => {
+				if (this.disabled) return;
 				const input = document.getElementById(this.#ids.input) as HTMLInputElement;
 				if (input) {
 					input.click();

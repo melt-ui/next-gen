@@ -10,18 +10,23 @@ import {
 	type MaybeMultiple,
 	type OnMultipleChange,
 } from "$lib/utils/selection-state.svelte";
+import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
 import { tick } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
-import { Popover, type PopoverProps } from "./Popover.svelte";
-import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
+import { BasePopover, type PopoverProps } from "./Popover.svelte";
+import { findNext, findPrev } from "$lib/utils/array";
+import { Synced } from "$lib/Synced.svelte";
 
-const { dataAttrs, dataSelectors } = createBuilderMetadata("select", [
+const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("select", [
 	"trigger",
 	"content",
 	"option",
 ]);
 
-export type SelectProps<T extends string, Multiple extends boolean = false> = PopoverProps & {
+export type SelectProps<T extends string, Multiple extends boolean = false> = Omit<
+	PopoverProps,
+	"sameWidth"
+> & {
 	/**
 	 * If `true`, multiple options can be selected at the same time.
 	 *
@@ -47,20 +52,49 @@ export type SelectProps<T extends string, Multiple extends boolean = false> = Po
 	onValueChange?: OnMultipleChange<T, Multiple>;
 
 	/**
+	 * The currently highlighted value.
+	 */
+	highlighted?: MaybeGetter<T | null | undefined>;
+
+	/**
+	 * Called when the highlighted value changes.
+	 */
+	onHighlightChange?: (highlighted: T | null) => void;
+
+	/**
 	 * How many time (in ms) the typeahead string is held before it is cleared
 	 * @default 500
 	 */
 	typeaheadTimeout?: MaybeGetter<number | undefined>;
+
+	/**
+	 * If the content should have the same width as the trigger
+	 *
+	 * @default true
+	 */
+	sameWidth?: MaybeGetter<boolean | undefined>;
+
+	/**
+	 * Determines behavior when scrolling items into view.
+	 * Set to null to disable auto-scrolling.
+	 *
+	 * @default "nearest"
+	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block
+	 */
+	scrollAlignment?: MaybeGetter<"nearest" | "center" | null | undefined>;
 };
 
-export class Select<T extends string, Multiple extends boolean = false> extends Popover {
+export class Select<T extends string, Multiple extends boolean = false> extends BasePopover {
 	/* Props */
 	#props!: SelectProps<T, Multiple>;
+	multiple = $derived(extract(this.#props.multiple, false as Multiple));
+	scrollAlignment = $derived(extract(this.#props.scrollAlignment, "nearest"));
 
 	/* State */
 	#value!: SelectionState<T, Multiple>;
-	multiple = $derived(extract(this.#props.multiple, false as Multiple));
-	highlighted: T | null = $state(null);
+	#highlighted: Synced<T | null>;
+
+	declare ids: ReturnType<typeof createIds> & BasePopover["ids"];
 
 	readonly typeaheadTimeout = $derived(extract(this.#props.typeaheadTimeout, 500));
 	readonly typeahead = $derived(
@@ -74,6 +108,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 							...acc,
 							{
 								value: curr.dataset.value as T,
+								typeahead: curr.dataset.typeahead,
 								current: curr.dataset.value === this.highlighted,
 							},
 						];
@@ -86,6 +121,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 
 	constructor(props: SelectProps<T, Multiple> = {}) {
 		super({
+			sameWidth: true,
 			...props,
 			onOpenChange: async (open) => {
 				props.onOpenChange?.(open);
@@ -111,8 +147,23 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		this.#value = new SelectionState({
 			value: props.value,
 			onChange: props.onValueChange,
-			multiple: this.multiple,
+			multiple: props.multiple,
 		});
+
+		this.#highlighted = new Synced({
+			value: props.highlighted,
+			onChange: props.onHighlightChange,
+			defaultValue: null,
+		});
+
+		const oldIds = this.ids;
+		const newIds = createIds();
+		this.ids = {
+			...oldIds,
+			trigger: oldIds.invoker,
+			content: oldIds.popover,
+			option: newIds.option,
+		};
 	}
 
 	get value() {
@@ -123,18 +174,37 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		this.#value.current = value;
 	}
 
-	#select(value: T) {
-		this.#value.toggle(value);
-		if (this.multiple) return;
+	get highlighted() {
+		return this.#highlighted.current;
+	}
+
+	set highlighted(v) {
+		this.#highlighted.current = v;
+	}
+
+	get valueAsString() {
+		return this.#value.toArray().join(", ");
+	}
+
+	isSelected = (value: T) => {
+		return this.#value.has(value);
+	};
+
+	select = (value: T) => {
+		if (this.multiple) {
+			this.#value.toggle(value);
+			return;
+		}
+		this.#value.add(value);
 
 		this.open = false;
 		tick().then(() => {
 			document.getElementById(this.ids.trigger)?.focus();
 		});
-	}
+	};
 
 	get trigger() {
-		return Object.assign(super.trigger, {
+		return Object.assign(super.getInvoker(), {
 			[dataAttrs.trigger]: "",
 			role: "combobox",
 			"aria-expanded": this.open,
@@ -165,7 +235,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 	}
 
 	get content() {
-		return Object.assign(super.content, {
+		return Object.assign(super.getPopover(), {
 			[dataAttrs.content]: "",
 			role: "listbox",
 			"aria-expanded": this.open,
@@ -203,7 +273,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 					case kbdSubset.SPACE:
 					case kbdSubset.ENTER: {
 						if (!this.highlighted) break;
-						this.#select(this.highlighted);
+						this.select(this.highlighted);
 						break;
 					}
 					case kbdSubset.ESCAPE: {
@@ -216,6 +286,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 					default: {
 						if (!letterRegex.test(e.key)) break;
 						e.preventDefault();
+						e.stopPropagation();
 						const next = this.typeahead(e.key);
 						if (next) this.highlighted = next.value;
 					}
@@ -228,19 +299,20 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		return `${this.ids.content}-option-${dataAttr(value)}`;
 	}
 
-	getOption(value: T) {
+	getOption(value: T, options?: { typeahead: string }) {
 		return {
 			[dataAttrs.option]: "",
 			"data-value": dataAttr(value),
+			"data-typeahead": dataAttr(options?.typeahead),
 			"aria-hidden": this.open ? undefined : true,
 			"aria-selected": this.#value.has(value),
-			"data-highlighted": this.highlighted === value,
+			"data-highlighted": dataAttr(this.highlighted === value),
 			role: "option",
 			onmouseover: () => {
 				this.highlighted = value;
 			},
 			onclick: () => {
-				this.#select(value);
+				this.select(value);
 			},
 		} as const satisfies HTMLAttributes<HTMLDivElement>;
 	}
@@ -255,19 +327,21 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 	#highlight(el: HTMLElement) {
 		if (!el.dataset.value) return;
 		this.highlighted = el.dataset.value as T;
+
+		if (this.scrollAlignment !== null) {
+			el.scrollIntoView({ block: this.scrollAlignment });
+		}
 	}
 
 	#highlightNext() {
 		const options = this.#getOptionsEls();
-		const current = options.find((o) => o.dataset.value === this.highlighted);
-		const next = current?.nextElementSibling ?? options[0];
+		const next = findNext(options, (o) => o.dataset.value === this.highlighted);
 		if (isHtmlElement(next)) this.#highlight(next);
 	}
 
 	#highlightPrev() {
 		const options = this.#getOptionsEls();
-		const current = options.find((o) => o.dataset.value === this.highlighted);
-		const prev = current?.previousElementSibling ?? options.at(-1);
+		const prev = findPrev(options, (o) => o.dataset.value === this.highlighted);
 		if (isHtmlElement(prev)) this.#highlight(prev);
 	}
 

@@ -1,8 +1,8 @@
 <script lang="ts" generics="Multiple extends boolean">
-	import { FileUpload, type FileUploadProps } from "../builders/FileUpload.svelte";
+	import { getters } from "$lib/utils/getters.svelte.js";
 	import { type Snippet } from "svelte";
+	import { FileUpload, type FileUploadProps } from "../builders/FileUpload.svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "$lib/builders";
 
 	type Props = ComponentProps<FileUploadProps<Multiple>> & {
 		children: Snippet<[FileUpload<Multiple>]>;

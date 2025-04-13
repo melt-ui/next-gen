@@ -1,8 +1,12 @@
 <script lang="ts">
-	import { Avatar as Builder, type AvatarProps, type ImageLoadingStatus } from "../builders/Avatar.svelte";
+	import { getters } from "$lib/utils/getters.svelte.js";
 	import { type Snippet } from "svelte";
+	import {
+		Avatar as Builder,
+		type AvatarProps,
+		type ImageLoadingStatus,
+	} from "../builders/Avatar.svelte";
 	import type { ComponentProps } from "../types";
-	import { getters } from "$lib/builders";
 
 	type Props = ComponentProps<AvatarProps> & {
 		children: Snippet<[Builder]>;

@@ -42,7 +42,10 @@ Things I want:
 <button {...popover.trigger}>
 	Click me to open the Popover
 </button>
-<div {...popover.content}>Content</div>
+<div {...popover.content}>
+	<div {...popover.arrow}></div>
+	Content
+</div>
 ```
 	</TabItem>
 
@@ -63,6 +66,10 @@ Things I want:
 ```
 	</TabItem>
 </Tabs>
+
+### Customizing floating elements
+
+Floating elements use [Floating UI](https://floating-ui.com/) under the hood. To this end, we expose a `floatingConfig` option, which can be used to control the underlying [computePosition](https://floating-ui.com/docs/computePosition) function, its middlewares, and the resulting styling that is applied.
 
 
 ## API Reference
