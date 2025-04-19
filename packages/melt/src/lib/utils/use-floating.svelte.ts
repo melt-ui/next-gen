@@ -1,25 +1,24 @@
 import type { MaybeGetter } from "$lib/types";
 import {
 	arrow,
-	offset,
-	flip,
-	shift,
-	type ComputePositionConfig,
-	computePosition,
 	autoUpdate,
-	type Placement,
-	type VirtualElement,
-	type ShiftOptions,
-	type FlipOptions,
-	type ArrowOptions,
-	type OffsetOptions,
+	computePosition,
+	flip,
+	offset,
+	shift,
 	size,
+	type ArrowOptions,
+	type ComputePositionConfig,
 	type ComputePositionReturn,
+	type FlipOptions,
+	type OffsetOptions,
+	type Placement,
+	type ShiftOptions,
+	type VirtualElement,
 } from "@floating-ui/dom";
+import { extract } from "./extract";
 import { isFunction, isHtmlElement } from "./is";
 import { deepMerge } from "./merge";
-import { extract } from "./extract";
-import { getters } from "./getters.svelte";
 
 const ARROW_TRANSFORM = {
 	bottom: "rotate(45deg)",
@@ -52,9 +51,12 @@ export type UseFloatingConfig = {
 	 *
 	 * This will override default behaviour! If you want to add
 	 * functionality while keeping the original intact, just call
-	 * `floatingApply` and `arrowApply` respectively.
+	 * the `floatingApply` and `arrowApply` functions present in
+	 * the args respectively.
+	 *
+	 * When passing in null, nothing will happen.
 	 */
-	onCompute?: OnCompute;
+	onCompute?: OnCompute | null;
 };
 
 /** All the parameters UseFloating returns */
@@ -158,7 +160,7 @@ export function useFloating(args: UseFloatingArgs) {
 
 				if (isFunction(config.onCompute)) {
 					config.onCompute({ ...returned, arrowApply, floatingApply });
-				} else {
+				} else if (config.onCompute === undefined) {
 					floatingApply();
 					arrowApply();
 				}

@@ -57,7 +57,7 @@
 	</button>
 
 	<div {...tooltip.content} class="rounded-xl bg-white p-0 shadow-xl dark:bg-gray-800">
-		<div {...tooltip.arrow} class="rounded-tl size-2"></div>
+		<div {...tooltip.arrow} class="size-2 rounded-tl"></div>
 		<p class="px-4 py-1 text-gray-700 dark:text-white">Let us cook!</p>
 	</div>
 </Preview>

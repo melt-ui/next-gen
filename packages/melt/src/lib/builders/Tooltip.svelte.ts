@@ -1,14 +1,19 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
-import { dataAttr } from "$lib/utils/attribute";
+import { dataAttr, styleAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
 import { isPointerInGraceArea } from "$lib/utils/pointer";
 import { computeConvexHull, getPointsFromEl } from "$lib/utils/polygon";
 import { autoOpenPopover, safelyHidePopover } from "$lib/utils/popover.js";
-import { useFloating, type UseFloatingArgs } from "$lib/utils/use-floating.svelte";
-import type { ComputePositionReturn } from "@floating-ui/dom";
+import {
+	useFloating,
+	type UseFloatingArgs,
+	type UseFloatingConfig,
+} from "$lib/utils/use-floating.svelte";
+import type { ComputePositionReturn, ElementRects } from "@floating-ui/dom";
+import { dequal } from "dequal";
 import { useEventListener, watch } from "runed";
 import type { HTMLAttributes } from "svelte/elements";
 import { on } from "svelte/events";
@@ -82,6 +87,7 @@ export type TooltipProps = {
 
 export class Tooltip {
 	#ids = createIds();
+	invokerRect = $state<ElementRects["reference"]>();
 
 	/** Props */
 	#props!: TooltipProps;
@@ -90,7 +96,28 @@ export class Tooltip {
 	closeDelay = $derived(extract(this.#props.closeDelay, 0));
 	disableHoverableContent = $derived(extract(this.#props.disableHoverableContent, false));
 	forceVisible = $derived(extract(this.#props.forceVisible, false));
-	floatingConfig = $derived(extract(this.#props.floatingConfig));
+	floatingConfig = $derived.by(() => {
+		const config = extract(this.#props.floatingConfig, {} satisfies UseFloatingConfig);
+
+		config.computePosition = {
+			...config.computePosition,
+			middleware: [
+				...(config.computePosition?.middleware ?? []),
+				{
+					name: "grabInvokerRect",
+					fn: ({ rects }) => {
+						const prev = $state.snapshot(this.invokerRect);
+						const curr = rects.reference;
+						if (dequal(prev, curr)) return {};
+						this.invokerRect = rects.reference;
+						return {};
+					},
+				},
+			],
+		};
+
+		return config;
+	});
 
 	/** State */
 	isVisible = $derived(this.open || this.forceVisible);
@@ -228,6 +255,12 @@ export class Tooltip {
 				}
 				this.open = false;
 			},
+			style: styleAttr({
+				"--melt-invoker-width": `${this.invokerRect?.width ?? 0}px`,
+				"--melt-invoker-height": `${this.invokerRect?.height ?? 0}px`,
+				"--melt-invoker-x": `${this.invokerRect?.x ?? 0}px`,
+				"--melt-invoker-y": `${this.invokerRect?.y ?? 0}px`,
+			}),
 		};
 	}
 
@@ -350,7 +383,6 @@ export class Tooltip {
 			popover: "manual",
 			role: "tooltip",
 			tabindex: -1,
-			style: `overflow: visible;`,
 			inert: !this.open,
 			"data-open": dataAttr(this.open),
 			onpointerenter: () => {
@@ -362,6 +394,7 @@ export class Tooltip {
 			},
 			onpointerdown: () => this.#openTooltip("pointer"),
 			...this.#sharedProps,
+			style: this.#sharedProps.style + `overflow: visible;`,
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 

@@ -1,19 +1,19 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
-import { dataAttr } from "$lib/utils/attribute";
+import { dataAttr, styleAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isFunction, isHtmlElement } from "$lib/utils/is";
-import { deepMerge } from "$lib/utils/merge";
 import { autoOpenPopover, safelyHidePopover } from "$lib/utils/popover";
 import {
 	useFloating,
 	type UseFloatingArgs,
 	type UseFloatingConfig,
 } from "$lib/utils/use-floating.svelte";
+import type { ElementRects } from "@floating-ui/dom";
+import { dequal } from "dequal";
 import { nanoid } from "nanoid";
 import { useEventListener } from "runed";
-import { tick } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
 
 const { dataAttrs, dataSelectors } = createBuilderMetadata("popover", [
@@ -86,6 +86,7 @@ export type PopoverProps = {
 
 export class BasePopover {
 	ids = $state({ invoker: nanoid(), popover: nanoid() });
+	invokerRect = $state<ElementRects["reference"]>();
 
 	/* Props */
 	#props!: PopoverProps;
@@ -95,9 +96,30 @@ export class BasePopover {
 	closeOnOutsideClick = $derived(extract(this.#props.closeOnOutsideClick, true));
 	floatingConfig = $derived.by(() => {
 		const config = extract(this.#props.floatingConfig, {} satisfies UseFloatingConfig);
+
 		const sameWidth = extract(this.#props.sameWidth);
-		const merged = deepMerge(config, sameWidth !== undefined ? { sameWidth } : {});
-		return merged;
+		if (sameWidth !== undefined) {
+			config.sameWidth = sameWidth;
+		}
+
+		config.computePosition = {
+			...config.computePosition,
+			middleware: [
+				...(config.computePosition?.middleware ?? []),
+				{
+					name: "grabInvokerRect",
+					fn: ({ rects }) => {
+						const prev = $state.snapshot(this.invokerRect);
+						const curr = rects.reference;
+						if (dequal(prev, curr)) return {};
+						this.invokerRect = rects.reference;
+						return {};
+					},
+				},
+			],
+		};
+
+		return config;
 	});
 
 	/* State */
@@ -167,6 +189,12 @@ export class BasePopover {
 
 				this.open = false;
 			},
+			style: styleAttr({
+				"--melt-invoker-width": `${this.invokerRect?.width ?? 0}px`,
+				"--melt-invoker-height": `${this.invokerRect?.height ?? 0}px`,
+				"--melt-invoker-x": `${this.invokerRect?.x ?? 0}px`,
+				"--melt-invoker-y": `${this.invokerRect?.y ?? 0}px`,
+			}),
 		} satisfies HTMLAttributes<HTMLElement>;
 	}
 

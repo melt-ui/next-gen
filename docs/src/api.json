@@ -241,6 +241,11 @@
     "methods": [],
     "properties": [
       {
+        "name": "invokerRect",
+        "type": "{ x: number; y: number; width: number; height: number } | undefined",
+        "description": ""
+      },
+      {
         "name": "closeOnPointerDown",
         "type": "boolean",
         "description": ""
@@ -267,7 +272,7 @@
       },
       {
         "name": "floatingConfig",
-        "type": "UseFloatingConfig | undefined",
+        "type": "UseFloatingConfig",
         "description": ""
       },
       {
@@ -287,12 +292,12 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-trigger\": \"\"\n  readonly id: string\n  readonly \"aria-describedby\": string\n  readonly \"data-open\": \"\" | undefined\n  readonly onpointerdown: () => void\n  readonly onpointerenter: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onpointermove: () => void\n  readonly onpointerleave: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}",
+        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}`\n  readonly \"data-melt-tooltip-trigger\": \"\"\n  readonly id: string\n  readonly \"aria-describedby\": string\n  readonly \"data-open\": \"\" | undefined\n  readonly onpointerdown: () => void\n  readonly onpointerenter: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onpointermove: () => void\n  readonly onpointerleave: (\n    e: PointerEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n}",
         "description": ""
       },
       {
         "name": "content",
-        "type": "{\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-content\": \"\"\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly role: \"tooltip\"\n  readonly tabindex: -1\n  readonly style: \"overflow: visible;\"\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n  readonly onpointerenter: () => void\n  readonly onpointerleave: () => void\n  readonly onpointerdown: () => void\n}",
+        "type": "{\n  readonly style: string\n  readonly onfocusout: () => Promise<void>\n  readonly \"data-melt-tooltip-content\": \"\"\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly role: \"tooltip\"\n  readonly tabindex: -1\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n  readonly onpointerenter: () => void\n  readonly onpointerleave: () => void\n  readonly onpointerdown: () => void\n}",
         "description": ""
       },
       {
@@ -752,12 +757,12 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n} & {\n  \"data-melt-select-trigger\": string\n  role: string\n  \"aria-expanded\": boolean\n  \"aria-controls\": string\n  \"aria-owns\": string\n  onkeydown: (e: KeyboardEvent) => void\n}",
+        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}`\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n} & {\n  \"data-melt-select-trigger\": string\n  role: string\n  \"aria-expanded\": boolean\n  \"aria-controls\": string\n  \"aria-owns\": string\n  onkeydown: (e: KeyboardEvent) => void\n}",
         "description": ""
       },
       {
         "name": "content",
-        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly tabindex: -1\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n} & {\n  readonly \"data-melt-select-content\": \"\"\n  readonly role: \"listbox\"\n  readonly \"aria-expanded\": boolean\n  readonly \"aria-activedescendant\": string | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n}",
+        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}`\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly tabindex: -1\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n} & {\n  readonly \"data-melt-select-content\": \"\"\n  readonly role: \"listbox\"\n  readonly \"aria-expanded\": boolean\n  readonly \"aria-activedescendant\": string | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n}",
         "description": ""
       }
     ],
@@ -987,12 +992,12 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n} & { \"data-melt-popover-trigger\": string }",
+        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}`\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n} & { \"data-melt-popover-trigger\": string }",
         "description": "The trigger that toggles the value."
       },
       {
         "name": "content",
-        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly tabindex: -1\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n} & { \"data-melt-popover-content\": string }",
+        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}`\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly tabindex: -1\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n} & { \"data-melt-popover-content\": string }",
         "description": ""
       }
     ],
@@ -1452,17 +1457,17 @@
       },
       {
         "name": "input",
-        "type": "{\n  readonly \"data-melt-combobox-input\": \"\"\n  readonly id: string\n  readonly role: \"combobox\"\n  readonly \"aria-expanded\": boolean\n  readonly \"aria-controls\": string\n  readonly \"aria-owns\": string\n  readonly onclick: undefined\n  readonly value: string\n  readonly oninput: (e: Event) => void\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly popovertarget: string\n}",
+        "type": "{\n  readonly \"data-melt-combobox-input\": \"\"\n  readonly id: string\n  readonly role: \"combobox\"\n  readonly \"aria-expanded\": boolean\n  readonly \"aria-controls\": string\n  readonly \"aria-owns\": string\n  readonly onclick: undefined\n  readonly value: string\n  readonly oninput: (e: Event) => void\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}`\n  readonly popovertarget: string\n}",
         "description": ""
       },
       {
         "name": "trigger",
-        "type": "{\n  onfocus: (event: FocusEvent) => void\n  onfocusout: (event: FocusEvent) => Promise<void>\n  \"data-melt-combobox-trigger\": string\n  id: string\n  onclick: () => void\n}",
+        "type": "{\n  onfocus: (event: FocusEvent) => void\n  onfocusout: (event: FocusEvent) => Promise<void>\n  style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}`\n  \"data-melt-combobox-trigger\": string\n  id: string\n  onclick: () => void\n}",
         "description": ""
       },
       {
         "name": "content",
-        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly tabindex: -1\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n} & {\n  readonly \"data-melt-combobox-content\": \"\"\n  readonly role: \"listbox\"\n  readonly \"aria-expanded\": boolean\n  readonly \"aria-activedescendant\": string | undefined\n}",
+        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}`\n  readonly id: string\n  readonly popover: \"manual\"\n  readonly ontoggle: (\n    e: ToggleEvent & { currentTarget: EventTarget & HTMLElement },\n  ) => void\n  readonly tabindex: -1\n  readonly inert: boolean\n  readonly \"data-open\": \"\" | undefined\n} & {\n  readonly \"data-melt-combobox-content\": \"\"\n  readonly role: \"listbox\"\n  readonly \"aria-expanded\": boolean\n  readonly \"aria-activedescendant\": string | undefined\n}",
         "description": ""
       }
     ],

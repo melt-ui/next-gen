@@ -60,7 +60,7 @@ export class Progress {
 			[dataIds.root]: "",
 			value: this.#value.current,
 			max: this.max,
-			role: "meter",
+			role: "progressbar",
 			"aria-valuemin": 0,
 			"aria-valuemax": this.max,
 			"aria-valuenow": this.#value.current,
@@ -85,4 +85,3 @@ export class Progress {
 		};
 	}
 }
-
