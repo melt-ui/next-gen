@@ -1,5 +1,15 @@
 # melt
 
+## 0.30.0
+
+### Minor Changes
+
+- feat: add invoker rect css vars (closes #131) ([`6ed4e4b`](https://github.com/melt-ui/next-gen/commit/6ed4e4bdf70fa2bd3b066b60588625bc95bc633d))
+
+### Patch Changes
+
+- fix: change role of Progress from 'meter' to 'progressbar' ([`6ed4e4b`](https://github.com/melt-ui/next-gen/commit/6ed4e4bdf70fa2bd3b066b60588625bc95bc633d))
+
 ## 0.29.3
 
 ### Patch Changes
