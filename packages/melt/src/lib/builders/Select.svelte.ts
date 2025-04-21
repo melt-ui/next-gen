@@ -308,6 +308,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 			"aria-selected": this.#value.has(value),
 			"data-highlighted": dataAttr(this.highlighted === value),
 			role: "option",
+			tabindex: -1,
 			onmouseover: () => {
 				this.highlighted = value;
 			},

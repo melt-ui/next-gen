@@ -332,6 +332,7 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 			"aria-hidden": this.open ? undefined : true,
 			"aria-selected": this.#value.has(value),
 			"data-highlighted": dataAttr(this.highlighted === value),
+			tabindex: -1,
 			role: "option",
 			onmouseover: () => {
 				this.highlighted = value;
