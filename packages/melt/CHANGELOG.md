@@ -1,5 +1,11 @@
 # melt
 
+## 0.30.1
+
+### Patch Changes
+
+- fix: select content not always being focused ([`46cb901`](https://github.com/melt-ui/next-gen/commit/46cb901610789530294963aaee57bef9a80e61b3))
+
 ## 0.30.0
 
 ### Minor Changes
