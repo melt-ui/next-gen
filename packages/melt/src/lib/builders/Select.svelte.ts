@@ -140,6 +140,9 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 				const content = document.getElementById(this.ids.content);
 				if (!content) return;
 				content.focus();
+				tick().then(() => {
+					content.focus();
+				});
 			},
 		});
 
