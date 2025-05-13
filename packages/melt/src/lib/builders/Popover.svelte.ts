@@ -10,7 +10,7 @@ import {
 	type UseFloatingArgs,
 	type UseFloatingConfig,
 } from "$lib/utils/use-floating.svelte";
-import type { ElementRects } from "@floating-ui/dom";
+import { size, type ElementRects } from "@floating-ui/dom";
 import { dequal } from "dequal";
 import { nanoid } from "nanoid";
 import { useEventListener } from "runed";
@@ -87,6 +87,8 @@ export type PopoverProps = {
 export class BasePopover {
 	ids = $state({ invoker: nanoid(), popover: nanoid() });
 	invokerRect = $state<ElementRects["reference"]>();
+	availableWidth = $state<number>();
+	availableHeight = $state<number>();
 
 	/* Props */
 	#props!: PopoverProps;
@@ -106,6 +108,12 @@ export class BasePopover {
 			...config.computePosition,
 			middleware: [
 				...(config.computePosition?.middleware ?? []),
+				size({
+					apply: ({ availableWidth, availableHeight }) => {
+						this.availableWidth = availableWidth;
+						this.availableHeight = availableHeight;
+					},
+				}),
 				{
 					name: "grabInvokerRect",
 					fn: ({ rects }) => {
@@ -194,6 +202,8 @@ export class BasePopover {
 				"--melt-invoker-height": `${this.invokerRect?.height ?? 0}px`,
 				"--melt-invoker-x": `${this.invokerRect?.x ?? 0}px`,
 				"--melt-invoker-y": `${this.invokerRect?.y ?? 0}px`,
+				"--melt-popover-available-width": `${this.availableWidth ?? 0}px`,
+				"--melt-popover-available-height": `${this.availableHeight ?? 0}px`,
 			}),
 		} satisfies HTMLAttributes<HTMLElement>;
 	}
