@@ -1,5 +1,13 @@
 # melt
 
+## 0.32.0
+
+### Minor Changes
+
+- toast: add id arg to `addToast` (closes #128) ([`3fbcbb2`](https://github.com/melt-ui/next-gen/commit/3fbcbb28ddfcaf1b0ef26db60eca546c2dce8dde))
+
+- toaster: add more args to `updateToast` (closes #127) ([`9831c2c`](https://github.com/melt-ui/next-gen/commit/9831c2c90c1276d78c5709f2de3824446ba0019d))
+
 ## 0.31.0
 
 ### Minor Changes
