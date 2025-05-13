@@ -40,11 +40,34 @@ export type ToasterProps = {
 	hover?: MaybeGetter<"pause" | "pause-all" | null | undefined>;
 };
 
-export type AddToastProps<T = object> = {
+export type AddToastArgs<T = object> = {
 	/**
 	 * The id of the toast. If undefined, a random one will be generated
 	 */
 	id?: string;
+	/**
+	 * The delay in milliseconds before the toast closes. Set to 0 to disable.
+	 * If `undefined`, uses the `closeDelay` defined in the parent toaster.
+	 */
+	closeDelay?: number;
+
+	/**
+	 * The sensitivity of the toast for accessibility purposes.
+	 * If `undefined`, uses the `type` defined in the parent toaster.
+	 */
+	type?: "assertive" | "polite";
+
+	/**
+	 * The data passed to the toaster.
+	 */
+	data: T;
+};
+
+export type UpdateToastArgs<T = object> = {
+	/**
+	 * The id of the toast.
+	 */
+	id: string;
 	/**
 	 * The delay in milliseconds before the toast closes. Set to 0 to disable.
 	 * If `undefined`, uses the `closeDelay` defined in the parent toaster.
@@ -86,12 +109,12 @@ export class Toaster<T = object> {
 	/**
 	 * Adds a toast.
 	 */
-	addToast = (props: AddToastProps<T>) => {
+	addToast = (props: AddToastArgs<T>) => {
 		const propsWithDefaults = {
 			closeDelay: this.closeDelay,
 			type: this.type,
 			...props,
-		} satisfies AddToastProps<T>;
+		} satisfies AddToastArgs<T>;
 
 		const id = props.id ?? window.crypto.randomUUID();
 
@@ -122,11 +145,13 @@ export class Toaster<T = object> {
 	 * @param id The id of the toast.
 	 * @param data The updated data.
 	 */
-	updateToast = (id: string, data: T) => {
-		const toast = this.#toastsMap.get(id);
+	updateToast = (args: UpdateToastArgs<T>) => {
+		const toast = this.#toastsMap.get(args.id);
 		if (!toast) return;
 
-		toast.data = data;
+		toast.data = args.data;
+		if (typeof args.closeDelay === "number") toast.closeDelay = args.closeDelay;
+		if (typeof args.type === "string") toast.type = args.type;
 	};
 
 	/**
@@ -198,8 +223,8 @@ class Toast<T = object> {
 	readonly id = $derived(this.#props.id);
 	/** The original data you passed to the `addToast` function. */
 	data: T = $state() as T;
-	readonly closeDelay = $derived(this.#props.closeDelay);
-	readonly type = $derived(this.#props.type);
+	closeDelay = $derived(this.#props.closeDelay);
+	type = $derived(this.#props.type);
 
 	/** State */
 	ids = toastMeta.createIds();

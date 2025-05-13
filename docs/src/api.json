@@ -409,7 +409,7 @@
       },
       {
         "name": "addToast",
-        "type": "(props: AddToastProps<T>) => Toast<T>",
+        "type": "(props: AddToastArgs<T>) => Toast<T>",
         "description": "Adds a toast."
       },
       {
@@ -419,7 +419,7 @@
       },
       {
         "name": "updateToast",
-        "type": "(id: string, data: T) => void",
+        "type": "(args: UpdateToastArgs<T>) => void",
         "description": "Updates a toast's data.\n@param id The id of the toast.\n@param data The updated data."
       },
       {
