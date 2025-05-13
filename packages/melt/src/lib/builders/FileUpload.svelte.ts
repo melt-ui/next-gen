@@ -87,7 +87,7 @@ export class FileUpload<Multiple extends boolean = false> {
 
 	/* State */
 	#isDragging = $state(false);
-	#ids = createIds();
+	ids = $state(createIds());
 
 	#selected: SelectionState<File, Multiple>;
 
@@ -250,7 +250,7 @@ export class FileUpload<Multiple extends boolean = false> {
 			},
 			onclick: () => {
 				if (this.disabled) return;
-				const input = document.getElementById(this.#ids.input) as HTMLInputElement;
+				const input = document.getElementById(this.ids.input) as HTMLInputElement;
 				if (input) {
 					input.click();
 				}
@@ -263,7 +263,7 @@ export class FileUpload<Multiple extends boolean = false> {
 		watch(
 			() => $state.snapshot(this.#selected.toArray()),
 			() => {
-				const input = document.getElementById(this.#ids.input) as HTMLInputElement;
+				const input = document.getElementById(this.ids.input) as HTMLInputElement;
 				if (!input) return;
 
 				const set = this.#selected.toSet();
@@ -278,7 +278,7 @@ export class FileUpload<Multiple extends boolean = false> {
 
 		return {
 			[dataAttrs.input]: "",
-			id: this.#ids.input,
+			id: this.ids.input,
 			type: "file",
 			accept: this.accept,
 			multiple: this.multiple,
@@ -300,7 +300,7 @@ export class FileUpload<Multiple extends boolean = false> {
 			"data-disabled": dataAttr(this.disabled),
 			onclick: () => {
 				if (this.disabled) return;
-				const input = document.getElementById(this.#ids.input) as HTMLInputElement;
+				const input = document.getElementById(this.ids.input) as HTMLInputElement;
 				if (input) {
 					input.click();
 				}

@@ -58,7 +58,7 @@ export type RadioGroupProps = {
 };
 
 export class RadioGroup {
-	#ids = metadata.createIds();
+	ids = $state(metadata.createIds());
 
 	/* Props */
 	#props!: RadioGroupProps;
@@ -101,10 +101,10 @@ export class RadioGroup {
 		return {
 			...this.#sharedAttrs,
 			[metadata.dataAttrs["root"]]: "",
-			id: this.#ids.root,
+			id: this.ids.root,
 			role: "radiogroup",
 			"aria-required": this.required,
-			"aria-labelledby": this.#ids.label,
+			"aria-labelledby": this.ids.label,
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
@@ -112,8 +112,8 @@ export class RadioGroup {
 		return {
 			...this.#sharedAttrs,
 			[metadata.dataAttrs.label]: "",
-			id: this.#ids.label,
-			for: this.#ids.root,
+			id: this.ids.label,
+			for: this.ids.root,
 			onclick: (e) => {
 				if (this.disabled) return;
 
@@ -251,7 +251,7 @@ class RadioItem {
 
 				if (itemToFocus) {
 					itemToFocus.focus();
-					if (this.#group.selectWhenFocused) this.#group.select(itemToFocus.dataset.value!!);
+					if (this.#group.selectWhenFocused) this.#group.select(itemToFocus.dataset.value!);
 				}
 			},
 		} as const satisfies HTMLAttributes<HTMLElement>;

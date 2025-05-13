@@ -69,7 +69,7 @@ export class Accordion<Multiple extends boolean = false> {
 
 	// State
 	#value: Selected<Multiple>;
-	#ids = createIds();
+	ids = $state(createIds());
 
 	constructor(props: AccordionProps<Multiple> = {}) {
 		this.#props = props;
@@ -94,7 +94,7 @@ export class Accordion<Multiple extends boolean = false> {
 	get root() {
 		return {
 			[dataAttrs.root]: "",
-			id: this.#ids.root,
+			id: this.ids.root,
 		};
 	}
 
@@ -107,7 +107,7 @@ export class Accordion<Multiple extends boolean = false> {
 		return new AccordionItem({
 			accordion: this,
 			item,
-			rootId: this.#ids.root,
+			rootId: this.ids.root,
 		});
 	}
 

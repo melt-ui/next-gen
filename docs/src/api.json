@@ -241,6 +241,11 @@
     "methods": [],
     "properties": [
       {
+        "name": "ids",
+        "type": "{ trigger: string; content: string; arrow: string }",
+        "description": ""
+      },
+      {
         "name": "invokerRect",
         "type": "{ x: number; y: number; width: number; height: number } | undefined",
         "description": ""
@@ -839,6 +844,11 @@
     ],
     "properties": [
       {
+        "name": "ids",
+        "type": "{\n  root: string\n  item: string\n  \"hidden-input\": string\n  label: string\n}",
+        "description": ""
+      },
+      {
         "name": "disabled",
         "type": "boolean",
         "description": ""
@@ -1245,6 +1255,11 @@
         "description": ""
       },
       {
+        "name": "ids",
+        "type": "{ input: string; dropzone: string }",
+        "description": ""
+      },
+      {
         "name": "isDragging",
         "type": "boolean",
         "description": ""
@@ -1502,6 +1517,11 @@
         "description": ""
       },
       {
+        "name": "ids",
+        "type": "{ trigger: string; content: string }",
+        "description": ""
+      },
+      {
         "name": "open",
         "type": "boolean",
         "description": "The open state of the collapsible."
@@ -1636,6 +1656,11 @@
       {
         "name": "disabled",
         "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "ids",
+        "type": "{\n  root: string\n  item: string\n  trigger: string\n  content: string\n  heading: string\n}",
         "description": ""
       },
       {

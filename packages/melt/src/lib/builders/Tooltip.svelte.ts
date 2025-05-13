@@ -86,7 +86,7 @@ export type TooltipProps = {
 };
 
 export class Tooltip {
-	#ids = createIds();
+	ids = $state(createIds());
 	invokerRect = $state<ElementRects["reference"]>();
 
 	/** Props */
@@ -132,8 +132,8 @@ export class Tooltip {
 	#floatingData = $state<ComputePositionReturn>();
 
 	get graceAreaPolygon() {
-		const contentEl = document.getElementById(this.#ids.content);
-		const triggerEl = document.getElementById(this.#ids.trigger);
+		const contentEl = document.getElementById(this.ids.content);
+		const triggerEl = document.getElementById(this.ids.trigger);
 		if (!contentEl || !triggerEl) {
 			return [];
 		}
@@ -183,8 +183,8 @@ export class Tooltip {
 			if (!this.open || typeof document === "undefined") return;
 
 			return on(document, "mousemove", (e) => {
-				const contentEl = document.getElementById(this.#ids.content);
-				const triggerEl = document.getElementById(this.#ids.trigger);
+				const contentEl = document.getElementById(this.ids.content);
+				const triggerEl = document.getElementById(this.ids.trigger);
 				if (!contentEl || !triggerEl) {
 					if (this.open) this.#closeTooltip();
 					return;
@@ -244,8 +244,8 @@ export class Tooltip {
 		return {
 			onfocusout: async () => {
 				await new Promise((r) => setTimeout(r)); // tick
-				const contentEl = document.getElementById(this.#ids.content);
-				const triggerEl = document.getElementById(this.#ids.trigger);
+				const contentEl = document.getElementById(this.ids.content);
+				const triggerEl = document.getElementById(this.ids.trigger);
 
 				if (
 					contentEl?.contains(document.activeElement) ||
@@ -266,7 +266,7 @@ export class Tooltip {
 
 	get trigger() {
 		$effect(() => {
-			const el = document.getElementById(this.#ids.content);
+			const el = document.getElementById(this.ids.content);
 			if (!isHtmlElement(el)) return;
 
 			return () => (this.#isPointerInsideTrigger = false);
@@ -274,8 +274,8 @@ export class Tooltip {
 
 		return {
 			[dataAttrs.trigger]: "",
-			id: this.#ids.trigger,
-			"aria-describedby": this.#ids.content,
+			id: this.ids.trigger,
+			"aria-describedby": this.ids.content,
 			"data-open": dataAttr(this.open),
 			onpointerdown: () => {
 				if (!this.closeOnPointerDown) return;
@@ -311,8 +311,8 @@ export class Tooltip {
 
 	get content() {
 		$effect(() => {
-			const triggerEl = document.getElementById(this.#ids.trigger);
-			const contentEl = document.getElementById(this.#ids.content);
+			const triggerEl = document.getElementById(this.ids.trigger);
+			const contentEl = document.getElementById(this.ids.content);
 
 			if (!triggerEl || !contentEl || !this.open) return;
 
@@ -335,8 +335,8 @@ export class Tooltip {
 		});
 
 		$effect(() => {
-			const triggerEl = document.getElementById(this.#ids.trigger);
-			const contentEl = document.getElementById(this.#ids.content);
+			const triggerEl = document.getElementById(this.ids.trigger);
+			const contentEl = document.getElementById(this.ids.content);
 
 			if (!triggerEl || !contentEl) return;
 
@@ -359,7 +359,7 @@ export class Tooltip {
 			() => document,
 			"keydown",
 			(e) => {
-				const el = document.getElementById(this.#ids.content);
+				const el = document.getElementById(this.ids.content);
 				if (e.key !== "Escape" || !this.open || !el) return;
 
 				e.preventDefault();
@@ -379,7 +379,7 @@ export class Tooltip {
 
 		return {
 			[dataAttrs.content]: "",
-			id: this.#ids.content,
+			id: this.ids.content,
 			popover: "manual",
 			role: "tooltip",
 			tabindex: -1,
@@ -401,7 +401,7 @@ export class Tooltip {
 	get arrow() {
 		return {
 			[dataAttrs.arrow]: "",
-			id: this.#ids.arrow,
+			id: this.ids.arrow,
 			"data-arrow": "",
 			"aria-hidden": true,
 			"data-open": dataAttr(this.open),
@@ -431,7 +431,7 @@ export class Tooltip {
 	}
 
 	#closeTooltip(isBlur?: boolean) {
-		const contentEl = document.getElementById(this.#ids.content);
+		const contentEl = document.getElementById(this.ids.content);
 		if (!isHtmlElement(contentEl)) return;
 
 		this.#stopOpening();
@@ -457,7 +457,7 @@ export class Tooltip {
 		const target = e.target;
 		if (!(target instanceof Element) && !(target instanceof Document)) return;
 
-		const triggerEl = document.getElementById(this.#ids.trigger);
+		const triggerEl = document.getElementById(this.ids.trigger);
 		if ((triggerEl && target.contains(triggerEl)) || this.open) {
 			this.#closeTooltip();
 		}
