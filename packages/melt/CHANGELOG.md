@@ -1,5 +1,11 @@
 # melt
 
+## 0.33.0
+
+### Minor Changes
+
+- feat: allow modifiying all ids (closes #135) ([`8833e57`](https://github.com/melt-ui/next-gen/commit/8833e574b74914c96e7b11d7a6b7043d2f2f95b2))
+
 ## 0.32.0
 
 ### Minor Changes
