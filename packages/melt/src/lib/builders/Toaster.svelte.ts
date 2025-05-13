@@ -42,6 +42,10 @@ export type ToasterProps = {
 
 export type AddToastProps<T = object> = {
 	/**
+	 * The id of the toast. If undefined, a random one will be generated
+	 */
+	id?: string;
+	/**
 	 * The delay in milliseconds before the toast closes. Set to 0 to disable.
 	 * If `undefined`, uses the `closeDelay` defined in the parent toaster.
 	 */
@@ -89,7 +93,7 @@ export class Toaster<T = object> {
 			...props,
 		} satisfies AddToastProps<T>;
 
-		const id = window.crypto.randomUUID();
+		const id = props.id ?? window.crypto.randomUUID();
 
 		const toast = new Toast({
 			toaster: this,
