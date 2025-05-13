@@ -1,5 +1,11 @@
 # melt
 
+## 0.31.0
+
+### Minor Changes
+
+- popover-based: add available dimensions to css vars ([`f5ab1aa`](https://github.com/melt-ui/next-gen/commit/f5ab1aae441499320f06bfe00d368b2b620b4224))
+
 ## 0.30.1
 
 ### Patch Changes
