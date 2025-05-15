@@ -313,6 +313,149 @@
     ],
     "propsAlt": "export type TooltipProps = {\n  /**\n   * If the Tooltip is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * If `true`, tooltip will close if trigger is pressed.\n   *\n   * @default true\n   */\n  closeOnPointerDown?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Tooltip open delay in milliseconds.\n   *\n   * @default 1000\n   */\n  openDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * Tooltip close delay in milliseconds.\n   *\n   * @default 0\n   */\n  closeDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * Config to be passed to `useFloating`\n   */\n  floatingConfig?: UseFloatingArgs[\"config\"];\n\n  /**\n   * If the popover visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If `true`, leaving trigger will close the tooltip.\n   *\n   * @default false\n   */\n  disableHoverableContent?: MaybeGetter<boolean | undefined>;\n};"
   },
+  "ToggleGroup": {
+    "constructorProps": [
+      {
+        "name": "type",
+        "type": "MaybeGetter<\"single\" | \"multiple\" | undefined>",
+        "description": "Whether the toggle(s) should allow multiple selection or just a single selection.\nIn 'single' mode, selecting one toggle will deselect any previously selected toggle.\nIn 'multiple' mode, toggles can be selected and deselected independently.",
+        "defaultValue": "\"single\"",
+        "optional": true
+      },
+      {
+        "name": "orientation",
+        "type": "MaybeGetter<\"horizontal\" | \"vertical\" | undefined>",
+        "description": "The orientation of the toggle group.",
+        "defaultValue": "\"horizontal\"",
+        "optional": true
+      },
+      {
+        "name": "disabled",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If `true`, prevents the user from interacting with the toggle group.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "loop",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If the the item navigation should loop when using arrow keys.",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
+        "name": "required",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If `true`, requires at least one option to be selected.\nIn single mode, when required=true, the user won't be able to deselect an option without selecting another.\nIn multiple mode, at least one option must be selected.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "value",
+        "type": "MaybeGetter<string | string[] | undefined>",
+        "description": "The controlled value of the toggle group.\nIf the type is 'single', it should be a string.\nIf the type is 'multiple', it should be an array of strings.",
+        "optional": true
+      },
+      {
+        "name": "onValueChange",
+        "type": "((value: string | string[]) => void) | undefined",
+        "description": "Called when the value changes.",
+        "optional": true
+      },
+      {
+        "name": "name",
+        "type": "MaybeGetter<string | undefined>",
+        "description": "Input name for the form hidden inputs.",
+        "optional": true
+      },
+      {
+        "name": "defaultItem",
+        "type": "MaybeGetter<string | undefined>",
+        "description": "The default item to be selected when the component is first rendered\nand required is true. This is only used if no value is provided.",
+        "optional": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "isSelected",
+        "type": "(itemValue: string) => boolean",
+        "description": ""
+      },
+      {
+        "name": "toggle",
+        "type": "(itemValue: string) => void",
+        "description": ""
+      },
+      {
+        "name": "getItem",
+        "type": "(item: string) => ToggleGroupItem",
+        "description": ""
+      }
+    ],
+    "properties": [
+      {
+        "name": "ids",
+        "type": "{\n  root: string\n  item: string\n  label: string\n  \"hidden-input\": string\n}",
+        "description": ""
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "orientation",
+        "type": "\"horizontal\" | \"vertical\"",
+        "description": ""
+      },
+      {
+        "name": "type",
+        "type": "\"single\" | \"multiple\"",
+        "description": ""
+      },
+      {
+        "name": "loop",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "description": ""
+      },
+      {
+        "name": "defaultItem",
+        "type": "string",
+        "description": ""
+      },
+      {
+        "name": "value",
+        "type": "string | string[]",
+        "description": ""
+      },
+      {
+        "name": "root",
+        "type": "{\n  readonly \"data-melt-toggle-group-root\": \"\"\n  readonly id: string\n  readonly role: \"group\"\n  readonly \"aria-labelledby\": string\n  readonly \"aria-required\": boolean\n  readonly \"data-required\": \"\" | undefined\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-disabled\": true | undefined\n}",
+        "description": ""
+      },
+      {
+        "name": "label",
+        "type": "{\n  readonly \"data-melt-toggle-group-label\": \"\"\n  readonly id: string\n  readonly for: string\n  readonly onclick: (\n    e: MouseEvent & { currentTarget: EventTarget & HTMLLabelElement },\n  ) => void\n  readonly \"data-orientation\": \"horizontal\" | \"vertical\"\n  readonly \"data-disabled\": true | undefined\n}",
+        "description": ""
+      },
+      {
+        "name": "hiddenInput",
+        "type": "| {\n      readonly \"data-melt-toggle-group-hidden-input\": \"\"\n      readonly type: \"hidden\"\n      readonly name: string\n      readonly value: string\n      readonly disabled: boolean\n      readonly required: boolean\n    }[]\n  | {\n      readonly \"data-melt-toggle-group-hidden-input\": \"\"\n      readonly type: \"hidden\"\n      readonly name: string\n      readonly value: string\n      readonly disabled: boolean\n      readonly required: boolean\n    }",
+        "description": ""
+      }
+    ],
+    "propsAlt": "export type ToggleGroupProps = {\n  /**\n   * Whether the toggle(s) should allow multiple selection or just a single selection.\n   * In 'single' mode, selecting one toggle will deselect any previously selected toggle.\n   * In 'multiple' mode, toggles can be selected and deselected independently.\n   *\n   * @default \"single\"\n   */\n  type?: MaybeGetter<\"single\" | \"multiple\" | undefined>;\n\n  /**\n   * The orientation of the toggle group.\n   *\n   * @default \"horizontal\"\n   */\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\n\n  /**\n   * If `true`, prevents the user from interacting with the toggle group.\n   *\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the the item navigation should loop when using arrow keys.\n   *\n   * @default true\n   */\n  loop?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If `true`, requires at least one option to be selected.\n   * In single mode, when required=true, the user won't be able to deselect an option without selecting another.\n   * In multiple mode, at least one option must be selected.\n   *\n   * @default false\n   */\n  required?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * The controlled value of the toggle group.\n   * If the type is 'single', it should be a string.\n   * If the type is 'multiple', it should be an array of strings.\n   */\n  value?: MaybeGetter<string | string[] | undefined>;\n\n  /**\n   * Called when the value changes.\n   */\n  onValueChange?: (value: string | string[]) => void;\n\n  /**\n   * Input name for the form hidden inputs.\n   */\n  name?: MaybeGetter<string | undefined>;\n\n  /**\n   * The default item to be selected when the component is first rendered\n   * and required is true. This is only used if no value is provided.\n   */\n  defaultItem?: MaybeGetter<string | undefined>;\n};"
+  },
   "Toggle": {
     "constructorProps": [
       {
@@ -845,7 +988,7 @@
     "properties": [
       {
         "name": "ids",
-        "type": "{\n  root: string\n  item: string\n  \"hidden-input\": string\n  label: string\n}",
+        "type": "{\n  root: string\n  item: string\n  label: string\n  \"hidden-input\": string\n}",
         "description": ""
       },
       {
@@ -1076,7 +1219,7 @@
       },
       {
         "name": "type",
-        "type": "MaybeGetter<\"alphanumeric\" | \"numeric\" | \"text\" | undefined>",
+        "type": "MaybeGetter<\"text\" | \"alphanumeric\" | \"numeric\" | undefined>",
         "description": "What characters the input accepts.",
         "defaultValue": "'text'",
         "optional": true
@@ -1113,7 +1256,7 @@
       },
       {
         "name": "type",
-        "type": "\"alphanumeric\" | \"numeric\" | \"text\"",
+        "type": "\"text\" | \"alphanumeric\" | \"numeric\"",
         "description": ""
       },
       {
@@ -1138,7 +1281,7 @@
       },
       {
         "name": "inputs",
-        "type": "{\n  readonly \"data-melt-pin-input-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"text\" | \"password\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly inputmode: \"numeric\" | \"text\"\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n  readonly onpaste: (\n    e: ClipboardEvent & { currentTarget: EventTarget & HTMLInputElement },\n  ) => void\n}[]",
+        "type": "{\n  readonly \"data-melt-pin-input-input\": \"\"\n  readonly placeholder: string | undefined\n  readonly disabled: true | undefined\n  readonly type: \"password\" | \"text\"\n  readonly \"data-filled\": \"\" | undefined\n  readonly tabindex: 0 | -1\n  readonly inputmode: \"text\" | \"numeric\"\n  readonly style: \"caret-color: transparent;\" | undefined\n  readonly onkeydown: (e: KeyboardEvent) => void\n  readonly onpointerdown: (e: Event) => void\n  readonly onpointerup: (e: Event) => void\n  readonly oninput: (e: Event) => void\n  readonly onfocus: () => void\n  readonly onblur: () => void\n  readonly onpaste: (\n    e: ClipboardEvent & { currentTarget: EventTarget & HTMLInputElement },\n  ) => void\n}[]",
         "description": "An array of props that should be spread to the input elements."
       }
     ],
