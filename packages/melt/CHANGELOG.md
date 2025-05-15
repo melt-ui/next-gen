@@ -1,5 +1,11 @@
 # melt
 
+## 0.34.0
+
+### Minor Changes
+
+- update svelte version ([`62d8920`](https://github.com/melt-ui/next-gen/commit/62d89201242e16d8fe85c5e0b6e1f5963446cf58))
+
 ## 0.33.0
 
 ### Minor Changes
