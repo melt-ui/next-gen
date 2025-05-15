@@ -383,9 +383,27 @@
         "description": "The behaviour when a toast is hovered.\nPass in `null` to disable.",
         "defaultValue": "'pause'",
         "optional": true
+      },
+      {
+        "name": "tabHidden",
+        "type": "MaybeGetter<\"pause-all\" | null | undefined>",
+        "description": "The behaviour when the user switches to another tab.\nPass in `null` to disable.",
+        "defaultValue": "'pause-all'",
+        "optional": true
       }
     ],
-    "methods": [],
+    "methods": [
+      {
+        "name": "pauseAll",
+        "type": "() => void",
+        "description": "Pauses all toasts."
+      },
+      {
+        "name": "resumeAll",
+        "type": "() => void",
+        "description": "Resumes all toasts countdowns."
+      }
+    ],
     "properties": [
       {
         "name": "ids",
@@ -405,6 +423,11 @@
       {
         "name": "hover",
         "type": "\"pause\" | \"pause-all\" | null",
+        "description": ""
+      },
+      {
+        "name": "tabHidden",
+        "type": "\"pause-all\" | null",
         "description": ""
       },
       {
@@ -433,7 +456,7 @@
         "description": "Spread attributes for the container of the toasts."
       }
     ],
-    "propsAlt": "export type ToasterProps = {\n  /**\n   * The delay in milliseconds before the toast closes. Set to 0 to disable.\n   * @default 5000\n   */\n  closeDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * The sensitivity of the toast for accessibility purposes.\n   * https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live\n   * @default 'polite'\n   */\n  type?: MaybeGetter<\"assertive\" | \"polite\" | undefined>;\n\n  /**\n   * The behaviour when a toast is hovered.\n   * Pass in `null` to disable.\n   *\n   * @default 'pause'\n   */\n  hover?: MaybeGetter<\"pause\" | \"pause-all\" | null | undefined>;\n};"
+    "propsAlt": "export type ToasterProps = {\n  /**\n   * The delay in milliseconds before the toast closes. Set to 0 to disable.\n   * @default 5000\n   */\n  closeDelay?: MaybeGetter<number | undefined>;\n\n  /**\n   * The sensitivity of the toast for accessibility purposes.\n   * https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live\n   * @default 'polite'\n   */\n  type?: MaybeGetter<\"assertive\" | \"polite\" | undefined>;\n\n  /**\n   * The behaviour when a toast is hovered.\n   * Pass in `null` to disable.\n   *\n   * @default 'pause'\n   */\n  hover?: MaybeGetter<\"pause\" | \"pause-all\" | null | undefined>;\n\n  /**\n   * The behaviour when the user switches to another tab.\n   * Pass in `null` to disable.\n   * \n   * @default 'pause-all'\n   */\n  tabHidden?: MaybeGetter<\"pause-all\" | null | undefined>;\n};"
   },
   "Tabs": {
     "constructorProps": [
