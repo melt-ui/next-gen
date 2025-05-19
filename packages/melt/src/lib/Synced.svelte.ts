@@ -2,16 +2,24 @@ import type { MaybeGetter } from "./types";
 import { extract } from "./utils/extract";
 import { isFunction } from "./utils/is";
 
-type SyncedArgs<T> =
-	| {
-			value: MaybeGetter<T>;
-			onChange?: (value: T) => void;
-	  }
-	| {
-			value: MaybeGetter<T | undefined>;
-			onChange?: (value: T) => void;
-			defaultValue: T;
-	  };
+type EqualityCheck<T> = boolean | ((prev: T, next: T) => boolean);
+
+type SyncedArgsBase<T> = {
+	onChange?: (value: T) => void;
+	/**
+	 * Optional equality check function. If this is set to true,
+	 * the `===` operator will be used.
+	 *
+	 * If it's a function and returns true, no changes will occur.
+	 */
+	equalityCheck?: EqualityCheck<T>;
+};
+
+type SyncedArgs<T> = SyncedArgsBase<T> &
+	(
+		| { value: MaybeGetter<T>; defaultValue?: never }
+		| { value: MaybeGetter<T | undefined>; defaultValue: T }
+	);
 
 /**
  * Setting `current` calls the `onChange` callback with the new value.
@@ -28,11 +36,13 @@ export class Synced<T> {
 	#valueArg: SyncedArgs<T>["value"];
 	#onChange?: SyncedArgs<T>["onChange"];
 	#defaultValue?: T;
+	#equalityCheck?: EqualityCheck<T>;
 
 	constructor({ value, onChange, ...args }: SyncedArgs<T>) {
 		this.#valueArg = value;
 		this.#onChange = onChange;
 		this.#defaultValue = "defaultValue" in args ? args?.defaultValue : undefined;
+		this.#equalityCheck = args.equalityCheck;
 		this.#internalValue = extract(value, this.#defaultValue) as T;
 	}
 
@@ -43,7 +53,11 @@ export class Synced<T> {
 	}
 
 	set current(value: T) {
-		if (this.current === value) return;
+		if (this.#equalityCheck === true && this.current === value) return;
+		if (isFunction(this.#equalityCheck)) {
+			if (this.#equalityCheck(this.current, value)) return;
+		}
+
 		if (isFunction(this.#valueArg)) {
 			this.#onChange?.(value);
 			return;

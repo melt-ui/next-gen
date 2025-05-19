@@ -47,7 +47,6 @@
 
 <Preview>
 	<div class="mx-auto flex w-fit flex-col gap-2" {...group.root}>
-		<!-- svelte-ignore a11y_label_has_associated_control -- https://github.com/sveltejs/svelte/issues/15067 -->
 		<label {...group.label} class="font-medium">Layout</label>
 		<div class="flex {isVert ? 'flex-col gap-1' : 'flex-row gap-3'}">
 			{#each items as i}
