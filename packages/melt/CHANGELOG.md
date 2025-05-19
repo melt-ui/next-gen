@@ -1,5 +1,13 @@
 # melt
 
+## 0.34.0
+
+### Minor Changes
+
+- all: call onChange fns even if value stays the same ([`6432a08`](https://github.com/melt-ui/next-gen/commit/6432a089b8e774a85e65b226cbd1fc79b76f977e))
+
+- update svelte version ([`62d8920`](https://github.com/melt-ui/next-gen/commit/62d89201242e16d8fe85c5e0b6e1f5963446cf58))
+
 ## 0.33.0
 
 ### Minor Changes
