@@ -1,8 +1,12 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
+import { createPreventable } from "$lib/utils/event";
 import { extract } from "$lib/utils/extract";
 import { createDataIds } from "$lib/utils/identifiers";
+import { tick } from "svelte";
+import { createAttachmentKey, type Attachment } from "svelte/attachments";
+import { on } from "svelte/events";
 
 const identifiers = createDataIds("toggle", ["trigger", "hidden-input"]);
 
@@ -32,6 +36,10 @@ export type ToggleProps = {
 	disabled?: MaybeGetter<boolean | undefined>;
 };
 
+function sleep(ms: number) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export class Toggle {
 	/* Props */
 	#props!: ToggleProps;
@@ -58,18 +66,33 @@ export class Toggle {
 	}
 
 	/** The trigger that toggles the value. */
-	get trigger() {
-		return {
+	trigger = $derived.by(() => {
+		const onclick = createPreventable(() => {
+			if (this.disabled) return;
+			this.value = !this.value;
+		});
+
+		const attachment: Attachment = (node) => {
+			return on(node, "click", onclick);
+		};
+
+		const obj = {
 			[identifiers.trigger]: "",
 			"data-checked": dataAttr(this.value),
 			"aria-pressed": this.value,
 			disabled: disabledAttr(this.disabled),
-			onclick: () => {
-				if (this.disabled) return;
-				this.value = !this.value;
-			},
+			[createAttachmentKey()]: attachment,
 		} as const;
-	}
+
+		Object.defineProperties(obj, {
+			onclick: {
+				value: onclick,
+				enumerable: false,
+			},
+		});
+
+		return obj as typeof obj & { onclick: typeof onclick };
+	});
 
 	/** A hidden input field to use within forms. */
 	get hiddenInput() {
