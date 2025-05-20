@@ -36,6 +36,10 @@ enhance the experience of building with Svelte and improve the ecosystem for eve
 
 Check out our [Contributing guide](./CONTRIBUTING.md) to learn more.
 
+### Roadmap
+
+For a rough roadmap of planned features, check out [ROADMAP.MD](./ROADMAP.md)
+
 ## Sponsors
 
 <p align="center">
