@@ -98,3 +98,26 @@ export function addEventListener(
 		}
 	};
 }
+
+function sleep(ms: number) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function createPreventable<Args extends any[]>(cb: (...args: Args) => void) {
+	let prevented = false;
+
+	const preventable = (...args: Args) => {
+		sleep(0)
+			.then(() => {
+				if (prevented) return;
+				cb(...args);
+			})
+			.finally(() => {
+				prevented = false;
+			});
+	};
+
+	preventable.prevent = () => (prevented = true);
+
+	return preventable;
+}

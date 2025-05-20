@@ -344,14 +344,14 @@
         "description": ""
       },
       {
+        "name": "trigger",
+        "type": "{\n  readonly [x: symbol]: Attachment<Element>\n  readonly \"data-melt-toggle-trigger\": \"\"\n  readonly \"data-checked\": \"\" | undefined\n  readonly \"aria-pressed\": boolean\n  readonly disabled: true | undefined\n} & { onclick: { (): void; prevent(): boolean } }",
+        "description": "The trigger that toggles the value."
+      },
+      {
         "name": "value",
         "type": "boolean",
         "description": ""
-      },
-      {
-        "name": "trigger",
-        "type": "{\n  readonly \"data-melt-toggle-trigger\": \"\"\n  readonly \"data-checked\": \"\" | undefined\n  readonly \"aria-pressed\": boolean\n  readonly disabled: true | undefined\n  readonly onclick: () => void\n}",
-        "description": "The trigger that toggles the value."
       },
       {
         "name": "hiddenInput",
