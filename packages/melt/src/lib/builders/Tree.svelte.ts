@@ -1,4 +1,5 @@
 import type { IterableProp, MaybeGetter } from "$lib/types";
+import { mapAndFilter } from "$lib/utils/array";
 import { dataAttr } from "$lib/utils/attribute";
 import { Collection } from "$lib/utils/collection";
 import { extract } from "$lib/utils/extract";
@@ -9,7 +10,6 @@ import { isControlOrMeta } from "$lib/utils/platform";
 import { SelectionState, type MaybeMultiple } from "$lib/utils/selection-state.svelte";
 import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
 import type { FalseIfUndefined } from "$lib/utils/types";
-import { useDebounce } from "runed";
 
 const identifiers = createDataIds("tree", ["root", "item", "group"]);
 
@@ -104,19 +104,18 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 				if (!isString(activeEl?.getAttribute(identifiers.item))) return [];
 
 				const visibleChildren = getAllChildren(this, true);
-				return visibleChildren.reduce(
-					(acc, curr) => {
-						if (!curr.el?.innerText) return acc;
-						return [
-							...acc,
-							{
-								child: curr,
-								value: curr.el.innerText as string,
-								current: curr.el.id === activeEl.id,
-							},
-						];
+
+				return mapAndFilter(
+					visibleChildren,
+					(curr) => {
+						return {
+							child: curr,
+							value: curr.el?.innerText ?? "",
+							typeahead: curr.el?.innerText ?? "",
+							current: curr.el?.id === activeEl.id,
+						} as const;
 					},
-					[] as Array<{ child: Child<I>; value: string }>,
+					(c) => !!c.typeahead,
 				);
 			},
 		}),

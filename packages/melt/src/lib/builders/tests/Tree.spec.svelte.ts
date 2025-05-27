@@ -1,5 +1,5 @@
 import { expectTypeOf, it } from "vitest";
-import { Tree, type TreeItem } from "./Tree.svelte";
+import { Tree, type TreeItem } from "../Tree.svelte";
 import { SvelteSet } from "svelte/reactivity";
 import { testWithEffect } from "$lib/utils/test.svelte";
 

@@ -1,5 +1,5 @@
 import { expectTypeOf, it } from "vitest";
-import { Accordion, type AccordionProps } from "./Accordion.svelte";
+import { Accordion, type AccordionProps } from "../Accordion.svelte";
 import type { SvelteSet } from "svelte/reactivity";
 import { testWithEffect } from "$lib/utils/test.svelte";
 

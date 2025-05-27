@@ -1,4 +1,6 @@
+import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
+import { findNext, findPrev, mapAndFilter } from "$lib/utils/array";
 import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
@@ -11,11 +13,10 @@ import {
 	type OnMultipleChange,
 } from "$lib/utils/selection-state.svelte";
 import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
+import { dequal } from "dequal";
 import { tick } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
 import { BasePopover, type PopoverProps } from "./Popover.svelte";
-import { findNext, findPrev } from "$lib/utils/array";
-import { Synced } from "$lib/Synced.svelte";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("select", [
 	"trigger",
@@ -23,10 +24,7 @@ const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("select", 
 	"option",
 ]);
 
-export type SelectProps<T extends string, Multiple extends boolean = false> = Omit<
-	PopoverProps,
-	"sameWidth"
-> & {
+export type SelectProps<T, Multiple extends boolean = false> = Omit<PopoverProps, "sameWidth"> & {
 	/**
 	 * If `true`, multiple options can be selected at the same time.
 	 *
@@ -84,8 +82,7 @@ export type SelectProps<T extends string, Multiple extends boolean = false> = Om
 	scrollAlignment?: MaybeGetter<"nearest" | "center" | null | undefined>;
 };
 
-export class Select<T extends string, Multiple extends boolean = false> extends BasePopover {
-	/* Props */
+export class Select<T, Multiple extends boolean = false> extends BasePopover {
 	#props!: SelectProps<T, Multiple>;
 	multiple = $derived(extract(this.#props.multiple, false as Multiple));
 	scrollAlignment = $derived(extract(this.#props.scrollAlignment, "nearest"));
@@ -101,19 +98,18 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		createTypeahead({
 			timeout: this.#props.typeaheadTimeout,
 			getItems: () => {
-				return this.#getOptionsEls().reduce(
-					(acc, curr) => {
-						if (!curr.dataset.value) return acc;
-						return [
-							...acc,
-							{
-								value: curr.dataset.value as T,
-								typeahead: curr.dataset.typeahead,
-								current: curr.dataset.value === this.highlighted,
-							},
-						];
+				return mapAndFilter(
+					this.#getOptionsEls(),
+					(curr) => {
+						return {
+							value: curr.dataset.value ? JSON.parse(curr.dataset.value ?? "") : ("" as T),
+							typeahead: curr.dataset.label as string,
+							current: curr.dataset.value === JSON.stringify(this.highlighted),
+						};
 					},
-					[] as Array<{ value: T; current: boolean }>,
+					(v) => {
+						return !!v.value;
+					},
 				);
 			},
 		}),
@@ -169,6 +165,10 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		};
 	}
 
+	getOptionLabel = (value: T) => {
+		return this.#valueLabelMap.get(value) ?? `${value}`;
+	};
+
 	get value() {
 		return this.#value.current;
 	}
@@ -186,7 +186,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 	}
 
 	get valueAsString() {
-		return this.#value.toArray().join(", ");
+		return this.#value.toArray().map(this.getOptionLabel).join(", ");
 	}
 
 	isSelected = (value: T) => {
@@ -302,14 +302,18 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 		return `${this.ids.content}-option-${dataAttr(value)}`;
 	}
 
-	getOption(value: T, options?: { typeahead: string }) {
+	#valueLabelMap = new Map<T, string>();
+
+	getOption(value: T, label?: string) {
+		this.#valueLabelMap.set(value, label ?? `${value}`);
+
 		return {
 			[dataAttrs.option]: "",
-			"data-value": dataAttr(value),
-			"data-typeahead": dataAttr(options?.typeahead),
+			"data-value": dataAttr(JSON.stringify(value)),
+			"data-label": dataAttr(label ?? `${value}`),
 			"aria-hidden": this.open ? undefined : true,
 			"aria-selected": this.#value.has(value),
-			"data-highlighted": dataAttr(this.highlighted === value),
+			"data-highlighted": dataAttr(dequal(this.highlighted, value)),
 			role: "option",
 			tabindex: -1,
 			onmouseover: () => {
@@ -330,7 +334,7 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 
 	#highlight(el: HTMLElement) {
 		if (!el.dataset.value) return;
-		this.highlighted = el.dataset.value as T;
+		this.highlighted = JSON.parse(el.dataset.value) as T;
 
 		if (this.scrollAlignment !== null) {
 			el.scrollIntoView({ block: this.scrollAlignment });
@@ -339,13 +343,13 @@ export class Select<T extends string, Multiple extends boolean = false> extends 
 
 	#highlightNext() {
 		const options = this.#getOptionsEls();
-		const next = findNext(options, (o) => o.dataset.value === this.highlighted);
+		const next = findNext(options, (o) => o.dataset.value === JSON.stringify(this.highlighted));
 		if (isHtmlElement(next)) this.#highlight(next);
 	}
 
 	#highlightPrev() {
 		const options = this.#getOptionsEls();
-		const prev = findPrev(options, (o) => o.dataset.value === this.highlighted);
+		const prev = findPrev(options, (o) => o.dataset.value === JSON.stringify(this.highlighted));
 		if (isHtmlElement(prev)) this.#highlight(prev);
 	}
 

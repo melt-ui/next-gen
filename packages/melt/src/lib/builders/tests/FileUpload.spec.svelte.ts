@@ -1,6 +1,6 @@
 import { testWithEffect } from "$lib/utils/test.svelte";
 import { expect } from "vitest";
-import { FileUpload } from "./FileUpload.svelte";
+import { FileUpload } from "../FileUpload.svelte";
 
 testWithEffect("Clear should not trigger onSelectedChange if already empty", () => {
 	let calls = 0;

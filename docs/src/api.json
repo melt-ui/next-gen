@@ -145,7 +145,7 @@
       },
       {
         "name": "typeahead",
-        "type": "(letter: string) => { child: Child<I>; value: string } | undefined",
+        "type": "(\n  letter: string,\n) =>\n  | {\n      readonly child: Child<I>\n      readonly value: string\n      readonly typeahead: string\n      readonly current: boolean\n    }\n  | undefined",
         "description": ""
       },
       {
@@ -705,7 +705,7 @@
       },
       {
         "name": "getOption",
-        "type": "(\n  value: T,\n  options?: { typeahead: string } | undefined,\n) => {\n  readonly \"data-melt-select-option\": \"\"\n  readonly \"data-value\": DataReturn<T>\n  readonly \"data-typeahead\": string | undefined\n  readonly \"aria-hidden\": true | undefined\n  readonly \"aria-selected\": boolean\n  readonly \"data-highlighted\": \"\" | undefined\n  readonly role: \"option\"\n  readonly tabindex: -1\n  readonly onmouseover: () => void\n  readonly onclick: () => void\n}",
+        "type": "(\n  value: T,\n  label?: string | undefined,\n) => {\n  readonly \"data-melt-select-option\": \"\"\n  readonly \"data-value\": string\n  readonly \"data-label\": string\n  readonly \"aria-hidden\": true | undefined\n  readonly \"aria-selected\": boolean\n  readonly \"data-highlighted\": \"\" | undefined\n  readonly role: \"option\"\n  readonly tabindex: -1\n  readonly onmouseover: () => void\n  readonly onclick: () => void\n}",
         "description": ""
       }
     ],
@@ -732,7 +732,12 @@
       },
       {
         "name": "typeahead",
-        "type": "(letter: string) => { value: T; current: boolean } | undefined",
+        "type": "(\n  letter: string,\n) => { value: any; typeahead: string; current: boolean } | undefined",
+        "description": ""
+      },
+      {
+        "name": "getOptionLabel",
+        "type": "(value: T) => string",
         "description": ""
       },
       {
@@ -771,7 +776,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type SelectProps<T extends string, Multiple extends boolean = false> = Omit<\n  PopoverProps,\n  \"sameWidth\"\n> & {\n  /**\n   * If `true`, multiple options can be selected at the same time.\n   *\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The value for the Select.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  value?: MaybeMultiple<T, Multiple>;\n  /**\n   * Called when the value is supposed to change.\n   */\n  onValueChange?: OnMultipleChange<T, Multiple>;\n\n  /**\n   * The currently highlighted value.\n   */\n  highlighted?: MaybeGetter<T | null | undefined>;\n\n  /**\n   * Called when the highlighted value changes.\n   */\n  onHighlightChange?: (highlighted: T | null) => void;\n\n  /**\n   * How many time (in ms) the typeahead string is held before it is cleared\n   * @default 500\n   */\n  typeaheadTimeout?: MaybeGetter<number | undefined>;\n\n  /**\n   * If the content should have the same width as the trigger\n   *\n   * @default true\n   */\n  sameWidth?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Determines behavior when scrolling items into view.\n   * Set to null to disable auto-scrolling.\n   *\n   * @default \"nearest\"\n   * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block\n   */\n  scrollAlignment?: MaybeGetter<\"nearest\" | \"center\" | null | undefined>;\n};"
+    "propsAlt": "export type SelectProps<T, Multiple extends boolean = false> = Omit<PopoverProps, \"sameWidth\"> & {\n  /**\n   * If `true`, multiple options can be selected at the same time.\n   *\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The value for the Select.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  value?: MaybeMultiple<T, Multiple>;\n  /**\n   * Called when the value is supposed to change.\n   */\n  onValueChange?: OnMultipleChange<T, Multiple>;\n\n  /**\n   * The currently highlighted value.\n   */\n  highlighted?: MaybeGetter<T | null | undefined>;\n\n  /**\n   * Called when the highlighted value changes.\n   */\n  onHighlightChange?: (highlighted: T | null) => void;\n\n  /**\n   * How many time (in ms) the typeahead string is held before it is cleared\n   * @default 500\n   */\n  typeaheadTimeout?: MaybeGetter<number | undefined>;\n\n  /**\n   * If the content should have the same width as the trigger\n   *\n   * @default true\n   */\n  sameWidth?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Determines behavior when scrolling items into view.\n   * Set to null to disable auto-scrolling.\n   *\n   * @default \"nearest\"\n   * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block\n   */\n  scrollAlignment?: MaybeGetter<\"nearest\" | \"center\" | null | undefined>;\n};"
   },
   "RadioGroup": {
     "constructorProps": [

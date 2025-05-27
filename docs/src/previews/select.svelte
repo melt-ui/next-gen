@@ -21,17 +21,17 @@
 	});
 
 	const options = [
-		"Solo Leveling",
-		"Bleach",
-		"Dan da Dan",
-		"Re: Zero",
-		"Jujutsu Kaisen",
-		"Attack on Titan",
-		"Death Note",
+		{ value: "Solo Leveling", label: "Solo Leveling" },
+		{ value: "Bleach", label: "Bleach" },
+		{ value: "Dan da Dan", label: "Dan da Dan" },
+		{ value: "Re: Zero", label: "Re: Zero" },
+		{ value: "Jujutsu Kaisen", label: "Jujutsu Kaisen" },
+		{ value: "Attack on Titan", label: "Attack on Titan" },
+		{ value: "Death Note", label: "Death Note" },
 	] as const;
 	type Option = (typeof options)[number];
 
-	const select = new Select<Option, boolean>({
+	const select = new Select<Option["value"], boolean>({
 		forceVisible: true,
 		...getters(controls),
 	});
@@ -60,15 +60,15 @@
 		>
 			{#each options as option}
 				<div
-					{...select.getOption(option)}
+					{...select.getOption(option.value, option.label)}
 					class={[
 						"relative flex items-center justify-between rounded-xl py-2 pl-8 pr-2",
-						select.highlighted === option && "bg-gray-700",
-						select.value === option && "font-semibold",
+						select.highlighted === option.value && "bg-gray-700",
+						select.value === option.value && "font-semibold",
 					]}
 				>
-					<span>{option}</span>
-					{#if select.isSelected(option)}
+					<span>{option.label}</span>
+					{#if select.isSelected(option.value)}
 						<Check class="text-accent-300 font-bold" />
 					{/if}
 				</div>
