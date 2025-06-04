@@ -1,0 +1,25 @@
+name: Publish to pkg.vc
+
+on:
+  pull_request:
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # add your build step here if needed
+
+      - name: Publish to pkg.vc
+        uses: pkg-vc/publish-action@main
+        with:
+          organization: melt-ui
+          directory: ./
+          secret: ${{ secrets.PKG_VC_SECRET }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}

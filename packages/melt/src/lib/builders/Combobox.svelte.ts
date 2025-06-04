@@ -17,6 +17,7 @@ import { BasePopover, type PopoverProps } from "./Popover.svelte";
 import { findNext, findPrev } from "$lib/utils/array";
 import { Synced } from "$lib/Synced.svelte";
 import { safeEffect } from "$lib/utils/effect.svelte";
+import { dequal } from "dequal";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("combobox", [
 	"input",
@@ -25,7 +26,7 @@ const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("combobox"
 	"option",
 ]);
 
-export type ComboboxProps<T extends string, Multiple extends boolean = false> = Omit<
+export type ComboboxProps<T, Multiple extends boolean = false> = Omit<
 	PopoverProps,
 	"closeOnEscape" | "closeOnOutsideClick" | "sameWidth"
 > & {
@@ -80,7 +81,7 @@ export type ComboboxProps<T extends string, Multiple extends boolean = false> = 
 	sameWidth?: MaybeGetter<boolean | undefined>;
 };
 
-export class Combobox<T extends string, Multiple extends boolean = false> extends BasePopover {
+export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 	/* Props */
 	#props!: ComboboxProps<T, Multiple>;
 	multiple = $derived(extract(this.#props.multiple, false as Multiple));
@@ -153,6 +154,10 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 		};
 	}
 
+	getOptionLabel = (value: T) => {
+		return this.#valueLabelMap.get(value) ?? `${value}`;
+	};
+
 	get value() {
 		return this.#value.current;
 	}
@@ -170,7 +175,7 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 	}
 
 	get valueAsString() {
-		return this.#value.toArray().join(", ");
+		return this.#value.toArray().map(this.getOptionLabel).join(", ");
 	}
 
 	isSelected = (value: T) => {
@@ -184,16 +189,14 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 			return;
 		}
 
-		this.#value.toggle(value);
-
 		if (this.multiple) {
+			this.#value.toggle(value);
 			this.inputValue = "";
-			return;
+		} else {
+			this.#value.add(value);
+			this.inputValue = this.valueAsString;
+			this.open = false;
 		}
-
-		this.inputValue = this.valueAsString;
-
-		this.open = false;
 	}
 
 	get input() {
@@ -206,7 +209,10 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 			"aria-expanded": this.open,
 			"aria-controls": this.ids.content,
 			"aria-owns": this.ids.content,
-			onclick: undefined,
+			onclick: () => {
+				this.open = true;
+				tick().then(() => this.highlightFirst());
+			},
 			value: this.inputValue,
 			oninput: (e: Event) => {
 				const input = e.currentTarget;
@@ -308,16 +314,21 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 	}
 
 	getOptionId(value: T) {
-		return `${this.ids.content}-option-${dataAttr(value)}`;
+		return `${this.ids.content}-option-${dataAttr(JSON.stringify(value))}`;
 	}
+
+	#valueLabelMap = new Map<T, string>();
 
 	/**
 	 * Gets the attributes for the option element.
 	 * @param value The value of the option.
+	 * @param label The label to display for the option. If not provided, the value will be stringified.
 	 * @param onSelect An optional callback to call when the option is selected, overriding the default behavior.
 	 * @returns The attributes for the option element.
 	 */
-	getOption(value: T, onSelect?: () => void) {
+	getOption(value: T, label?: string, onSelect?: () => void) {
+		this.#valueLabelMap.set(value, label ?? `${value}`);
+
 		safeEffect(() => {
 			if (onSelect) this.onSelectMap.set(value, onSelect);
 			return () => {
@@ -328,10 +339,11 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 		return {
 			id: this.getOptionId(value),
 			[dataAttrs.option]: "",
-			"data-value": dataAttr(value),
+			"data-value": dataAttr(JSON.stringify(value)),
+			"data-label": dataAttr(label ?? `${value}`),
 			"aria-hidden": this.open ? undefined : true,
 			"aria-selected": this.#value.has(value),
-			"data-highlighted": dataAttr(this.highlighted === value),
+			"data-highlighted": dataAttr(dequal(this.highlighted, value)),
 			tabindex: -1,
 			role: "option",
 			onmouseover: () => {
@@ -352,7 +364,13 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 
 	getOptions(): T[] {
 		const els = this.getOptionsEls();
-		return els.map((el) => el.dataset.value as T);
+		return els.map((el) => {
+			try {
+				return el.dataset.value ? JSON.parse(el.dataset.value) : undefined;
+			} catch {
+				return undefined;
+			}
+		}).filter((v): v is T => v !== undefined);
 	}
 
 	highlight(value: T) {
@@ -362,13 +380,13 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 
 	highlightNext() {
 		const options = this.getOptions();
-		const next = findNext(options, (v) => v === this.highlighted);
+		const next = findNext(options, (v) => dequal(v, this.highlighted));
 		if (next !== undefined) this.highlight(next);
 	}
 
 	highlightPrev() {
 		const options = this.getOptions();
-		const prev = findPrev(options, (v) => v === this.highlighted);
+		const prev = findPrev(options, (v) => dequal(v, this.highlighted));
 		if (prev !== undefined) this.highlight(prev);
 	}
 
