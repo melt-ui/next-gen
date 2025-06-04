@@ -14,12 +14,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # add your build step here if needed
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22.x"
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - name: Package
+        run: pnpm package
 
       - name: Publish to pkg.vc
         uses: pkg-vc/publish-action@main
         with:
           organization: melt-ui
-          directory: ./
+          directory: ./packages/melt
           secret: ${{ secrets.PKG_VC_SECRET }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
