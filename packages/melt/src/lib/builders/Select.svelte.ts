@@ -15,7 +15,7 @@ import {
 import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
 import { dequal } from "dequal";
 import { tick } from "svelte";
-import type { HTMLAttributes } from "svelte/elements";
+import type { HTMLAttributes, HTMLLabelAttributes } from "svelte/elements";
 import { BasePopover, type PopoverProps } from "./Popover.svelte";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("select", [
@@ -206,9 +206,20 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 		});
 	};
 
+	get label() {
+		return {
+			for: this.ids.trigger,
+			onclick: (e) => {
+				e.preventDefault();
+				document.getElementById(this.ids.trigger)?.focus();
+			},
+		} satisfies HTMLLabelAttributes;
+	}
+
 	get trigger() {
 		return Object.assign(super.getInvoker(), {
 			[dataAttrs.trigger]: "",
+			id: this.ids.trigger,
 			role: "combobox",
 			"aria-expanded": this.open,
 			"aria-controls": this.ids.content,

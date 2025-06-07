@@ -1,5 +1,5 @@
-import type { MaybeGetter } from "$lib/types";
-import { dataAttr } from "$lib/utils/attribute";
+import type { MaybeGetter, Setter } from "$lib/types";
+import { dataAttr, idAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement, isHtmlInputElement, isNode } from "$lib/utils/is";
@@ -12,12 +12,13 @@ import {
 } from "$lib/utils/selection-state.svelte";
 import { letterRegex } from "$lib/utils/typeahead.svelte";
 import { tick } from "svelte";
-import type { HTMLAttributes, HTMLInputAttributes } from "svelte/elements";
+import type { HTMLAttributes, HTMLInputAttributes, HTMLLabelAttributes } from "svelte/elements";
 import { BasePopover, type PopoverProps } from "./Popover.svelte";
 import { findNext, findPrev } from "$lib/utils/array";
 import { Synced } from "$lib/Synced.svelte";
 import { safeEffect } from "$lib/utils/effect.svelte";
 import { dequal } from "dequal";
+import { unique } from "$lib/utils/string";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("combobox", [
 	"input",
@@ -55,6 +56,23 @@ export type ComboboxProps<T, Multiple extends boolean = false> = Omit<
 	onValueChange?: OnMultipleChange<T, Multiple>;
 
 	/**
+	 * The inputValue for the Combobox.
+	 *
+	 * When passing a getter, it will be used as source of truth,
+	 * meaning that the value only changes when the getter returns a new value.
+	 *
+	 * Otherwise, if passing a static value, it'll serve as the default value.
+	 *
+	 *
+	 * @default false
+	 */
+	inputValue?: MaybeGetter<string | undefined>;
+	/**
+	 * Called when the value is supposed to change.
+	 */
+	onInputValueChange?: Setter<string>;
+
+	/**
 	 * The currently highlighted value.
 	 */
 	highlighted?: MaybeGetter<T | null | undefined>;
@@ -89,7 +107,7 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 
 	/* State */
 	#value!: SelectionState<T, Multiple>;
-	inputValue = $state("");
+	#inputValue: Synced<string>;
 	#highlighted: Synced<T | null>;
 	touched = $state(false);
 	onSelectMap = new Map<T, () => void>();
@@ -112,9 +130,6 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 				await tick();
 				if (!open) {
 					this.highlighted = null;
-					if (!this.multiple) {
-						this.inputValue = this.valueAsString ?? "";
-					}
 					return;
 				}
 
@@ -144,6 +159,12 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 			defaultValue: null,
 		});
 
+		this.#inputValue = new Synced({
+			value: props.inputValue,
+			onChange: props.onInputValueChange,
+			defaultValue: "",
+		});
+
 		const oldIds = this.ids;
 		const newIds = createIds();
 		this.ids = {
@@ -154,10 +175,6 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 		};
 	}
 
-	getOptionLabel = (value: T) => {
-		return this.#valueLabelMap.get(value) ?? `${value}`;
-	};
-
 	get value() {
 		return this.#value.current;
 	}
@@ -166,16 +183,20 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 		this.#value.current = value;
 	}
 
+	get inputValue() {
+		return this.#inputValue.current;
+	}
+
+	set inputValue(v) {
+		this.#inputValue.current = v;
+	}
+
 	get highlighted() {
 		return this.#highlighted.current;
 	}
 
 	set highlighted(v) {
 		this.#highlighted.current = v;
-	}
-
-	get valueAsString() {
-		return this.#value.toArray().map(this.getOptionLabel).join(", ");
 	}
 
 	isSelected = (value: T) => {
@@ -194,9 +215,19 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 			this.inputValue = "";
 		} else {
 			this.#value.add(value);
-			this.inputValue = this.valueAsString;
+			this.inputValue = this.getOptionLabel(value);
 			this.open = false;
 		}
+	}
+
+	get label() {
+		return {
+			for: this.ids.input,
+			onclick: (e) => {
+				e.preventDefault();
+				document.getElementById(this.ids.input)?.focus();
+			},
+		} satisfies HTMLLabelAttributes;
 	}
 
 	get input() {
@@ -314,10 +345,23 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 	}
 
 	getOptionId(value: T) {
-		return `${this.ids.content}-option-${dataAttr(JSON.stringify(value))}`;
+		return idAttr(unique(value));
 	}
 
-	#valueLabelMap = new Map<T, string>();
+	#valueLabelMap = new Map<string, string>();
+
+	getOptionLabel(value: T) {
+		const key = unique(value);
+		if (this.#valueLabelMap.has(key)) {
+			return this.#valueLabelMap.get(key)!;
+		}
+
+		return typeof value === "string" ? (value as string) : "";
+	}
+
+	#setOptionLabel(value: T, label: string) {
+		return this.#valueLabelMap.set(unique(value), label);
+	}
 
 	/**
 	 * Gets the attributes for the option element.
@@ -327,7 +371,7 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 	 * @returns The attributes for the option element.
 	 */
 	getOption(value: T, label?: string, onSelect?: () => void) {
-		this.#valueLabelMap.set(value, label ?? `${value}`);
+		if (label) this.#setOptionLabel(value, label);
 
 		safeEffect(() => {
 			if (onSelect) this.onSelectMap.set(value, onSelect);
@@ -364,13 +408,15 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 
 	getOptions(): T[] {
 		const els = this.getOptionsEls();
-		return els.map((el) => {
-			try {
-				return el.dataset.value ? JSON.parse(el.dataset.value) : undefined;
-			} catch {
-				return undefined;
-			}
-		}).filter((v): v is T => v !== undefined);
+		return els
+			.map((el) => {
+				try {
+					return el.dataset.value ? JSON.parse(el.dataset.value) : undefined;
+				} catch {
+					return undefined;
+				}
+			})
+			.filter((v): v is T => v !== undefined);
 	}
 
 	highlight(value: T) {

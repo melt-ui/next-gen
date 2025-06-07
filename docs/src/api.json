@@ -766,8 +766,13 @@
         "description": ""
       },
       {
+        "name": "label",
+        "type": "{\n  for: string\n  onclick: (\n    e: MouseEvent & { currentTarget: EventTarget & HTMLLabelElement },\n  ) => void\n}",
+        "description": ""
+      },
+      {
         "name": "trigger",
-        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}; --melt-popover-available-width: ${string}; --melt-popover-available-height: ${string}`\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n} & {\n  \"data-melt-select-trigger\": string\n  role: string\n  \"aria-expanded\": boolean\n  \"aria-controls\": string\n  \"aria-owns\": string\n  onkeydown: (e: KeyboardEvent) => void\n}",
+        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}; --melt-popover-available-width: ${string}; --melt-popover-available-height: ${string}`\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n} & {\n  \"data-melt-select-trigger\": string\n  id: string\n  role: string\n  \"aria-expanded\": boolean\n  \"aria-controls\": string\n  \"aria-owns\": string\n  onkeydown: (e: KeyboardEvent) => void\n}",
         "description": ""
       },
       {
@@ -1341,6 +1346,19 @@
         "optional": true
       },
       {
+        "name": "inputValue",
+        "type": "MaybeGetter<string | undefined>",
+        "description": "The inputValue for the Combobox.\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that the value only changes when the getter returns a new value.\n\nOtherwise, if passing a static value, it'll serve as the default value.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "onInputValueChange",
+        "type": "Setter<string> | undefined",
+        "description": "Called when the value is supposed to change.",
+        "optional": true
+      },
+      {
         "name": "highlighted",
         "type": "MaybeGetter<T | null | undefined>",
         "description": "The currently highlighted value.",
@@ -1380,6 +1398,11 @@
       },
       {
         "name": "getOptionId",
+        "type": "(value: T) => string",
+        "description": ""
+      },
+      {
+        "name": "getOptionLabel",
         "type": "(value: T) => string",
         "description": ""
       },
@@ -1436,11 +1459,6 @@
         "description": ""
       },
       {
-        "name": "inputValue",
-        "type": "string",
-        "description": ""
-      },
-      {
         "name": "touched",
         "type": "boolean",
         "description": ""
@@ -1456,11 +1474,6 @@
         "description": ""
       },
       {
-        "name": "getOptionLabel",
-        "type": "(value: T) => string",
-        "description": ""
-      },
-      {
         "name": "isSelected",
         "type": "(value: T) => boolean",
         "description": ""
@@ -1471,13 +1484,18 @@
         "description": ""
       },
       {
+        "name": "inputValue",
+        "type": "string",
+        "description": ""
+      },
+      {
         "name": "highlighted",
         "type": "T | null",
         "description": ""
       },
       {
-        "name": "valueAsString",
-        "type": "string",
+        "name": "label",
+        "type": "{\n  for: string\n  onclick: (\n    e: MouseEvent & { currentTarget: EventTarget & HTMLLabelElement },\n  ) => void\n}",
         "description": ""
       },
       {
@@ -1496,7 +1514,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type ComboboxProps<T, Multiple extends boolean = false> = Omit<\n  PopoverProps,\n  \"closeOnEscape\" | \"closeOnOutsideClick\" | \"sameWidth\"\n> & {\n  /**\n   * If `true`, multiple options can be selected at the same time.\n   *\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The value for the Combobox.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  value?: MaybeMultiple<T, Multiple>;\n  /**\n   * Called when the value is supposed to change.\n   */\n  onValueChange?: OnMultipleChange<T, Multiple>;\n\n  /**\n   * The currently highlighted value.\n   */\n  highlighted?: MaybeGetter<T | null | undefined>;\n\n  /**\n   * Called when the highlighted value changes.\n   */\n  onHighlightChange?: (highlighted: T | null) => void;\n\n  /**\n   * Determines behavior when scrolling items into view.\n   * Set to null to disable auto-scrolling.\n   *\n   * @default \"nearest\"\n   * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block\n   */\n  scrollAlignment?: MaybeGetter<\"nearest\" | \"center\" | null | undefined>;\n\n  /**\n   * If the content should have the same width as the trigger\n   *\n   * @default true\n   */\n  sameWidth?: MaybeGetter<boolean | undefined>;\n};"
+    "propsAlt": "export type ComboboxProps<T, Multiple extends boolean = false> = Omit<\n  PopoverProps,\n  \"closeOnEscape\" | \"closeOnOutsideClick\" | \"sameWidth\"\n> & {\n  /**\n   * If `true`, multiple options can be selected at the same time.\n   *\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The value for the Combobox.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  value?: MaybeMultiple<T, Multiple>;\n  /**\n   * Called when the value is supposed to change.\n   */\n  onValueChange?: OnMultipleChange<T, Multiple>;\n\n  /**\n   * The inputValue for the Combobox.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  inputValue?: MaybeGetter<string | undefined>;\n  /**\n   * Called when the value is supposed to change.\n   */\n  onInputValueChange?: Setter<string>;\n\n  /**\n   * The currently highlighted value.\n   */\n  highlighted?: MaybeGetter<T | null | undefined>;\n\n  /**\n   * Called when the highlighted value changes.\n   */\n  onHighlightChange?: (highlighted: T | null) => void;\n\n  /**\n   * Determines behavior when scrolling items into view.\n   * Set to null to disable auto-scrolling.\n   *\n   * @default \"nearest\"\n   * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block\n   */\n  scrollAlignment?: MaybeGetter<\"nearest\" | \"center\" | null | undefined>;\n\n  /**\n   * If the content should have the same width as the trigger\n   *\n   * @default true\n   */\n  sameWidth?: MaybeGetter<boolean | undefined>;\n};"
   },
   "Collapsible": {
     "constructorProps": [
