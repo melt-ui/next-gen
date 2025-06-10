@@ -16,3 +16,35 @@ export function styleAttr<T extends Record<string, string>>(value: T): ObjToStri
 		.map(([key, value]) => `${key}: ${value};`)
 		.join(" ") as ObjToString<T>;
 }
+
+/**
+ * Generate a unique, safe ID attribute from a string using hash-based approach
+ */
+export function idAttr(value: string): string {
+	if (!value || typeof value !== "string") {
+		return "id-empty";
+	}
+
+	// Simple but effective hash function (djb2 algorithm)
+	let hash = 5381;
+	for (let i = 0; i < value.length; i++) {
+		hash = (hash << 5) + hash + value.charCodeAt(i);
+		hash = hash & hash; // Convert to 32-bit integer
+	}
+
+	// Convert to positive number and then to base36 for compactness
+	const hashStr = Math.abs(hash).toString(36);
+
+	// Create readable prefix from original string
+	let prefix = value
+		.replace(/[^a-zA-Z0-9]/g, "")
+		.toLowerCase()
+		.slice(0, 8);
+
+	// Ensure prefix starts with a letter
+	if (!prefix || /^[0-9]/.test(prefix)) {
+		prefix = "id" + prefix;
+	}
+
+	return `${prefix}-${hashStr}`;
+}

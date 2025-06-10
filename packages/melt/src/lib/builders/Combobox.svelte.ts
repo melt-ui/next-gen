@@ -1,5 +1,5 @@
-import type { MaybeGetter } from "$lib/types";
-import { dataAttr } from "$lib/utils/attribute";
+import type { MaybeGetter, Setter } from "$lib/types";
+import { dataAttr, idAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement, isHtmlInputElement, isNode } from "$lib/utils/is";
@@ -12,11 +12,13 @@ import {
 } from "$lib/utils/selection-state.svelte";
 import { letterRegex } from "$lib/utils/typeahead.svelte";
 import { tick } from "svelte";
-import type { HTMLAttributes, HTMLInputAttributes } from "svelte/elements";
+import type { HTMLAttributes, HTMLInputAttributes, HTMLLabelAttributes } from "svelte/elements";
 import { BasePopover, type PopoverProps } from "./Popover.svelte";
 import { findNext, findPrev } from "$lib/utils/array";
 import { Synced } from "$lib/Synced.svelte";
 import { safeEffect } from "$lib/utils/effect.svelte";
+import { dequal } from "dequal";
+import { unique } from "$lib/utils/string";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("combobox", [
 	"input",
@@ -25,7 +27,7 @@ const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("combobox"
 	"option",
 ]);
 
-export type ComboboxProps<T extends string, Multiple extends boolean = false> = Omit<
+export type ComboboxProps<T, Multiple extends boolean = false> = Omit<
 	PopoverProps,
 	"closeOnEscape" | "closeOnOutsideClick" | "sameWidth"
 > & {
@@ -54,6 +56,23 @@ export type ComboboxProps<T extends string, Multiple extends boolean = false> = 
 	onValueChange?: OnMultipleChange<T, Multiple>;
 
 	/**
+	 * The inputValue for the Combobox.
+	 *
+	 * When passing a getter, it will be used as source of truth,
+	 * meaning that the value only changes when the getter returns a new value.
+	 *
+	 * Otherwise, if passing a static value, it'll serve as the default value.
+	 *
+	 *
+	 * @default false
+	 */
+	inputValue?: MaybeGetter<string | undefined>;
+	/**
+	 * Called when the value is supposed to change.
+	 */
+	onInputValueChange?: Setter<string>;
+
+	/**
 	 * The currently highlighted value.
 	 */
 	highlighted?: MaybeGetter<T | null | undefined>;
@@ -80,7 +99,7 @@ export type ComboboxProps<T extends string, Multiple extends boolean = false> = 
 	sameWidth?: MaybeGetter<boolean | undefined>;
 };
 
-export class Combobox<T extends string, Multiple extends boolean = false> extends BasePopover {
+export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 	/* Props */
 	#props!: ComboboxProps<T, Multiple>;
 	multiple = $derived(extract(this.#props.multiple, false as Multiple));
@@ -88,7 +107,7 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 
 	/* State */
 	#value!: SelectionState<T, Multiple>;
-	inputValue = $state("");
+	#inputValue: Synced<string>;
 	#highlighted: Synced<T | null>;
 	touched = $state(false);
 	onSelectMap = new Map<T, () => void>();
@@ -111,9 +130,6 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 				await tick();
 				if (!open) {
 					this.highlighted = null;
-					if (!this.multiple) {
-						this.inputValue = this.valueAsString ?? "";
-					}
 					return;
 				}
 
@@ -143,6 +159,12 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 			defaultValue: null,
 		});
 
+		this.#inputValue = new Synced({
+			value: props.inputValue,
+			onChange: props.onInputValueChange,
+			defaultValue: "",
+		});
+
 		const oldIds = this.ids;
 		const newIds = createIds();
 		this.ids = {
@@ -161,16 +183,20 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 		this.#value.current = value;
 	}
 
+	get inputValue() {
+		return this.#inputValue.current;
+	}
+
+	set inputValue(v) {
+		this.#inputValue.current = v;
+	}
+
 	get highlighted() {
 		return this.#highlighted.current;
 	}
 
 	set highlighted(v) {
 		this.#highlighted.current = v;
-	}
-
-	get valueAsString() {
-		return this.#value.toArray().join(", ");
 	}
 
 	isSelected = (value: T) => {
@@ -184,16 +210,24 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 			return;
 		}
 
-		this.#value.toggle(value);
-
 		if (this.multiple) {
+			this.#value.toggle(value);
 			this.inputValue = "";
-			return;
+		} else {
+			this.#value.add(value);
+			this.inputValue = this.getOptionLabel(value);
+			this.open = false;
 		}
+	}
 
-		this.inputValue = this.valueAsString;
-
-		this.open = false;
+	get label() {
+		return {
+			for: this.ids.input,
+			onclick: (e) => {
+				e.preventDefault();
+				document.getElementById(this.ids.input)?.focus();
+			},
+		} satisfies HTMLLabelAttributes;
 	}
 
 	get input() {
@@ -206,7 +240,10 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 			"aria-expanded": this.open,
 			"aria-controls": this.ids.content,
 			"aria-owns": this.ids.content,
-			onclick: undefined,
+			onclick: () => {
+				this.open = true;
+				tick().then(() => this.highlightFirst());
+			},
 			value: this.inputValue,
 			oninput: (e: Event) => {
 				const input = e.currentTarget;
@@ -308,16 +345,38 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 	}
 
 	getOptionId(value: T) {
-		return `${this.ids.content}-option-${dataAttr(value)}`;
+		return idAttr(unique(value));
+	}
+
+	#valueLabelMap = new Map<string, string>();
+
+	get valueAsString() {
+		return this.#value.toArray().join(", ");
+	}
+
+	getOptionLabel(value: T) {
+		const key = unique(value);
+		if (this.#valueLabelMap.has(key)) {
+			return this.#valueLabelMap.get(key)!;
+		}
+
+		return typeof value === "string" ? (value as string) : "";
+	}
+
+	#setOptionLabel(value: T, label: string) {
+		return this.#valueLabelMap.set(unique(value), label);
 	}
 
 	/**
 	 * Gets the attributes for the option element.
 	 * @param value The value of the option.
+	 * @param label The label to display for the option. If not provided, the value will be stringified.
 	 * @param onSelect An optional callback to call when the option is selected, overriding the default behavior.
 	 * @returns The attributes for the option element.
 	 */
-	getOption(value: T, onSelect?: () => void) {
+	getOption(value: T, label?: string, onSelect?: () => void) {
+		if (label) this.#setOptionLabel(value, label);
+
 		safeEffect(() => {
 			if (onSelect) this.onSelectMap.set(value, onSelect);
 			return () => {
@@ -328,10 +387,11 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 		return {
 			id: this.getOptionId(value),
 			[dataAttrs.option]: "",
-			"data-value": dataAttr(value),
+			"data-value": dataAttr(JSON.stringify(value)),
+			"data-label": dataAttr(label ?? `${value}`),
 			"aria-hidden": this.open ? undefined : true,
 			"aria-selected": this.#value.has(value),
-			"data-highlighted": dataAttr(this.highlighted === value),
+			"data-highlighted": dataAttr(dequal(this.highlighted, value)),
 			tabindex: -1,
 			role: "option",
 			onmouseover: () => {
@@ -352,7 +412,15 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 
 	getOptions(): T[] {
 		const els = this.getOptionsEls();
-		return els.map((el) => el.dataset.value as T);
+		return els
+			.map((el) => {
+				try {
+					return el.dataset.value ? JSON.parse(el.dataset.value) : undefined;
+				} catch {
+					return undefined;
+				}
+			})
+			.filter((v): v is T => v !== undefined);
 	}
 
 	highlight(value: T) {
@@ -362,13 +430,13 @@ export class Combobox<T extends string, Multiple extends boolean = false> extend
 
 	highlightNext() {
 		const options = this.getOptions();
-		const next = findNext(options, (v) => v === this.highlighted);
+		const next = findNext(options, (v) => dequal(v, this.highlighted));
 		if (next !== undefined) this.highlight(next);
 	}
 
 	highlightPrev() {
 		const options = this.getOptions();
-		const prev = findPrev(options, (v) => v === this.highlighted);
+		const prev = findPrev(options, (v) => dequal(v, this.highlighted));
 		if (prev !== undefined) this.highlight(prev);
 	}
 

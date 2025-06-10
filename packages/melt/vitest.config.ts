@@ -1,6 +1,4 @@
 import { defineConfig } from "vitest/config";
-// @ts-ignore -- no types for this package
-import { svelteTesting } from "@testing-library/svelte/vite";
 
 export default defineConfig({
 	test: {
@@ -9,27 +7,43 @@ export default defineConfig({
 			provider: "v8",
 			include: ["src/**/*.{svelte,js,ts}"],
 		},
-		// workspace settings
-		workspace: [
+		projects: [
 			{
+				// Client-side tests (Svelte components)
 				extends: "./vite.config.ts",
-				plugins: [svelteTesting()],
 				test: {
 					name: "client",
-					environment: "jsdom",
-					clearMocks: true,
+					environment: "browser",
+					testTimeout: 2000,
+					browser: {
+						enabled: true,
+						provider: "playwright",
+						// Multiple browser instances for better performance
+						// Uses single Vite server with shared caching
+						instances: [{ browser: "chromium" }, { browser: "firefox" }],
+					},
 					include: ["src/**/*.{test,spec}.svelte.{js,ts}"],
-					exclude: ["src/lib/server/**"],
+					exclude: ["src/lib/server/**", "src/**/*.ssr.{test,spec}.{js,ts}"],
 					setupFiles: ["./vitest-setup-client.ts"],
 				},
 			},
 			{
+				// SSR tests (Server-side rendering)
+				extends: "./vite.config.ts",
+				test: {
+					name: "ssr",
+					environment: "node",
+					include: ["src/**/*.ssr.{test,spec}.{js,ts}"],
+				},
+			},
+			{
+				// Server-side tests (Node.js utilities)
 				extends: "./vite.config.ts",
 				test: {
 					name: "server",
 					environment: "node",
 					include: ["src/**/*.{test,spec}.{js,ts}"],
-					exclude: ["src/**/*.{test,spec}.svelte.{js,ts}"],
+					exclude: ["src/**/*.{test,spec}.svelte.{js,ts}", "src/**/*.ssr.{test,spec}.{js,ts}"],
 				},
 			},
 		],

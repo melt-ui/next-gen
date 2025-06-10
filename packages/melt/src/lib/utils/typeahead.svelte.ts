@@ -2,7 +2,7 @@ import type { MaybeGetter } from "$lib/types";
 import { useDebounce } from "runed";
 import { extract } from "./extract";
 
-type Item = { value: string; typeahead?: string; current?: boolean };
+type Item = { value: unknown; typeahead: string; current?: boolean };
 
 export type CreateTypeaheadArgs<T extends Item> = {
 	/**

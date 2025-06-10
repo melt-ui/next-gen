@@ -39,7 +39,7 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
   const select = new Select<Option>();
 </script>
 
-<label for={select.ids.trigger}>Anime</label>
+<label {...select.label}>Anime</label>
 <button	{...select.trigger}>
 	{select.value ?? "Select an anime"}
 </button>

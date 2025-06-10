@@ -1,7 +1,7 @@
-import { expectTypeOf, it } from "vitest";
-import { Accordion, type AccordionProps } from "./Accordion.svelte";
-import type { SvelteSet } from "svelte/reactivity";
 import { testWithEffect } from "$lib/utils/test.svelte";
+import type { SvelteSet } from "svelte/reactivity";
+import { expectTypeOf } from "vitest";
+import { Accordion } from "../Accordion.svelte";
 
 testWithEffect("Should have valid types", () => {
 	const a1 = new Accordion();

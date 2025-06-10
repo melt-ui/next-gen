@@ -26,8 +26,13 @@ jobs:
           run_install: true
       - run: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} && pnpm run check
 
-  Tests:
+  test:
+    name: Unit Tests & Coverage
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.52.0-noble
+      options: --user 1001
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2
