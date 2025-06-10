@@ -2,8 +2,8 @@ import { testWithEffect } from "$lib/utils/test.svelte";
 import { expect } from "vitest";
 import { Select } from "../Select.svelte.js";
 import { SvelteSet } from "svelte/reactivity";
-import { render, screen } from "@testing-library/svelte";
-import userEvent from "@testing-library/user-event";
+import { render } from "vitest-browser-svelte";
+import { page, userEvent } from "@vitest/browser/context";
 import SelectTest from "./SelectTest.svelte";
 
 testWithEffect("Single selection should not toggle", () => {
@@ -44,25 +44,25 @@ testWithEffect("Allows selecting non-strings", () => {
 });
 
 testWithEffect("typeahead", async () => {
-	const user = userEvent.setup();
+	const { container } = render(SelectTest);
 
-	const _ = render(SelectTest);
-	const trigger = screen.getByRole("combobox");
-	const listbox = screen.getByRole("listbox");
-	expect(trigger.textContent).toEqual("Select an item");
-	expect(listbox.getAttribute("aria-expanded")).toEqual("false");
+	const trigger = page.getByRole("combobox");
+	const listbox = page.getByRole("listbox");
 
-	await user.click(trigger);
+	expect(trigger).toHaveTextContent("Select an item");
+	expect(container.querySelector("[role='listbox']")).toHaveAttribute("aria-expanded", "false");
 
-	expect(listbox.getAttribute("aria-expanded")).toEqual("true");
+	await trigger.click();
 
-	const options = screen.getAllByRole("option");
-	await user.hover(options[0]!);
-	expect(options[0]?.dataset.highlighted).toEqual("");
+	expect(listbox).toHaveAttribute("aria-expanded", "true");
 
-	await user.keyboard("o");
+	const firstOption = page.getByRole("option").first();
+	await firstOption.hover();
+	expect(firstOption).toHaveAttribute("data-highlighted", "");
+
+	await userEvent.type(trigger, "o");
 	await new Promise((resolve) => setTimeout(resolve, 100));
 	// TODO: fix
-	// console.log(options);
-	// expect(options[2]?.dataset.highlighted).toEqual("");
+	// const thirdOption = page.getByRole("option").nth(2);
+	// await expect(thirdOption).toHaveAttribute("data-highlighted", "");
 });

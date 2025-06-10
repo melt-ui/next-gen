@@ -1,9 +1,9 @@
 import { testWithEffect } from "$lib/utils/test.svelte";
-import { expect } from "vitest";
-import { Combobox } from "../Combobox.svelte.js";
-import { SvelteSet } from "svelte/reactivity";
-import { render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
+import { SvelteSet } from "svelte/reactivity";
+import { expect } from "vitest";
+import { render } from "vitest-browser-svelte";
+import { Combobox } from "../Combobox.svelte.js";
 import ComboboxTest from "./ComboboxTest.svelte";
 
 testWithEffect("Single selection should not toggle", () => {
@@ -74,21 +74,25 @@ testWithEffect("highlighting works with non-strings", () => {
 testWithEffect("basic interaction with non-string values", async () => {
 	const user = userEvent.setup();
 
-	const _ = render(ComboboxTest);
+	const screen = render(ComboboxTest);
 	const input = screen.getByRole("combobox");
 	const listbox = screen.getByRole("listbox");
-	expect(listbox.getAttribute("aria-expanded")).toEqual("false");
 
-	await user.click(input);
+	expect(screen.container.querySelector("[role='listbox']")).toHaveAttribute(
+		"aria-expanded",
+		"false",
+	);
 
-	expect(listbox.getAttribute("aria-expanded")).toEqual("true");
+	await user.click(input.element());
 
-	const options = screen.getAllByRole("option");
+	await expect.element(listbox).toHaveAttribute("aria-expanded", "true");
+
+	const options = screen.getByRole("option").all();
 	expect(options).toHaveLength(3);
 
 	// Click on the first option (number 1)
-	await user.click(options[0]!);
+	await user.click(options[0]!.element()!);
 
 	// Should be selected
-	expect(options[0]?.getAttribute("aria-selected")).toEqual("true");
+	expect(options[0]!.element().getAttribute("aria-selected")).toEqual("true");
 });

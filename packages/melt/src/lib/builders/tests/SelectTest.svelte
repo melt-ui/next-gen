@@ -10,6 +10,7 @@
 
 	const select = new Select<Item["value"], true>({
 		multiple: true,
+		sameWidth: false,
 	});
 </script>
 
@@ -21,7 +22,7 @@
 <div {...select.content}>
 	{#each items as item}
 		<div {...select.getOption(item.value, item.label)}>
-			<span>{item}</span>
+			<span>{item.label}</span>
 			{#if select.isSelected(item.value)}
 				selected
 			{/if}
