@@ -350,6 +350,10 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 
 	#valueLabelMap = new Map<string, string>();
 
+	get valueAsString() {
+		return this.#value.toArray().join(", ");
+	}
+
 	getOptionLabel(value: T) {
 		const key = unique(value);
 		if (this.#valueLabelMap.has(key)) {

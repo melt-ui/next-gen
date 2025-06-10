@@ -39,7 +39,7 @@
 
 <Preview>
 	<div class="mx-auto flex w-[300px] flex-col gap-1">
-		<label for={select.ids.trigger}>Anime</label>
+		<label {...select.label}>Anime</label>
 		<button
 			{...select.trigger}
 			class="flex items-center justify-between overflow-hidden rounded-xl border border-gray-500 bg-gray-100 py-2 pl-3 pr-4 text-left text-gray-800

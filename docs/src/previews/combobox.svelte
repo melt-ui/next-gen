@@ -84,13 +84,13 @@
 
 <Preview>
 	<div class="mx-auto flex w-[300px] flex-col gap-1">
-		<label for={combobox.ids.input}>Favorite Character</label>
+		<label {...combobox.label}>Favorite Character</label>
 		<div class="relative text-left text-gray-800 transition dark:text-gray-200">
 			<AlphabetJapanese class="abs-y-center absolute left-3 shrink-0" />
 			<input
 				{...combobox.input}
 				class="w-full rounded-xl border border-gray-500 bg-gray-100 py-2 pl-9 text-left
-					focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
+					disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
 					dark:bg-gray-900"
 				type="text"
 			/>

@@ -39,7 +39,7 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 	});
 </script>
 
-<label for={combobox.ids.input}>Favorite Character</label>
+<label {...combobox.label}>Favorite Character</label>
 <input {...combobox.input} />
 <button {...combobox.trigger}>open</button>
 
