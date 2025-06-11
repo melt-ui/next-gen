@@ -1,5 +1,13 @@
 # melt
 
+## 0.35.0
+
+### Minor Changes
+
+- select & combobox: label ([#148](https://github.com/melt-ui/next-gen/pull/148))
+
+- select & combobox: accept non-string values ([#148](https://github.com/melt-ui/next-gen/pull/148))
+
 ## 0.34.0
 
 ### Minor Changes
