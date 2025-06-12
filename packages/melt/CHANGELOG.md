@@ -1,5 +1,11 @@
 # melt
 
+## 0.35.1
+
+### Patch Changes
+
+- combobox: fix valueAsString ([`ff3067d`](https://github.com/melt-ui/next-gen/commit/ff3067d9403ebd17e933b6d3685df44d67080e11))
+
 ## 0.35.0
 
 ### Minor Changes
