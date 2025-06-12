@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "concurrently --kill-others \"pnpm --parallel dev\" \"pnpm watch-and-type\"",
 		"test": "pnpm --filter melt test",
+		"test:headless": "pnpm --filter melt test:headless",
 		"check": "pnpm --filter melt check",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",

@@ -38,6 +38,7 @@
 	"scripts": {
 		"dev": "pnpm sync && pnpm watch",
 		"test": "vitest",
+		"test:headless": "vitest --browser.headless",
 		"sync": "svelte-kit sync",
 		"build": "npm run package",
 		"preview": "vite preview",

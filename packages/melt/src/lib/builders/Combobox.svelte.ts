@@ -351,7 +351,7 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 	#valueLabelMap = new Map<string, string>();
 
 	get valueAsString() {
-		return this.#value.toArray().join(", ");
+		return this.#value.toArray().map(value => this.getOptionLabel(value)).join(", ");
 	}
 
 	getOptionLabel(value: T) {
