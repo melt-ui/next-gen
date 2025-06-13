@@ -6,7 +6,7 @@ import { SvelteMap } from "svelte/reactivity";
 import { isHtmlElement, isTouch } from "../utils/is";
 import { AnimationFrames } from "$lib/utils/animation-frames.svelte";
 import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
-import { watch } from "runed";
+import { useEventListener, watch } from "runed";
 
 const toasterMeta = createBuilderMetadata("toaster", ["root"]);
 
@@ -38,6 +38,14 @@ export type ToasterProps = {
 	 * @default 'pause'
 	 */
 	hover?: MaybeGetter<"pause" | "pause-all" | null | undefined>;
+
+	/**
+	 * The behaviour when the user switches to another tab.
+	 * Pass in `null` to disable.
+	 * 
+	 * @default 'pause-all'
+	 */
+	tabHidden?: MaybeGetter<"pause-all" | null | undefined>;
 };
 
 export type AddToastArgs<T = object> = {
@@ -93,6 +101,7 @@ export class Toaster<T = object> {
 	closeDelay = $derived(extract(this.#props.closeDelay, 5000));
 	type = $derived(extract(this.#props.type, "polite"));
 	hover = $derived(extract(this.#props.hover, "pause"));
+	tabHidden = $derived(extract(this.#props.tabHidden, "pause-all"));
 
 	// State
 	#toastsMap = new SvelteMap<string, Toast<T>>();
@@ -104,6 +113,12 @@ export class Toaster<T = object> {
 
 	constructor(props: ToasterProps = {}) {
 		this.#props = props;
+
+		useEventListener(
+			() => document,
+			"visibilitychange",
+			this.#onVisibilityChange.bind(this)
+		);
 	}
 
 	/**
@@ -153,6 +168,28 @@ export class Toaster<T = object> {
 		if (typeof args.closeDelay === "number") toast.closeDelay = args.closeDelay;
 		if (typeof args.type === "string") toast.type = args.type;
 	};
+
+	/**
+	 * Pauses all toasts.
+	 */
+	pauseAll() {
+		this.toasts.forEach((t) => t.pause());
+	}
+
+	/**
+	 * Resumes all toasts countdowns.
+	 */
+	resumeAll() {
+		this.toasts.forEach((t) => t.resume());
+	}
+
+	#onVisibilityChange() {
+		if (this.tabHidden === "pause-all" && document.hidden) {
+			this.pauseAll();
+		} else {
+			this.resumeAll();
+		}
+	}
 
 	/**
 	 * Spread attributes for the container of the toasts.
