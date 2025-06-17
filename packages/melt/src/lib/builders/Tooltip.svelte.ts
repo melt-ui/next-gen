@@ -15,6 +15,7 @@ import {
 import type { ComputePositionReturn, ElementRects } from "@floating-ui/dom";
 import { dequal } from "dequal";
 import { useEventListener, watch } from "runed";
+import { createAttachmentKey } from "svelte/attachments";
 import type { HTMLAttributes } from "svelte/elements";
 import { on } from "svelte/events";
 
@@ -265,13 +266,6 @@ export class Tooltip {
 	}
 
 	get trigger() {
-		$effect(() => {
-			const el = document.getElementById(this.ids.content);
-			if (!isHtmlElement(el)) return;
-
-			return () => (this.#isPointerInsideTrigger = false);
-		});
-
 		return {
 			[dataAttrs.trigger]: "",
 			id: this.ids.trigger,
@@ -305,78 +299,17 @@ export class Tooltip {
 				this.#openTooltip("focus");
 			},
 			onblur: () => this.#closeTooltip(true),
+			[createAttachmentKey()]: () => {
+				const el = document.getElementById(this.ids.content);
+				if (!isHtmlElement(el)) return;
+
+				return () => (this.#isPointerInsideTrigger = false);
+			},
 			...this.#sharedProps,
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
 	get content() {
-		$effect(() => {
-			const triggerEl = document.getElementById(this.ids.trigger);
-			const contentEl = document.getElementById(this.ids.content);
-
-			if (!triggerEl || !contentEl || !this.open) return;
-
-			useFloating({
-				node: () => triggerEl,
-				floating: () => contentEl,
-				config: {
-					...this.floatingConfig,
-					onCompute: ({ floatingApply, arrowApply, ...data }) => {
-						this.#floatingData = data;
-						if (this.floatingConfig?.onCompute) {
-							this.floatingConfig.onCompute({ floatingApply, arrowApply, ...data });
-						} else {
-							floatingApply();
-							arrowApply();
-						}
-					},
-				},
-			});
-		});
-
-		$effect(() => {
-			const triggerEl = document.getElementById(this.ids.trigger);
-			const contentEl = document.getElementById(this.ids.content);
-
-			if (!triggerEl || !contentEl) return;
-
-			if (!this.isVisible) {
-				safelyHidePopover(contentEl);
-				return () => (this.#isPointerInsideContent = false);
-			}
-
-			return autoOpenPopover({ el: contentEl });
-		});
-
-		useEventListener(
-			() => document,
-			"scroll",
-			(e) => this.#handleScroll(e),
-			{ capture: true },
-		);
-
-		useEventListener(
-			() => document,
-			"keydown",
-			(e) => {
-				const el = document.getElementById(this.ids.content);
-				if (e.key !== "Escape" || !this.open || !el) return;
-
-				e.preventDefault();
-				const openTooltips = [...el.querySelectorAll("[popover]")].filter((child) => {
-					if (!isHtmlElement(child)) return false;
-					// If child is a Melt popover, check if it's open
-					if (child.matches(dataSelectors.content)) return child.dataset.open !== undefined;
-					return child.matches(":popover-open");
-				});
-
-				if (openTooltips.length) return;
-
-				this.#stopOpening();
-				setTimeout(() => (this.open = false));
-			},
-		);
-
 		return {
 			[dataAttrs.content]: "",
 			id: this.ids.content,
@@ -393,6 +326,74 @@ export class Tooltip {
 				this.#isPointerInsideContent = false;
 			},
 			onpointerdown: () => this.#openTooltip("pointer"),
+			[createAttachmentKey()]: () => {
+				$effect(() => {
+					const triggerEl = document.getElementById(this.ids.trigger);
+					const contentEl = document.getElementById(this.ids.content);
+
+					if (!triggerEl || !contentEl || !this.open) return;
+
+					useFloating({
+						node: () => triggerEl,
+						floating: () => contentEl,
+						config: {
+							...this.floatingConfig,
+							onCompute: ({ floatingApply, arrowApply, ...data }) => {
+								this.#floatingData = data;
+								if (this.floatingConfig?.onCompute) {
+									this.floatingConfig.onCompute({ floatingApply, arrowApply, ...data });
+								} else {
+									floatingApply();
+									arrowApply();
+								}
+							},
+						},
+					});
+				});
+
+				$effect(() => {
+					const triggerEl = document.getElementById(this.ids.trigger);
+					const contentEl = document.getElementById(this.ids.content);
+
+					if (!triggerEl || !contentEl) return;
+
+					if (!this.isVisible) {
+						safelyHidePopover(contentEl);
+						return () => (this.#isPointerInsideContent = false);
+					}
+
+					return autoOpenPopover({ el: contentEl });
+				});
+
+				useEventListener(
+					() => document,
+					"scroll",
+					(e) => this.#handleScroll(e),
+					{ capture: true },
+				);
+
+				useEventListener(
+					() => document,
+					"keydown",
+					(e) => {
+						const el = document.getElementById(this.ids.content);
+						if (e.key !== "Escape" || !this.open || !el) return;
+
+						e.preventDefault();
+						const openTooltips = [...el.querySelectorAll("[popover]")].filter((child) => {
+							if (!isHtmlElement(child)) return false;
+							// If child is a Melt popover, check if it's open
+							if (child.matches(dataSelectors.content)) return child.dataset.open !== undefined;
+							return child.matches(":popover-open");
+						});
+
+						if (openTooltips.length) return;
+
+						this.#stopOpening();
+						setTimeout(() => (this.open = false));
+					},
+				);
+			},
 			...this.#sharedProps,
 			style: this.#sharedProps.style + `overflow: visible;`,
 		} as const satisfies HTMLAttributes<HTMLElement>;
