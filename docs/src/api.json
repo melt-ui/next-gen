@@ -1402,11 +1402,6 @@
         "description": ""
       },
       {
-        "name": "getOptionLabel",
-        "type": "(value: T) => string",
-        "description": ""
-      },
-      {
         "name": "getOption",
         "type": "(\n  value: T,\n  label?: string | undefined,\n  onSelect?: (() => void) | undefined,\n) => {\n  readonly id: string\n  readonly \"data-melt-combobox-option\": \"\"\n  readonly \"data-value\": string\n  readonly \"data-label\": string\n  readonly \"aria-hidden\": true | undefined\n  readonly \"aria-selected\": boolean\n  readonly \"data-highlighted\": \"\" | undefined\n  readonly tabindex: -1\n  readonly role: \"option\"\n  readonly onmouseover: () => void\n  readonly onclick: () => void\n}",
         "description": "Gets the attributes for the option element.\n@param value The value of the option.\n@param label The label to display for the option. If not provided, the value will be stringified.\n@param onSelect An optional callback to call when the option is selected, overriding the default behavior.\n@returns The attributes for the option element."
@@ -1476,6 +1471,11 @@
       {
         "name": "isSelected",
         "type": "(value: T) => boolean",
+        "description": ""
+      },
+      {
+        "name": "getOptionLabel",
+        "type": "(value: T) => string",
         "description": ""
       },
       {

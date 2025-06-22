@@ -1,7 +1,7 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { findNext, findPrev, mapAndFilter } from "$lib/utils/array";
-import { dataAttr } from "$lib/utils/attribute";
+import { dataAttr, idAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
@@ -12,6 +12,7 @@ import {
 	type MaybeMultiple,
 	type OnMultipleChange,
 } from "$lib/utils/selection-state.svelte";
+import { unique } from "$lib/utils/string";
 import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
 import { dequal } from "dequal";
 import { tick } from "svelte";
@@ -166,8 +167,17 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 	}
 
 	getOptionLabel = (value: T) => {
-		return this.#valueLabelMap.get(value) ?? `${value}`;
+		const key = unique(value);
+		if (this.#valueLabelMap.has(key)) {
+			return this.#valueLabelMap.get(key)!;
+		}
+
+		return typeof value === "string" ? (value as string) : "";
 	};
+
+	#setOptionLabel(value: T, label: string) {
+		return this.#valueLabelMap.set(unique(value), label);
+	}
 
 	get value() {
 		return this.#value.current;
@@ -310,13 +320,13 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 	}
 
 	getOptionId(value: T) {
-		return `${this.ids.content}-option-${dataAttr(value)}`;
+		return idAttr(unique(value));
 	}
 
-	#valueLabelMap = new Map<T, string>();
+	#valueLabelMap = new Map<string, string>();
 
 	getOption(value: T, label?: string) {
-		this.#valueLabelMap.set(value, label ?? `${value}`);
+		if (label) this.#setOptionLabel(value, label);
 
 		return {
 			[dataAttrs.option]: "",
