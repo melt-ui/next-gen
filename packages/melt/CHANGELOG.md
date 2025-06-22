@@ -1,5 +1,13 @@
 # melt
 
+## 0.35.2
+
+### Patch Changes
+
+- tooltip: fix effects ([#152](https://github.com/melt-ui/next-gen/pull/152))
+
+- select: align label storage with combobox ([#152](https://github.com/melt-ui/next-gen/pull/152))
+
 ## 0.35.1
 
 ### Patch Changes
