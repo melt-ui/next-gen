@@ -351,17 +351,20 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 	#valueLabelMap = new Map<string, string>();
 
 	get valueAsString() {
-		return this.#value.toArray().map(value => this.getOptionLabel(value)).join(", ");
+		return this.#value
+			.toArray()
+			.map((value) => this.getOptionLabel(value))
+			.join(", ");
 	}
 
-	getOptionLabel(value: T) {
+	getOptionLabel = (value: T) => {
 		const key = unique(value);
 		if (this.#valueLabelMap.has(key)) {
 			return this.#valueLabelMap.get(key)!;
 		}
 
 		return typeof value === "string" ? (value as string) : "";
-	}
+	};
 
 	#setOptionLabel(value: T, label: string) {
 		return this.#valueLabelMap.set(unique(value), label);
