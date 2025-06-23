@@ -30,6 +30,11 @@ export default [
 	prettier,
 	...svelte.configs["flat/prettier"],
 	{
+		rules: {
+			"svelte/require-each-key": "off",
+		},
+	},
+	{
 		languageOptions: {
 			globals: {
 				...globals.browser,

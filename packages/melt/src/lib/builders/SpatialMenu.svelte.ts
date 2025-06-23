@@ -57,13 +57,143 @@ export class SpatialMenu<T> {
 		});
 	}
 
+	#findClosestItem(direction: "up" | "down" | "left" | "right"): SpatialMenuItem<T> | null {
+		const current = this.#items.find((i) => i.highlighted);
+		if (!current?.rect) return null;
+
+		const currentRect = current.rect;
+		const candidates = this.#items.filter((item) => item !== current && item.rect);
+
+		if (candidates.length === 0) return null;
+
+		let bestCandidate: SpatialMenuItem<T> | null = null;
+		let bestScore = Infinity;
+
+		for (const candidate of candidates) {
+			const candidateRect = candidate.rect!;
+			let isValidDirection = false;
+			let distance = 0;
+
+			switch (direction) {
+				case "up":
+					isValidDirection = candidateRect.bottom <= currentRect.top;
+					if (isValidDirection) {
+						const verticalDistance = currentRect.top - candidateRect.bottom;
+						const horizontalOverlap = Math.max(
+							0,
+							Math.min(currentRect.right, candidateRect.right) -
+								Math.max(currentRect.left, candidateRect.left),
+						);
+						const horizontalDistance =
+							horizontalOverlap > 0
+								? 0
+								: Math.min(
+										Math.abs(currentRect.left - candidateRect.right),
+										Math.abs(currentRect.right - candidateRect.left),
+									);
+						distance = verticalDistance + horizontalDistance * 2;
+					}
+					break;
+				case "down":
+					isValidDirection = candidateRect.top >= currentRect.bottom;
+					if (isValidDirection) {
+						const verticalDistance = candidateRect.top - currentRect.bottom;
+						const horizontalOverlap = Math.max(
+							0,
+							Math.min(currentRect.right, candidateRect.right) -
+								Math.max(currentRect.left, candidateRect.left),
+						);
+						const horizontalDistance =
+							horizontalOverlap > 0
+								? 0
+								: Math.min(
+										Math.abs(currentRect.left - candidateRect.right),
+										Math.abs(currentRect.right - candidateRect.left),
+									);
+						distance = verticalDistance + horizontalDistance * 2;
+					}
+					break;
+				case "left":
+					isValidDirection = candidateRect.right <= currentRect.left;
+					if (isValidDirection) {
+						const horizontalDistance = currentRect.left - candidateRect.right;
+						const verticalOverlap = Math.max(
+							0,
+							Math.min(currentRect.bottom, candidateRect.bottom) -
+								Math.max(currentRect.top, candidateRect.top),
+						);
+						const verticalDistance =
+							verticalOverlap > 0
+								? 0
+								: Math.min(
+										Math.abs(currentRect.top - candidateRect.bottom),
+										Math.abs(currentRect.bottom - candidateRect.top),
+									);
+						distance = horizontalDistance + verticalDistance * 2;
+					}
+					break;
+				case "right":
+					isValidDirection = candidateRect.left >= currentRect.right;
+					if (isValidDirection) {
+						const horizontalDistance = candidateRect.left - currentRect.right;
+						const verticalOverlap = Math.max(
+							0,
+							Math.min(currentRect.bottom, candidateRect.bottom) -
+								Math.max(currentRect.top, candidateRect.top),
+						);
+						const verticalDistance =
+							verticalOverlap > 0
+								? 0
+								: Math.min(
+										Math.abs(currentRect.top - candidateRect.bottom),
+										Math.abs(currentRect.bottom - candidateRect.top),
+									);
+						distance = horizontalDistance + verticalDistance * 2;
+					}
+					break;
+			}
+
+			if (isValidDirection && distance < bestScore) {
+				bestScore = distance;
+				bestCandidate = candidate;
+			}
+		}
+
+		return bestCandidate;
+	}
+
 	#onKeydown = (e: KeyboardEvent) => {
 		const arrowKeys = [kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.ARROW_LEFT, kbd.ARROW_RIGHT] as string[];
 
 		if (arrowKeys.includes(e.key)) {
 			e.preventDefault();
+
 			const current = this.#items.find((i) => i.highlighted);
-			if (!current) this.highlighted = this.#items[0]?.value ?? null;
+			if (!current) {
+				this.highlighted = this.#items[0]?.value ?? null;
+				return;
+			}
+
+			let nextItem: SpatialMenuItem<T> | null = null;
+
+			switch (e.key) {
+				case kbd.ARROW_UP:
+					nextItem = this.#findClosestItem("up");
+					break;
+				case kbd.ARROW_DOWN:
+					nextItem = this.#findClosestItem("down");
+					break;
+				case kbd.ARROW_LEFT:
+					nextItem = this.#findClosestItem("left");
+					break;
+				case kbd.ARROW_RIGHT:
+					nextItem = this.#findClosestItem("right");
+					break;
+			}
+
+			if (nextItem) {
+				this.highlighted = nextItem.value;
+			}
 		}
 	};
 
@@ -71,6 +201,7 @@ export class SpatialMenu<T> {
 	get root() {
 		return {
 			[dataAttrs.root]: "",
+			// TODO: check if this is okay in a11y context
 			tabindex: 0,
 			onkeydown: this.#onKeydown,
 			[createAttachmentKey()]: (node) => {
@@ -161,4 +292,3 @@ class SpatialMenuItem<T> {
 		this.#props.parent.onSelect?.(this.#props.value);
 	}
 }
-
