@@ -28,7 +28,7 @@ export function createIds<const T extends DataIds<string, string[]>>(identifiers
 	return Object.keys(identifiers).reduce((acc, key) => {
 		acc[key] = `${key}-${id}`;
 		return acc;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		 
 	}, {} as any);
 }
 
@@ -53,7 +53,7 @@ export function createBuilderMetadata<const Name extends string, const Parts ext
 	const dataSelectors = keys(dataAttrs).reduce((acc, key) => {
 		acc[key] = `[${dataAttrs[key]}]`;
 		return acc;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		 
 	}, {} as any);
 
 	return {

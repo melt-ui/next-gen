@@ -512,6 +512,57 @@
     ],
     "propsAlt": "export type TabsProps<T extends string = string> = {\n  /**\n   * If `true`, the value will be changed whenever a trigger is focused.\n   *\n   * @default true\n   */\n  selectWhenFocused?: MaybeGetter<boolean | undefined>;\n  /**\n   * If the the trigger selection should loop when navigating with the arrow keys.\n   *\n   * @default true\n   */\n  loop?: MaybeGetter<boolean | undefined>;\n  /**\n   * The orientation of the tabs.\n   *\n   * @default \"horizontal\"\n   */\n  orientation?: MaybeGetter<\"horizontal\" | \"vertical\" | undefined>;\n  /**\n   * The default value for `tabs.value`\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that `tabs.value` only changes when the getter returns a new value.\n   *\n   */\n  value: MaybeGetter<T>;\n  /**\n   * Called when the `Tabs` instance tries to change the active tab.\n   */\n  onValueChange?: (active: T) => void;\n};"
   },
+  "SpatialMenu": {
+    "constructorProps": [
+      {
+        "name": "highlighted",
+        "type": "MaybeGetter<T | null | undefined>",
+        "description": "The currently highlighted value.",
+        "optional": true
+      },
+      {
+        "name": "onHighlightChange",
+        "type": "((highlighted: T | null) => void) | undefined",
+        "description": "Called when the highlighted value changes.",
+        "optional": true
+      },
+      {
+        "name": "onSelect",
+        "type": "((value: T) => void) | undefined",
+        "optional": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "getItem",
+        "type": "(\n  value: T,\n  options?: Omit<SpatialMenuItemProps<T>, \"parent\" | \"value\"> | undefined,\n) => SpatialMenuItem<T>",
+        "description": ""
+      }
+    ],
+    "properties": [
+      {
+        "name": "onSelect",
+        "type": "((value: T) => void) | undefined",
+        "description": ""
+      },
+      {
+        "name": "highlighted",
+        "type": "T | null",
+        "description": ""
+      },
+      {
+        "name": "root",
+        "type": "{\n  readonly [x: symbol]: (node: HTMLElement) => () => void\n  readonly \"data-melt-spatial-menu-root\": \"\"\n  readonly tabindex: 0\n  readonly onkeydown: (e: KeyboardEvent) => void\n}",
+        "description": "The root element."
+      },
+      {
+        "name": "input",
+        "type": "{\n  readonly [x: symbol]: (node: HTMLInputElement) => () => void\n  readonly \"data-melt-spatial-menu-input\": \"\"\n  readonly onkeydown: (e: KeyboardEvent) => void\n}",
+        "description": ""
+      }
+    ],
+    "propsAlt": "export type SpatialMenuProps<T> = {\n  /**\n   * The currently highlighted value.\n   */\n  highlighted?: MaybeGetter<T | null | undefined>;\n\n  /**\n   * Called when the highlighted value changes.\n   */\n  onHighlightChange?: (highlighted: T | null) => void;\n\n  onSelect?: (value: T) => void;\n};"
+  },
   "Slider": {
     "constructorProps": [
       {

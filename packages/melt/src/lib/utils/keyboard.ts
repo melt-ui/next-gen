@@ -41,6 +41,8 @@ export const kbd = {
 	P: "p",
 } as const;
 
+type Key = (typeof kbd)[keyof typeof kbd];
+
 /** Key sets for navigation within lists, such as select, menu, and combobox. */
 export const FIRST_KEYS = [kbd.ARROW_DOWN, kbd.PAGE_UP, kbd.HOME];
 export const LAST_KEYS = [kbd.ARROW_UP, kbd.PAGE_DOWN, kbd.END];
@@ -76,3 +78,76 @@ export const getDirectionalKeys = (
 		prevKey: getPrevKey(dir, orientation),
 	};
 };
+
+type KeyMap = {
+	[key in Key]?:
+		| ((e: KeyboardEvent) => void)
+		| {
+				handler: (e: KeyboardEvent) => void;
+				/**
+				 * Whether to prevent default behaviour
+				 * @default true
+				 **/
+				preventDefault?: boolean;
+				/**
+				 * Whether to stop propagation of the event
+				 * @default false
+				 **/
+				stopPropagation?: boolean;
+				/**
+				 * Whether to stop immediate propagation of the event
+				 * @default false
+				 **/
+				stopImmediatePropagation?: boolean;
+				/**
+				 * Whether to only activate if ctrl/cmd key is pressed
+				 * @default false
+				 **/
+				ctrl?: boolean;
+				/**
+				 * Whether to only activate if shift key is pressed
+				 * @default false
+				 **/
+				shift?: boolean;
+				/**
+				 * Whether to only activate if alt key is pressed
+				 * @default false
+				 **/
+				alt?: boolean;
+		  };
+};
+
+export function createKeydownHandler(keyMap: KeyMap) {
+	return (e: KeyboardEvent) => {
+		if (!(e.key in keyMap)) return;
+		const k = e.key as Key;
+
+		const handler = keyMap[k];
+		if (!handler) return;
+
+		if (typeof handler === "function") {
+			handler(e);
+			return;
+		}
+
+		const {
+			handler: handlerFn,
+			preventDefault,
+			stopPropagation,
+			stopImmediatePropagation,
+			ctrl,
+			shift,
+			alt,
+		} = handler;
+
+		if (preventDefault) e.preventDefault();
+		if (stopPropagation) e.stopPropagation();
+		if (stopImmediatePropagation) e.stopImmediatePropagation();
+
+		if (ctrl && !e.ctrlKey) return;
+		if (shift && !e.shiftKey) return;
+		if (alt && !e.altKey) return;
+
+		handlerFn(e);
+	};
+}

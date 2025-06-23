@@ -1,0 +1,54 @@
+---
+title: Spatial Menu
+description: A description of the SpatialMenu component.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/SpatialMenu.svelte";
+import Features from "@components/features.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 💪 It works
+</Features>
+
+## Usage
+
+<Tabs>
+  <TabItem label="Builder">
+```svelte
+<script lang="ts">
+  import { SpatialMenu } from "melt/builders";
+
+  const SpatialMenu = new SpatialMenu();
+</script>
+
+<div {...SpatialMenu.root}>
+  SpatialMenu content
+</div>
+```
+  </TabItem>
+
+  <TabItem label="Component">
+```svelte
+<script lang="ts">
+  import { SpatialMenu } from "melt/components";
+</script>
+
+<SpatialMenu>
+  {#snippet children(SpatialMenu)}
+    <div {...SpatialMenu.root}>
+      SpatialMenu content
+    </div>
+  {/snippet}
+</SpatialMenu>
+```
+  </TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="SpatialMenu" />
