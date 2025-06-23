@@ -25,12 +25,21 @@ export type SpatialMenuProps<T> = {
 	onHighlightChange?: (highlighted: T | null) => void;
 
 	onSelect?: (value: T) => void;
+
+	/**
+	 * Whether navigation should wrap around when reaching the edges.
+	 * @default false
+	 */
+	wrap?: MaybeGetter<boolean>;
 };
 
 export class SpatialMenu<T> {
 	/* Props */
 	#props!: SpatialMenuProps<T>;
 	onSelect = $derived(this.#props.onSelect);
+	wrap = $derived(
+		typeof this.#props.wrap === "function" ? this.#props.wrap() : this.#props.wrap ?? false,
+	);
 
 	/* State */
 	#elMap: {
@@ -159,6 +168,118 @@ export class SpatialMenu<T> {
 			}
 		}
 
+		if (!bestCandidate && this.wrap) {
+			bestCandidate = this.#findWrapAroundItem(direction);
+		}
+
+		return bestCandidate;
+	}
+
+	#findWrapAroundItem(direction: "up" | "down" | "left" | "right"): SpatialMenuItem<T> | null {
+		const current = this.#items.find((i) => i.highlighted);
+		if (!current?.rect) return null;
+
+		const currentRect = current.rect;
+		const candidates = this.#items.filter((item) => item !== current && item.rect);
+
+		if (candidates.length === 0) return null;
+
+		let bestCandidate: SpatialMenuItem<T> | null = null;
+		let bestScore = Infinity;
+
+		for (const candidate of candidates) {
+			const candidateRect = candidate.rect!;
+			let score = 0;
+
+			switch (direction) {
+				case "up":
+					// Find the bottommost item with best horizontal alignment
+					score = -candidateRect.bottom; // Prioritize items at the bottom (negative for max)
+					const horizontalOverlap = Math.max(
+						0,
+						Math.min(currentRect.right, candidateRect.right) -
+							Math.max(currentRect.left, candidateRect.left),
+					);
+					if (horizontalOverlap > 0) {
+						score -= 10000; // Big bonus for horizontal alignment
+					} else {
+						const horizontalDistance = Math.min(
+							Math.abs(currentRect.left - candidateRect.left),
+							Math.abs(currentRect.right - candidateRect.right),
+							Math.abs(currentRect.left - candidateRect.right),
+							Math.abs(currentRect.right - candidateRect.left),
+						);
+						score += horizontalDistance;
+					}
+					break;
+				case "down":
+					// Find the topmost item with best horizontal alignment
+					score = candidateRect.top; // Prioritize items at the top
+					const hOverlap = Math.max(
+						0,
+						Math.min(currentRect.right, candidateRect.right) -
+							Math.max(currentRect.left, candidateRect.left),
+					);
+					if (hOverlap > 0) {
+						score -= 10000; // Big bonus for horizontal alignment
+					} else {
+						const hDistance = Math.min(
+							Math.abs(currentRect.left - candidateRect.left),
+							Math.abs(currentRect.right - candidateRect.right),
+							Math.abs(currentRect.left - candidateRect.right),
+							Math.abs(currentRect.right - candidateRect.left),
+						);
+						score += hDistance;
+					}
+					break;
+				case "left":
+					// Find the rightmost item with best vertical alignment
+					score = -candidateRect.right; // Prioritize items at the right (negative for max)
+					const verticalOverlap = Math.max(
+						0,
+						Math.min(currentRect.bottom, candidateRect.bottom) -
+							Math.max(currentRect.top, candidateRect.top),
+					);
+					if (verticalOverlap > 0) {
+						score -= 10000; // Big bonus for vertical alignment
+					} else {
+						const verticalDistance = Math.min(
+							Math.abs(currentRect.top - candidateRect.top),
+							Math.abs(currentRect.bottom - candidateRect.bottom),
+							Math.abs(currentRect.top - candidateRect.bottom),
+							Math.abs(currentRect.bottom - candidateRect.top),
+						);
+						score += verticalDistance;
+					}
+					break;
+				case "right":
+					// Find the leftmost item with best vertical alignment
+					score = candidateRect.left; // Prioritize items at the left
+					const vOverlap = Math.max(
+						0,
+						Math.min(currentRect.bottom, candidateRect.bottom) -
+							Math.max(currentRect.top, candidateRect.top),
+					);
+					if (vOverlap > 0) {
+						score -= 10000; // Big bonus for vertical alignment
+					} else {
+						const vDistance = Math.min(
+							Math.abs(currentRect.top - candidateRect.top),
+							Math.abs(currentRect.bottom - candidateRect.bottom),
+							Math.abs(currentRect.top - candidateRect.bottom),
+							Math.abs(currentRect.bottom - candidateRect.top),
+						);
+						score += vDistance;
+					}
+					break;
+			}
+
+			if (score < bestScore) {
+				bestScore = score;
+				bestCandidate = candidate;
+			}
+		}
+
 		return bestCandidate;
 	}
 
@@ -271,6 +392,12 @@ class SpatialMenuItem<T> {
 		return {
 			[dataAttrs.item]: "",
 			"data-highlighted": dataAttr(this.highlighted),
+			onmouseenter: () => {
+				this.parent.highlighted = this.#props.value;
+			},
+			onclick: () => {
+				this.onSelect();
+			},
 			[createAttachmentKey()]: (node) => {
 				this.el = node;
 				this.#props.lifecycle.onMount();

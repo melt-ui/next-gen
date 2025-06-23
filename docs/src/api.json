@@ -530,6 +530,13 @@
         "name": "onSelect",
         "type": "((value: T) => void) | undefined",
         "optional": true
+      },
+      {
+        "name": "wrap",
+        "type": "MaybeGetter<boolean> | undefined",
+        "description": "Whether navigation should wrap around when reaching the edges.",
+        "defaultValue": "false",
+        "optional": true
       }
     ],
     "methods": [
@@ -543,6 +550,11 @@
       {
         "name": "onSelect",
         "type": "((value: T) => void) | undefined",
+        "description": ""
+      },
+      {
+        "name": "wrap",
+        "type": "boolean",
         "description": ""
       },
       {
@@ -561,7 +573,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type SpatialMenuProps<T> = {\n  /**\n   * The currently highlighted value.\n   */\n  highlighted?: MaybeGetter<T | null | undefined>;\n\n  /**\n   * Called when the highlighted value changes.\n   */\n  onHighlightChange?: (highlighted: T | null) => void;\n\n  onSelect?: (value: T) => void;\n};"
+    "propsAlt": "export type SpatialMenuProps<T> = {\n  /**\n   * The currently highlighted value.\n   */\n  highlighted?: MaybeGetter<T | null | undefined>;\n\n  /**\n   * Called when the highlighted value changes.\n   */\n  onHighlightChange?: (highlighted: T | null) => void;\n\n  onSelect?: (value: T) => void;\n\n  /**\n   * Whether navigation should wrap around when reaching the edges.\n   * @default false\n   */\n  wrap?: MaybeGetter<boolean>;\n};"
   },
   "Slider": {
     "constructorProps": [

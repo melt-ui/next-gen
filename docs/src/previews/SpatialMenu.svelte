@@ -11,22 +11,59 @@
 			defaultValue: false,
 			label: "Disabled",
 		},
+		wrap: {
+			type: "boolean",
+			defaultValue: false,
+			label: "Wrap Around",
+		},
+		columns: {
+			type: "number",
+			defaultValue: 3,
+			min: 2,
+			max: 6,
+			label: "Columns",
+		},
+		itemCount: {
+			type: "number",
+			defaultValue: 9,
+			min: 4,
+			max: 20,
+			label: "Item Count",
+		},
 	});
 
-	const items = [
-		{ id: "item-1", label: "Dashboard", position: "top-left" },
-		{ id: "item-2", label: "Analytics", position: "top-center" },
-		{ id: "item-3", label: "Settings", position: "top-right" },
-		{ id: "item-4", label: "Profile", position: "middle-left" },
-		{ id: "item-5", label: "Home", position: "center" },
-		{ id: "item-6", label: "Messages", position: "middle-right" },
-		{ id: "item-7", label: "Calendar", position: "bottom-left" },
-		{ id: "item-8", label: "Tasks", position: "bottom-center" },
-		{ id: "item-9", label: "Help", position: "bottom-right" },
+	const allItems = [
+		"Dashboard",
+		"Analytics",
+		"Settings",
+		"Profile",
+		"Home",
+		"Messages",
+		"Calendar",
+		"Tasks",
+		"Help",
+		"Reports",
+		"Users",
+		"Admin",
+		"Notifications",
+		"Search",
+		"Export",
+		"Import",
+		"Archive",
+		"Backup",
+		"Security",
+		"Logs",
 	];
 
+	const items = $derived(
+		allItems.slice(0, controls.itemCount).map((label, i) => ({
+			id: `item-${i + 1}`,
+			label,
+		})),
+	);
+
 	const spatialMenu = new SpatialMenu<string>({
-		highlighted: "item-5",
+		highlighted: "item-1",
 		onSelect: (value) => {
 			const item = items.find((i) => i.id === value);
 			console.log(`Selected: ${item?.label}`);
@@ -36,23 +73,27 @@
 </script>
 
 <Preview>
-	<div class="mx-auto flex w-[400px] flex-col gap-4">
+	<div class="mx-auto flex max-w-2xl flex-col gap-4">
 		<div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
 			<Grid3x3 class="size-4" />
-			<span>Use arrow keys to navigate the grid</span>
+			<span
+				>Use arrow keys to navigate • {controls.wrap
+					? "Wrap-around enabled"
+					: "No wrap-around"}</span
+			>
 		</div>
 
 		<div
 			{...spatialMenu.root}
-			class="grid grid-cols-3 gap-3 rounded-xl border border-gray-300 bg-gray-50 p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+			class="grid gap-3 rounded-xl border border-gray-300 bg-gray-50 p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+			style={`grid-template-columns: repeat(${controls.columns}, 1fr);`}
 		>
 			{#each items as item}
 				{@const menuItem = spatialMenu.getItem(item.id)}
-				<button
+				<div
 					{...menuItem.attrs}
-					onclick={() => menuItem.onSelect()}
 					class={[
-						"flex items-center justify-center rounded-lg border p-4 text-sm font-medium transition-all",
+						"flex min-h-16 items-center justify-center rounded-lg border p-3 text-sm font-medium transition-all",
 						"hover:bg-gray-100 active:scale-95 dark:hover:bg-gray-700",
 						menuItem.highlighted
 							? "border-blue-500 bg-blue-50 text-blue-700 shadow-md dark:border-blue-400 dark:bg-blue-900/50 dark:text-blue-300"
@@ -60,7 +101,7 @@
 					]}
 				>
 					{item.label}
-				</button>
+				</div>
 			{/each}
 		</div>
 
