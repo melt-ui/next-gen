@@ -42,10 +42,10 @@ export default defineConfig({
 				dark: "./src/assets/logo-dark.svg",
 				replacesTitle: true,
 			},
-			social: {
-				discord: "https://melt-ui.com/discord",
-				github: "https://github.com/melt-ui/next-gen",
-			},
+			social: [
+				{ icon: "discord", label: "Discord", href: "https://melt-ui.com/discord" },
+				{ icon: "github", label: "GitHub", href: "https://github.com/melt-ui/next-gen" },
+			],
 			sidebar: [
 				{
 					label: "Getting Started",
