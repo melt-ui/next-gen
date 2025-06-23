@@ -32,81 +32,47 @@
 		},
 	});
 
-	const allItems = [
-		"Dashboard",
-		"Analytics",
-		"Settings",
-		"Profile",
-		"Home",
-		"Messages",
-		"Calendar",
-		"Tasks",
-		"Help",
-		"Reports",
-		"Users",
-		"Admin",
-		"Notifications",
-		"Search",
-		"Export",
-		"Import",
-		"Archive",
-		"Backup",
-		"Security",
-		"Logs",
-	];
-
-	const items = $derived(
-		allItems.slice(0, controls.itemCount).map((label, i) => ({
-			id: `item-${i + 1}`,
-			label,
-		})),
-	);
+	const items = [...new Array(30)].fill(0).map((_, i) => `Item ${i + 1}`);
 
 	const spatialMenu = new SpatialMenu<string>({
-		highlighted: "item-1",
-		onSelect: (value) => {
-			const item = items.find((i) => i.id === value);
-			console.log(`Selected: ${item?.label}`);
-		},
 		...getters(controls),
 	});
+
+	let search = $state("");
 </script>
 
 <Preview>
-	<div class="mx-auto flex max-w-2xl flex-col gap-4">
-		<div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-			<Grid3x3 class="size-4" />
-			<span
-				>Use arrow keys to navigate • {controls.wrap
-					? "Wrap-around enabled"
-					: "No wrap-around"}</span
-			>
-		</div>
+	<div
+		class="mx-auto flex h-96 flex-col items-center gap-2 overflow-hidden border p-2"
+		{...spatialMenu.root}
+	>
+		<label class="focus-within:border-accent-500 w-64 border-b-2 border-gray-800 transition">
+			<input
+				class="w-full bg-transparent !outline-none"
+				bind:value={search}
+				placeholder="Search for movies"
+				{...spatialMenu.input}
+			/>
+		</label>
 
 		<div
-			{...spatialMenu.root}
-			class="grid gap-3 rounded-xl border border-gray-300 bg-gray-50 p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-			style={`grid-template-columns: repeat(${controls.columns}, 1fr);`}
+			class="shrink-1 grid min-h-0 w-[30rem] flex-1 gap-4 overflow-y-auto border border-red-500 p-2"
+			style:grid-template-columns="repeat(auto-fill,minmax(100px,1fr))"
 		>
 			{#each items as item}
-				{@const menuItem = spatialMenu.getItem(item.id)}
-				<div
-					{...menuItem.attrs}
-					class={[
-						"flex min-h-16 items-center justify-center rounded-lg border p-3 text-sm font-medium transition-all",
-						"hover:bg-gray-100 active:scale-95 dark:hover:bg-gray-700",
-						menuItem.highlighted
-							? "border-blue-500 bg-blue-50 text-blue-700 shadow-md dark:border-blue-400 dark:bg-blue-900/50 dark:text-blue-300"
-							: "border-gray-200 bg-white text-gray-700 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300",
-					]}
-				>
-					{item.label}
+				{@const spatialItem = spatialMenu.getItem(item)}
+				<div class={["flex w-full scroll-m-2 flex-col"]} {...spatialItem.attrs}>
+					<img
+						class={[
+							"aspect-[9/14] border",
+							spatialItem.highlighted && "border-accent-500 scale-[1.05]",
+						]}
+						src="fuck"
+						alt={item}
+					/>
+					<span class="text-center text-sm font-medium text-gray-500">{item}</span>
 				</div>
 			{/each}
-		</div>
-
-		<div class="text-center text-sm text-gray-500 dark:text-gray-400">
-			Highlighted: {items.find((i) => i.id === spatialMenu.highlighted)?.label || "None"}
 		</div>
 	</div>
 </Preview>

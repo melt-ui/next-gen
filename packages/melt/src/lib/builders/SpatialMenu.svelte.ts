@@ -288,6 +288,7 @@ export class SpatialMenu<T> {
 
 		if (arrowKeys.includes(e.key)) {
 			e.preventDefault();
+			e.stopPropagation();
 
 			const current = this.#items.find((i) => i.highlighted);
 			if (!current) {
@@ -314,6 +315,7 @@ export class SpatialMenu<T> {
 
 			if (nextItem) {
 				this.highlighted = nextItem.value;
+				nextItem.el?.scrollIntoView({ block: "nearest" });
 			}
 		}
 	};
