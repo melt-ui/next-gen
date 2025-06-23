@@ -1,11 +1,13 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
+import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { kbd } from "$lib/utils/keyboard";
 import { dequal } from "dequal";
 import { createAttachmentKey } from "svelte/attachments";
 import type { HTMLAttributes } from "svelte/elements";
+import { on } from "svelte/events";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("spatial-menu", [
 	"root",
@@ -31,6 +33,14 @@ export type SpatialMenuProps<T> = {
 	 * @default false
 	 */
 	wrap?: MaybeGetter<boolean>;
+
+	/**
+	 * Scroll behavior when highlighting an item with the keyboard.
+	 * `null` to disable scrolling.
+	 *
+	 * @default "smooth"
+	 */
+	scrollBehavior?: MaybeGetter<"smooth" | "instant" | "auto" | null>;
 };
 
 export class SpatialMenu<T> {
@@ -40,6 +50,7 @@ export class SpatialMenu<T> {
 	wrap = $derived(
 		typeof this.#props.wrap === "function" ? this.#props.wrap() : this.#props.wrap ?? false,
 	);
+	scrollBehavior = $derived(extract(this.#props.scrollBehavior, "smooth"));
 
 	/* State */
 	#elMap: {
@@ -47,6 +58,7 @@ export class SpatialMenu<T> {
 		input?: HTMLInputElement;
 	} = {};
 	#items: Array<SpatialMenuItem<T>> = [];
+	selectionMode = $state<"keyboard" | "mouse">("keyboard");
 
 	#highlighted: Synced<T | null>;
 	get highlighted() {
@@ -289,6 +301,7 @@ export class SpatialMenu<T> {
 		if (arrowKeys.includes(e.key)) {
 			e.preventDefault();
 			e.stopPropagation();
+			this.selectionMode = "keyboard";
 
 			const current = this.#items.find((i) => i.highlighted);
 			if (!current) {
@@ -315,7 +328,9 @@ export class SpatialMenu<T> {
 
 			if (nextItem) {
 				this.highlighted = nextItem.value;
-				nextItem.el?.scrollIntoView({ block: "nearest" });
+				if (this.scrollBehavior !== null) {
+					nextItem.el?.scrollIntoView({ block: "nearest", behavior: this.scrollBehavior });
+				}
 			}
 		}
 	};
@@ -329,8 +344,13 @@ export class SpatialMenu<T> {
 			onkeydown: this.#onKeydown,
 			[createAttachmentKey()]: (node) => {
 				this.#elMap.root = node;
+
+				const off = on(document.body, "mousemove", () => {
+					this.selectionMode = "mouse";
+				});
 				return () => {
 					delete this.#elMap.root;
+					off();
 				};
 			},
 		} as const satisfies HTMLAttributes<HTMLElement>;
@@ -394,7 +414,8 @@ class SpatialMenuItem<T> {
 		return {
 			[dataAttrs.item]: "",
 			"data-highlighted": dataAttr(this.highlighted),
-			onmouseenter: () => {
+			onmousemove: () => {
+				if (this.parent.selectionMode !== "mouse") return;
 				this.parent.highlighted = this.#props.value;
 			},
 			onclick: () => {

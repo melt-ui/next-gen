@@ -43,7 +43,7 @@
 
 <Preview>
 	<div
-		class="mx-auto flex h-96 flex-col items-center gap-2 overflow-hidden border p-2"
+		class="h-128 mx-auto flex flex-col items-center gap-2 overflow-hidden border p-2"
 		{...spatialMenu.root}
 	>
 		<label class="focus-within:border-accent-500 w-64 border-b-2 border-gray-800 transition">

@@ -537,6 +537,13 @@
         "description": "Whether navigation should wrap around when reaching the edges.",
         "defaultValue": "false",
         "optional": true
+      },
+      {
+        "name": "scrollBehavior",
+        "type": "MaybeGetter<\"auto\" | \"smooth\" | \"instant\" | null> | undefined",
+        "description": "Scroll behavior when highlighting an item with the keyboard.\n`null` to disable scrolling.",
+        "defaultValue": "\"smooth\"",
+        "optional": true
       }
     ],
     "methods": [
@@ -558,6 +565,16 @@
         "description": ""
       },
       {
+        "name": "scrollBehavior",
+        "type": "\"auto\" | \"smooth\" | \"instant\" | null",
+        "description": ""
+      },
+      {
+        "name": "selectionMode",
+        "type": "\"keyboard\" | \"mouse\"",
+        "description": ""
+      },
+      {
         "name": "highlighted",
         "type": "T | null",
         "description": ""
@@ -573,7 +590,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type SpatialMenuProps<T> = {\n  /**\n   * The currently highlighted value.\n   */\n  highlighted?: MaybeGetter<T | null | undefined>;\n\n  /**\n   * Called when the highlighted value changes.\n   */\n  onHighlightChange?: (highlighted: T | null) => void;\n\n  onSelect?: (value: T) => void;\n\n  /**\n   * Whether navigation should wrap around when reaching the edges.\n   * @default false\n   */\n  wrap?: MaybeGetter<boolean>;\n};"
+    "propsAlt": "export type SpatialMenuProps<T> = {\n  /**\n   * The currently highlighted value.\n   */\n  highlighted?: MaybeGetter<T | null | undefined>;\n\n  /**\n   * Called when the highlighted value changes.\n   */\n  onHighlightChange?: (highlighted: T | null) => void;\n\n  onSelect?: (value: T) => void;\n\n  /**\n   * Whether navigation should wrap around when reaching the edges.\n   * @default false\n   */\n  wrap?: MaybeGetter<boolean>;\n\n  /**\n   * Scroll behavior when highlighting an item with the keyboard.\n   * `null` to disable scrolling.\n   *\n   * @default \"smooth\"\n   */\n  scrollBehavior?: MaybeGetter<\"smooth\" | \"instant\" | \"auto\" | null>;\n};"
   },
   "Slider": {
     "constructorProps": [
