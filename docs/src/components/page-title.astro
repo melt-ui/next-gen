@@ -1,14 +1,14 @@
 ---
 import type { Props } from "@astrojs/starlight/props";
 
-const isHomepage = Astro.props.entry.data.title === "Homepage";
+const isHomepage = Astro.locals.starlightRoute.entry.data.title === "Homepage";
 ---
 
 {
 	isHomepage ? null : (
 		<>
-			<h1>{Astro.props.entry.data.title}</h1>
-			<p>{Astro.props.entry.data.description}</p>
+			<h1>{Astro.locals.starlightRoute.entry.data.title}</h1>
+			<p>{Astro.locals.starlightRoute.entry.data.description}</p>
 		</>
 	)
 }

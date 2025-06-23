@@ -13,7 +13,7 @@
 		"@antfu/utils": "^0.7.10",
 		"@astrojs/check": "^0.9.4",
 		"@astrojs/mdx": "^4.0.8",
-		"@astrojs/starlight": "^0.31.1",
+		"@astrojs/starlight": "^0.32.0",
 		"@astrojs/starlight-tailwind": "^3.0.0",
 		"@astrojs/svelte": "^7.0.4",
 		"@astrojs/tailwind": "^6.0.0",
