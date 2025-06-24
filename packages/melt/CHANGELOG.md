@@ -1,5 +1,11 @@
 # melt
 
+## 0.35.3
+
+### Patch Changes
+
+- select & combobox: remove generic restriction ([`4549eb9`](https://github.com/melt-ui/next-gen/commit/4549eb948ff9f4618f09dc9cbefe4a9ca65509b5))
+
 ## 0.35.2
 
 ### Patch Changes
