@@ -1,4 +1,4 @@
-<script lang="ts" generics="T extends string, Multiple extends boolean">
+<script lang="ts" generics="T , Multiple extends boolean">
 	import { getters } from "$lib/utils/getters.svelte.js";
 	import { type Snippet } from "svelte";
 	import { Select as Builder, type SelectProps } from "../builders/Select.svelte";
