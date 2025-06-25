@@ -5,6 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"dev": "concurrently --kill-others \"pnpm --parallel dev\" \"pnpm watch-and-type\"",
+		"dev:no-type": "pnpm --parallel dev",
 		"test": "pnpm --filter melt test",
 		"test:headless": "pnpm --filter melt test:headless",
 		"check": "pnpm --filter melt check",

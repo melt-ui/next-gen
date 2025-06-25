@@ -94,27 +94,27 @@ export class SpatialMenu<T> {
 
 	#findClosestItem(direction: "up" | "down" | "left" | "right"): SpatialMenuItem<T> | null {
 		const current = this.#items.find((i) => i.highlighted);
-		const currentRect = current?.rect;
+		const currentRect = current?.extendedRect;
 		if (!currentRect) return null;
 
-		const candidates = this.#items.filter((item) => item !== current && item.rect);
+		const candidates = this.#items.filter((item) => item !== current && item.extendedRect);
 
 		if (candidates.length === 0) return null;
 
 		let bestCandidate: SpatialMenuItem<T> | null = null;
 		let shortest = Infinity;
 
-		// For horizontal movement (left/right), prefer items at same level
 		if (direction === "left" || direction === "right") {
 			for (const candidate of candidates) {
-				const candidateRect = candidate.rect!;
+				const candidateRect = candidate.extendedRect!;
 				let isValidDirection = false;
 				let distance = 0;
 
-				// Skip items that are above the current item in first pass
-				const isAbove = candidateRect.bottom <= currentRect.top;
-				if (isAbove) continue;
+				// Skip items that are too far away from the centerY of the current item
+				const centerYDistance = Math.abs(currentRect.centerY - candidateRect.centerY);
+				if (centerYDistance > this.maxDistanceY) continue;
 
+				// Skip items that are not in the appointed direction
 				if (direction === "left") {
 					isValidDirection = candidateRect.right <= currentRect.left;
 				} else {
@@ -123,6 +123,7 @@ export class SpatialMenu<T> {
 				}
 
 				if (!isValidDirection) continue;
+
 				const horizontalDistance =
 					direction === "left"
 						? currentRect.left - candidateRect.right
@@ -148,7 +149,6 @@ export class SpatialMenu<T> {
 			}
 		}
 
-		// For vertical movement, use regular logic (no first pass filtering)
 		if (direction === "up" || direction === "down") {
 			for (const candidate of candidates) {
 				const candidateRect = candidate.rect!;
@@ -463,6 +463,17 @@ class SpatialMenuItem<T> {
 
 	get rect() {
 		return this.el?.getBoundingClientRect();
+	}
+
+	// Same as rect, but with extra useful properties
+	get extendedRect() {
+		if (!this.rect) return;
+
+		const rect = this.rect;
+		return Object.assign(rect, {
+			centerX: rect.left + rect.width / 2,
+			centerY: rect.top + rect.height / 2,
+		});
 	}
 
 	onSelect() {
