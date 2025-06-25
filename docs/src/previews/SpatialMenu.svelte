@@ -66,18 +66,23 @@
 							]}
 							{...item.attrs}
 						>
-							<div class="relative">
-								<img
+							<div
+								class={[
+									"relative overflow-hidden rounded-md outline-2 outline-offset-2 transition-all",
+									item.highlighted ? "outline-accent-500 " : "!outline-transparent",
+								]}
+							>
+								<img class={["object-fit h-full w-full"]} src={movie.posterUrl} alt={movie.title} />
+								<div
 									class={[
-										"w-full rounded-md outline-2 outline-offset-2 transition-all",
-										item.highlighted ? "outline-accent-500 " : "!outline-transparent",
+										"absolute -bottom-2 -right-2 h-10 w-12 rounded-md transition",
+										"bg-gradient-to-br from-transparent via-neutral-900/45 via-30% to-neutral-900/45 blur-sm",
+										!isSelected && "opacity-0",
 									]}
-									src={movie.posterUrl}
-									alt={movie.title}
-								/>
+								></div>
 								<IconHeart
 									class={[
-										"text-accent-500 dark:text-accent-200 absolute bottom-3 right-2",
+										"absolute bottom-1 right-1 text-white",
 										"drop-shadow-xs transition",
 										isSelected ? "scale-100" : "scale-75 opacity-0",
 									]}
