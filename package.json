@@ -9,6 +9,7 @@
 		"test": "pnpm --filter melt test",
 		"test:headless": "pnpm --filter melt test:headless",
 		"check": "pnpm --filter melt check",
+		"lint:only": "eslint .",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"gen:api": "jiti scripts/generate-api.ts",

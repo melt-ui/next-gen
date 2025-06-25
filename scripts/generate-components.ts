@@ -63,10 +63,10 @@ for (const filename of builderFiles) {
 		const onChangePropName = `on${propName.charAt(0).toUpperCase() + propName.slice(1)}Change`;
 
 		if (!propNames.includes(onChangePropName)) return;
-		console.log(await parseType(prop.getDeclaredType()))
+		console.log(await parseType(prop.getDeclaredType()));
 		onChangeProps.push({
 			propName,
-			type: "fuck"
+			type: "fuck",
 		});
 	});
 

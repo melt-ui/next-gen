@@ -45,14 +45,22 @@ export type SpatialMenuProps<T> = {
 	/**
 	 * The maximum distance a the centerX of an item can be in relation
 	 * to the highlighted item when navigating vertically with the keyboard.
+	 *
+	 * Set to `null` to disable.
+	 *
+	 * @default null
 	 */
-	maxDistanceX?: MaybeGetter<number>;
+	maxDistanceX?: MaybeGetter<number | null>;
 
 	/**
 	 * The maximum distance a the centerY of an item can be in relation
 	 * to the highlighted item when navigating horizontally with the keyboard.
+	 *
+	 * Set to `null` to disable.
+	 *
+	 * @default 16
 	 */
-	maxDistanceY?: MaybeGetter<number>;
+	maxDistanceY?: MaybeGetter<number | null>;
 };
 
 export class SpatialMenu<T> {
@@ -63,8 +71,8 @@ export class SpatialMenu<T> {
 		typeof this.#props.wrap === "function" ? this.#props.wrap() : this.#props.wrap ?? false,
 	);
 	scrollBehavior = $derived(extract(this.#props.scrollBehavior, "smooth"));
-	maxDistanceX = $derived(extract(this.#props.maxDistanceX, 10));
-	maxDistanceY = $derived(extract(this.#props.maxDistanceY, 10));
+	maxDistanceX = $derived(extract(this.#props.maxDistanceX, null));
+	maxDistanceY = $derived(extract(this.#props.maxDistanceY, 16));
 
 	/* State */
 	#elMap: {
@@ -110,9 +118,11 @@ export class SpatialMenu<T> {
 				let isValidDirection = false;
 				let distance = 0;
 
-				// Skip items that are too far away from the centerY of the current item
-				const centerYDistance = Math.abs(currentRect.centerY - candidateRect.centerY);
-				if (centerYDistance > this.maxDistanceY) continue;
+				if (this.maxDistanceY) {
+					// Skip items that are too far away from the centerY of the current item
+					const centerYDistance = Math.abs(currentRect.centerY - candidateRect.centerY);
+					if (centerYDistance > this.maxDistanceY) continue;
+				}
 
 				// Skip items that are not in the appointed direction
 				if (direction === "left") {
@@ -151,9 +161,15 @@ export class SpatialMenu<T> {
 
 		if (direction === "up" || direction === "down") {
 			for (const candidate of candidates) {
-				const candidateRect = candidate.rect!;
+				const candidateRect = candidate.extendedRect!;
 				let isValidDirection = false;
 				let distance = 0;
+
+				if (this.maxDistanceX) {
+					// Skip items that are too far away from the centerX of the current item
+					const centerXDistance = Math.abs(currentRect.centerX - candidateRect.centerX);
+					if (centerXDistance > this.maxDistanceX) continue;
+				}
 
 				if (direction === "up") {
 					isValidDirection = candidateRect.bottom <= currentRect.top;
@@ -210,10 +226,10 @@ export class SpatialMenu<T> {
 
 	#findWrapAroundItem(direction: "up" | "down" | "left" | "right"): SpatialMenuItem<T> | null {
 		const current = this.#items.find((i) => i.highlighted);
-		if (!current?.rect) return null;
+		if (!current?.extendedRect) return null;
 
-		const currentRect = current.rect;
-		const candidates = this.#items.filter((item) => item !== current && item.rect);
+		const currentRect = current.extendedRect;
+		const candidates = this.#items.filter((item) => item !== current && item.extendedRect);
 
 		if (candidates.length === 0) return null;
 
@@ -221,11 +237,17 @@ export class SpatialMenu<T> {
 		let bestScore = Infinity;
 
 		for (const candidate of candidates) {
-			const candidateRect = candidate.rect!;
+			const candidateRect = candidate.extendedRect!;
 			let score = 0;
 
 			switch (direction) {
-				case "up":
+				case "up": {
+					if (this.maxDistanceX) {
+						// Skip items that are too far away from the centerX of the current item
+						const centerXDistance = Math.abs(currentRect.centerX - candidateRect.centerX);
+						if (centerXDistance > this.maxDistanceX) continue;
+					}
+
 					// Find the bottommost item with best horizontal alignment
 					score = -candidateRect.bottom; // Prioritize items at the bottom (negative for max)
 					const horizontalOverlap = Math.max(
@@ -245,7 +267,14 @@ export class SpatialMenu<T> {
 						score += horizontalDistance;
 					}
 					break;
-				case "down":
+				}
+				case "down": {
+					if (this.maxDistanceX) {
+						// Skip items that are too far away from the centerX of the current item
+						const centerXDistance = Math.abs(currentRect.centerX - candidateRect.centerX);
+						if (centerXDistance > this.maxDistanceX) continue;
+					}
+
 					// Find the topmost item with best horizontal alignment
 					score = candidateRect.top; // Prioritize items at the top
 					const hOverlap = Math.max(
@@ -265,7 +294,14 @@ export class SpatialMenu<T> {
 						score += hDistance;
 					}
 					break;
-				case "left":
+				}
+				case "left": {
+					if (this.maxDistanceY) {
+						// Skip items that are too far away from the centerY of the current item
+						const centerYDistanceLeft = Math.abs(currentRect.centerY - candidateRect.centerY);
+						if (centerYDistanceLeft > this.maxDistanceY) continue;
+					}
+
 					// Find the rightmost item with best vertical alignment
 					score = -candidateRect.right; // Prioritize items at the right (negative for max)
 					const verticalOverlap = Math.max(
@@ -285,7 +321,14 @@ export class SpatialMenu<T> {
 						score += verticalDistance;
 					}
 					break;
-				case "right":
+				}
+				case "right": {
+					if (this.maxDistanceY) {
+						// Skip items that are too far away from the centerY of the current item
+						const centerYDistanceRight = Math.abs(currentRect.centerY - candidateRect.centerY);
+						if (centerYDistanceRight > this.maxDistanceY) continue;
+					}
+
 					// Find the leftmost item with best vertical alignment
 					score = candidateRect.left; // Prioritize items at the left
 					const vOverlap = Math.max(
@@ -305,6 +348,7 @@ export class SpatialMenu<T> {
 						score += vDistance;
 					}
 					break;
+				}
 			}
 
 			if (score < bestScore) {

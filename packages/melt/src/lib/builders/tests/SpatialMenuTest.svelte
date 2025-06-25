@@ -9,7 +9,7 @@
 	let { wrap = false, items = 8 }: Props = $props();
 
 	type Item = { id: number; name: string; color: string };
-	
+
 	const allColors = [
 		{ name: "Red", color: "#ef4444" },
 		{ name: "Blue", color: "#3b82f6" },
@@ -32,7 +32,7 @@
 		{ name: "Zinc", color: "#71717a" },
 		{ name: "Stone", color: "#78716c" },
 	];
-	
+
 	const itemsArray: Item[] = Array.from({ length: items }, (_, i) => {
 		const colorIndex = i % allColors.length;
 		return {
@@ -58,13 +58,13 @@
 
 <div data-testid="spatial-root" class="test-container" {...spatialMenu.root}>
 	<h2>Spatial Menu Test</h2>
-	
-	<input 
+
+	<input
 		data-testid="spatial-input"
-		placeholder="Type to test input navigation" 
+		placeholder="Type to test input navigation"
 		{...spatialMenu.input}
 	/>
-	
+
 	<div class="items-grid">
 		{#each itemsArray as item}
 			{@const menuItem = spatialMenu.getItem(item)}
@@ -81,17 +81,17 @@
 			</div>
 		{/each}
 	</div>
-	
+
 	{#if selectedItem}
 		<div data-testid="selected-item" class="selected-info">
 			Selected: {selectedItem.name} (#{selectedItem.id})
 		</div>
 	{/if}
-	
+
 	<div data-testid="highlighted-item" class="highlighted-info">
 		Highlighted: {spatialMenu.highlighted?.name ?? "None"}
 	</div>
-	
+
 	<div data-testid="selection-mode" class="mode-info">
 		Mode: {spatialMenu.selectionMode}
 	</div>
@@ -106,17 +106,17 @@
 		max-width: 600px;
 		margin: 0 auto;
 	}
-	
+
 	.test-container:focus {
 		outline: 2px solid #3b82f6;
 		outline-offset: 2px;
 	}
-	
+
 	h2 {
 		margin: 0 0 16px 0;
 		color: #333;
 	}
-	
+
 	input {
 		width: 100%;
 		padding: 8px 12px;
@@ -125,20 +125,20 @@
 		margin-bottom: 20px;
 		font-size: 14px;
 	}
-	
+
 	input:focus {
 		outline: 2px solid #3b82f6;
 		outline-offset: 2px;
 		border-color: #3b82f6;
 	}
-	
+
 	.items-grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		gap: 12px;
 		margin-bottom: 20px;
 	}
-	
+
 	.item {
 		padding: 16px;
 		border-radius: 8px;
@@ -152,27 +152,27 @@
 		flex-direction: column;
 		gap: 4px;
 	}
-	
+
 	.item:hover {
 		transform: translateY(-2px);
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 	}
-	
+
 	.item.highlighted {
 		border-color: #fff;
 		transform: scale(1.05);
 		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 	}
-	
+
 	.item-name {
 		font-size: 16px;
 	}
-	
+
 	.item-id {
 		font-size: 12px;
 		opacity: 0.8;
 	}
-	
+
 	.selected-info,
 	.highlighted-info,
 	.mode-info {
@@ -183,7 +183,7 @@
 		font-size: 14px;
 		color: #666;
 	}
-	
+
 	.selected-info {
 		background: #dcfce7;
 		color: #166534;
