@@ -9,11 +9,7 @@ import { createAttachmentKey } from "svelte/attachments";
 import type { HTMLAttributes } from "svelte/elements";
 import { on } from "svelte/events";
 
-const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("spatial-menu", [
-	"root",
-	"input",
-	"item",
-]);
+const { dataAttrs } = createBuilderMetadata("spatial-menu", ["root", "input", "item"]);
 
 export type SpatialMenuProps<T> = {
 	/**
@@ -483,14 +479,13 @@ class SpatialMenuItem<T> {
 			this.#props.lifecycle.onMount();
 
 			return () => {
-				if (node.isConnected) return;
 				this.el = null;
 				this.#props.lifecycle.onUnmount();
 			};
 		},
 	};
 
-	get attrs() {
+	attrs = $derived.by(() => {
 		return {
 			[dataAttrs.item]: "",
 			"data-highlighted": dataAttr(this.highlighted),
@@ -503,7 +498,7 @@ class SpatialMenuItem<T> {
 			},
 			...this.#attachment,
 		} as const satisfies HTMLAttributes<HTMLElement>;
-	}
+	});
 
 	get rect() {
 		return this.el?.getBoundingClientRect();

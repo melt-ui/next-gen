@@ -7,29 +7,10 @@
 	import fuzzysearch from "./utils/search";
 
 	const controls = usePreviewControls({
-		disabled: {
-			type: "boolean",
-			defaultValue: false,
-			label: "Disabled",
-		},
 		wrap: {
 			type: "boolean",
 			defaultValue: false,
 			label: "Wrap Around",
-		},
-		columns: {
-			type: "number",
-			defaultValue: 3,
-			min: 2,
-			max: 6,
-			label: "Columns",
-		},
-		itemCount: {
-			type: "number",
-			defaultValue: 9,
-			min: 4,
-			max: 20,
-			label: "Item Count",
 		},
 	});
 
@@ -39,7 +20,7 @@
 		...getters(controls),
 	});
 
-	let search = $state("old");
+	let search = $state("");
 
 	const filtered = $derived(fuzzysearch({ needle: search, haystack: movies, property: "title" }));
 </script>
