@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { SpatialMenu } from "../SpatialMenu.svelte.js";
 
+	interface Props {
+		wrap?: boolean;
+	}
+
+	let { wrap = false }: Props = $props();
+
 	type Item = { id: number; name: string; color: string };
 	const items: Item[] = [
 		{ id: 1, name: "Red", color: "#ef4444" },
@@ -9,12 +15,14 @@
 		{ id: 4, name: "Yellow", color: "#f59e0b" },
 		{ id: 5, name: "Purple", color: "#8b5cf6" },
 		{ id: 6, name: "Pink", color: "#ec4899" },
+		{ id: 7, name: "Orange", color: "#f97316" },
+		{ id: 8, name: "Cyan", color: "#06b6d4" },
 	];
 
 	let selectedItem: Item | null = $state(null);
 
 	const spatialMenu = new SpatialMenu<Item>({
-		wrap: false,
+		wrap,
 		scrollBehavior: "smooth",
 		onSelect: (item) => {
 			selectedItem = item;

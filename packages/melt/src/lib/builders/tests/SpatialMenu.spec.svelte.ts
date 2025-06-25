@@ -195,7 +195,7 @@ testWithEffect("basic interaction", async () => {
 	const root = page.getByTestId("spatial-root");
 	const items = page.getByTestId("spatial-item").all();
 
-	expect(items).toHaveLength(6);
+	expect(items).toHaveLength(8);
 
 	// Focus the root to enable keyboard navigation
 	await user.click(root.element());
@@ -260,6 +260,154 @@ testWithEffect("item click should trigger selection", async () => {
 	await user.click(items[0]!.element());
 
 	// Check if onSelect was called (would be shown in test component)
+});
+
+testWithEffect("edge case: pressing right on item 3 without wrap - should stay on item 3", async () => {
+	const user = userEvent.setup();
+
+	render(SpatialMenuTest);
+	const root = page.getByTestId("spatial-root");
+	const items = page.getByTestId("spatial-item").all();
+
+	// Focus the root
+	await user.click(root.element());
+
+	// Navigate to item 3 (last item in first row - index 2)
+	await user.keyboard("{ArrowDown}"); // Start highlighting
+	await user.keyboard("{ArrowRight}"); // Move to item 2
+	await user.keyboard("{ArrowRight}"); // Move to item 3 (last in row)
+	
+	// Verify we're on item 3
+	expect(items[2]!.element().getAttribute("data-highlighted")).toBe("");
+	
+	// Now press right - should stay on item 3 since wrap is false
+	await user.keyboard("{ArrowRight}");
+	
+	// Should still be on item 3 (no wrapping)
+	expect(items[2]!.element().getAttribute("data-highlighted")).toBe("");
+});
+
+testWithEffect("edge case: pressing right on item 6 without wrap - should stay on item 6", async () => {
+	const user = userEvent.setup();
+
+	render(SpatialMenuTest);
+	const root = page.getByTestId("spatial-root");
+	const items = page.getByTestId("spatial-item").all();
+
+	// Focus the root
+	await user.click(root.element());
+
+	// Navigate to item 6 (last item in second row - index 5)
+	await user.keyboard("{ArrowDown}"); // Start highlighting (item 1)
+	await user.keyboard("{ArrowDown}"); // Move to item 4
+	await user.keyboard("{ArrowRight}"); // Move to item 5
+	await user.keyboard("{ArrowRight}"); // Move to item 6 (last in row)
+	
+	// Verify we're on item 6
+	expect(items[5]!.element().getAttribute("data-highlighted")).toBe("");
+	
+	// Now press right - should stay on item 6 since wrap is false
+	await user.keyboard("{ArrowRight}");
+	
+	// Should still be on item 6 (no wrapping)
+	expect(items[5]!.element().getAttribute("data-highlighted")).toBe("");
+});
+
+testWithEffect("edge case: pressing right on item 8 without wrap - should stay on item 8", async () => {
+	const user = userEvent.setup();
+
+	render(SpatialMenuTest);
+	const root = page.getByTestId("spatial-root");
+	const items = page.getByTestId("spatial-item").all();
+
+	// Focus the root
+	await user.click(root.element());
+
+	// Navigate to item 8 (last item overall - index 7)
+	await user.keyboard("{ArrowDown}"); // Start highlighting (item 1)
+	await user.keyboard("{ArrowDown}"); // Move to item 4
+	await user.keyboard("{ArrowDown}"); // Move to item 7
+	await user.keyboard("{ArrowRight}"); // Move to item 8 (last item)
+	
+	// Verify we're on item 8
+	expect(items[7]!.element().getAttribute("data-highlighted")).toBe("");
+	
+	// Now press right - should stay on item 8 since there's nowhere to go and wrap is false
+	await user.keyboard("{ArrowRight}");
+	
+	// Should still be on item 8
+	expect(items[7]!.element().getAttribute("data-highlighted")).toBe("");
+});
+
+testWithEffect("edge case with wrap: pressing right on item 3 should wrap to item 1", async () => {
+	const user = userEvent.setup();
+
+	render(SpatialMenuTest, { props: { wrap: true } });
+	const root = page.getByTestId("spatial-root");
+	const items = page.getByTestId("spatial-item").all();
+
+	// Focus and navigate to item 3 (last in first row)
+	await user.click(root.element());
+	await user.keyboard("{ArrowDown}"); // Start highlighting item 1
+	await user.keyboard("{ArrowRight}"); // Move to item 2
+	await user.keyboard("{ArrowRight}"); // Move to item 3
+	
+	// Verify on item 3
+	expect(items[2]!.element().getAttribute("data-highlighted")).toBe("");
+	
+	// Press right - should wrap to item 1 (first item in next row or leftmost)
+	await user.keyboard("{ArrowRight}");
+	
+	// Should wrap around to item 1
+	expect(items[0]!.element().getAttribute("data-highlighted")).toBe("");
+});
+
+testWithEffect("edge case with wrap: pressing right on item 6 should wrap to item 4", async () => {
+	const user = userEvent.setup();
+
+	render(SpatialMenuTest, { props: { wrap: true } });
+	const root = page.getByTestId("spatial-root");
+	const items = page.getByTestId("spatial-item").all();
+
+	// Focus and navigate to item 6 (last in second row)
+	await user.click(root.element());
+	await user.keyboard("{ArrowDown}"); // Start highlighting item 1
+	await user.keyboard("{ArrowDown}"); // Move to item 4
+	await user.keyboard("{ArrowRight}"); // Move to item 5
+	await user.keyboard("{ArrowRight}"); // Move to item 6
+	
+	// Verify on item 6
+	expect(items[5]!.element().getAttribute("data-highlighted")).toBe("");
+	
+	// Press right - should wrap to item 4 (leftmost item in second row)
+	await user.keyboard("{ArrowRight}");
+	
+	// Should wrap around to item 4
+	expect(items[3]!.element().getAttribute("data-highlighted")).toBe("");
+});
+
+testWithEffect("edge case with wrap: pressing right on item 8 should wrap to item 7", async () => {
+	const user = userEvent.setup();
+
+	render(SpatialMenuTest, { props: { wrap: true } });
+	const root = page.getByTestId("spatial-root");
+	const items = page.getByTestId("spatial-item").all();
+
+	// Focus and navigate to item 8 (last item overall)
+	await user.click(root.element());
+	await user.keyboard("{ArrowDown}"); // Start highlighting item 1
+	await user.keyboard("{ArrowDown}"); // Move to item 4
+	await user.keyboard("{ArrowDown}"); // Move to item 7
+	await user.keyboard("{ArrowRight}"); // Move to item 8
+	
+	// Verify on item 8
+	expect(items[7]!.element().getAttribute("data-highlighted")).toBe("");
+	
+	// Press right - should wrap to item 7 (leftmost item in third row)
+	await user.keyboard("{ArrowRight}");
+	
+	// Should wrap around to item 7
+	expect(items[6]!.element().getAttribute("data-highlighted")).toBe("");
 });
 
 testWithEffect("Type tests: string spatial menu", () => {
