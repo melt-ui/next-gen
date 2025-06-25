@@ -380,6 +380,7 @@ export class SpatialMenu<T> {
 				},
 				onUnmount: () => {
 					this.#items = this.#items.filter((i) => i !== item);
+					if (item.highlighted) this.highlighted = this.#items[0]?.value ?? null;
 				},
 			},
 		});
@@ -410,6 +411,19 @@ class SpatialMenuItem<T> {
 		this.#props = props;
 	}
 
+	#attachment = {
+		[createAttachmentKey()]: (node: HTMLElement) => {
+			this.el = node;
+			this.#props.lifecycle.onMount();
+
+			return () => {
+				if (node.isConnected) return;
+				this.el = null;
+				this.#props.lifecycle.onUnmount();
+			};
+		},
+	};
+
 	get attrs() {
 		return {
 			[dataAttrs.item]: "",
@@ -421,15 +435,7 @@ class SpatialMenuItem<T> {
 			onclick: () => {
 				this.onSelect();
 			},
-			[createAttachmentKey()]: (node) => {
-				this.el = node;
-				this.#props.lifecycle.onMount();
-
-				return () => {
-					this.el = null;
-					this.#props.lifecycle.onUnmount();
-				};
-			},
+			...this.#attachment,
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 

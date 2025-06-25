@@ -120,14 +120,6 @@ export const movies = [
 		rating: "10",
 	},
 	{
-		title: "American Beauty",
-		posterUrl:
-			"https://a.ltrbxd.com/resized/film-poster/2/7/0/3/2703-american-beauty-0-250-0-375-crop.jpg?v=30329dd752",
-		letterboxdUrl: "https://letterboxd.com/film/american-beauty/",
-		year: "1999",
-		rating: "10",
-	},
-	{
 		title: "Get Out",
 		posterUrl:
 			"https://a.ltrbxd.com/resized/film-poster/3/5/3/1/1/7/353117-get-out-0-250-0-375-crop.jpg?v=136acec030",
@@ -440,14 +432,6 @@ export const movies = [
 		rating: "9",
 	},
 	{
-		title: "American History X",
-		posterUrl:
-			"https://a.ltrbxd.com/resized/sm/upload/ob/wg/lb/jd/w16MygFtasBBVfCJZQwsuwyKksc-0-250-0-375-crop.jpg?v=96eb689ac7",
-		letterboxdUrl: "https://letterboxd.com/film/american-history-x/",
-		year: "1998",
-		rating: "9",
-	},
-	{
 		title: "Shutter Island",
 		posterUrl:
 			"https://a.ltrbxd.com/resized/film-poster/4/5/4/0/9/45409-shutter-island-0-250-0-375-crop.jpg?v=85dd4c38e3",
@@ -616,14 +600,6 @@ export const movies = [
 		rating: "9",
 	},
 	{
-		title: "Léon: The Professional",
-		posterUrl:
-			"https://a.ltrbxd.com/resized/sm/upload/6x/vq/25/fy/gE8S02QUOhVnAmYu4tcrBlMTujz-0-250-0-375-crop.jpg?v=f72423fa1f",
-		letterboxdUrl: "https://letterboxd.com/film/leon-the-professional/",
-		year: "1994",
-		rating: "9",
-	},
-	{
 		title: "Snowpiercer",
 		posterUrl:
 			"https://a.ltrbxd.com/resized/film-poster/8/8/4/8/8/88488-snowpiercer-0-250-0-375-crop.jpg?v=93b9024162",
@@ -735,14 +711,7 @@ export const movies = [
 		year: "2020",
 		rating: "9",
 	},
-	{
-		title: "The Collini Case",
-		posterUrl:
-			"https://a.ltrbxd.com/resized/film-poster/4/9/9/1/4/6/499146-the-collini-case-0-250-0-375-crop.jpg?v=7eae156fe6",
-		letterboxdUrl: "https://letterboxd.com/film/the-collini-case/",
-		year: "2019",
-		rating: "9",
-	},
+
 	{
 		title: "The Thing",
 		posterUrl:
