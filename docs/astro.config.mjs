@@ -4,6 +4,8 @@ import tailwind from "@astrojs/tailwind";
 import svelte from "@astrojs/svelte";
 import icons from "unplugin-icons/vite";
 
+import tailwindcss from "@tailwindcss/vite";
+
 const isDev = process.env.NODE_ENV === "development";
 
 // https://astro.build/config
@@ -42,10 +44,10 @@ export default defineConfig({
 				dark: "./src/assets/logo-dark.svg",
 				replacesTitle: true,
 			},
-			social: {
-				discord: "https://melt-ui.com/discord",
-				github: "https://github.com/melt-ui/next-gen",
-			},
+			social: [
+				{ icon: "discord", label: "Discord", href: "https://melt-ui.com/discord" },
+				{ icon: "github", label: "GitHub", href: "https://github.com/melt-ui/next-gen" },
+			],
 			sidebar: [
 				{
 					label: "Getting Started",
@@ -91,15 +93,11 @@ export default defineConfig({
 				},
 			],
 		}),
-		tailwind({
-			// Disable the default base styles:
-			applyBaseStyles: false,
-		}),
 		svelte(),
 		icons({ compiler: "astro" }),
 	],
 	vite: {
-		plugins: [icons({ compiler: "svelte" })],
+		plugins: [icons({ compiler: "svelte" }), tailwindcss()],
 		server: {
 			allowedHosts: isDev ? true : undefined,
 		},

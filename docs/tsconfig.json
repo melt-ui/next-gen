@@ -6,9 +6,7 @@
 			"@*": ["src/*"]
 		},
 		"lib": ["dom", "dom.iterable", "esnext"],
-		"types": [
-      "unplugin-icons/types/svelte"
-    ]
+		"types": ["unplugin-icons/types/svelte"]
 	},
 	"include": ["src/**/*", "tests/**/*"]
 }

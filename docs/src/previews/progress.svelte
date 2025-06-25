@@ -60,8 +60,8 @@
 
 	const lightClr = $derived(`hsl(${light.h}, ${light.s()}%, ${light.l()}%)`);
 
-	const clrClasses = "text-[--light] dark:text-[--dark]";
-	const bgClasses = "bg-[--light] dark:bg-[--dark]";
+	const clrClasses = "text-(--light) dark:text-(--dark)";
+	const bgClasses = "bg-(--light) dark:bg-(--dark)";
 	const clrStyle = $derived(`--light: ${lightClr}; --dark: ${darkClr};`);
 </script>
 

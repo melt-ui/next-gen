@@ -18,4 +18,3 @@
 </script>
 
 {@render children(tooltip)}
-

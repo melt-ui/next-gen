@@ -37,7 +37,7 @@
 		>
 			<PhHeartFill
 				class="text-accent-500 dark:text-accent-200 absolute left-1/2 top-1/2 z-10 origin-center -translate-x-1/2 -translate-y-1/2"
-				style="--tw-scale-x: {absScale}; --tw-scale-y: {absScale}; "
+				style="scale: {absScale}"
 			/>
 			<PhHeartBold
 				class="absolute left-1/2 top-1/2  -translate-x-1/2 -translate-y-1/2 opacity-30"

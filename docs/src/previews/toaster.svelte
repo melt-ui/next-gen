@@ -76,7 +76,7 @@
 	>
 		{#each toaster.toasts as toast, i (toast.id)}
 			<div
-				class="relative flex h-[--toast-height] w-full flex-col justify-center rounded-xl bg-white px-4 text-left transition dark:bg-gray-800"
+				class="h-(--toast-height) relative flex w-full flex-col justify-center rounded-xl bg-white px-4 text-left transition dark:bg-gray-800"
 				{...toast.content}
 				style:--n={toaster.toasts.length - i}
 				in:fly={{ y: 60, opacity: 0.9 }}

@@ -34,16 +34,14 @@ Uses getters and setters for reactive properties.
 <script lang="ts">
 	import { Toggle } from "melt/builders";
 
-	let value = $state(false)
+	let value = $state(false);
 	const toggle = new Toggle({
 		value: () => value,
 		onValueChange: (v) => (value = v),
 	});
 </script>
 
-<button {...toggle.trigger}>
-	{toggle.value ? "On" : "Off"}
-</button>
+<button {...toggle.trigger}>{toggle.value ? "On" : "Off"}</button>
 ```
 
 ### Using Components
@@ -56,14 +54,12 @@ able to use the `bind:` directive.
 <script lang="ts">
 	import { Toggle } from "melt/components";
 
-	let value = $state(false)
+	let value = $state(false);
 </script>
 
 <Toggle bind:value>
 	{#snippet children(toggle)}
-		<button {...toggle.trigger}>
-			{toggle.value ? "On" : "Off"}
-		</button>
+	<button {...toggle.trigger}>{toggle.value ? "On" : "Off"}</button>
 	{/snippet}
 </Toggle>
 ```
