@@ -88,7 +88,7 @@ export class SpatialMenu<T> {
 		if (candidates.length === 0) return null;
 
 		let bestCandidate: SpatialMenuItem<T> | null = null;
-		let bestScore = Infinity;
+		let shortest = Infinity;
 
 		for (const candidate of candidates) {
 			const candidateRect = candidate.rect!;
@@ -174,8 +174,8 @@ export class SpatialMenu<T> {
 					break;
 			}
 
-			if (isValidDirection && distance < bestScore) {
-				bestScore = distance;
+			if (isValidDirection && distance < shortest) {
+				shortest = distance;
 				bestCandidate = candidate;
 			}
 		}
