@@ -37,8 +37,8 @@
 		const colorIndex = i % allColors.length;
 		return {
 			id: i + 1,
-			name: allColors[colorIndex].name,
-			color: allColors[colorIndex].color,
+			name: allColors[colorIndex]?.name ?? "Unknown",
+			color: allColors[colorIndex]?.color ?? "#ccc",
 		};
 	});
 
@@ -50,7 +50,7 @@
 		onSelect: (item) => {
 			selectedItem = item;
 		},
-		onHighlightChange: (item) => {
+		onHighlightChange: () => {
 			// Track highlight changes for testing
 		},
 	});
