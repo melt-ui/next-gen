@@ -395,6 +395,15 @@ export class SpatialMenu<T> {
 			}
 			// If nextItem is null, do nothing - this maintains current highlighted state
 		}
+
+		if (e.key === "Enter") {
+			e.preventDefault();
+			e.stopPropagation();
+			const current = this.#items.find((i) => i.highlighted);
+			if (current) {
+				current.onSelect?.();
+			}
+		}
 	};
 
 	/** The root element. */
@@ -431,7 +440,7 @@ export class SpatialMenu<T> {
 		} as const satisfies HTMLAttributes<HTMLInputElement>;
 	}
 
-	getItem(value: T, options?: Omit<SpatialMenuItemProps<T>, "parent" | "value">) {
+	getItem(value: T, options?: Pick<SpatialMenuItemProps<T>, "onSelect">) {
 		const item = new SpatialMenuItem({
 			value,
 			onSelect: options?.onSelect,

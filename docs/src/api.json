@@ -563,7 +563,7 @@
     "methods": [
       {
         "name": "getItem",
-        "type": "(\n  value: T,\n  options?: Omit<SpatialMenuItemProps<T>, \"parent\" | \"value\"> | undefined,\n) => SpatialMenuItem<T>",
+        "type": "(\n  value: T,\n  options?: Pick<SpatialMenuItemProps<T>, \"onSelect\"> | undefined,\n) => SpatialMenuItem<T>",
         "description": ""
       }
     ],
