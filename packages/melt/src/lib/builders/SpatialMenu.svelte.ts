@@ -41,6 +41,18 @@ export type SpatialMenuProps<T> = {
 	 * @default "smooth"
 	 */
 	scrollBehavior?: MaybeGetter<"smooth" | "instant" | "auto" | null>;
+
+	/**
+	 * The maximum distance a the centerX of an item can be in relation
+	 * to the highlighted item when navigating vertically with the keyboard.
+	 */
+	maxDistanceX?: MaybeGetter<number>;
+
+	/**
+	 * The maximum distance a the centerY of an item can be in relation
+	 * to the highlighted item when navigating horizontally with the keyboard.
+	 */
+	maxDistanceY?: MaybeGetter<number>;
 };
 
 export class SpatialMenu<T> {
@@ -51,6 +63,8 @@ export class SpatialMenu<T> {
 		typeof this.#props.wrap === "function" ? this.#props.wrap() : this.#props.wrap ?? false,
 	);
 	scrollBehavior = $derived(extract(this.#props.scrollBehavior, "smooth"));
+	maxDistanceX = $derived(extract(this.#props.maxDistanceX, 10));
+	maxDistanceY = $derived(extract(this.#props.maxDistanceY, 10));
 
 	/* State */
 	#elMap: {
@@ -80,20 +94,17 @@ export class SpatialMenu<T> {
 
 	#findClosestItem(direction: "up" | "down" | "left" | "right"): SpatialMenuItem<T> | null {
 		const current = this.#items.find((i) => i.highlighted);
-		if (!current?.rect) return null;
+		const currentRect = current?.rect;
+		if (!currentRect) return null;
 
-		const currentRect = current.rect;
 		const candidates = this.#items.filter((item) => item !== current && item.rect);
 
 		if (candidates.length === 0) return null;
 
-
-
 		let bestCandidate: SpatialMenuItem<T> | null = null;
 		let shortest = Infinity;
 
-		// For horizontal movement (left/right), prefer items at same level or below
-		// First pass: look for candidates at same level or below
+		// For horizontal movement (left/right), prefer items at same level
 		if (direction === "left" || direction === "right") {
 			for (const candidate of candidates) {
 				const candidateRect = candidate.rect!;
@@ -106,32 +117,33 @@ export class SpatialMenu<T> {
 
 				if (direction === "left") {
 					isValidDirection = candidateRect.right <= currentRect.left;
-				} else { // direction === "right"
+				} else {
+					// direction === "right"
 					isValidDirection = candidateRect.left >= currentRect.right;
 				}
 
-				if (isValidDirection) {
-					const horizontalDistance = direction === "left" 
+				if (!isValidDirection) continue;
+				const horizontalDistance =
+					direction === "left"
 						? currentRect.left - candidateRect.right
 						: candidateRect.left - currentRect.right;
-					const verticalOverlap = Math.max(
-						0,
-						Math.min(currentRect.bottom, candidateRect.bottom) -
-							Math.max(currentRect.top, candidateRect.top),
-					);
-					const verticalDistance =
-						verticalOverlap > 0
-							? 0
-							: Math.min(
-									Math.abs(currentRect.top - candidateRect.bottom),
-									Math.abs(currentRect.bottom - candidateRect.top),
-								);
-					distance = horizontalDistance + verticalDistance * 2;
+				const verticalOverlap = Math.max(
+					0,
+					Math.min(currentRect.bottom, candidateRect.bottom) -
+						Math.max(currentRect.top, candidateRect.top),
+				);
+				const verticalDistance =
+					verticalOverlap > 0
+						? 0
+						: Math.min(
+								Math.abs(currentRect.top - candidateRect.bottom),
+								Math.abs(currentRect.bottom - candidateRect.top),
+							);
+				distance = horizontalDistance + verticalDistance * 2;
 
-					if (distance < shortest) {
-						shortest = distance;
-						bestCandidate = candidate;
-					}
+				if (distance < shortest) {
+					shortest = distance;
+					bestCandidate = candidate;
 				}
 			}
 		}
@@ -161,7 +173,8 @@ export class SpatialMenu<T> {
 									);
 						distance = verticalDistance + horizontalDistance * 2;
 					}
-				} else { // direction === "down"
+				} else {
+					// direction === "down"
 					isValidDirection = candidateRect.top >= currentRect.bottom;
 					if (isValidDirection) {
 						const verticalDistance = candidateRect.top - currentRect.bottom;
@@ -334,7 +347,6 @@ export class SpatialMenu<T> {
 					break;
 			}
 
-			
 			if (nextItem) {
 				this.highlighted = nextItem.value;
 				if (this.scrollBehavior !== null) {
