@@ -3,21 +3,44 @@
 
 	interface Props {
 		wrap?: boolean;
+		items?: number;
 	}
 
-	let { wrap = false }: Props = $props();
+	let { wrap = false, items = 8 }: Props = $props();
 
 	type Item = { id: number; name: string; color: string };
-	const items: Item[] = [
-		{ id: 1, name: "Red", color: "#ef4444" },
-		{ id: 2, name: "Blue", color: "#3b82f6" },
-		{ id: 3, name: "Green", color: "#10b981" },
-		{ id: 4, name: "Yellow", color: "#f59e0b" },
-		{ id: 5, name: "Purple", color: "#8b5cf6" },
-		{ id: 6, name: "Pink", color: "#ec4899" },
-		{ id: 7, name: "Orange", color: "#f97316" },
-		{ id: 8, name: "Cyan", color: "#06b6d4" },
+	
+	const allColors = [
+		{ name: "Red", color: "#ef4444" },
+		{ name: "Blue", color: "#3b82f6" },
+		{ name: "Green", color: "#10b981" },
+		{ name: "Yellow", color: "#f59e0b" },
+		{ name: "Purple", color: "#8b5cf6" },
+		{ name: "Pink", color: "#ec4899" },
+		{ name: "Orange", color: "#f97316" },
+		{ name: "Cyan", color: "#06b6d4" },
+		{ name: "Indigo", color: "#6366f1" },
+		{ name: "Teal", color: "#14b8a6" },
+		{ name: "Rose", color: "#f43f5e" },
+		{ name: "Emerald", color: "#059669" },
+		{ name: "Amber", color: "#d97706" },
+		{ name: "Lime", color: "#65a30d" },
+		{ name: "Sky", color: "#0284c7" },
+		{ name: "Violet", color: "#7c3aed" },
+		{ name: "Fuchsia", color: "#c026d3" },
+		{ name: "Slate", color: "#475569" },
+		{ name: "Zinc", color: "#71717a" },
+		{ name: "Stone", color: "#78716c" },
 	];
+	
+	const itemsArray: Item[] = Array.from({ length: items }, (_, i) => {
+		const colorIndex = i % allColors.length;
+		return {
+			id: i + 1,
+			name: allColors[colorIndex].name,
+			color: allColors[colorIndex].color,
+		};
+	});
 
 	let selectedItem: Item | null = $state(null);
 
@@ -43,7 +66,7 @@
 	/>
 	
 	<div class="items-grid">
-		{#each items as item}
+		{#each itemsArray as item}
 			{@const menuItem = spatialMenu.getItem(item)}
 			<div
 				data-testid="spatial-item"

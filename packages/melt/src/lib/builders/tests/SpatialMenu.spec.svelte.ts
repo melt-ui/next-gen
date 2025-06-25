@@ -410,6 +410,62 @@ testWithEffect("edge case with wrap: pressing right on item 8 should wrap to ite
 	expect(items[6]!.element().getAttribute("data-highlighted")).toBe("");
 });
 
+testWithEffect("edge case with 7 items: pressing right on item 7 without wrap - should stay on item 7", async () => {
+	const user = userEvent.setup();
+
+	render(SpatialMenuTest, { items: 7 });
+	const root = page.getByTestId("spatial-root");
+	const items = page.getByTestId("spatial-item").all();
+
+	// Should have 7 items total
+	expect(items).toHaveLength(7);
+
+	// Focus the root
+	await user.click(root.element());
+
+	// Navigate to item 7 (last item overall - index 6)
+	await user.keyboard("{ArrowDown}"); // Start highlighting (item 1)
+	await user.keyboard("{ArrowDown}"); // Move to item 4
+	await user.keyboard("{ArrowDown}"); // Move to item 7
+	
+	// Verify we're on item 7
+	expect(items[6]!.element().getAttribute("data-highlighted")).toBe("");
+	
+	// Now press right - should stay on item 7 since there's nowhere to go and wrap is false
+	await user.keyboard("{ArrowRight}");
+	
+	// Should still be on item 7
+	expect(items[6]!.element().getAttribute("data-highlighted")).toBe("");
+});
+
+testWithEffect("edge case with 7 items and wrap: pressing right on item 7 should wrap to item 7", async () => {
+	const user = userEvent.setup();
+
+	render(SpatialMenuTest, { items: 7, wrap: true });
+	const root = page.getByTestId("spatial-root");
+	const items = page.getByTestId("spatial-item").all();
+
+	// Should have 7 items total
+	expect(items).toHaveLength(7);
+
+	// Focus the root
+	await user.click(root.element());
+
+	// Navigate to item 7 (last item overall - index 6)
+	await user.keyboard("{ArrowDown}"); // Start highlighting (item 1)
+	await user.keyboard("{ArrowDown}"); // Move to item 4
+	await user.keyboard("{ArrowDown}"); // Move to item 7
+	
+	// Verify we're on item 7
+	expect(items[6]!.element().getAttribute("data-highlighted")).toBe("");
+	
+	// Now press right - with wrap enabled, should wrap to item 4 (leftmost with best vertical alignment)
+	await user.keyboard("{ArrowRight}");
+	
+	// Should wrap around to item 4 (leftmost item with best vertical alignment)
+	expect(items[3]!.element().getAttribute("data-highlighted")).toBe("");
+});
+
 testWithEffect("Type tests: string spatial menu", () => {
 	const spatialMenu = new SpatialMenu<string>();
 
