@@ -342,7 +342,7 @@ testWithEffect("edge case: pressing right on item 8 without wrap - should stay o
 testWithEffect("edge case with wrap: pressing right on item 3 should wrap to item 1", async () => {
 	const user = userEvent.setup();
 
-	render(SpatialMenuTest, { props: { wrap: true } });
+	render(SpatialMenuTest, { wrap: true });
 	const root = page.getByTestId("spatial-root");
 	const items = page.getByTestId("spatial-item").all();
 
@@ -365,7 +365,7 @@ testWithEffect("edge case with wrap: pressing right on item 3 should wrap to ite
 testWithEffect("edge case with wrap: pressing right on item 6 should wrap to item 4", async () => {
 	const user = userEvent.setup();
 
-	render(SpatialMenuTest, { props: { wrap: true } });
+	render(SpatialMenuTest, { wrap: true });
 	const root = page.getByTestId("spatial-root");
 	const items = page.getByTestId("spatial-item").all();
 
@@ -389,7 +389,7 @@ testWithEffect("edge case with wrap: pressing right on item 6 should wrap to ite
 testWithEffect("edge case with wrap: pressing right on item 8 should wrap to item 7", async () => {
 	const user = userEvent.setup();
 
-	render(SpatialMenuTest, { props: { wrap: true } });
+	render(SpatialMenuTest, { wrap: true });
 	const root = page.getByTestId("spatial-root");
 	const items = page.getByTestId("spatial-item").all();
 

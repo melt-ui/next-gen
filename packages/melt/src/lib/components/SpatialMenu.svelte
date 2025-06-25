@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { SpatialMenu as Builder, type SpatialMenuProps } from "../builders/SpatialMenu.svelte";
+  import { SpatialMenu as SpatialMenuBuilder, type SpatialMenuProps } from "../builders/SpatialMenu.svelte";
   import { type Snippet } from "svelte";
   import type { ComponentProps } from "../types";
 
-  type Props = ComponentProps<SpatialMenuProps> & {
-    children: Snippet<[Builder]>;
+  type Props<T = unknown> = ComponentProps<SpatialMenuProps<T>> & {
+    children: Snippet<[SpatialMenuBuilder<T>]>;
   };
 
   let { children, ...rest }: Props = $props();
 
-  const SpatialMenu = new SpatialMenu({});
+  const spatialMenu = new SpatialMenuBuilder(rest);
 </script>
 
-{@render children(SpatialMenu)}
+{@render children(spatialMenu)}

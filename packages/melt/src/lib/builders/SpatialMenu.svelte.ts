@@ -87,16 +87,63 @@ export class SpatialMenu<T> {
 
 		if (candidates.length === 0) return null;
 
+
+
 		let bestCandidate: SpatialMenuItem<T> | null = null;
 		let shortest = Infinity;
 
-		for (const candidate of candidates) {
-			const candidateRect = candidate.rect!;
-			let isValidDirection = false;
-			let distance = 0;
+		// For horizontal movement (left/right), prefer items at same level or below
+		// First pass: look for candidates at same level or below
+		if (direction === "left" || direction === "right") {
+			for (const candidate of candidates) {
+				const candidateRect = candidate.rect!;
+				let isValidDirection = false;
+				let distance = 0;
 
-			switch (direction) {
-				case "up":
+				// Skip items that are above the current item in first pass
+				const isAbove = candidateRect.bottom <= currentRect.top;
+				if (isAbove) continue;
+
+				if (direction === "left") {
+					isValidDirection = candidateRect.right <= currentRect.left;
+				} else { // direction === "right"
+					isValidDirection = candidateRect.left >= currentRect.right;
+				}
+
+				if (isValidDirection) {
+					const horizontalDistance = direction === "left" 
+						? currentRect.left - candidateRect.right
+						: candidateRect.left - currentRect.right;
+					const verticalOverlap = Math.max(
+						0,
+						Math.min(currentRect.bottom, candidateRect.bottom) -
+							Math.max(currentRect.top, candidateRect.top),
+					);
+					const verticalDistance =
+						verticalOverlap > 0
+							? 0
+							: Math.min(
+									Math.abs(currentRect.top - candidateRect.bottom),
+									Math.abs(currentRect.bottom - candidateRect.top),
+								);
+					distance = horizontalDistance + verticalDistance * 2;
+
+					if (distance < shortest) {
+						shortest = distance;
+						bestCandidate = candidate;
+					}
+				}
+			}
+		}
+
+		// For vertical movement, use regular logic (no first pass filtering)
+		if (direction === "up" || direction === "down") {
+			for (const candidate of candidates) {
+				const candidateRect = candidate.rect!;
+				let isValidDirection = false;
+				let distance = 0;
+
+				if (direction === "up") {
 					isValidDirection = candidateRect.bottom <= currentRect.top;
 					if (isValidDirection) {
 						const verticalDistance = currentRect.top - candidateRect.bottom;
@@ -114,8 +161,7 @@ export class SpatialMenu<T> {
 									);
 						distance = verticalDistance + horizontalDistance * 2;
 					}
-					break;
-				case "down":
+				} else { // direction === "down"
 					isValidDirection = candidateRect.top >= currentRect.bottom;
 					if (isValidDirection) {
 						const verticalDistance = candidateRect.top - currentRect.bottom;
@@ -133,50 +179,12 @@ export class SpatialMenu<T> {
 									);
 						distance = verticalDistance + horizontalDistance * 2;
 					}
-					break;
-				case "left":
-					isValidDirection = candidateRect.right <= currentRect.left;
-					if (isValidDirection) {
-						const horizontalDistance = currentRect.left - candidateRect.right;
-						const verticalOverlap = Math.max(
-							0,
-							Math.min(currentRect.bottom, candidateRect.bottom) -
-								Math.max(currentRect.top, candidateRect.top),
-						);
-						const verticalDistance =
-							verticalOverlap > 0
-								? 0
-								: Math.min(
-										Math.abs(currentRect.top - candidateRect.bottom),
-										Math.abs(currentRect.bottom - candidateRect.top),
-									);
-						distance = horizontalDistance + verticalDistance * 2;
-					}
-					break;
-				case "right":
-					isValidDirection = candidateRect.left >= currentRect.right;
-					if (isValidDirection) {
-						const horizontalDistance = candidateRect.left - currentRect.right;
-						const verticalOverlap = Math.max(
-							0,
-							Math.min(currentRect.bottom, candidateRect.bottom) -
-								Math.max(currentRect.top, candidateRect.top),
-						);
-						const verticalDistance =
-							verticalOverlap > 0
-								? 0
-								: Math.min(
-										Math.abs(currentRect.top - candidateRect.bottom),
-										Math.abs(currentRect.bottom - candidateRect.top),
-									);
-						distance = horizontalDistance + verticalDistance * 2;
-					}
-					break;
-			}
+				}
 
-			if (isValidDirection && distance < shortest) {
-				shortest = distance;
-				bestCandidate = candidate;
+				if (isValidDirection && distance < shortest) {
+					shortest = distance;
+					bestCandidate = candidate;
+				}
 			}
 		}
 
@@ -326,12 +334,14 @@ export class SpatialMenu<T> {
 					break;
 			}
 
+			
 			if (nextItem) {
 				this.highlighted = nextItem.value;
 				if (this.scrollBehavior !== null) {
 					nextItem.el?.scrollIntoView({ block: "nearest", behavior: this.scrollBehavior });
 				}
 			}
+			// If nextItem is null, do nothing - this maintains current highlighted state
 		}
 	};
 
