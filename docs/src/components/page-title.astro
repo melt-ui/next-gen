@@ -1,14 +1,15 @@
 ---
-import type { Props } from "@astrojs/starlight/props";
-
-const isHomepage = Astro.locals.starlightRoute.entry.data.title === "Homepage";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck - astros types suck
+const { entry } = Astro.locals.starlightRoute;
+const isHomepage = entry.data.title === "Homepage";
 ---
 
 {
 	isHomepage ? null : (
 		<>
-			<h1>{Astro.locals.starlightRoute.entry.data.title}</h1>
-			<p>{Astro.locals.starlightRoute.entry.data.description}</p>
+			<h1>{entry.data.title}</h1>
+			<p>{entry.data.description}</p>
 		</>
 	)
 }
