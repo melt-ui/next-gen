@@ -1,5 +1,11 @@
 # melt
 
+## 0.36.0
+
+### Minor Changes
+
+- feat: add spatial menu ([#155](https://github.com/melt-ui/next-gen/pull/155))
+
 ## 0.35.3
 
 ### Patch Changes
