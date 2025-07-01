@@ -16,6 +16,7 @@ import { watch } from "runed";
 import { createAttachmentKey, type Attachment } from "svelte/attachments";
 import type { HTMLAttributes } from "svelte/elements";
 import { on } from "svelte/events";
+import * as focusTrap from "focus-trap"; // ESM
 
 const { dataAttrs, dataSelectors } = createBuilderMetadata("popover", [
 	"trigger",
@@ -263,7 +264,7 @@ export class BasePopover {
 	}
 
 	#popoverAttachmentKey = createAttachmentKey();
-	#popoverAttachment: Attachment = () => {
+	#popoverAttachment: Attachment<HTMLElement> = (node) => {
 		// Show and hide popover based on open state
 		const isVisible = $derived(this.open || this.forceVisible);
 		$effect(() => {
@@ -290,6 +291,17 @@ export class BasePopover {
 				});
 			},
 		);
+
+		const trap = focusTrap.createFocusTrap(node, {
+			allowOutsideClick: true,
+			clickOutsideDeactivates: true,
+		});
+		$effect(() => {
+			if (!this.open || !this.focus.trap) return;
+			trap.activate();
+
+			return () => trap.deactivate();
+		});
 
 		$effect(() => {
 			const contentEl = document.getElementById(this.ids.popover);

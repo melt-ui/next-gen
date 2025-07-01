@@ -6,6 +6,9 @@
 
 	const popover = new Popover({
 		forceVisible: true,
+		focus: {
+			trap: true,
+		},
 	});
 
 	let activeTrigger = $state<string | null>(null);

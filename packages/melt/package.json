@@ -69,6 +69,7 @@
 	"dependencies": {
 		"@floating-ui/dom": "^1.6.13",
 		"dequal": "^2.0.3",
+		"focus-trap": "^7.6.5",
 		"jest-axe": "^9.0.0",
 		"runed": "^0.23.3"
 	},
