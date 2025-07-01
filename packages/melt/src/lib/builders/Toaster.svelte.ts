@@ -1,6 +1,6 @@
 import type { MaybeGetter } from "$lib/types";
 import { extract } from "$lib/utils/extract";
-import { createBuilderMetadata } from "$lib/utils/identifiers";
+import { createBuilderMetadata, createId } from "$lib/utils/identifiers";
 import type { HTMLAttributes } from "svelte/elements";
 import { SvelteMap } from "svelte/reactivity";
 import { isHtmlElement, isTouch } from "../utils/is";
@@ -116,7 +116,7 @@ export class Toaster<T = object> {
 			...props,
 		} satisfies AddToastArgs<T>;
 
-		const id = props.id ?? window.crypto.randomUUID();
+		const id = props.id ?? createId();
 
 		const toast = new Toast({
 			toaster: this,

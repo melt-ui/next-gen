@@ -1,9 +1,8 @@
 import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
-import { nanoid } from "nanoid";
 import { Synced } from "../Synced.svelte";
 import type { MaybeGetter } from "../types";
-import { createDataIds } from "../utils/identifiers";
+import { createDataIds, createId } from "../utils/identifiers";
 import { isHtmlElement } from "../utils/is";
 
 const TRIGGER_KEYS = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
@@ -45,7 +44,7 @@ export type TabsProps<T extends string = string> = {
 
 export class Tabs<T extends string = string> {
 	#value: Synced<T>;
-	#id = nanoid();
+	#id = createId();
 	/* Props */
 	#props!: TabsProps<T>;
 	readonly selectWhenFocused = $derived(extract(this.#props.selectWhenFocused, true));

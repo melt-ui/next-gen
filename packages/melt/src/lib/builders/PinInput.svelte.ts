@@ -3,9 +3,8 @@ import type { Extracted, MaybeGetter } from "$lib/types";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { inBrowser } from "$lib/utils/browser";
 import { extract } from "$lib/utils/extract";
-import { createDataIds } from "$lib/utils/identifiers";
+import { createDataIds, createId } from "$lib/utils/identifiers";
 import { isHtmlInputElement } from "$lib/utils/is";
-import { nanoid } from "nanoid";
 import type { HTMLInputAttributes } from "svelte/elements";
 
 const identifiers = createDataIds("pin-input", ["root", "input"]);
@@ -123,7 +122,7 @@ function setInputSelectionRange(input: HTMLInputElement, start: number, end: num
 }
 
 export class PinInput {
-	#id = nanoid();
+	#id = createId();
 
 	/* Props */
 	#props!: PinInputProps;

@@ -2,7 +2,7 @@ import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { dataAttr, styleAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
-import { createBuilderMetadata } from "$lib/utils/identifiers";
+import { createBuilderMetadata, createId } from "$lib/utils/identifiers";
 import { isFunction, isHtmlElement } from "$lib/utils/is";
 import { autoOpenPopover, safelyHidePopover } from "$lib/utils/popover";
 import {
@@ -12,7 +12,6 @@ import {
 } from "$lib/utils/use-floating.svelte";
 import { size, type ElementRects } from "@floating-ui/dom";
 import { dequal } from "dequal";
-import { nanoid } from "nanoid";
 import { watch } from "runed";
 import { createAttachmentKey, type Attachment } from "svelte/attachments";
 import type { HTMLAttributes } from "svelte/elements";
@@ -100,6 +99,7 @@ export type PopoverProps = {
 		 * Defaults to the popover content element.
 		 */
 		onOpen?: MaybeGetter<HTMLElement | string | null | undefined>;
+
 		/**
 		 * Which element to focus when the popover closes.
 		 * Can be a selector string, an element, or a Getter for those.
@@ -166,7 +166,7 @@ export class BasePopover {
 	}));
 
 	/* State */
-	ids = $state({ popover: nanoid() });
+	ids = $state({ popover: createId() });
 	invokerRect = $state<ElementRects["reference"]>();
 	availableWidth = $state<number>();
 	availableHeight = $state<number>();
