@@ -82,6 +82,7 @@ A single popover can be controlled by multiple triggers, creating a singleton pa
 ```svelte
 <script lang="ts">
 	import { Popover } from "melt/builders";
+	import { mergeAttrs } from "$lib/utils/attribute";
 
 	const popover = new Popover();
 	let activeTrigger = $state<string | null>(null);
@@ -91,24 +92,15 @@ A single popover can be controlled by multiple triggers, creating a singleton pa
 		notifications: { label: "Notifications", content: "3 unread notifications" },
 		help: { label: "Help", content: "FAQ and support options" }
 	};
-
-	function createTriggerHandler(triggerKey: string) {
-		return (e: Event) => {
-			activeTrigger = triggerKey;
-			popover.trigger.onclick?.(e);
-		};
-	}
 </script>
 
-<button {...popover.trigger} onclick={createTriggerHandler('user')}>
-	User Profile
-</button>
-<button {...popover.trigger} onclick={createTriggerHandler('notifications')}>
-	Notifications
-</button>
-<button {...popover.trigger} onclick={createTriggerHandler('help')}>
-	Help
-</button>
+{#each Object.entries(triggerData) as [key, data]}
+	<button {...mergeAttrs(popover.trigger, {
+		onclick: () => activeTrigger = key
+	})}>
+		{data.label}
+	</button>
+{/each}
 
 <div {...popover.content}>
 	{#if activeTrigger && triggerData[activeTrigger]}
@@ -125,6 +117,7 @@ A single popover can be controlled by multiple triggers, creating a singleton pa
 ```svelte
 <script lang="ts">
 	import { Popover } from "melt/components";
+	import { mergeAttrs } from "$lib/utils/attribute";
 
 	let activeTrigger = $state<string | null>(null);
 	const triggerData = {
@@ -136,15 +129,13 @@ A single popover can be controlled by multiple triggers, creating a singleton pa
 
 <Popover>
 	{#snippet children(popover)}
-		<button {...popover.trigger} onclick={() => activeTrigger = 'user'}>
-			User Profile
-		</button>
-		<button {...popover.trigger} onclick={() => activeTrigger = 'notifications'}>
-			Notifications
-		</button>
-		<button {...popover.trigger} onclick={() => activeTrigger = 'help'}>
-			Help
-		</button>
+		{#each Object.entries(triggerData) as [key, data]}
+			<button {...mergeAttrs(popover.trigger, {
+				onclick: () => activeTrigger = key
+			})}>
+				{data.label}
+			</button>
+		{/each}
 
 		<div {...popover.content}>
 			{#if activeTrigger && triggerData[activeTrigger]}
