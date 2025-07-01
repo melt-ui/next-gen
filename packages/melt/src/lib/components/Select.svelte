@@ -1,5 +1,5 @@
 <script lang="ts" generics="T , Multiple extends boolean">
-	import { getters } from "$lib/utils/getters.svelte.js";
+	import { getters } from "../utils/getters.svelte";
 	import { type Snippet } from "svelte";
 	import { Select as Builder, type SelectProps } from "../builders/Select.svelte";
 	import type { ComponentProps } from "../types";
@@ -21,6 +21,9 @@
 			highlighted = v as unknown as any;
 		},
 		...getters({ ...rest }),
+		focus: {
+			...getters(rest).focus,
+		},
 	});
 </script>
 

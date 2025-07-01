@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getters } from "$lib/utils/getters.svelte.js";
+	import { getters } from "../utils/getters.svelte";
 	import { type Snippet } from "svelte";
 	import { Popover as Builder, type PopoverProps } from "../builders/Popover.svelte";
 	import type { ComponentProps } from "../types";
@@ -14,6 +14,9 @@
 		open: () => open,
 		onOpenChange: (v) => (open = v),
 		...getters(rest),
+		focus: {
+			...getters(rest).focus,
+		},
 	});
 </script>
 
