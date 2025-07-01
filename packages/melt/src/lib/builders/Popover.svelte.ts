@@ -85,10 +85,12 @@ export type PopoverProps = {
 };
 
 export class BasePopover {
-	ids = $state({ invoker: nanoid(), popover: nanoid() });
+	/* State */
+	ids = $state({ popover: nanoid() });
 	invokerRect = $state<ElementRects["reference"]>();
 	availableWidth = $state<number>();
 	availableHeight = $state<number>();
+	triggerEl: HTMLElement | null = $state(null);
 
 	/* Props */
 	#props!: PopoverProps;
@@ -173,10 +175,10 @@ export class BasePopover {
 			},
 
 			onfocusout: async (event: FocusEvent) => {
+				if (!this.triggerEl) return;
 				await new Promise((r) => setTimeout(r, 0));
 
 				const contentEl = document.getElementById(this.ids.popover);
-				const triggerEl = document.getElementById(this.ids.invoker);
 				const relatedTarget = event.relatedTarget as Element | null;
 
 				// Use the related target from the event when possible
@@ -189,7 +191,7 @@ export class BasePopover {
 				if (
 					!targetElement ||
 					contentEl?.contains(targetElement) ||
-					triggerEl?.contains(targetElement) ||
+					this.triggerEl.contains(targetElement) ||
 					!this.#shouldClose(targetElement)
 				) {
 					return;
@@ -211,14 +213,15 @@ export class BasePopover {
 	/** The trigger that toggles the value. */
 	protected getInvoker() {
 		return {
-			id: this.ids.invoker,
+			// @ts-expect-error - we're a bit more permissive here
 			popovertarget: this.ids.popover,
 			onclick: (e: Event) => {
 				e.preventDefault();
+				this.triggerEl = e.target as HTMLElement;
 				this.open = !this.open;
 			},
 			...this.sharedProps,
-		} as const;
+		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
 	protected getPopover() {
@@ -239,7 +242,7 @@ export class BasePopover {
 
 		$effect(() => {
 			const contentEl = document.getElementById(this.ids.popover);
-			const triggerEl = document.getElementById(this.ids.invoker);
+			const triggerEl = this.triggerEl;
 			if (!isHtmlElement(contentEl) || !isHtmlElement(triggerEl) || !this.open) {
 				return;
 			}
@@ -279,7 +282,7 @@ export class BasePopover {
 				if (!this.open) return; // Exit early if not open
 
 				const contentEl = document.getElementById(this.ids.popover);
-				const triggerEl = document.getElementById(this.ids.invoker);
+				const triggerEl = this.triggerEl;
 
 				if (!contentEl || !triggerEl) return; // Exit if elements are missing
 
@@ -331,7 +334,7 @@ export class Popover extends BasePopover {
 
 	constructor(props: PopoverProps = {}) {
 		super({ ...props });
-		this.ids = { ...this.ids, trigger: this.ids.invoker, content: this.ids.popover };
+		this.ids = { ...this.ids, content: this.ids.popover };
 	}
 
 	/** The trigger that toggles the value. */

@@ -169,7 +169,7 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 		const newIds = createIds();
 		this.ids = {
 			...oldIds,
-			input: oldIds.invoker,
+			input: newIds.input,
 			content: oldIds.popover,
 			trigger: newIds.trigger,
 		};

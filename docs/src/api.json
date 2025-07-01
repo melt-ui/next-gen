@@ -826,7 +826,7 @@
       },
       {
         "name": "ids",
-        "type": "{ trigger: string; content: string; option: string } & {\n  invoker: string\n  popover: string\n}",
+        "type": "{ trigger: string; content: string; option: string } & {\n  popover: string\n}",
         "description": ""
       },
       {
@@ -876,7 +876,7 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}; --melt-popover-available-width: ${string}; --melt-popover-available-height: ${string}`\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n} & {\n  \"data-melt-select-trigger\": string\n  id: string\n  role: string\n  \"aria-expanded\": boolean\n  \"aria-controls\": string\n  \"aria-owns\": string\n  onkeydown: (e: KeyboardEvent) => void\n}",
+        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}; --melt-popover-available-width: ${string}; --melt-popover-available-height: ${string}`\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n} & {\n  \"data-melt-select-trigger\": string\n  id: string\n  role: string\n  \"aria-expanded\": boolean\n  \"aria-controls\": string\n  \"aria-owns\": string\n  onkeydown: (e: KeyboardEvent) => void\n}",
         "description": ""
       },
       {
@@ -1111,12 +1111,12 @@
     "properties": [
       {
         "name": "ids",
-        "type": "{ invoker: string; popover: string } & {\n  trigger: string\n  content: string\n}",
+        "type": "{ popover: string } & { trigger: string; content: string }",
         "description": ""
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}; --melt-popover-available-width: ${string}; --melt-popover-available-height: ${string}`\n  readonly id: string\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n} & { \"data-melt-popover-trigger\": string }",
+        "type": "{\n  readonly onfocus: (event: FocusEvent) => void\n  readonly onfocusout: (event: FocusEvent) => Promise<void>\n  readonly style: `--melt-invoker-width: ${string}; --melt-invoker-height: ${string}; --melt-invoker-x: ${string}; --melt-invoker-y: ${string}; --melt-popover-available-width: ${string}; --melt-popover-available-height: ${string}`\n  readonly popovertarget: string\n  readonly onclick: (e: Event) => void\n} & { \"data-melt-popover-trigger\": string }",
         "description": "The trigger that toggles the value."
       },
       {
@@ -1569,7 +1569,7 @@
       },
       {
         "name": "ids",
-        "type": "{\n  trigger: string\n  content: string\n  option: string\n  input: string\n} & { invoker: string; popover: string }",
+        "type": "{\n  trigger: string\n  content: string\n  option: string\n  input: string\n} & { popover: string }",
         "description": ""
       },
       {

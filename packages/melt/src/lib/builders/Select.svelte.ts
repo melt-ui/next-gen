@@ -160,7 +160,7 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 		const newIds = createIds();
 		this.ids = {
 			...oldIds,
-			trigger: oldIds.invoker,
+			trigger: newIds.trigger,
 			content: oldIds.popover,
 			option: newIds.option,
 		};
