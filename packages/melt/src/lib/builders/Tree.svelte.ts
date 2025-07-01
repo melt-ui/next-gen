@@ -3,7 +3,7 @@ import { mapAndFilter } from "$lib/utils/array";
 import { dataAttr } from "$lib/utils/attribute";
 import { Collection } from "$lib/utils/collection";
 import { extract } from "$lib/utils/extract";
-import { createDataIds } from "$lib/utils/identifiers";
+import { createDataIds, createId } from "$lib/utils/identifiers";
 import { isString } from "$lib/utils/is";
 import { first, last } from "$lib/utils/iterator";
 import { isControlOrMeta } from "$lib/utils/platform";
@@ -124,7 +124,7 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 	#selected: Selected<Multiple>;
 	#expanded: SelectionState<string, true>;
 
-	#id = crypto.randomUUID();
+	#id = createId();
 
 	/**
 	 * Creates a new Tree instance

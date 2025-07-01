@@ -18,6 +18,7 @@ import { dequal } from "dequal";
 import { tick } from "svelte";
 import type { HTMLAttributes, HTMLLabelAttributes } from "svelte/elements";
 import { BasePopover, type PopoverProps } from "./Popover.svelte";
+import { createAttachmentKey } from "svelte/attachments";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("select", [
 	"trigger",
@@ -160,7 +161,7 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 		const newIds = createIds();
 		this.ids = {
 			...oldIds,
-			trigger: oldIds.invoker,
+			trigger: newIds.trigger,
 			content: oldIds.popover,
 			option: newIds.option,
 		};
@@ -226,6 +227,17 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 		} satisfies HTMLLabelAttributes;
 	}
 
+	#triggerAttachment = {
+		[createAttachmentKey()]: (node) => {
+			this.triggerEl = node;
+			return () => {
+				if (this.triggerEl === node) {
+					this.triggerEl = null;
+				}
+			};
+		},
+	} as const satisfies HTMLAttributes<HTMLElement>;
+
 	get trigger() {
 		return Object.assign(super.getInvoker(), {
 			[dataAttrs.trigger]: "",
@@ -255,6 +267,7 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 					}
 				}
 			},
+			...this.#triggerAttachment,
 		});
 	}
 
