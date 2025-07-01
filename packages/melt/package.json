@@ -42,6 +42,7 @@
 		"test:headless": "vitest --browser.headless",
 		"sync": "svelte-kit sync",
 		"build": "npm run package",
+		"prepare": "svelte-kit sync || echo ''",
 		"preview": "vite preview",
 		"package": "svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run package",

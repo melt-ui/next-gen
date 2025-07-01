@@ -1,11 +1,11 @@
 import { extract } from "$lib/utils/extract";
-import { createDataIds } from "$lib/utils/identifiers";
+import { createBuilderMetadata, } from "$lib/utils/identifiers";
 import { styleAttr } from "$lib/utils/attribute";
 import { inBrowser } from "$lib/utils/browser";
 import type { MaybeGetter } from "$lib/types";
 import { watch } from "runed";
 
-const identifiers = createDataIds("avatar", ["image", "fallback"]);
+const { dataAttrs, createIds } = createBuilderMetadata("avatar", ["image", "fallback"]);
 
 export type ImageLoadingStatus = "loading" | "loaded" | "error";
 
@@ -29,27 +29,43 @@ export type AvatarProps = {
 };
 
 export class Avatar {
+	#ids = createIds();
 	/* Props */
 	#props!: AvatarProps;
-	readonly src = $derived(extract(this.#props.src, ""));
+	readonly src = $derived(extract(this.#props.src, undefined));
 	readonly delayMs = $derived(extract(this.#props.delayMs, 0));
 
 	/* State */
 	#loadingStatus: ImageLoadingStatus = $state("loading");
 
 	constructor(props: AvatarProps = {}) {
-		$effect(() => {
-			this.#props.onLoadingStatusChange?.(this.#loadingStatus);
-		});
+		// Should be defined at the top before the effects
+		// when using $effect.pre or $watch.pre
+		this.#props = props;
 
-		watch(
+		// Run effects before dom updates
+		// for provide handlers with some execution time 
+		watch.pre(
+			() => this.#loadingStatus,
+			() => {
+				this.#props.onLoadingStatusChange?.(this.#loadingStatus);
+			}
+		);
+		
+		watch.pre(
 			() => this.src,
 			() => {
-				this.#loadingStatus = "loading";
+					this.#loadingStatus = "loading";
 			},
+			{
+				lazy: true
+			}
 		);
 
-		this.#props = props;
+	}
+
+	get id() {
+		return this.#ids.image;
 	}
 
 	get loadingStatus() {
@@ -58,7 +74,7 @@ export class Avatar {
 
 	get image() {
 		return {
-			[identifiers.image]: "",
+			[dataAttrs.image]: "",
 			src: this.src,
 			style: styleAttr({ display: this.#loadingStatus === "loaded" ? "block" : "none" }),
 			onload: () => {
@@ -76,7 +92,7 @@ export class Avatar {
 
 	get fallback() {
 		return {
-			[identifiers.fallback]: "",
+			[dataAttrs.fallback]: "",
 			style: this.#loadingStatus === "loaded" ? styleAttr({ display: "none" }) : undefined,
 			hidden: this.#loadingStatus === "loaded" ? true : undefined,
 		} as const;
