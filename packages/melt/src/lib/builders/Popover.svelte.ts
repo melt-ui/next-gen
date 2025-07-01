@@ -13,8 +13,10 @@ import {
 import { size, type ElementRects } from "@floating-ui/dom";
 import { dequal } from "dequal";
 import { nanoid } from "nanoid";
-import { useEventListener } from "runed";
+import { watch } from "runed";
+import { createAttachmentKey, type Attachment } from "svelte/attachments";
 import type { HTMLAttributes } from "svelte/elements";
+import { on } from "svelte/events";
 
 const { dataAttrs, dataSelectors } = createBuilderMetadata("popover", [
 	"trigger",
@@ -28,6 +30,12 @@ type CloseOnOutsideClickProp = MaybeGetter<boolean | CloseOnOutsideClickCheck | 
 export const isCloseOnOutsideClickCheck = (
 	value: CloseOnOutsideClickProp,
 ): value is CloseOnOutsideClickCheck => isFunction(value) && value.length === 1;
+
+function getHtmlElement(el: string | HTMLElement): HTMLElement | undefined {
+	const elm = typeof el === "string" ? document.querySelector(el) : el;
+	if (!isHtmlElement(elm)) return undefined;
+	return elm;
+}
 
 export type PopoverProps = {
 	/**
@@ -82,16 +90,35 @@ export type PopoverProps = {
 	 * @default true
 	 */
 	closeOnOutsideClick?: CloseOnOutsideClickProp;
+
+	focus?: {
+		/**
+		 * Which element to focus when the popover opens.
+		 * Can be a selector string, an element, or a Getter for those.
+		 * If null, the focus remains on the trigger element.
+		 *
+		 * Defaults to the popover content element.
+		 */
+		onOpen?: MaybeGetter<HTMLElement | string | null | undefined>;
+		/**
+		 * Which element to focus when the popover closes.
+		 * Can be a selector string, an element, or a Getter for those.
+		 * If null, the focus goes to the document body.
+		 *
+		 * Defaults to the last used trigger element.
+		 */
+		onClose?: MaybeGetter<HTMLElement | string | null | undefined>;
+
+		/**
+		 * If focus should be trapped inside the popover content when open.
+		 *
+		 * @default false
+		 */
+		trap?: MaybeGetter<boolean | undefined>;
+	};
 };
 
 export class BasePopover {
-	/* State */
-	ids = $state({ popover: nanoid() });
-	invokerRect = $state<ElementRects["reference"]>();
-	availableWidth = $state<number>();
-	availableHeight = $state<number>();
-	triggerEl: HTMLElement | null = $state(null);
-
 	/* Props */
 	#props!: PopoverProps;
 	forceVisible = $derived(extract(this.#props.forceVisible, false));
@@ -132,7 +159,18 @@ export class BasePopover {
 		return config;
 	});
 
+	focus = $derived.by(() => ({
+		onOpen: extract(this.#props.focus?.onOpen, `#${this.ids.popover}`),
+		onClose: extract(this.#props.focus?.onClose, this.triggerEl),
+		trap: extract(this.#props.focus?.trap, false),
+	}));
+
 	/* State */
+	ids = $state({ popover: nanoid() });
+	invokerRect = $state<ElementRects["reference"]>();
+	availableWidth = $state<number>();
+	availableHeight = $state<number>();
+	triggerEl: HTMLElement | null = $state(null);
 	#open!: Synced<boolean>;
 
 	constructor(props: PopoverProps = {}) {
@@ -224,7 +262,8 @@ export class BasePopover {
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
-	protected getPopover() {
+	#popoverAttachmentKey = createAttachmentKey();
+	#popoverAttachment: Attachment = () => {
 		// Show and hide popover based on open state
 		const isVisible = $derived(this.open || this.forceVisible);
 		$effect(() => {
@@ -240,6 +279,18 @@ export class BasePopover {
 			}
 		});
 
+		watch(
+			() => this.open,
+			(open) => {
+				setTimeout(() => {
+					const selector = open ? this.focus.onOpen : this.focus.onClose;
+					if (!selector) return;
+					const el = getHtmlElement(selector);
+					el?.focus();
+				});
+			},
+		);
+
 		$effect(() => {
 			const contentEl = document.getElementById(this.ids.popover);
 			const triggerEl = this.triggerEl;
@@ -254,10 +305,8 @@ export class BasePopover {
 			});
 		});
 
-		useEventListener(
-			() => document,
-			"keydown",
-			(e) => {
+		const offs = [
+			on(document, "keydown", (e) => {
 				if (!this.closeOnEscape) return;
 				const el = document.getElementById(this.ids.popover);
 				if (e.key !== "Escape" || !this.open || !isHtmlElement(el)) return;
@@ -272,13 +321,9 @@ export class BasePopover {
 				if (openPopovers.length) return;
 				// Set timeout to give time to all event listeners to run
 				setTimeout(() => (this.open = false));
-			},
-		);
+			}),
 
-		useEventListener(
-			() => document,
-			"click",
-			(e) => {
+			on(document, "click", (e) => {
 				if (!this.open) return; // Exit early if not open
 
 				const contentEl = document.getElementById(this.ids.popover);
@@ -293,9 +338,13 @@ export class BasePopover {
 				if (isInsideContent || isInsideTrigger) return; // Exit if clicked inside
 
 				if (this.#shouldClose(target)) this.open = false;
-			},
-		);
+			}),
+		];
 
+		return () => offs.forEach((off) => off());
+	};
+
+	protected getPopover() {
 		return {
 			id: this.ids.popover,
 			popover: "manual",
@@ -309,6 +358,7 @@ export class BasePopover {
 			tabindex: -1,
 			inert: !this.open,
 			"data-open": dataAttr(this.open),
+			[this.#popoverAttachmentKey]: this.#popoverAttachment,
 			...this.sharedProps,
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}

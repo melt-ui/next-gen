@@ -72,6 +72,9 @@ Things I want:
 
 A single popover can be controlled by multiple triggers, creating a singleton pattern where one popover instance serves different contextual content. The popover will position itself relative to whichever trigger was last clicked, and you can dynamically change the content based on the active trigger.
 
+{/* Spacer */}
+<div class="py-2" aria-hidden="true" />
+
 <PreviewMultipleTriggers client:load />
 
 <Tabs>
@@ -122,7 +125,7 @@ A single popover can be controlled by multiple triggers, creating a singleton pa
 ```svelte
 <script lang="ts">
 	import { Popover } from "melt/components";
-	
+
 	let activeTrigger = $state<string | null>(null);
 	const triggerData = {
 		user: { label: "User Profile", content: "User settings and preferences" },
@@ -142,7 +145,7 @@ A single popover can be controlled by multiple triggers, creating a singleton pa
 		<button {...popover.trigger} onclick={() => activeTrigger = 'help'}>
 			Help
 		</button>
-		
+
 		<div {...popover.content}>
 			{#if activeTrigger && triggerData[activeTrigger]}
 				<h3>{triggerData[activeTrigger].label}</h3>
