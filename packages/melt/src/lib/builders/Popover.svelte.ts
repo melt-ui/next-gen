@@ -256,7 +256,7 @@ export class BasePopover {
 			popovertarget: this.ids.popover,
 			onclick: (e: Event) => {
 				e.preventDefault();
-				this.triggerEl = e.target as HTMLElement;
+				this.triggerEl = e.currentTarget as HTMLElement;
 				this.open = !this.open;
 			},
 			...this.sharedProps,
