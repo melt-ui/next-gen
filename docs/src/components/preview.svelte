@@ -76,45 +76,46 @@
 		</button>
 	{/if}
 
-	<div
-		class="absolute bottom-2 left-2 top-2 z-50 w-[200px] rounded-xl border border-gray-300 bg-gray-100
+	{#if values}
+		<div
+			class="absolute bottom-2 left-2 top-2 z-50 w-[200px] rounded-xl border border-gray-300 bg-gray-100
 		p-3 shadow-xl backdrop-blur-xl dark:border-none dark:bg-gray-800/80"
-		data-preview
-		data-open={open}
-	>
-		<div class="flex items-center justify-between">
-			<p class="text-xl font-bold text-black dark:text-white">Props</p>
-			<button
-				class="cursor-pointer rounded-lg bg-gray-500 px-2 py-1 text-sm
+			data-preview
+			data-open={open}
+		>
+			<div class="flex items-center justify-between">
+				<p class="text-xl font-bold text-black dark:text-white">Props</p>
+				<button
+					class="cursor-pointer rounded-lg bg-gray-500 px-2 py-1 text-sm
 				text-white transition hover:bg-gray-600 active:bg-gray-700"
-				onclick={() => (open = !open)}
-			>
-				Close
-			</button>
-		</div>
+					onclick={() => (open = !open)}
+				>
+					Close
+				</button>
+			</div>
 
-		<hr class="mt-2 block h-[2px] rounded-full bg-gray-300/50 dark:bg-gray-600" />
+			<hr class="mt-2 block h-[2px] rounded-full bg-gray-300/50 dark:bg-gray-600" />
 
-		<div class="mt-2 flex flex-col gap-2">
-			{#each Object.keys(values ?? {}) as key}
-				{@const control = schema[key]}
-				<label class="flex w-full flex-col items-start gap-1 text-sm font-medium">
-					{control.label}
-					{#if control.type === "boolean"}
-						<input type="checkbox" bind:checked={values[key] as boolean} />
-					{:else if control.type === "select"}
-						<select
-							bind:value={values[key] as string}
-							class="self-stretch rounded-md px-1 py-0.5 dark:bg-gray-900"
-						>
-							{#each control.options as option}
-								<option value={option}>{option}</option>
-							{/each}
-						</select>
-					{:else if control.type === "number"}
-						<input
-							type="number"
-							bind:value={() => values[key] as number,
+			<div class="mt-2 flex flex-col gap-2">
+				{#each Object.keys(values ?? {}) as key}
+					{@const control = schema[key]}
+					<label class="flex w-full flex-col items-start gap-1 text-sm font-medium">
+						{control.label}
+						{#if control.type === "boolean"}
+							<input type="checkbox" bind:checked={values[key] as boolean} />
+						{:else if control.type === "select"}
+							<select
+								bind:value={values[key] as string}
+								class="self-stretch rounded-md px-1 py-0.5 dark:bg-gray-900"
+							>
+								{#each control.options as option}
+									<option value={option}>{option}</option>
+								{/each}
+							</select>
+						{:else if control.type === "number"}
+							<input
+								type="number"
+								bind:value={() => values[key] as number,
 							(v: number) => {
 								// Make sure that inputed values don't go outside the specified min/max values.
 								if (control.min && v < control.min) {
@@ -125,21 +126,22 @@
 									values[key] = v;
 								}
 							}}
-							min={control.min}
-							max={control.max}
-							class="self-stretch rounded-md px-1 py-0.5 dark:bg-gray-900"
-						/>
-					{:else if control.type === "string"}
-						<input
-							type="text"
-							bind:value={values[key] as string}
-							class="self-stretch rounded-md px-1 py-0.5 dark:bg-gray-900"
-						/>
-					{/if}
-				</label>
-			{/each}
+								min={control.min}
+								max={control.max}
+								class="self-stretch rounded-md px-1 py-0.5 dark:bg-gray-900"
+							/>
+						{:else if control.type === "string"}
+							<input
+								type="text"
+								bind:value={values[key] as string}
+								class="self-stretch rounded-md px-1 py-0.5 dark:bg-gray-900"
+							/>
+						{/if}
+					</label>
+				{/each}
+			</div>
 		</div>
-	</div>
+	{/if}
 </div>
 
 <style>

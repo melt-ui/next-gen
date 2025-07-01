@@ -19,6 +19,7 @@ import { Synced } from "$lib/Synced.svelte";
 import { safeEffect } from "$lib/utils/effect.svelte";
 import { dequal } from "dequal";
 import { unique } from "$lib/utils/string";
+import { createAttachmentKey } from "svelte/attachments";
 
 const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("combobox", [
 	"input",
@@ -230,6 +231,17 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 		} satisfies HTMLLabelAttributes;
 	}
 
+	#inputAttachment = {
+		[createAttachmentKey()]: (node) => {
+			this.triggerEl = node;
+			return () => {
+				if (this.triggerEl === node) {
+					this.triggerEl = null;
+				}
+			};
+		},
+	} as const satisfies HTMLAttributes<HTMLElement>;
+
 	get input() {
 		// using object.assign breaks types here
 		return {
@@ -311,6 +323,7 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 					}
 				}
 			},
+			...this.#inputAttachment,
 		} as const satisfies HTMLInputAttributes;
 	}
 
