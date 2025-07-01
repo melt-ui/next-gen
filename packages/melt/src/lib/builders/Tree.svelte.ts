@@ -10,7 +10,7 @@ import { isControlOrMeta } from "$lib/utils/platform";
 import { SelectionState, type MaybeMultiple } from "$lib/utils/selection-state.svelte";
 import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
 import type { FalseIfUndefined } from "$lib/utils/types";
-
+import { randomUUID } from "$lib/utils/uuid";
 const identifiers = createDataIds("tree", ["root", "item", "group"]);
 
 /**
@@ -124,7 +124,10 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 	#selected: Selected<Multiple>;
 	#expanded: SelectionState<string, true>;
 
-	#id = crypto.randomUUID();
+
+	#id = randomUUID();
+
+
 
 	/**
 	 * Creates a new Tree instance

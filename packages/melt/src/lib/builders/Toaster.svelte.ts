@@ -7,6 +7,7 @@ import { isHtmlElement, isTouch } from "../utils/is";
 import { AnimationFrames } from "$lib/utils/animation-frames.svelte";
 import { safelyHidePopover, safelyShowPopover } from "$lib/utils/popover";
 import { watch } from "runed";
+import { randomUUID } from "$lib/utils/uuid";
 
 const toasterMeta = createBuilderMetadata("toaster", ["root"]);
 
@@ -116,7 +117,7 @@ export class Toaster<T = object> {
 			...props,
 		} satisfies AddToastArgs<T>;
 
-		const id = props.id ?? window.crypto.randomUUID();
+		const id = props.id ?? randomUUID();
 
 		const toast = new Toast({
 			toaster: this,
