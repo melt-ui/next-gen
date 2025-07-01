@@ -230,7 +230,7 @@ export class BasePopover {
 				if (
 					!targetElement ||
 					contentEl?.contains(targetElement) ||
-					this.triggerEl.contains(targetElement) ||
+					this.triggerEl?.contains(targetElement) ||
 					!this.#shouldClose(targetElement)
 				) {
 					return;
