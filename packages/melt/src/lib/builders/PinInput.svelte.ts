@@ -3,12 +3,11 @@ import type { Extracted, MaybeGetter } from "$lib/types";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { inBrowser } from "$lib/utils/browser";
 import { extract } from "$lib/utils/extract";
-import { createDataIds, createId } from "$lib/utils/identifiers";
+import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlInputElement } from "$lib/utils/is";
 import type { HTMLInputAttributes } from "svelte/elements";
 
-const identifiers = createDataIds("pin-input", ["root", "input"]);
-
+const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("pin-input", ["root", "input"])
 export type PinInputError = {
 	method: "paste" | "input";
 	message: string;
@@ -122,7 +121,7 @@ function setInputSelectionRange(input: HTMLInputElement, start: number, end: num
 }
 
 export class PinInput {
-	#id = createId();
+	#ids = createIds();
 
 	/* Props */
 	#props!: PinInputProps;
@@ -143,15 +142,16 @@ export class PinInput {
 			value: props.value,
 			onChange: props.onValueChange,
 			defaultValue: "",
+			equalityCheck: true,
 		});
 		this.#props = props;
 	}
 
 	#getInputEls(): HTMLInputElement[] {
 		if (!inBrowser()) return [];
-		const rootEl = document.getElementById(this.#id);
+		const rootEl = document.getElementById(this.#ids.root);
 		if (!rootEl) return [];
-		return [...rootEl.querySelectorAll(`[${identifiers.input}]`)].filter(isHtmlInputElement);
+		return [...rootEl.querySelectorAll(dataSelectors.input)].filter(isHtmlInputElement);
 	}
 
 	get value() {
@@ -176,8 +176,8 @@ export class PinInput {
 	/** The root element's props. */
 	get root() {
 		return {
-			[identifiers.root]: "",
-			id: this.#id,
+			[dataAttrs.root]: "",
+			id: this.#ids.root,
 			"data-complete": dataAttr(this.isFilled),
 		} as const;
 	}
@@ -234,7 +234,7 @@ export class PinInput {
 		};
 
 		return {
-			[identifiers.input]: "",
+			[dataAttrs.input]: "",
 			placeholder: isFocused ? undefined : this.placeholder,
 			disabled: disabledAttr(this.disabled),
 			type: this.mask ? "password" : "text",
