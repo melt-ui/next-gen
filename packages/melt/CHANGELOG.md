@@ -1,5 +1,11 @@
 # melt
 
+## 0.37.1
+
+### Patch Changes
+
+- pininput: fix callstack overflow on input ([#158](https://github.com/melt-ui/next-gen/pull/158))
+
 ## 0.37.0
 
 ### Minor Changes
