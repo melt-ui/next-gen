@@ -1,5 +1,17 @@
 # melt
 
+## 0.37.0
+
+### Minor Changes
+
+- popover: focus management ([#160](https://github.com/melt-ui/next-gen/pull/160))
+
+- popover: allow multiple triggers ([#160](https://github.com/melt-ui/next-gen/pull/160))
+
+### Patch Changes
+
+- replace nanoid and crypto randomUUID with local impl ([#160](https://github.com/melt-ui/next-gen/pull/160))
+
 ## 0.36.0
 
 ### Minor Changes
