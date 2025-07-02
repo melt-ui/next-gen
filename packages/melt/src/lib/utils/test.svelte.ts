@@ -1,10 +1,11 @@
 import { flushSync } from "svelte";
-import { test, vi } from "vitest";
+import { test, vi, type TestOptions } from "vitest";
 import { kbd } from "./keyboard";
 
 export function testWithEffect(
 	name: string,
 	fn: () => void | Promise<void>,
+	options?: number | Omit<TestOptions, "shuffle">
 ): ReturnType<typeof test> {
 	return test(name, async () => {
 		let promise: void | Promise<void>;
@@ -17,7 +18,7 @@ export function testWithEffect(
 		} finally {
 			cleanup();
 		}
-	});
+	}, options);
 }
 
 export function vitestSetTimeoutWrapper(fn: () => void, timeout: number) {
