@@ -69,6 +69,88 @@ const cases: TestCase[] = [
 		],
 		wrap: true,
 	},
+	{
+		// prettier-ignore
+		initial: [
+			"h x o",
+			"o o o",
+		],
+		// prettier-ignore
+		steps: [
+			"right",
+			[
+				"o x h",
+				"o o o"
+			]
+		],
+	},
+	{
+		// prettier-ignore
+		initial: [
+			"h x x",
+			"o o o",
+		],
+		// prettier-ignore
+		steps: [
+			"right",
+			[
+				"h x x",
+				"o o o"
+			]
+		],
+		crossAxis: false,
+	},
+	{
+		// prettier-ignore
+		initial: [
+			"h x x",
+			"o o o",
+		],
+		// prettier-ignore
+		steps: [
+			"right",
+			[
+				"o x x",
+				"o h o"
+			]
+		],
+		crossAxis: true,
+	},
+	{
+		// prettier-ignore
+		initial: [
+			"o o x",
+			"o x o",
+			"o h o",
+		],
+		// prettier-ignore
+		steps: [
+			"up",
+			[
+				"o h x",
+				"o x o",
+				"o o o",
+			]
+		],
+	},
+	{
+		// prettier-ignore
+		initial: [
+			"o x x",
+			"o x o",
+			"o h o",
+		],
+		// prettier-ignore
+		steps: [
+			"up",
+			[
+				"h x x",
+				"o x o",
+				"o o o",
+			]
+		],
+		crossAxis: true,
+	},
 ];
 
 function getSupposedHighlightedIdx(grid: Grid): number {
