@@ -40,23 +40,31 @@ export type SpatialMenuProps<T> = {
 
 	/**
 	 * The maximum distance a the centerX of an item can be in relation
-	 * to the highlighted item when navigating vertically with the keyboard.
+	 * to the highlighted item to be considered as being on the same column.
 	 *
 	 * Set to `null` to disable.
 	 *
 	 * @default 16
 	 */
-	maxDistanceX?: MaybeGetter<number | null>;
+	toleranceCol?: MaybeGetter<number | null>;
 
 	/**
 	 * The maximum distance a the centerY of an item can be in relation
-	 * to the highlighted item when navigating horizontally with the keyboard.
+	 * to the highlighted item to be considered as being on the same row.
 	 *
 	 * Set to `null` to disable.
 	 *
 	 * @default 16
 	 */
-	maxDistanceY?: MaybeGetter<number | null>;
+	toleranceRow?: MaybeGetter<number | null>;
+
+	/**
+	 * If `true`, arrow keys will navigate cross-axis as well, if no item
+	 * is available on the current axis.
+	 *
+	 * @default false
+	 */
+	crossAxis?: MaybeGetter<boolean>;
 };
 
 export class SpatialMenu<T> {
@@ -67,8 +75,9 @@ export class SpatialMenu<T> {
 		typeof this.#props.wrap === "function" ? this.#props.wrap() : this.#props.wrap ?? false,
 	);
 	scrollBehavior = $derived(extract(this.#props.scrollBehavior, "smooth"));
-	maxDistanceX = $derived(extract(this.#props.maxDistanceX, null));
-	maxDistanceY = $derived(extract(this.#props.maxDistanceY, 16));
+	toleranceCol = $derived(extract(this.#props.toleranceCol, 16));
+	toleranceRow = $derived(extract(this.#props.toleranceRow, 16));
+	crossAxis = $derived(extract(this.#props.crossAxis, false));
 
 	/* State */
 	#elMap: {
@@ -111,26 +120,26 @@ export class SpatialMenu<T> {
 		const isOnSameAxis = (rect1: DOMRect, rect2: DOMRect, dir: typeof direction): boolean => {
 			if (dir === "up" || dir === "down") {
 				// Same column: check if centers are aligned horizontally
-				if (this.maxDistanceX === null) {
-					// If no maxDistanceX set, use strict overlap detection (significant overlap required)
+				if (this.toleranceCol === null) {
+					// If no toleranceCol set, use strict overlap detection (significant overlap required)
 					const overlap = Math.min(rect1.right, rect2.right) - Math.max(rect1.left, rect2.left);
 					const minWidth = Math.min(rect1.width, rect2.width);
 					return overlap > minWidth * 0.5; // Require at least 50% overlap
 				}
 				const center1X = rect1.left + rect1.width / 2;
 				const center2X = rect2.left + rect2.width / 2;
-				return Math.abs(center1X - center2X) <= this.maxDistanceX;
+				return Math.abs(center1X - center2X) <= this.toleranceCol;
 			} else {
 				// Same row: check if centers are aligned vertically
-				if (this.maxDistanceY === null) {
-					// If no maxDistanceY set, use strict overlap detection (significant overlap required)
+				if (this.toleranceRow === null) {
+					// If no toleranceRow set, use strict overlap detection (significant overlap required)
 					const overlap = Math.min(rect1.bottom, rect2.bottom) - Math.max(rect1.top, rect2.top);
 					const minHeight = Math.min(rect1.height, rect2.height);
 					return overlap > minHeight * 0.5; // Require at least 50% overlap
 				}
 				const center1Y = rect1.top + rect1.height / 2;
 				const center2Y = rect2.top + rect2.height / 2;
-				return Math.abs(center1Y - center2Y) <= this.maxDistanceY;
+				return Math.abs(center1Y - center2Y) <= this.toleranceRow;
 			}
 		};
 
@@ -157,13 +166,13 @@ export class SpatialMenu<T> {
 			if (!isValidDirection) continue;
 
 			// Apply distance constraints if set (this maintains original edge-case behavior)
-			if ((direction === "left" || direction === "right") && this.maxDistanceY) {
+			if ((direction === "left" || direction === "right") && this.toleranceRow) {
 				const centerYDistance = Math.abs(currentRect.centerY - candidateRect.centerY);
-				if (centerYDistance > this.maxDistanceY) continue;
+				if (centerYDistance > this.toleranceRow) continue;
 			}
-			if ((direction === "up" || direction === "down") && this.maxDistanceX) {
+			if ((direction === "up" || direction === "down") && this.toleranceCol) {
 				const centerXDistance = Math.abs(currentRect.centerX - candidateRect.centerX);
-				if (centerXDistance > this.maxDistanceX) continue;
+				if (centerXDistance > this.toleranceCol) continue;
 			}
 
 			// Check if this candidate is on the same axis
@@ -180,6 +189,7 @@ export class SpatialMenu<T> {
 				distance = candidateRect.top - currentRect.bottom;
 			}
 
+			console.log(this.crossAxis, bestCandidate);
 			// If we haven't found a same-axis candidate yet, or this is closer on the same axis
 			if (onSameAxis) {
 				if (
@@ -191,10 +201,10 @@ export class SpatialMenu<T> {
 					bestCandidate = candidate;
 				}
 			} else if (
-				!bestCandidate ||
-				!isOnSameAxis(currentRect, bestCandidate.extendedRect!, direction)
+				this.crossAxis &&
+				(!bestCandidate || !isOnSameAxis(currentRect, bestCandidate.extendedRect!, direction))
 			) {
-				// Only consider off-axis candidates if we haven't found any same-axis candidates
+				// Only consider off-axis candidates if crossAxis is enabled and we haven't found any same-axis candidates
 				// Add penalty for being off-axis
 				let offAxisDistance = distance;
 
@@ -250,12 +260,11 @@ export class SpatialMenu<T> {
 
 			switch (direction) {
 				case "up": {
-					if (this.maxDistanceX) {
+					if (this.toleranceCol) {
 						// Skip items that are too far away from the centerX of the current item
 						const centerXDistance = Math.abs(currentRect.centerX - candidateRect.centerX);
-						if (centerXDistance > this.maxDistanceX) continue;
+						if (centerXDistance > this.toleranceCol && !this.crossAxis) continue;
 					}
-
 					// Find the bottommost item with best horizontal alignment
 					score = -candidateRect.bottom; // Prioritize items at the bottom (negative for max)
 					const horizontalOverlap = Math.max(
@@ -277,12 +286,11 @@ export class SpatialMenu<T> {
 					break;
 				}
 				case "down": {
-					if (this.maxDistanceX) {
+					if (this.toleranceCol) {
 						// Skip items that are too far away from the centerX of the current item
 						const centerXDistance = Math.abs(currentRect.centerX - candidateRect.centerX);
-						if (centerXDistance > this.maxDistanceX) continue;
+						if (centerXDistance > this.toleranceCol && !this.crossAxis) continue;
 					}
-
 					// Find the topmost item with best horizontal alignment
 					score = candidateRect.top; // Prioritize items at the top
 					const hOverlap = Math.max(
@@ -304,12 +312,11 @@ export class SpatialMenu<T> {
 					break;
 				}
 				case "left": {
-					if (this.maxDistanceY) {
+					if (this.toleranceRow) {
 						// Skip items that are too far away from the centerY of the current item
 						const centerYDistanceLeft = Math.abs(currentRect.centerY - candidateRect.centerY);
-						if (centerYDistanceLeft > this.maxDistanceY) continue;
+						if (centerYDistanceLeft > this.toleranceRow && !this.crossAxis) continue;
 					}
-
 					// Find the rightmost item with best vertical alignment
 					score = -candidateRect.right; // Prioritize items at the right (negative for max)
 					const verticalOverlap = Math.max(
@@ -331,12 +338,11 @@ export class SpatialMenu<T> {
 					break;
 				}
 				case "right": {
-					if (this.maxDistanceY) {
+					if (this.toleranceRow) {
 						// Skip items that are too far away from the centerY of the current item
 						const centerYDistanceRight = Math.abs(currentRect.centerY - candidateRect.centerY);
-						if (centerYDistanceRight > this.maxDistanceY) continue;
+						if (centerYDistanceRight > this.toleranceRow && !this.crossAxis) continue;
 					}
-
 					// Find the leftmost item with best vertical alignment
 					score = candidateRect.left; // Prioritize items at the left
 					const vOverlap = Math.max(

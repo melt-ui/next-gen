@@ -14,6 +14,11 @@
 			defaultValue: false,
 			label: "Wrap Around",
 		},
+		crossAxis: {
+			type: "boolean",
+			defaultValue: false,
+			label: "Cross Axis",
+		},
 	});
 
 	type Movie = (typeof movies)[number];

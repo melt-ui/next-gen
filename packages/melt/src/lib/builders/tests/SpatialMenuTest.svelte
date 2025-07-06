@@ -4,9 +4,12 @@
 	interface Props {
 		wrap?: boolean;
 		items?: number;
+		crossAxis?: boolean;
+		toleranceCol?: number | null;
+		toleranceRow?: number | null;
 	}
 
-	let { wrap = false, items = 8 }: Props = $props();
+	let { wrap = false, items = 8, crossAxis = false, toleranceCol = 16, toleranceRow = 16 }: Props = $props();
 
 	type Item = { id: number; name: string; color: string };
 
@@ -46,6 +49,9 @@
 
 	const spatialMenu = new SpatialMenu<Item>({
 		wrap,
+		crossAxis,
+		toleranceCol,
+		toleranceRow,
 		scrollBehavior: "smooth",
 		onSelect: (item) => {
 			selectedItem = item;

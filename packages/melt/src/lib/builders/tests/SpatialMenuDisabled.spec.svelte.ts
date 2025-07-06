@@ -374,7 +374,7 @@ testWithEffect("Axis priority: horizontal navigation prefers same row", async ()
 });
 
 // Test fallback when no same-axis items available
-testWithEffect("Axis priority: fallback to closest item when no same-axis items", async () => {
+testWithEffect("Axis priority: stays put when no valid items within distance constraints", async () => {
 	const user = userEvent.setup();
 	
 	// Pattern: o o o
@@ -396,11 +396,11 @@ testWithEffect("Axis priority: fallback to closest item when no same-axis items"
 	// Verify we're at item 5 (middle center)
 	expect(items[4]!.element().getAttribute("data-highlighted")).toBe("");
 	
-	// Press left - no same-row enabled items to the left, should fallback to closest item in left direction
+	// Press left - no same-row enabled items to the left within distance constraints, should stay put
 	await user.keyboard("{ArrowLeft}");
 	
-	// Should move to item 1 (closest enabled item in left direction)
-	expect(items[0]!.element().getAttribute("data-highlighted")).toBe("");
+	// Should stay on item 5 since no valid items found within toleranceRow constraint
+	expect(items[4]!.element().getAttribute("data-highlighted")).toBe("");
 });
 
 // Performance test: navigation in large grid with many disabled items

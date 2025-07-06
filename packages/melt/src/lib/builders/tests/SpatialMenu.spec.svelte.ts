@@ -638,3 +638,89 @@ testWithEffect("Type tests: item rect getter", () => {
 	// rect should return DOMRect | undefined
 	expectTypeOf(item.rect).toEqualTypeOf<DOMRect | undefined>();
 });
+
+testWithEffect("crossAxis property should work", () => {
+	const spatialMenuCrossAxis = new SpatialMenu<string>({ crossAxis: true });
+	expect(spatialMenuCrossAxis.crossAxis).toBe(true);
+
+	const spatialMenuNoCrossAxis = new SpatialMenu<string>({ crossAxis: false });
+	expect(spatialMenuNoCrossAxis.crossAxis).toBe(false);
+
+	const spatialMenuDefault = new SpatialMenu<string>();
+	expect(spatialMenuDefault.crossAxis).toBe(false);
+});
+
+testWithEffect("toleranceCol property should work", () => {
+	const spatialMenuWithTolerance = new SpatialMenu<string>({ toleranceCol: 20 });
+	expect(spatialMenuWithTolerance.toleranceCol).toBe(20);
+
+	const spatialMenuNullTolerance = new SpatialMenu<string>({ toleranceCol: null });
+	expect(spatialMenuNullTolerance.toleranceCol).toBe(null);
+
+	const spatialMenuDefault = new SpatialMenu<string>();
+	expect(spatialMenuDefault.toleranceCol).toBe(16);
+});
+
+testWithEffect("toleranceRow property should work", () => {
+	const spatialMenuWithTolerance = new SpatialMenu<string>({ toleranceRow: 25 });
+	expect(spatialMenuWithTolerance.toleranceRow).toBe(25);
+
+	const spatialMenuNullTolerance = new SpatialMenu<string>({ toleranceRow: null });
+	expect(spatialMenuNullTolerance.toleranceRow).toBe(null);
+
+	const spatialMenuDefault = new SpatialMenu<string>();
+	expect(spatialMenuDefault.toleranceRow).toBe(16);
+});
+
+testWithEffect("crossAxis navigation should work when enabled", async () => {
+	const user = userEvent.setup();
+
+	render(SpatialMenuTest, { 
+		crossAxis: true,
+		toleranceCol: 5, // Very strict tolerance to force cross-axis navigation
+		toleranceRow: 5
+	});
+
+	const root = page.getByTestId("spatial-root");
+	const items = page.getByTestId("spatial-item").all();
+
+	// Focus the root to enable keyboard navigation
+	await user.click(root.element());
+
+	// Start with first item highlighted
+	await user.keyboard("{ArrowDown}");
+	expect(items[0]!.element().getAttribute("data-highlighted")).toBe("");
+
+	// With crossAxis enabled and strict tolerance, should be able to navigate to off-axis items
+	await user.keyboard("{ArrowRight}");
+	// Should move to item 2 (next in grid) even if not perfectly aligned
+	expect(items[1]!.element().getAttribute("data-highlighted")).toBe("");
+});
+
+testWithEffect("crossAxis navigation should be restricted when disabled", async () => {
+	const user = userEvent.setup();
+
+	render(SpatialMenuTest, { 
+		crossAxis: false,
+		toleranceCol: 1, // Very strict tolerance to prevent same-row navigation
+		toleranceRow: 1
+	});
+
+	const root = page.getByTestId("spatial-root");
+	const items = page.getByTestId("spatial-item").all();
+
+	// Focus the root to enable keyboard navigation
+	await user.click(root.element());
+
+	// Navigate to item 4 (first item in second row) to test horizontal movement
+	await user.keyboard("{ArrowDown}"); // Start highlighting (item 1)
+	await user.keyboard("{ArrowDown}"); // Move to item 4
+
+	// Verify we're on item 4
+	expect(items[3]!.element().getAttribute("data-highlighted")).toBe("");
+
+	// With crossAxis disabled and strict tolerance, should not navigate to off-axis items
+	await user.keyboard("{ArrowRight}");
+	// Should move to item 5 (next in same row) since they're likely aligned
+	expect(items[4]!.element().getAttribute("data-highlighted")).toBe("");
+});
