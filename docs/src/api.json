@@ -549,7 +549,7 @@
         "name": "maxDistanceX",
         "type": "MaybeGetter<number | null> | undefined",
         "description": "The maximum distance a the centerX of an item can be in relation\nto the highlighted item when navigating vertically with the keyboard.\n\nSet to `null` to disable.",
-        "defaultValue": "null",
+        "defaultValue": "16",
         "optional": true
       },
       {
@@ -563,7 +563,7 @@
     "methods": [
       {
         "name": "getItem",
-        "type": "(\n  value: T,\n  options?: Pick<SpatialMenuItemProps<T>, \"onSelect\"> | undefined,\n) => SpatialMenuItem<T>",
+        "type": "(\n  value: T,\n  options?: Pick<SpatialMenuItemProps<T>, \"onSelect\" | \"disabled\"> | undefined,\n) => SpatialMenuItem<T>",
         "description": ""
       }
     ],
@@ -614,7 +614,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type SpatialMenuProps<T> = {\n  /**\n   * The currently highlighted value.\n   */\n  highlighted?: MaybeGetter<T | null | undefined>;\n\n  /**\n   * Called when the highlighted value changes.\n   */\n  onHighlightChange?: (highlighted: T | null) => void;\n\n  onSelect?: (value: T) => void;\n\n  /**\n   * Whether navigation should wrap around when reaching the edges.\n   * @default false\n   */\n  wrap?: MaybeGetter<boolean>;\n\n  /**\n   * Scroll behavior when highlighting an item with the keyboard.\n   * `null` to disable scrolling.\n   *\n   * @default \"smooth\"\n   */\n  scrollBehavior?: MaybeGetter<\"smooth\" | \"instant\" | \"auto\" | null>;\n\n  /**\n   * The maximum distance a the centerX of an item can be in relation\n   * to the highlighted item when navigating vertically with the keyboard.\n   *\n   * Set to `null` to disable.\n   *\n   * @default null\n   */\n  maxDistanceX?: MaybeGetter<number | null>;\n\n  /**\n   * The maximum distance a the centerY of an item can be in relation\n   * to the highlighted item when navigating horizontally with the keyboard.\n   *\n   * Set to `null` to disable.\n   *\n   * @default 16\n   */\n  maxDistanceY?: MaybeGetter<number | null>;\n};"
+    "propsAlt": "export type SpatialMenuProps<T> = {\n  /**\n   * The currently highlighted value.\n   */\n  highlighted?: MaybeGetter<T | null | undefined>;\n\n  /**\n   * Called when the highlighted value changes.\n   */\n  onHighlightChange?: (highlighted: T | null) => void;\n\n  onSelect?: (value: T) => void;\n\n  /**\n   * Whether navigation should wrap around when reaching the edges.\n   * @default false\n   */\n  wrap?: MaybeGetter<boolean>;\n\n  /**\n   * Scroll behavior when highlighting an item with the keyboard.\n   * `null` to disable scrolling.\n   *\n   * @default \"smooth\"\n   */\n  scrollBehavior?: MaybeGetter<\"smooth\" | \"instant\" | \"auto\" | null>;\n\n  /**\n   * The maximum distance a the centerX of an item can be in relation\n   * to the highlighted item when navigating vertically with the keyboard.\n   *\n   * Set to `null` to disable.\n   *\n   * @default 16\n   */\n  maxDistanceX?: MaybeGetter<number | null>;\n\n  /**\n   * The maximum distance a the centerY of an item can be in relation\n   * to the highlighted item when navigating horizontally with the keyboard.\n   *\n   * Set to `null` to disable.\n   *\n   * @default 16\n   */\n  maxDistanceY?: MaybeGetter<number | null>;\n};"
   },
   "Slider": {
     "constructorProps": [

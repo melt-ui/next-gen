@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import Preview from "@components/preview.svelte";
-	import { getters } from "melt";
+	import { getters, mergeAttrs } from "melt";
 	import { SpatialMenu } from "melt/builders";
 	import { movies } from "./movies";
 	import fuzzysearch from "./utils/search";
 	import IconHeart from "~icons/solar/heart-bold";
+	import IconDisabled from "~icons/lucide/circle-slash";
 
 	const controls = usePreviewControls({
 		wrap: {
@@ -24,15 +25,18 @@
 	let search = $state("");
 
 	const filtered = $derived(fuzzysearch({ needle: search, haystack: movies, property: "title" }));
-	const selected: Movie[] = $state([]);
+	const selected: Movie["title"][] = $state([]);
+	const disabled: Movie["title"][] = $state([]);
 
-	function toggle(movie: Movie) {
-		const index = selected.findIndex((i) => i.title === movie.title);
-		if (index === -1) {
-			selected.push(movie);
-		} else {
-			selected.splice(index, 1);
-		}
+	function toggle<T>(arr: T[], value: T) {
+		const index = arr.findIndex((i) => i === value);
+		if (index === -1) arr.push(value);
+		else arr.splice(index, 1);
+	}
+
+	function remove<T>(arr: T[], value: T) {
+		const index = arr.findIndex((i) => i === value);
+		if (index !== -1) arr.splice(index, 1);
 	}
 </script>
 
@@ -57,19 +61,32 @@
 					style:grid-template-columns="repeat(auto-fill,minmax(100px,1fr))"
 				>
 					{#each filtered as movie}
-						{@const item = spatialMenu.getItem(movie, { onSelect: () => toggle(movie) })}
-						{@const isSelected = selected.find((i) => i.title === movie.title)}
+						{@const isDisabled = Boolean(disabled.find((i) => i === movie.title))}
+						{@const item = spatialMenu.getItem(movie, {
+							onSelect: () => toggle(selected, movie.title),
+							disabled: isDisabled,
+						})}
+						{@const isSelected = selected.find((i) => i === movie.title)}
 						<div
 							class={[
 								" flex w-full scroll-mb-8 scroll-mt-14 flex-col gap-2 transition",
 								item.highlighted && "scale-105",
 							]}
-							{...item.attrs}
+							{...mergeAttrs(item.attrs, {
+								onclick: (e) => {
+									const isAltKeyPressed = e.altKey;
+									if (isAltKeyPressed) {
+										toggle(disabled, movie.title);
+										remove(selected, movie.title);
+									}
+								},
+							})}
 						>
 							<div
 								class={[
 									"relative overflow-hidden rounded-md outline-2 outline-offset-2 transition-all",
 									item.highlighted ? "outline-accent-500 " : "!outline-transparent",
+									item.disabled ? "opacity-50" : "",
 								]}
 							>
 								<img class={["object-fit h-full w-full"]} src={movie.posterUrl} alt={movie.title} />
@@ -85,6 +102,13 @@
 										"absolute bottom-1 right-1 text-white",
 										"drop-shadow-xs transition",
 										isSelected ? "scale-100" : "scale-75 opacity-0",
+									]}
+								/>
+								<IconDisabled
+									class={[
+										"absolute bottom-1 right-1 text-white",
+										"drop-shadow-xs transition",
+										isDisabled ? "scale-100" : "scale-75 opacity-0",
 									]}
 								/>
 							</div>

@@ -44,7 +44,7 @@ export type SpatialMenuProps<T> = {
 	 *
 	 * Set to `null` to disable.
 	 *
-	 * @default null
+	 * @default 16
 	 */
 	maxDistanceX?: MaybeGetter<number | null>;
 
@@ -101,113 +101,123 @@ export class SpatialMenu<T> {
 		const currentRect = current?.extendedRect;
 		if (!currentRect) return null;
 
-		const candidates = this.#items.filter((item) => item !== current && item.extendedRect);
+		const candidates = this.#items.filter(
+			(item) => item !== current && item.extendedRect && !item.disabled,
+		);
 
 		if (candidates.length === 0) return null;
 
+		// Helper function to check if two rectangles are on the same axis
+		const isOnSameAxis = (rect1: DOMRect, rect2: DOMRect, dir: typeof direction): boolean => {
+			if (dir === "up" || dir === "down") {
+				// Same column: check if centers are aligned horizontally
+				if (this.maxDistanceX === null) {
+					// If no maxDistanceX set, use strict overlap detection (significant overlap required)
+					const overlap = Math.min(rect1.right, rect2.right) - Math.max(rect1.left, rect2.left);
+					const minWidth = Math.min(rect1.width, rect2.width);
+					return overlap > minWidth * 0.5; // Require at least 50% overlap
+				}
+				const center1X = rect1.left + rect1.width / 2;
+				const center2X = rect2.left + rect2.width / 2;
+				return Math.abs(center1X - center2X) <= this.maxDistanceX;
+			} else {
+				// Same row: check if centers are aligned vertically
+				if (this.maxDistanceY === null) {
+					// If no maxDistanceY set, use strict overlap detection (significant overlap required)
+					const overlap = Math.min(rect1.bottom, rect2.bottom) - Math.max(rect1.top, rect2.top);
+					const minHeight = Math.min(rect1.height, rect2.height);
+					return overlap > minHeight * 0.5; // Require at least 50% overlap
+				}
+				const center1Y = rect1.top + rect1.height / 2;
+				const center2Y = rect2.top + rect2.height / 2;
+				return Math.abs(center1Y - center2Y) <= this.maxDistanceY;
+			}
+		};
+
+		// First pass: Look for items strictly on the same axis
 		let bestCandidate: SpatialMenuItem<T> | null = null;
 		let shortest = Infinity;
 
-		if (direction === "left" || direction === "right") {
-			for (const candidate of candidates) {
-				const candidateRect = candidate.extendedRect!;
-				let isValidDirection = false;
-				let distance = 0;
+		for (const candidate of candidates) {
+			const candidateRect = candidate.extendedRect!;
+			let isValidDirection = false;
+			let distance = 0;
 
-				if (this.maxDistanceY) {
-					// Skip items that are too far away from the centerY of the current item
-					const centerYDistance = Math.abs(currentRect.centerY - candidateRect.centerY);
-					if (centerYDistance > this.maxDistanceY) continue;
-				}
+			// Check if candidate is in the correct direction
+			if (direction === "left") {
+				isValidDirection = candidateRect.right <= currentRect.left;
+			} else if (direction === "right") {
+				isValidDirection = candidateRect.left >= currentRect.right;
+			} else if (direction === "up") {
+				isValidDirection = candidateRect.bottom <= currentRect.top;
+			} else if (direction === "down") {
+				isValidDirection = candidateRect.top >= currentRect.bottom;
+			}
 
-				// Skip items that are not in the appointed direction
-				if (direction === "left") {
-					isValidDirection = candidateRect.right <= currentRect.left;
-				} else {
-					// direction === "right"
-					isValidDirection = candidateRect.left >= currentRect.right;
-				}
+			if (!isValidDirection) continue;
 
-				if (!isValidDirection) continue;
+			// Apply distance constraints if set (this maintains original edge-case behavior)
+			if ((direction === "left" || direction === "right") && this.maxDistanceY) {
+				const centerYDistance = Math.abs(currentRect.centerY - candidateRect.centerY);
+				if (centerYDistance > this.maxDistanceY) continue;
+			}
+			if ((direction === "up" || direction === "down") && this.maxDistanceX) {
+				const centerXDistance = Math.abs(currentRect.centerX - candidateRect.centerX);
+				if (centerXDistance > this.maxDistanceX) continue;
+			}
 
-				const horizontalDistance =
-					direction === "left"
-						? currentRect.left - candidateRect.right
-						: candidateRect.left - currentRect.right;
-				const verticalOverlap = Math.max(
-					0,
-					Math.min(currentRect.bottom, candidateRect.bottom) -
-						Math.max(currentRect.top, candidateRect.top),
-				);
-				const verticalDistance =
-					verticalOverlap > 0
-						? 0
-						: Math.min(
-								Math.abs(currentRect.top - candidateRect.bottom),
-								Math.abs(currentRect.bottom - candidateRect.top),
-							);
-				distance = horizontalDistance + verticalDistance * 2;
+			// Check if this candidate is on the same axis
+			const onSameAxis = isOnSameAxis(currentRect, candidateRect, direction);
 
-				if (distance < shortest) {
+			// Calculate distance
+			if (direction === "left") {
+				distance = currentRect.left - candidateRect.right;
+			} else if (direction === "right") {
+				distance = candidateRect.left - currentRect.right;
+			} else if (direction === "up") {
+				distance = currentRect.top - candidateRect.bottom;
+			} else if (direction === "down") {
+				distance = candidateRect.top - currentRect.bottom;
+			}
+
+			// If we haven't found a same-axis candidate yet, or this is closer on the same axis
+			if (onSameAxis) {
+				if (
+					!bestCandidate ||
+					!isOnSameAxis(currentRect, bestCandidate.extendedRect!, direction) ||
+					distance < shortest
+				) {
 					shortest = distance;
 					bestCandidate = candidate;
 				}
-			}
-		}
+			} else if (
+				!bestCandidate ||
+				!isOnSameAxis(currentRect, bestCandidate.extendedRect!, direction)
+			) {
+				// Only consider off-axis candidates if we haven't found any same-axis candidates
+				// Add penalty for being off-axis
+				let offAxisDistance = distance;
 
-		if (direction === "up" || direction === "down") {
-			for (const candidate of candidates) {
-				const candidateRect = candidate.extendedRect!;
-				let isValidDirection = false;
-				let distance = 0;
-
-				if (this.maxDistanceX) {
-					// Skip items that are too far away from the centerX of the current item
-					const centerXDistance = Math.abs(currentRect.centerX - candidateRect.centerX);
-					if (centerXDistance > this.maxDistanceX) continue;
-				}
-
-				if (direction === "up") {
-					isValidDirection = candidateRect.bottom <= currentRect.top;
-					if (isValidDirection) {
-						const verticalDistance = currentRect.top - candidateRect.bottom;
-						const horizontalOverlap = Math.max(
-							0,
-							Math.min(currentRect.right, candidateRect.right) -
-								Math.max(currentRect.left, candidateRect.left),
-						);
-						const horizontalDistance =
-							horizontalOverlap > 0
-								? 0
-								: Math.min(
-										Math.abs(currentRect.left - candidateRect.right),
-										Math.abs(currentRect.right - candidateRect.left),
-									);
-						distance = verticalDistance + horizontalDistance * 2;
-					}
+				if (direction === "up" || direction === "down") {
+					// For vertical movement, add horizontal distance as penalty
+					const horizontalDistance = Math.min(
+						Math.abs(currentRect.left - candidateRect.right),
+						Math.abs(currentRect.right - candidateRect.left),
+						Math.abs(currentRect.centerX - candidateRect.centerX),
+					);
+					offAxisDistance += horizontalDistance * 2;
 				} else {
-					// direction === "down"
-					isValidDirection = candidateRect.top >= currentRect.bottom;
-					if (isValidDirection) {
-						const verticalDistance = candidateRect.top - currentRect.bottom;
-						const horizontalOverlap = Math.max(
-							0,
-							Math.min(currentRect.right, candidateRect.right) -
-								Math.max(currentRect.left, candidateRect.left),
-						);
-						const horizontalDistance =
-							horizontalOverlap > 0
-								? 0
-								: Math.min(
-										Math.abs(currentRect.left - candidateRect.right),
-										Math.abs(currentRect.right - candidateRect.left),
-									);
-						distance = verticalDistance + horizontalDistance * 2;
-					}
+					// For horizontal movement, add vertical distance as penalty
+					const verticalDistance = Math.min(
+						Math.abs(currentRect.top - candidateRect.bottom),
+						Math.abs(currentRect.bottom - candidateRect.top),
+						Math.abs(currentRect.centerY - candidateRect.centerY),
+					);
+					offAxisDistance += verticalDistance * 2;
 				}
 
-				if (isValidDirection && distance < shortest) {
-					shortest = distance;
+				if (offAxisDistance < shortest) {
+					shortest = offAxisDistance;
 					bestCandidate = candidate;
 				}
 			}
@@ -225,7 +235,9 @@ export class SpatialMenu<T> {
 		if (!current?.extendedRect) return null;
 
 		const currentRect = current.extendedRect;
-		const candidates = this.#items.filter((item) => item !== current && item.extendedRect);
+		const candidates = this.#items.filter(
+			(item) => item !== current && item.extendedRect && !item.disabled,
+		);
 
 		if (candidates.length === 0) return null;
 
@@ -366,7 +378,8 @@ export class SpatialMenu<T> {
 
 			const current = this.#items.find((i) => i.highlighted);
 			if (!current) {
-				this.highlighted = this.#items[0]?.value ?? null;
+				const firstEnabledItem = this.#items.find((item) => !item.disabled);
+				this.highlighted = firstEnabledItem?.value ?? null;
 				return;
 			}
 
@@ -400,7 +413,7 @@ export class SpatialMenu<T> {
 			e.preventDefault();
 			e.stopPropagation();
 			const current = this.#items.find((i) => i.highlighted);
-			if (current) {
+			if (current && !current.disabled) {
 				current.onSelect?.();
 			}
 		}
@@ -440,10 +453,11 @@ export class SpatialMenu<T> {
 		} as const satisfies HTMLAttributes<HTMLInputElement>;
 	}
 
-	getItem(value: T, options?: Pick<SpatialMenuItemProps<T>, "onSelect">) {
+	getItem(value: T, options?: Pick<SpatialMenuItemProps<T>, "onSelect" | "disabled">) {
 		const item = new SpatialMenuItem({
 			value,
 			onSelect: options?.onSelect,
+			disabled: options?.disabled,
 			parent: this,
 			lifecycle: {
 				onMount: () => {
@@ -463,6 +477,7 @@ export class SpatialMenu<T> {
 type SpatialMenuItemProps<T> = {
 	value: T;
 	onSelect?: () => void;
+	disabled?: boolean;
 	parent: SpatialMenu<T>;
 	lifecycle: {
 		onMount: () => void;
@@ -473,6 +488,7 @@ type SpatialMenuItemProps<T> = {
 class SpatialMenuItem<T> {
 	#props!: SpatialMenuItemProps<T>;
 	value = $derived(this.#props.value);
+	disabled = $derived(this.#props.disabled ?? false);
 
 	el: HTMLElement | null = null;
 	parent = $derived(this.#props.parent);
@@ -498,11 +514,13 @@ class SpatialMenuItem<T> {
 		return {
 			[dataAttrs.item]: "",
 			"data-highlighted": dataAttr(this.highlighted),
+			"data-disabled": dataAttr(this.disabled),
 			onmousemove: () => {
-				if (this.parent.selectionMode !== "mouse") return;
+				if (this.parent.selectionMode !== "mouse" || this.disabled) return;
 				this.parent.highlighted = this.#props.value;
 			},
 			onclick: () => {
+				if (this.disabled) return;
 				this.onSelect();
 			},
 			...this.#attachment,
@@ -525,6 +543,7 @@ class SpatialMenuItem<T> {
 	}
 
 	onSelect() {
+		if (this.disabled) return;
 		this.#props.onSelect?.();
 		this.#props.parent.onSelect?.(this.#props.value);
 	}
