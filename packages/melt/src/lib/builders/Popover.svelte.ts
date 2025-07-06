@@ -17,6 +17,7 @@ import { createAttachmentKey, type Attachment } from "svelte/attachments";
 import type { HTMLAttributes } from "svelte/elements";
 import { on } from "svelte/events";
 import * as focusTrap from "focus-trap"; // ESM
+import { untrack } from "svelte";
 
 const { dataAttrs, dataSelectors } = createBuilderMetadata("popover", [
 	"trigger",
@@ -249,6 +250,17 @@ export class BasePopover {
 		} satisfies HTMLAttributes<HTMLElement>;
 	}
 
+	#triggerAttachmentKey = createAttachmentKey();
+	#triggerAttachment: Attachment<HTMLElement> = (node) => {
+		if (untrack(() => this.triggerEl)) return;
+
+		this.triggerEl = node;
+		return () => {
+			if (this.triggerEl !== node) return;
+			this.triggerEl = null;
+		};
+	};
+
 	/** The trigger that toggles the value. */
 	protected getInvoker() {
 		return {
@@ -260,6 +272,7 @@ export class BasePopover {
 				this.open = !this.open;
 			},
 			...this.sharedProps,
+			[this.#triggerAttachmentKey]: this.#triggerAttachment,
 		} as const satisfies HTMLAttributes<HTMLElement>;
 	}
 
@@ -290,6 +303,7 @@ export class BasePopover {
 					el?.focus();
 				});
 			},
+			{ lazy: true },
 		);
 
 		const trap = focusTrap.createFocusTrap(node, {
