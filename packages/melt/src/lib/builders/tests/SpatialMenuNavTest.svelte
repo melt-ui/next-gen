@@ -71,11 +71,11 @@
 		border: 1px solid #ccc;
 	}
 
-	[data-melt-spatial-menu-item]:hover {
-		background-color: #ddd;
-	}
-
 	[data-melt-spatial-menu-item][data-highlighted] {
 		background-color: #ccc;
+	}
+
+	[data-melt-spatial-menu-item][data-disabled] {
+		opacity: 0.5;
 	}
 </style>

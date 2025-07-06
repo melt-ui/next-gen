@@ -563,7 +563,7 @@
         "name": "crossAxis",
         "type": "MaybeGetter<boolean> | undefined",
         "description": "If `true`, arrow keys will navigate cross-axis as well, if no item\nis available on the current axis.",
-        "defaultValue": "false",
+        "defaultValue": "true",
         "optional": true
       }
     ],
@@ -626,7 +626,7 @@
         "description": ""
       }
     ],
-    "propsAlt": "export type SpatialMenuProps<T> = {\n  /**\n   * The currently highlighted value.\n   */\n  highlighted?: MaybeGetter<T | null | undefined>;\n\n  /**\n   * Called when the highlighted value changes.\n   */\n  onHighlightChange?: (highlighted: T | null) => void;\n\n  onSelect?: (value: T) => void;\n\n  /**\n   * Whether navigation should wrap around when reaching the edges.\n   * @default false\n   */\n  wrap?: MaybeGetter<boolean>;\n\n  /**\n   * Scroll behavior when highlighting an item with the keyboard.\n   * `null` to disable scrolling.\n   *\n   * @default \"smooth\"\n   */\n  scrollBehavior?: MaybeGetter<\"smooth\" | \"instant\" | \"auto\" | null>;\n\n  /**\n   * The maximum distance a the centerX of an item can be in relation\n   * to the highlighted item to be considered as being on the same column.\n   *\n   * Set to `null` to disable.\n   *\n   * @default 16\n   */\n  toleranceCol?: MaybeGetter<number | null>;\n\n  /**\n   * The maximum distance a the centerY of an item can be in relation\n   * to the highlighted item to be considered as being on the same row.\n   *\n   * Set to `null` to disable.\n   *\n   * @default 16\n   */\n  toleranceRow?: MaybeGetter<number | null>;\n\n  /**\n   * If `true`, arrow keys will navigate cross-axis as well, if no item\n   * is available on the current axis.\n   *\n   * @default false\n   */\n  crossAxis?: MaybeGetter<boolean>;\n};"
+    "propsAlt": "export type SpatialMenuProps<T> = {\n  /**\n   * The currently highlighted value.\n   */\n  highlighted?: MaybeGetter<T | null | undefined>;\n\n  /**\n   * Called when the highlighted value changes.\n   */\n  onHighlightChange?: (highlighted: T | null) => void;\n\n  onSelect?: (value: T) => void;\n\n  /**\n   * Whether navigation should wrap around when reaching the edges.\n   * @default false\n   */\n  wrap?: MaybeGetter<boolean>;\n\n  /**\n   * Scroll behavior when highlighting an item with the keyboard.\n   * `null` to disable scrolling.\n   *\n   * @default \"smooth\"\n   */\n  scrollBehavior?: MaybeGetter<\"smooth\" | \"instant\" | \"auto\" | null>;\n\n  /**\n   * The maximum distance a the centerX of an item can be in relation\n   * to the highlighted item to be considered as being on the same column.\n   *\n   * Set to `null` to disable.\n   *\n   * @default 16\n   */\n  toleranceCol?: MaybeGetter<number | null>;\n\n  /**\n   * The maximum distance a the centerY of an item can be in relation\n   * to the highlighted item to be considered as being on the same row.\n   *\n   * Set to `null` to disable.\n   *\n   * @default 16\n   */\n  toleranceRow?: MaybeGetter<number | null>;\n\n  /**\n   * If `true`, arrow keys will navigate cross-axis as well, if no item\n   * is available on the current axis.\n   *\n   * @default true\n   */\n  crossAxis?: MaybeGetter<boolean>;\n};"
   },
   "Slider": {
     "constructorProps": [

@@ -151,6 +151,369 @@ const cases: TestCase[] = [
 		],
 		crossAxis: true,
 	},
+	// Test 8: Simple cross-axis navigation
+	{
+		// prettier-ignore
+		initial: [
+			"h x",
+			"x o",
+		],
+		// prettier-ignore
+		steps: [
+			"right",
+			[
+				"o x",
+				"x h",
+			],
+		],
+		crossAxis: true,
+	},
+	// Test 9: Wrap around with disabled items at edges
+	{
+		// prettier-ignore
+		initial: [
+			"x o o h",
+			"o o o x",
+		],
+		// prettier-ignore
+		steps: [
+			"right",
+			[
+				"x h o o",
+				"o o o x",
+			],
+		],
+		wrap: true,
+	},
+	// Test 10: Vertical navigation with wrap and disabled items
+	{
+		// prettier-ignore
+		initial: [
+			"x o",
+			"o h",
+			"x o",
+		],
+		// prettier-ignore
+		steps: [
+			"down",
+			[
+				"x o",
+				"o o",
+				"x h",
+			],
+		],
+		wrap: true,
+	},
+	// Test 11: L-shaped navigation pattern
+	{
+		// prettier-ignore
+		initial: [
+			"h o o",
+			"x x o",
+			"o o o",
+		],
+		// prettier-ignore
+		steps: [
+			"right",
+			[
+				"o h o",
+				"x x o",
+				"o o o",
+			],
+			"down",
+			[
+				"o o o",
+				"x x o",
+				"o h o",
+			],
+			"right",
+			[
+				"o o o",
+				"x x o",
+				"o o h",
+			],
+		],
+		crossAxis: true,
+	},
+	// Test 12: No valid moves without crossAxis
+	{
+		// prettier-ignore
+		initial: [
+			"o x o",
+			"x h x",
+			"o x o",
+		],
+		// prettier-ignore
+		steps: [
+			"up",
+			[
+				"o x o",
+				"x h x",
+				"o x o",
+			],
+			"down",
+			[
+				"o x o",
+				"x h x",
+				"o x o",
+			],
+			"left",
+			[
+				"o x o",
+				"x h x",
+				"o x o",
+			],
+			"right",
+			[
+				"o x o",
+				"x h x",
+				"o x o",
+			],
+		],
+		crossAxis: false,
+	},
+	// Test 13: Cross-axis navigation from center
+	{
+		// prettier-ignore
+		initial: [
+			"o x o",
+			"x h x",
+			"o x o",
+		],
+		// prettier-ignore
+		steps: [
+			"up",
+			[
+				"h x o",
+				"x o x",
+				"o x o",
+			],
+			"right",
+			[
+				"o x h",
+				"x o x",
+				"o x o",
+			],
+			"down",
+			[
+				"o x o",
+				"x o x",
+				"o x h",
+			],
+			"left",
+			[
+				"o x o",
+				"x o x",
+				"h x o",
+			],
+		],
+		crossAxis: true,
+	},
+	// Test 14: Large grid navigation
+	{
+		// prettier-ignore
+		initial: [
+			"h o o o",
+			"x x x o",
+			"x o x o",
+			"x x x o",
+			"x o x o",
+		],
+		// prettier-ignore
+		steps: [
+			"down",
+			[
+				"o o o o",
+				"x x x o",
+				"x h x o",
+				"x x x o",
+				"x o x o",
+			],
+			"down",
+			[
+				"o o o o",
+				"x x x o",
+				"x o x o",
+				"x x x o",
+				"x h x o",
+			],
+			"right",
+			[
+				"o o o o",
+				"x x x o",
+				"x o x o",
+				"x x x o",
+				"x o x h",
+			]
+		],
+		crossAxis: true,
+	},
+	// Test 15: Wrap around corners
+	{
+		// prettier-ignore
+		initial: [
+			"h o o",
+			"o o o",
+			"o o o",
+		],
+		// prettier-ignore
+		steps: [
+			"left",
+			[
+				"o o h",
+				"o o o",
+				"o o o",
+			],
+			"up",
+			[
+				"o o o",
+				"o o o",
+				"o o h",
+			],
+		],
+		wrap: true,
+	},
+	// Test 16: Single row navigation
+	{
+		// prettier-ignore
+		initial: [
+			"h x o x o",
+		],
+		// prettier-ignore
+		steps: [
+			"right",
+			[
+				"o x h x o",
+			],
+			"right",
+			[
+				"o x o x h",
+			],
+			"right",
+			[
+				"h x o x o",
+			],
+		],
+		wrap: true,
+	},
+	// Test 17: Single column navigation
+	{
+		// prettier-ignore
+		initial: [
+			"h",
+			"x",
+			"o",
+			"x",
+			"o",
+		],
+		// prettier-ignore
+		steps: [
+			"down",
+			[
+				"o",
+				"x",
+				"h",
+				"x",
+				"o",
+			],
+			"down",
+			[
+				"o",
+				"x",
+				"o",
+				"x",
+				"h",
+			],
+			"down",
+			[
+				"h",
+				"x",
+				"o",
+				"x",
+				"o",
+			],
+		],
+		wrap: true,
+	},
+	// Test 18: Diagonal-like movement with crossAxis
+	{
+		// prettier-ignore
+		initial: [
+			"h x x x",
+			"x x x x",
+			"x x x x",
+			"x x x o",
+		],
+		// prettier-ignore
+		steps: [
+			"right",
+			[
+				"o x x x",
+				"x x x x",
+				"x x x x",
+				"x x x h",
+			],
+			"left",
+			[
+				"h x x x",
+				"x x x x",
+				"x x x x",
+				"x x x o",
+			],
+		],
+		crossAxis: true,
+	},
+	// Test 19: Mixed wrap and crossAxis behavior
+	{
+		// prettier-ignore
+		initial: [
+			"o x h",
+			"x x x",
+			"o x o",
+		],
+		// prettier-ignore
+		steps: [
+			"down",
+			[
+				"o x o",
+				"x x x",
+				"o x h",
+			],
+			"up",
+			[
+				"o x h",
+				"x x x",
+				"o x o",
+			],
+		],
+		wrap: true,
+		crossAxis: true,
+	},
+	// Test 20: Edge case with all items disabled except two
+	{
+		// prettier-ignore
+		initial: [
+			"h x x",
+			"x x x",
+			"x x o",
+		],
+		// prettier-ignore
+		steps: [
+			"right",
+			[
+				"o x x",
+				"x x x",
+				"x x h",
+			],
+			"left",
+			[
+				"h x x",
+				"x x x",
+				"x x o",
+			],
+		],
+		crossAxis: true,
+	},
 ];
 
 function getSupposedHighlightedIdx(grid: Grid): number {

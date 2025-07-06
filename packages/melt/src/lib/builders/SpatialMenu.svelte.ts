@@ -62,7 +62,7 @@ export type SpatialMenuProps<T> = {
 	 * If `true`, arrow keys will navigate cross-axis as well, if no item
 	 * is available on the current axis.
 	 *
-	 * @default false
+	 * @default true
 	 */
 	crossAxis?: MaybeGetter<boolean>;
 };
