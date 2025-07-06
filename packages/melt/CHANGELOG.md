@@ -1,5 +1,17 @@
 # melt
 
+## 0.38.0
+
+### Minor Changes
+
+- spatial menu: add more props and change behaviour ([`b547c05`](https://github.com/melt-ui/next-gen/commit/b547c05b0a4f5fbf077c6129400b7593dc4bc063))
+
+### Patch Changes
+
+- popover: fix no el when programmatically opening ([`bdfbdcf`](https://github.com/melt-ui/next-gen/commit/bdfbdcf3742305db66db481dfd55aa570cf6edf7))
+
+- pininput: fix callstack overflow on input ([#158](https://github.com/melt-ui/next-gen/pull/158))
+
 ## 0.37.0
 
 ### Minor Changes
