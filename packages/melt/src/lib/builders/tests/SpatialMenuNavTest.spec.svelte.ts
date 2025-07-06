@@ -144,8 +144,8 @@ const cases: TestCase[] = [
 		steps: [
 			"up",
 			[
-				"h x x",
-				"o x o",
+				"o x x",
+				"h x o",
 				"o o o",
 			]
 		],
@@ -155,7 +155,6 @@ const cases: TestCase[] = [
 
 function getSupposedHighlightedIdx(grid: Grid): number {
 	const cells = grid.flatMap((r) => r.split(" "));
-	console.log(cells);
 	return cells.findIndex((c) => c === "h");
 }
 
@@ -186,7 +185,6 @@ cases.forEach((c, i) => {
 			} else {
 				grid = step as Grid;
 				const idx = getSupposedHighlightedIdx(grid);
-				console.log(idx);
 				expect(items[idx]!.element().getAttribute("data-highlighted")).toBe("");
 			}
 		}

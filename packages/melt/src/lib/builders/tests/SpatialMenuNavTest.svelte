@@ -38,7 +38,6 @@
 	const menu = new SpatialMenu({
 		highlighted: () => highlighted,
 		onHighlightChange: (id) => {
-			console.log("hey", id);
 			highlighted = id;
 		},
 		wrap,

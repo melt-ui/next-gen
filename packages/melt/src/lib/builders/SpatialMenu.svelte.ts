@@ -165,18 +165,21 @@ export class SpatialMenu<T> {
 
 			if (!isValidDirection) continue;
 
-			// Apply distance constraints if set (this maintains original edge-case behavior)
-			if ((direction === "left" || direction === "right") && this.toleranceRow) {
-				const centerYDistance = Math.abs(currentRect.centerY - candidateRect.centerY);
-				if (centerYDistance > this.toleranceRow) continue;
-			}
-			if ((direction === "up" || direction === "down") && this.toleranceCol) {
-				const centerXDistance = Math.abs(currentRect.centerX - candidateRect.centerX);
-				if (centerXDistance > this.toleranceCol) continue;
+			// Apply distance constraints if set, but only for same-axis navigation
+			// For cross-axis navigation, we'll handle this later in the cross-axis section
+			const onSameAxis = isOnSameAxis(currentRect, candidateRect, direction);
+			if (onSameAxis) {
+				if ((direction === "left" || direction === "right") && this.toleranceRow) {
+					const centerYDistance = Math.abs(currentRect.centerY - candidateRect.centerY);
+					if (centerYDistance > this.toleranceRow) continue;
+				}
+				if ((direction === "up" || direction === "down") && this.toleranceCol) {
+					const centerXDistance = Math.abs(currentRect.centerX - candidateRect.centerX);
+					if (centerXDistance > this.toleranceCol) continue;
+				}
 			}
 
-			// Check if this candidate is on the same axis
-			const onSameAxis = isOnSameAxis(currentRect, candidateRect, direction);
+			// We already calculated onSameAxis above
 
 			// Calculate distance
 			if (direction === "left") {
