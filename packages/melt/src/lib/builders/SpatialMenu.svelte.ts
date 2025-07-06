@@ -189,7 +189,6 @@ export class SpatialMenu<T> {
 				distance = candidateRect.top - currentRect.bottom;
 			}
 
-			console.log(this.crossAxis, bestCandidate);
 			// If we haven't found a same-axis candidate yet, or this is closer on the same axis
 			if (onSameAxis) {
 				if (
