@@ -41,25 +41,19 @@ Things I want:
 	const tree = new Tree({ items });
 </script>
 
-<div {...tree.root}>
-	{#each tree.items as item}
-		<div {...item.root}>
-			<button {...item.trigger}>
-				{item.value}
-			</button>
-			{#if item.children}
-				<div {...item.content}>
-					{#each item.children as child}
-						<div {...child.root}>
-							<button {...child.trigger}>
-								{child.value}
-							</button>
-						</div>
-					{/each}
-				</div>
+{#snippet treeItems(items: typeof tree['children'], depth: number = 0)}
+	{#each items as item (item.id)}
+		<div {...item.attrs}>
+			<!-- Content here -->
+			{#if item.children?.length}
+				{@render treeItems(item.children, depth + 1)}
 			{/if}
 		</div>
 	{/each}
+{/snippet}
+
+<div {...tree.root}>
+	{@render treeItems(tree.children, 0)}
 </div>
 ```
 	</TabItem>
