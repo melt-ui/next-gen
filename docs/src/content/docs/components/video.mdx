@@ -1,0 +1,196 @@
+---
+title: Video
+description: A headless video player with full control over playback, volume, and state.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/video.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 🎹 Keyboard controls
+- 🎮 Play, pause, seek, volume, and fullscreen controls
+- 📊 Progress and buffering indicators
+- 🧠 Smart state management
+- ⌛ Time formatting utilities
+- 💬 Screen reader support
+</Features>
+
+## Usage
+
+<Tabs>
+	<TabItem label="Builder">
+```svelte
+<script lang="ts">
+	import { Video } from "melt/builders";
+
+	const video = new Video({
+		src: () => "https://example.com/video.mp4",
+	});
+</script>
+
+<div {...video.root}>
+	<video {...video.video} />
+	<div {...video.controls}>
+		<button {...video.playButton}>
+			{video.playing ? 'Pause' : 'Play'}
+		</button>
+		<input {...video.progressBar} />
+		<span {...video.timeDisplay}>
+			{video.formatTime(video.currentTime)} / {video.formatTime(video.duration)}
+		</span>
+		<button {...video.muteButton}>
+			{video.muted ? 'Unmute' : 'Mute'}
+		</button>
+		<input {...video.volumeSlider} />
+		<button {...video.fullscreenButton}>
+			Fullscreen
+		</button>
+	</div>
+</div>
+```
+	</TabItem>
+
+	<TabItem label="Component">
+```svelte
+<script lang="ts">
+	import { Video } from "melt/components";
+</script>
+
+<Video src="https://example.com/video.mp4">
+	{#snippet children(video)}
+		<div {...video.root}>
+			<video {...video.video} />
+			<div {...video.controls}>
+				<button {...video.playButton}>
+					{video.playing ? 'Pause' : 'Play'}
+				</button>
+				<input {...video.progressBar} />
+				<span {...video.timeDisplay}>
+					{video.formatTime(video.currentTime)} / {video.formatTime(video.duration)}
+				</span>
+			</div>
+		</div>
+	{/snippet}
+</Video>
+```
+	</TabItem>
+</Tabs>
+
+## Controls
+
+The Video builder includes multiple ways to interact with the player:
+
+### Mouse Controls
+
+- **Click**: Play/pause
+- **Double-click**: Toggle fullscreen
+
+### Keyboard Controls
+
+The Video builder includes keyboard shortcuts by default:
+
+- **Space / K**: Play/pause
+- **Arrow Left / J**: Seek backward (default: 10 seconds)
+- **Arrow Right / L**: Seek forward (default: 10 seconds)
+- **Arrow Up**: Increase volume (default: 5%)
+- **Arrow Down**: Decrease volume (default: 5%)
+- **M**: Toggle mute
+- **F**: Toggle fullscreen
+- **Home**: Jump to beginning
+- **End**: Jump to end
+- **0-9**: Jump to 0%-90% of the video
+
+### Visual Feedback
+
+When using keyboard shortcuts or mouse controls, a brief visual indicator appears on screen showing the action performed (e.g., "Volume: 75%", "+10s", "Muted", "Playing"). This feedback is automatically displayed for 1.5 seconds and can be styled using the `keyboardFeedback` property:
+
+```svelte
+<div {...video.root}>
+	<video {...video.video} />
+	
+	{#if video.keyboardFeedback}
+		<div class="feedback-overlay">
+			{video.keyboardFeedback}
+		</div>
+	{/if}
+</div>
+```
+
+### Customizing Keyboard Controls
+
+You can configure the seek and volume step values:
+
+```svelte
+<script lang="ts">
+	import { Video } from "melt/builders";
+
+	const video = new Video({
+		src: () => "https://example.com/video.mp4",
+		seekStep: () => 15, // Seek 15 seconds instead of 10
+		volumeStep: () => 0.1, // Change volume by 10% instead of 5%
+	});
+</script>
+```
+
+You can also disable keyboard controls entirely:
+
+```svelte
+<script lang="ts">
+	import { Video } from "melt/builders";
+
+	const video = new Video({
+		src: () => "https://example.com/video.mp4",
+		keyboardControls: () => false,
+	});
+</script>
+```
+
+## Styling
+
+By default, Melt does not provide styles. This means you'll be responsible for styling your video player controls.
+
+To facilitate this, Melt provides CSS custom properties, `--progress` and `--buffered`.
+
+### Progress Bar
+
+The progress bar uses the `--progress` CSS property to indicate playback position:
+
+```css
+[data-melt-video-player-progress-bar] {
+	background: linear-gradient(
+		to right,
+		blue 0%,
+		blue var(--progress),
+		gray var(--progress),
+		gray 100%
+	);
+}
+```
+
+### Buffering Progress
+
+You can also show buffering progress using the `--buffered` property:
+
+```css
+[data-melt-video-player-progress-bar] {
+	background: linear-gradient(
+		to right,
+		blue 0%,
+		blue var(--progress),
+		lightblue var(--progress),
+		lightblue var(--buffered),
+		gray var(--buffered),
+		gray 100%
+	);
+}
+```
+
+## API Reference
+
+<ApiTable entry="Video" />
