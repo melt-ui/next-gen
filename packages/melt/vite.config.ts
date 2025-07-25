@@ -1,4 +1,3 @@
-// @ts-ignore -- no types for some reason
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 
