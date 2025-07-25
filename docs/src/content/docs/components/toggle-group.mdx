@@ -1,0 +1,147 @@
+---
+title: Toggle Group
+description: A set of toggle buttons where one or multiple can be selected at a time.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/toggle-group.svelte";
+import Features from "@components/features.astro";
+import ThemedCode from "@components/themed-code.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 🎹 Keyboard navigation with arrow keys
+- 🔀 Single or multiple selection modes
+- 🔄 Horizontal and vertical orientation
+- ⭕ Loop navigation option
+- 📝 Form support with hidden inputs
+- 🏷️ Accessible label support
+- 🔴 Required option support
+- 🧠 Smart focus management
+</Features>
+
+## Usage
+
+The Toggle Group component provides a way to group multiple toggle buttons with built-in keyboard navigation, focus management, and selection handling. It can operate in two modes:
+
+- **Single mode**: Only one toggle can be selected at a time (like radio buttons)
+- **Multiple mode**: Multiple toggles can be selected independently
+
+When the `required` option is enabled, at least one toggle must be selected at all times:
+
+- In **single mode**: Once an option is selected, it can't be deselected without selecting another
+- In **multiple mode**: At least one option must remain selected
+
+<Tabs>
+	<TabItem label="Builder">
+```svelte
+<script lang="ts">
+    import { ToggleGroup } from "melt/builders";
+
+    const toggleGroup = new ToggleGroup({
+      type: "single", // or "multiple"
+      orientation: "horizontal", // or "vertical"
+      name: "alignment", // for form submission
+      required: true, // requires at least one selected option
+      defaultItem: "left", // default selection when required is true
+    });
+    const items = ["left", "center", "right"];
+</script>
+
+<div class="flex flex-col gap-2">
+  <label {...toggleGroup.label}>Text Alignment</label>
+  <div {...toggleGroup.root} class="flex gap-1">
+    {#each items as i}
+      {@const item = toggleGroup.getItem(i)}
+      <button {...item.attrs} class="p-2 border rounded data-[state=on]:bg-blue-500">
+        {i}
+      </button>
+    {/each}
+
+    <!-- For form support -->
+  {#if toggleGroup.type === "multiple" && Array.isArray(toggleGroup.value)}
+    {#each toggleGroup.value as val}
+      <input type="hidden" name={toggleGroup.name} value={val} />
+    {/each}
+  {:else}
+    <input type="hidden" name={toggleGroup.name} value={toggleGroup.value || ""} />
+  {/if}
+  </div>
+</div>
+```
+	</TabItem>
+
+	<TabItem label="Component">
+```svelte
+<script lang="ts">
+	import { ToggleGroup } from "melt/components";
+	const items = ["left", "center", "right"];
+</script>
+
+<ToggleGroup type="single" orientation="horizontal" name="alignment" required={true} defaultItem="left">
+	{#snippet children(toggleGroup)}
+		<div class="flex flex-col gap-2">
+					<label {...toggleGroup.label}>Text Alignment</label>
+					<div {...toggleGroup.root} class="flex gap-1">
+						{#each items as i}
+							{@const item = toggleGroup.getItem(i)}
+							<button
+								{...item.attrs}
+								class="p-2 border rounded data-[state=on]:bg-blue-500"
+							>
+								{i}
+							</button>
+						{/each}
+
+						<!-- For form support -->
+			{#if toggleGroup.type === "multiple" && Array.isArray(toggleGroup.value)}
+				{#each toggleGroup.value as val}
+					<input type="hidden" name={toggleGroup.name} value={val} />
+				{/each}
+			{:else}
+				<input type="hidden" name={toggleGroup.name} value={toggleGroup.value || ""} />
+			{/if}
+					</div>
+				</div>
+			{/snippet}
+</ToggleGroup>
+```
+	</TabItem>
+</Tabs>
+
+## Keyboard Interactions
+
+| Key          | Description                                           |
+|--------------|-------------------------------------------------------|
+| `Tab`        | Moves focus to the next focusable element             |
+| `Shift + Tab`| Moves focus to the previous focusable element         |
+| `Space`      | Toggles the focused toggle button                     |
+| `Enter`      | Toggles the focused toggle button                     |
+| `ArrowRight` | In horizontal orientation, moves focus to the next toggle button |
+| `ArrowLeft`  | In horizontal orientation, moves focus to the previous toggle button |
+| `ArrowDown`  | In vertical orientation, moves focus to the next toggle button |
+| `ArrowUp`    | In vertical orientation, moves focus to the previous toggle button |
+| `Home`       | Moves focus to the first toggle button               |
+| `End`        | Moves focus to the last toggle button                |
+
+## Accessibility
+
+ToggleGroup uses the correct ARIA attributes for toggle buttons in a group:
+
+- Each toggle button has `role="button"` and `aria-pressed` attributes
+- The group container has `role="group"` with `aria-labelledby` referencing the label
+- The label is properly associated with the group
+- When required, the group has `aria-required="true"` for accessibility
+- Focus is properly managed with keyboard navigation
+
+For better accessibility:
+- Always include a label that describes the purpose of the toggle group
+- Add descriptive text or `aria-label` to each toggle button
+- Use visually distinct states for selected and unselected toggles (not just color)
+
+## API Reference
+
+<ApiTable entry="ToggleGroup" />
