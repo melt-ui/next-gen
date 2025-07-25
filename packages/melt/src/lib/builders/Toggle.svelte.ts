@@ -2,9 +2,9 @@ import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { dataAttr, disabledAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
-import { createDataIds } from "$lib/utils/identifiers";
+import { createBuilderMetadata } from "$lib/utils/identifiers";
 
-const identifiers = createDataIds("toggle", ["trigger", "hidden-input"]);
+const { dataAttrs } = createBuilderMetadata("toggle", ["trigger", "hidden-input"]);
 
 export type ToggleProps = {
 	/**
@@ -60,7 +60,7 @@ export class Toggle {
 	/** The trigger that toggles the value. */
 	get trigger() {
 		return {
-			[identifiers.trigger]: "",
+			[dataAttrs.trigger]: "",
 			"data-checked": dataAttr(this.value),
 			"aria-pressed": this.value,
 			disabled: disabledAttr(this.disabled),
@@ -74,7 +74,7 @@ export class Toggle {
 	/** A hidden input field to use within forms. */
 	get hiddenInput() {
 		return {
-			[identifiers["hidden-input"]]: "",
+			[dataAttrs["hidden-input"]]: "",
 			type: "hidden",
 			value: this.value ? "on" : "off",
 		} as const;
