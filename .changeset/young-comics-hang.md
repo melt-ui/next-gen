@@ -1,5 +1,5 @@
 ---
-"melt": patch
+"melt": minor
 ---
 
-add `pauseAll()` and `resumeAll()` functions to toaster
+toaster: add `pauseAll()` and `resumeAll()` functions
