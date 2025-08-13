@@ -1,5 +1,11 @@
 # melt
 
+## 0.39.0
+
+### Minor Changes
+
+- toaster: add `pauseAll()` and `resumeAll()` functions ([#145](https://github.com/melt-ui/next-gen/pull/145))
+
 ## 0.38.1
 
 ### Patch Changes
