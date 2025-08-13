@@ -129,6 +129,7 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 				this.touched = false;
 				props.onOpenChange?.(open);
 				await tick();
+				console.log("open", open);
 				if (!open) {
 					this.highlighted = null;
 					return;
@@ -140,10 +141,10 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 					if (lastSelected) this.highlight(lastSelected);
 					else this.highlightFirst();
 				});
-
-				// const content = document.getElementById(this.ids.content);
-				// if (!content) return;
-				// content.focus();
+			},
+			focus: {
+				onOpen: () => this.ids.input,
+				onClose: null,
 			},
 		});
 

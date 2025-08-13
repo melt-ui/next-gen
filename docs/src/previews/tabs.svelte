@@ -88,7 +88,7 @@
 			{#each tabIds as id}
 				<button
 					class="group min-w-0 max-w-full cursor-pointer text-ellipsis whitespace-nowrap bg-transparent text-start font-medium
-					outline-none transition {tabs.orientation === 'horizontal' ? 'px-2' : 'py-0.5'}"
+					!outline-none transition {tabs.orientation === 'horizontal' ? 'px-2' : 'py-0.5'}"
 					{...tabs.getTrigger(id)}
 				>
 					<div
