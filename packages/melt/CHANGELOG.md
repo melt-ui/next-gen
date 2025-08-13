@@ -1,5 +1,11 @@
 # melt
 
+## 0.38.1
+
+### Patch Changes
+
+- combobox: fix focus ([`a7932e6`](https://github.com/melt-ui/next-gen/commit/a7932e69ed57232664910cf8d1a5832acf43328f))
+
 ## 0.38.0
 
 ### Minor Changes
