@@ -1,5 +1,18 @@
 # melt
 
+## 0.40.2
+
+### Patch Changes
+
+- Fix `onNavigate` callback behavior in Combobox and Select components ([`be3bf49`](https://github.com/melt-ui/next-gen/commit/be3bf49a69cd3123993bad19b3d05facd1e80d63))
+
+  Previously, the `onNavigate` callback would only handle custom navigation and never fall back to default behavior when returning `null`. Now correctly implements the documented behavior:
+
+  - When `onNavigate` returns a value: uses that value for navigation
+  - When `onNavigate` returns `null`: falls back to default DOM-based navigation
+
+  This allows for more flexible navigation handling, such as selective override of navigation behavior in specific scenarios while maintaining default behavior in others.
+
 ## 0.40.1
 
 ### Patch Changes
