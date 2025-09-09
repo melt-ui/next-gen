@@ -9,7 +9,13 @@
 		toleranceRow?: number | null;
 	}
 
-	let { wrap = false, items = 8, crossAxis = false, toleranceCol = 16, toleranceRow = 16 }: Props = $props();
+	let {
+		wrap = false,
+		items = 8,
+		crossAxis = false,
+		toleranceCol = 16,
+		toleranceRow = 16,
+	}: Props = $props();
 
 	type Item = { id: number; name: string; color: string };
 

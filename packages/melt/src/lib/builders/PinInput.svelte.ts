@@ -7,7 +7,10 @@ import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlInputElement } from "$lib/utils/is";
 import type { HTMLInputAttributes } from "svelte/elements";
 
-const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("pin-input", ["root", "input"])
+const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("pin-input", [
+	"root",
+	"input",
+]);
 export type PinInputError = {
 	method: "paste" | "input";
 	message: string;

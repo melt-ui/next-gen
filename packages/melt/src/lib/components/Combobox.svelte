@@ -4,9 +4,10 @@
 	import { Combobox as Builder, type ComboboxProps } from "../builders/Combobox.svelte";
 	import type { ComponentProps } from "../types";
 
-	type Props = Omit<ComponentProps<ComboboxProps<T, Multiple>>, "multiple"> & {
+	type Props = Omit<ComponentProps<ComboboxProps<T, Multiple>>, "multiple" | "onNavigate"> & {
 		children: Snippet<[Builder<T, Multiple>]>;
 		multiple?: Multiple;
+		onNavigate?: (current: T | null, direction: "next" | "prev") => T | null;
 	};
 
 	let { value = $bindable(), highlighted = $bindable(), children, ...rest }: Props = $props();
@@ -24,6 +25,8 @@
 		focus: {
 			...getters(rest).focus,
 		},
+		// onNavigate should not be wrapped in a getter since it's a callback function
+		onNavigate: rest.onNavigate,
 	});
 </script>
 
