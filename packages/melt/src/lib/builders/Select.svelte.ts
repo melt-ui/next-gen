@@ -62,6 +62,16 @@ export type SelectProps<T, Multiple extends boolean = false> = Omit<PopoverProps
 	onHighlightChange?: (highlighted: T | null) => void;
 
 	/**
+	 * Custom navigation handler for virtualized lists.
+	 * When provided, this will be used instead of DOM-based navigation.
+	 *
+	 * @param current - The currently highlighted item
+	 * @param direction - The navigation direction ('next' or 'prev')
+	 * @returns The next item to highlight, or null if navigation should be handled by default behavior
+	 */
+	onNavigate?: (current: T | null, direction: "next" | "prev") => T | null;
+
+	/**
 	 * How many time (in ms) the typeahead string is held before it is cleared
 	 * @default 500
 	 */
@@ -376,12 +386,42 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 	}
 
 	#highlightNext() {
+		if (this.#props.onNavigate) {
+			const next = this.#props.onNavigate(this.highlighted, "next");
+			if (next !== null) {
+				this.highlighted = next;
+				// Try to scroll the element into view if it exists in DOM
+				const id = this.getOptionId(next);
+				const el = document.getElementById(id);
+				if (el && this.scrollAlignment !== null) {
+					el.scrollIntoView({ block: this.scrollAlignment });
+				}
+			}
+			return;
+		}
+
+		// Fallback to current DOM-based implementation
 		const options = this.#getOptionsEls();
 		const next = findNext(options, (o) => o.dataset.value === JSON.stringify(this.highlighted));
 		if (isHtmlElement(next)) this.#highlight(next);
 	}
 
 	#highlightPrev() {
+		if (this.#props.onNavigate) {
+			const prev = this.#props.onNavigate(this.highlighted, "prev");
+			if (prev !== null) {
+				this.highlighted = prev;
+				// Try to scroll the element into view if it exists in DOM
+				const id = this.getOptionId(prev);
+				const el = document.getElementById(id);
+				if (el && this.scrollAlignment !== null) {
+					el.scrollIntoView({ block: this.scrollAlignment });
+				}
+			}
+			return;
+		}
+
+		// Fallback to current DOM-based implementation
 		const options = this.#getOptionsEls();
 		const prev = findPrev(options, (o) => o.dataset.value === JSON.stringify(this.highlighted));
 		if (isHtmlElement(prev)) this.#highlight(prev);

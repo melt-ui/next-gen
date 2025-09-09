@@ -84,6 +84,16 @@ export type ComboboxProps<T, Multiple extends boolean = false> = Omit<
 	onHighlightChange?: (highlighted: T | null) => void;
 
 	/**
+	 * Custom navigation handler for virtualized lists.
+	 * When provided, this will be used instead of DOM-based navigation.
+	 *
+	 * @param current - The currently highlighted item
+	 * @param direction - The navigation direction ('next' or 'prev')
+	 * @returns The next item to highlight, or null if navigation should be handled by default behavior
+	 */
+	onNavigate?: (current: T | null, direction: "next" | "prev") => T | null;
+
+	/**
 	 * Determines behavior when scrolling items into view.
 	 * Set to null to disable auto-scrolling.
 	 *
@@ -446,12 +456,26 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 	}
 
 	highlightNext() {
+		if (this.#props.onNavigate) {
+			const next = this.#props.onNavigate(this.highlighted, "next");
+			if (next !== null) this.highlight(next);
+			return;
+		}
+
+		// Fallback to current DOM-based implementation
 		const options = this.getOptions();
 		const next = findNext(options, (v) => dequal(v, this.highlighted));
 		if (next !== undefined) this.highlight(next);
 	}
 
 	highlightPrev() {
+		if (this.#props.onNavigate) {
+			const prev = this.#props.onNavigate(this.highlighted, "prev");
+			if (prev !== null) this.highlight(prev);
+			return;
+		}
+
+		// Fallback to current DOM-based implementation
 		const options = this.getOptions();
 		const prev = findPrev(options, (v) => dequal(v, this.highlighted));
 		if (prev !== undefined) this.highlight(prev);

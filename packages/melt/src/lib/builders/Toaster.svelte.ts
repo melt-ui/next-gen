@@ -42,7 +42,7 @@ export type ToasterProps = {
 	/**
 	 * The behaviour when the user switches to another tab.
 	 * Pass in `null` to disable.
-	 * 
+	 *
 	 * @default 'pause-all'
 	 */
 	tabHidden?: MaybeGetter<"pause-all" | null | undefined>;
@@ -114,11 +114,7 @@ export class Toaster<T = object> {
 	constructor(props: ToasterProps = {}) {
 		this.#props = props;
 
-		useEventListener(
-			() => document,
-			"visibilitychange",
-			this.#onVisibilityChange.bind(this)
-		);
+		useEventListener(() => document, "visibilitychange", this.#onVisibilityChange.bind(this));
 	}
 
 	/**
