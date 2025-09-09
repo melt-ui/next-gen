@@ -458,8 +458,11 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 	highlightNext() {
 		if (this.#props.onNavigate) {
 			const next = this.#props.onNavigate(this.highlighted, "next");
-			if (next !== null) this.highlight(next);
-			return;
+			if (next !== null) {
+				this.highlight(next);
+				return;
+			}
+			// Fall through to default behavior when null is returned
 		}
 
 		// Fallback to current DOM-based implementation
@@ -471,8 +474,11 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 	highlightPrev() {
 		if (this.#props.onNavigate) {
 			const prev = this.#props.onNavigate(this.highlighted, "prev");
-			if (prev !== null) this.highlight(prev);
-			return;
+			if (prev !== null) {
+				this.highlight(prev);
+				return;
+			}
+			// Fall through to default behavior when null is returned
 		}
 
 		// Fallback to current DOM-based implementation

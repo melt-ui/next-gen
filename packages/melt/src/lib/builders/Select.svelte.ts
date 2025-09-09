@@ -396,8 +396,9 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 				if (el && this.scrollAlignment !== null) {
 					el.scrollIntoView({ block: this.scrollAlignment });
 				}
+				return;
 			}
-			return;
+			// Fall through to default behavior when null is returned
 		}
 
 		// Fallback to current DOM-based implementation
@@ -417,8 +418,9 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 				if (el && this.scrollAlignment !== null) {
 					el.scrollIntoView({ block: this.scrollAlignment });
 				}
+				return;
 			}
-			return;
+			// Fall through to default behavior when null is returned
 		}
 
 		// Fallback to current DOM-based implementation
