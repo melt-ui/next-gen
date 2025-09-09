@@ -1,5 +1,11 @@
 # melt
 
+## 0.40.1
+
+### Patch Changes
+
+- fix(toaster): effect used in constructor ([#173](https://github.com/melt-ui/next-gen/pull/173))
+
 ## 0.40.0
 
 ### Minor Changes
