@@ -113,8 +113,6 @@ export class Toaster<T = object> {
 
 	constructor(props: ToasterProps = {}) {
 		this.#props = props;
-
-		useEventListener(() => document, "visibilitychange", this.#onVisibilityChange.bind(this));
 	}
 
 	/**
@@ -215,6 +213,8 @@ export class Toaster<T = object> {
 					});
 				},
 			);
+
+			useEventListener(document, "visibilitychange", this.#onVisibilityChange.bind(this));
 		}
 
 		return {
