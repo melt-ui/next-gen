@@ -28,10 +28,7 @@ const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("combobox"
 	"option",
 ]);
 
-export type ComboboxProps<T, Multiple extends boolean = false> = Omit<
-	PopoverProps,
-	"closeOnEscape" | "closeOnOutsideClick" | "sameWidth"
-> & {
+export type ComboboxProps<T, Multiple extends boolean = false> = Omit<PopoverProps> & {
 	/**
 	 * If `true`, multiple options can be selected at the same time.
 	 *
@@ -128,18 +125,21 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 	constructor(props: ComboboxProps<T, Multiple> = {}) {
 		super({
 			sameWidth: true,
-			...props,
 			closeOnOutsideClick: (el) => {
 				const triggerEl = document.getElementById(this.ids.trigger);
 				if (triggerEl && isNode(el) && triggerEl.contains(el)) return false;
 				return true;
 			},
 			closeOnEscape: () => this.open,
+			focus: {
+				onOpen: () => this.ids.input,
+				onClose: null,
+			},
+			...props,
 			onOpenChange: async (open) => {
 				this.touched = false;
 				props.onOpenChange?.(open);
 				await tick();
-				console.log("open", open);
 				if (!open) {
 					this.highlighted = null;
 					return;
@@ -151,10 +151,6 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 					if (lastSelected) this.highlight(lastSelected);
 					else this.highlightFirst();
 				});
-			},
-			focus: {
-				onOpen: () => this.ids.input,
-				onClose: null,
 			},
 		});
 
