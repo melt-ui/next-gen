@@ -28,7 +28,7 @@ const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("combobox"
 	"option",
 ]);
 
-export type ComboboxProps<T, Multiple extends boolean = false> = Omit<PopoverProps> & {
+export type ComboboxProps<T, Multiple extends boolean = false> = PopoverProps & {
 	/**
 	 * If `true`, multiple options can be selected at the same time.
 	 *
