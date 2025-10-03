@@ -1,5 +1,11 @@
 # melt
 
+## 0.41.0
+
+### Minor Changes
+
+- combobox: allow for more props ([`ebd80bb`](https://github.com/melt-ui/next-gen/commit/ebd80bbb7bcfafee8ae1a15c46d7bb774561f078))
+
 ## 0.40.2
 
 ### Patch Changes
