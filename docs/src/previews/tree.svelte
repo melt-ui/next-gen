@@ -171,7 +171,21 @@
 	{/each}
 {/snippet}
 
+{#snippet button(props: {onclick: () => void, text: string})}
+	<button
+		class="rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-800
+			transition-all hover:cursor-pointer hover:bg-gray-200
+			active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
+			dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
+		onclick={props.onclick}>{props.text}</button
+	>
+{/snippet}
+
 <Preview class="!py-6">
+	<div class="flex items-center justify-center gap-2">
+		{@render button({ onclick: tree.collapseAll, text: "Collapse All" })}
+		{@render button({ onclick: tree.expandAll, text: "Expand All" })}
+	</div>
 	<ul class="mx-auto w-[300px] list-none rounded-md p-4" {...tree.root}>
 		{@render treeItems(tree.children, 0)}
 	</ul>

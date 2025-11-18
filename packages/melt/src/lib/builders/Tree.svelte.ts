@@ -103,7 +103,7 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 				const activeEl = document.activeElement;
 				if (!isString(activeEl?.getAttribute(identifiers.item))) return [];
 
-				const visibleChildren = getAllChildren(this, true);
+				const visibleChildren = Tree.getAllChildren(this, true);
 
 				return mapAndFilter(
 					visibleChildren,
@@ -189,74 +189,96 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 		return this.#expanded.has(id);
 	}
 
+	getItem(id: string): I | undefined {
+		return Tree.getAllChildren(this).find((i) => i.id === id)?.item;
+	}
+
 	/**
 	 * Expands a specific item
 	 * @param id - ID of the item to expand
 	 */
-	expand(id: string) {
+	expand = (id: string) => {
+		const item = this.getItem(id);
+		if (!item || !item.children?.length) return;
 		this.#expanded.add(id);
-	}
+	};
+
+	/**
+	 * Expands all items
+	 */
+	expandAll = () => {
+		const children = Tree.getAllChildren(this);
+		children.forEach((c) => this.expand(c.id));
+	};
 
 	/**
 	 * Collapses a specific item
 	 * @param id - ID of the item to collapse
 	 */
-	collapse(id: string) {
+	collapse = (id: string) => {
 		this.#expanded.delete(id);
-	}
+	};
+
+	/**
+	 * Collapses all items
+	 */
+	collapseAll = () => {
+		const children = Tree.getAllChildren(this);
+		children.forEach((c) => this.collapse(c.id));
+	};
 
 	/**
 	 * Toggles the expanded state of an item
 	 * @param id - ID of the item to toggle
 	 */
-	toggleExpand(id: string) {
+	toggleExpand = (id: string) => {
 		this.#expanded.toggle(id);
-	}
+	};
 
 	/**
 	 * Selects a specific item
 	 * @param id - ID of the item to select
 	 */
-	select(id: string) {
+	select = (id: string) => {
 		this.#selected.add(id);
-	}
+	};
 
 	/**
 	 * Deselects a specific item
 	 * @param id - ID of the item to deselect
 	 */
-	deselect(id: string) {
+	deselect = (id: string) => {
 		this.#selected.delete(id);
-	}
+	};
 
 	/**
 	 * Clears all current selections
 	 */
-	clearSelection() {
+	clearSelection = () => {
 		this.#selected.clear();
-	}
+	};
 
 	/**
 	 * Toggles the selected state of an item
 	 * @param id - ID of the item to toggle
 	 */
-	toggleSelect(id: string) {
+	toggleSelect = (id: string) => {
 		this.#selected.toggle(id);
-	}
+	};
 
 	/**
 	 * Selects all visible items.
 	 * If all items are already selected, clears the selection.
 	 */
-	selectAll() {
-		const ids = getAllChildren(this, true).map((c) => c.id);
+	selectAll = () => {
+		const ids = Tree.getAllChildren(this, true).map((c) => c.id);
 		const alreadySelected = ids.every((id) => this.#selected.has(id));
 		if (alreadySelected) {
 			this.clearSelection();
 		} else {
 			this.#selected.addAll(ids);
 		}
-	}
+	};
 
 	/**
 	 * Gets the DOM ID for a specific tree item
@@ -282,7 +304,7 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 		// TODO: Use a direction constant to ensure correct order?
 		if (!this.#selected.size()) return this.select(id);
 
-		const allChildren = getAllChildren(this);
+		const allChildren = Tree.getAllChildren(this);
 
 		const to = allChildren.find((c) => c.id === id);
 		if (!to) return;
@@ -334,25 +356,27 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 			(i) => new Child({ tree: this, item: i, parent: this, selectedState: this.#selected }),
 		);
 	}
-}
 
-/**
- * Helper function to get all child items in a tree or subtree
- * @param treeOrChild - Tree or Child instance to get children from
- * @param onlyVisible - If true, only returns visible (expanded) children
- */
-function getAllChildren<I extends TreeItem>(
-	treeOrChild: Tree<I, boolean> | Child<I>,
-	onlyVisible = false,
-): Child<I>[] {
-	const children =
-		!onlyVisible || treeOrChild instanceof Tree || treeOrChild.expanded ? treeOrChild.children : [];
+	/**
+	 * Helper function to get all child items in a tree or subtree
+	 * @param treeOrChild - Tree or Child instance to get children from
+	 * @param onlyVisible - If true, only returns visible (expanded) children
+	 */
+	static getAllChildren<I extends TreeItem>(
+		treeOrChild: Tree<I, boolean> | Child<I>,
+		onlyVisible = false,
+	): Child<I>[] {
+		const children =
+			!onlyVisible || treeOrChild instanceof Tree || treeOrChild.expanded
+				? treeOrChild.children
+				: [];
 
-	return (
-		children?.reduce((acc, c) => {
-			return [...acc, c, ...getAllChildren(c, onlyVisible)];
-		}, [] as Child<I>[]) || []
-	);
+		return (
+			children?.reduce((acc, c) => {
+				return [...acc, c, ...Tree.getAllChildren(c, onlyVisible)];
+			}, [] as Child<I>[]) || []
+		);
+	}
 }
 
 type ChildProps<I extends TreeItem> = {
@@ -533,12 +557,12 @@ class Child<I extends TreeItem> {
 						break;
 					}
 					case "Home": {
-						first(getAllChildren(this.tree))?.focus();
+						first(Tree.getAllChildren(this.tree))?.focus();
 						break;
 					}
 
 					case "End": {
-						last(getAllChildren(this.tree, true))?.focus();
+						last(Tree.getAllChildren(this.tree, true))?.focus();
 						break;
 					}
 					case "*": {
