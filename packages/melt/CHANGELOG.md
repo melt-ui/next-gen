@@ -1,5 +1,11 @@
 # melt
 
+## 0.42.0
+
+### Minor Changes
+
+- Tree: add collapseAll and expandAll functions ([`67306a5`](https://github.com/melt-ui/next-gen/commit/67306a5ffe560da088ebdda9d99fe82230b8c7da))
+
 ## 0.41.0
 
 ### Minor Changes
