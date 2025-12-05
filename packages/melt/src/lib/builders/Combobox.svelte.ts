@@ -128,8 +128,6 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 	declare ids: ReturnType<typeof createIds> & BasePopover["ids"];
 
 	constructor(props: ComboboxProps<T, Multiple> = {}) {
-		const { popover: popoverId, ...overrideIds } = extract(props.ids, {});
-
 		super({
 			sameWidth: true,
 			closeOnOutsideClick: (el) => {
@@ -143,9 +141,6 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 				onClose: null,
 			},
 			...props,
-			ids: {
-				popover: popoverId
-			},
 			onOpenChange: async (open) => {
 				this.touched = false;
 				props.onOpenChange?.(open);
@@ -190,7 +185,7 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 			input: newIds.input,
 			content: oldIds.popover,
 			trigger: newIds.trigger,
-			...overrideIds
+			...extract(props.ids, {})
 		};
 	}
 

@@ -133,14 +133,9 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 	);
 
 	constructor(props: SelectProps<T, Multiple> = {}) {
-		const { popover: popoverId, ...overrideIds } = extract(props.ids, {});
-
 		super({
 			sameWidth: true,
 			...props,
-			ids: {
-				popover: popoverId
-			},
 			onOpenChange: async (open) => {
 				props.onOpenChange?.(open);
 				await tick();
@@ -184,7 +179,7 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 			trigger: newIds.trigger,
 			content: oldIds.popover,
 			option: newIds.option,
-			...overrideIds
+			...extract(props.ids, {})
 		};
 	}
 
