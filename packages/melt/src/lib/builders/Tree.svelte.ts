@@ -129,7 +129,7 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 	/* State */
 	#selected: Selected<Multiple>;
 	#expanded: SelectionState<string, true>;
-	ids = $state({ tree: createId() });
+	ids = $state({ root: createId() });
 
 	/**
 	 * Creates a new Tree instance
@@ -294,7 +294,7 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 	 * @param id - ID of the item
 	 */
 	getItemId(id: string): string {
-		return `melt-tree-${this.ids.tree}-item--${id}`;
+		return `melt-tree-${this.ids.root}-item--${id}`;
 	}
 
 	/**
