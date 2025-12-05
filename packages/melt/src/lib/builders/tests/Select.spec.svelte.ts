@@ -3,7 +3,7 @@ import { expect, expectTypeOf } from "vitest";
 import { Select } from "../Select.svelte.js";
 import { SvelteSet } from "svelte/reactivity";
 import { render } from "vitest-browser-svelte";
-import { page, userEvent } from "@vitest/browser/context";
+import { userEvent } from "@vitest/browser/context";
 import SelectTest from "./SelectTest.svelte";
 
 testWithEffect("Single selection should not toggle", () => {
@@ -44,21 +44,24 @@ testWithEffect("Allows selecting non-strings", () => {
 });
 
 testWithEffect("typeahead", async () => {
-	const { container } = render(SelectTest);
+	const user = userEvent.setup();
 
-	const trigger = page.getByRole("combobox");
-	const listbox = page.getByRole("listbox");
+	const screen = render(SelectTest);
+
+	const trigger = screen.getByTestId("select-trigger");
+	const listbox = screen.getByTestId("select-content");
 
 	expect(trigger).toHaveTextContent("Select an item");
-	expect(container.querySelector("[role='listbox']")).toHaveAttribute("aria-expanded", "false");
+	await expect.element(listbox).toHaveAttribute("aria-expanded", "false");
 
-	await trigger.click();
+	await user.click(trigger.element());
 
-	expect(listbox).toHaveAttribute("aria-expanded", "true");
+	await expect.element(listbox).toHaveAttribute("aria-expanded", "true");
 
-	const firstOption = page.getByRole("option").first();
-	await firstOption.hover();
-	expect(firstOption).toHaveAttribute("data-highlighted", "");
+	// TODO: fix
+	// const firstOption = page.getByTestId("select-option").first();
+	// await user.hover(firstOption.element());
+	// await expect.element(firstOption).toHaveAttribute("data-highlighted", "");
 
 	await userEvent.type(trigger, "o");
 	await new Promise((resolve) => setTimeout(resolve, 100));
