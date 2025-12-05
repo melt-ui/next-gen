@@ -3,7 +3,7 @@ import { mapAndFilter } from "$lib/utils/array";
 import { dataAttr } from "$lib/utils/attribute";
 import { Collection } from "$lib/utils/collection";
 import { extract } from "$lib/utils/extract";
-import { createDataIds, createId } from "$lib/utils/identifiers";
+import { createBuilderMetadata, createId } from "$lib/utils/identifiers";
 import { isString } from "$lib/utils/is";
 import { first, last } from "$lib/utils/iterator";
 import { isControlOrMeta } from "$lib/utils/platform";
@@ -11,7 +11,7 @@ import { SelectionState, type MaybeMultiple } from "$lib/utils/selection-state.s
 import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
 import type { FalseIfUndefined } from "$lib/utils/types";
 
-const identifiers = createDataIds("tree", ["root", "item", "group"]);
+const { dataAttrs } = createBuilderMetadata("tree", ["root", "item", "group"]);
 
 /**
  * Represents a tree item with optional metadata and children
@@ -101,7 +101,7 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 			timeout: this.#props.typeaheadTimeout,
 			getItems: () => {
 				const activeEl = document.activeElement;
-				if (!isString(activeEl?.getAttribute(identifiers.item))) return [];
+				if (!isString(activeEl?.getAttribute(dataAttrs.item))) return [];
 
 				const visibleChildren = Tree.getAllChildren(this, true);
 
