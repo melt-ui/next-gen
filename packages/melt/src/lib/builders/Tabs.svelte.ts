@@ -56,7 +56,7 @@ export class Tabs<T extends string = string> {
 
 	/* State */
 	#value: Synced<T>;
-	ids = $state({ tabs: createId() });
+	ids = $state({ root: createId() });
 
 	constructor(props: TabsProps<T>) {
 		this.#props = props;
@@ -71,11 +71,11 @@ export class Tabs<T extends string = string> {
 	}
 
 	#getTriggerId(value: T) {
-		return `${this.ids}-trigger-${value.replace(/\s/g, "_")}`;
+		return `${this.ids.root}-trigger-${value.replace(/\s/g, "_")}`;
 	}
 
 	#getContentId(value: T) {
-		return `${this.ids}-content-${value.replace(/\s/g, "_")}`;
+		return `${this.ids.root}-content-${value.replace(/\s/g, "_")}`;
 	}
 
 	/** The current selected tab. */
