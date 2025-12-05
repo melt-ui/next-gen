@@ -92,6 +92,11 @@ export type SelectProps<T, Multiple extends boolean = false> = Omit<PopoverProps
 	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block
 	 */
 	scrollAlignment?: MaybeGetter<"nearest" | "center" | null | undefined>;
+	
+	/**
+	 * The ids to use for the select elements.
+	 */
+	ids?: MaybeGetter<Partial<ReturnType<typeof createIds> & BasePopover["ids"]> | undefined>;
 };
 
 export class Select<T, Multiple extends boolean = false> extends BasePopover {
@@ -128,9 +133,14 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 	);
 
 	constructor(props: SelectProps<T, Multiple> = {}) {
+		const { popover: popoverId, ...overrideIds } = extract(props.ids, {});
+
 		super({
 			sameWidth: true,
 			...props,
+			ids: {
+				popover: popoverId
+			},
 			onOpenChange: async (open) => {
 				props.onOpenChange?.(open);
 				await tick();
@@ -174,6 +184,7 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 			trigger: newIds.trigger,
 			content: oldIds.popover,
 			option: newIds.option,
+			...overrideIds
 		};
 	}
 

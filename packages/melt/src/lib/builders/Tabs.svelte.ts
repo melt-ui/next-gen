@@ -40,16 +40,23 @@ export type TabsProps<T extends string = string> = {
 	 * Called when the `Tabs` instance tries to change the active tab.
 	 */
 	onValueChange?: (active: T) => void;
+	
+	/**
+	 * The ids to use for the tabs elements.
+	 */
+	ids?: MaybeGetter<Partial<Tabs["ids"]> | undefined>;
 };
 
 export class Tabs<T extends string = string> {
-	#value: Synced<T>;
-	#id = createId();
 	/* Props */
 	#props!: TabsProps<T>;
 	readonly selectWhenFocused = $derived(extract(this.#props.selectWhenFocused, true));
 	readonly loop = $derived(extract(this.#props.loop, true));
 	readonly orientation = $derived(extract(this.#props.orientation, "horizontal"));
+
+	/* State */
+	#value: Synced<T>;
+	ids = $state({ tabs: createId() });
 
 	constructor(props: TabsProps<T>) {
 		this.#props = props;
@@ -57,14 +64,18 @@ export class Tabs<T extends string = string> {
 			value: props.value,
 			onChange: props.onValueChange,
 		});
+		this.ids = {
+			...this.ids,
+			...extract(props.ids, {})
+		}
 	}
 
 	#getTriggerId(value: T) {
-		return `${this.#id}-trigger-${value.replace(/\s/g, "_")}`;
+		return `${this.ids}-trigger-${value.replace(/\s/g, "_")}`;
 	}
 
 	#getContentId(value: T) {
-		return `${this.#id}-content-${value.replace(/\s/g, "_")}`;
+		return `${this.ids}-content-${value.replace(/\s/g, "_")}`;
 	}
 
 	/** The current selected tab. */
