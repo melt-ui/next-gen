@@ -234,10 +234,10 @@ testWithEffect("basic interaction with non-string values", async () => {
 	const user = userEvent.setup();
 
 	const screen = render(ComboboxTest);
-	const input = screen.getByTestId("combobox");
-	const listbox = screen.getByTestId("combobox-content");
+	const input = screen.getByRole("combobox");
+	const listbox = screen.getByRole("listbox");
 
-	await expect.element(listbox).toHaveAttribute(
+	expect(screen.container.querySelector("[role='listbox']")).toHaveAttribute(
 		"aria-expanded",
 		"false",
 	);
@@ -246,7 +246,7 @@ testWithEffect("basic interaction with non-string values", async () => {
 
 	await expect.element(listbox).toHaveAttribute("aria-expanded", "true");
 
-	const options = screen.getByTestId("combobox-option").all();
+	const options = screen.getByRole("option").all();
 	expect(options).toHaveLength(3);
 
 	// Click on the first option (number 1)

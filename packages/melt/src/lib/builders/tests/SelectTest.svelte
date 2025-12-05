@@ -15,13 +15,13 @@
 </script>
 
 <label for={select.ids.trigger}>Label</label>
-<button {...select.trigger} data-testid="select-trigger">
+<button {...select.trigger}>
 	<span class="truncate">{select.valueAsString || "Select an item"}</span>
 </button>
 
-<div {...select.content} data-testid="select-content">
+<div {...select.content}>
 	{#each items as item}
-		<div {...select.getOption(item.value, item.label)} data-testid="select-option">
+		<div {...select.getOption(item.value, item.label)}>
 			<span>{item.label}</span>
 			{#if select.isSelected(item.value)}
 				selected

@@ -14,12 +14,12 @@
 </script>
 
 <label for={combobox.ids.input}>Label</label>
-<input {...combobox.input} data-testid="combobox" />
+<input {...combobox.input} />
 <button {...combobox.trigger}>Toggle</button>
 
-<div {...combobox.content} data-testid="combobox-content">
+<div {...combobox.content}>
 	{#each items as item}
-		<div {...combobox.getOption(item.value, item.label)} data-testid="combobox-option">
+		<div {...combobox.getOption(item.value, item.label)}>
 			<span>{item.label}</span>
 			{#if combobox.isSelected(item.value)}
 				selected
