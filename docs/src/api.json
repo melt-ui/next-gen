@@ -1472,6 +1472,68 @@
     ],
     "propsAlt": "export type FileUploadProps<Multiple extends boolean = false> = {\n  /**\n   * The currently selected files.\n   */\n  selected?: MaybeMultiple<File, Multiple>;\n\n  /**\n   * Callback fired when selected files change\n   */\n  onSelectedChange?: (files: Multiple extends true ? Set<File> : File | undefined) => void;\n\n  /**\n   * Whether to accept multiple files\n   * @default false\n   */\n  multiple?: MaybeGetter<Multiple | undefined>;\n\n  /**\n   * The accepted file types. Can be a MIME type, a MIME group, or a file extension.\n   * Separate multiple types with a comma.\n   * @example 'image/jpeg'\n   * @example 'image/*'\n   * @example '.png, .jpg, .jpeg'\n   */\n  accept?: MaybeGetter<string | undefined>;\n\n  /**\n   * Maximum file size in bytes\n   * @default undefined\n   */\n  maxSize?: MaybeGetter<number | undefined>;\n\n  /**\n   * Whether the file upload is disabled\n   * @default false\n   */\n  disabled?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Custom validate fn. Will be called together with the original validation,\n   * which takes into account the `accept` and `maxSize` props.\n   */\n  validate?: (file: File) => boolean;\n\n  /**\n   * Callback fired when a file fails validation\n   */\n  onError?: (error: FileUploadError) => void;\n\n  /**\n   * Callback fired when a file is accepted\n   */\n  onAccept?: (file: File) => void;\n\n  /**\n   * If true, checks the files contents to avoid duplicate.\n   * It's performance is not tested in large files, so by default its set to false.\n   *\n   * @default false\n   */\n  avoidDuplicates?: MaybeGetter<boolean | undefined>;\n};"
   },
+  "Dialog": {
+    "constructorProps": [
+      {
+        "name": "open",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If the Dialog is open.\n\nWhen passing a getter, it will be used as source of truth,\nmeaning that the value only changes when the getter returns a new value.\n\nOtherwise, if passing a static value, it'll serve as the default value.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "onOpenChange",
+        "type": "((value: boolean) => void) | undefined",
+        "description": "Called when the value is supposed to change.",
+        "optional": true
+      },
+      {
+        "name": "forceVisible",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If the dialog visibility should be controlled by the user.",
+        "defaultValue": "false",
+        "optional": true
+      },
+      {
+        "name": "closeOnEscape",
+        "type": "MaybeGetter<boolean | undefined>",
+        "description": "If the dialog should close when clicking escape.",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
+        "name": "closeOnOutsideClick",
+        "type": "CloseOnOutsideClickProp",
+        "description": "If the dialog should close when clicking outside.\nAlternatively, accepts a function that receives the clicked element,\nand returns if the dialog should close.",
+        "defaultValue": "true",
+        "optional": true
+      },
+      {
+        "name": "focus",
+        "type": "| { onOpen?: MaybeGetter<string | HTMLElement | null | undefined> }\n  | undefined",
+        "optional": true
+      }
+    ],
+    "methods": [],
+    "properties": [
+      {
+        "name": "open",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "trigger",
+        "type": "{\n  readonly \"data-melt-dialog-trigger\": \"\"\n  readonly onclick: () => boolean\n}",
+        "description": "The trigger element."
+      },
+      {
+        "name": "content",
+        "type": "{\n  readonly [x: symbol]: Attachment<HTMLDialogElement>\n  readonly \"data-melt-dialog-content\": \"\"\n}",
+        "description": "The element for the dialog itself."
+      }
+    ],
+    "propsAlt": "export type DialogProps = {\n  /**\n   * If the Dialog is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * If the dialog visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the dialog should close when clicking escape.\n   *\n   * @default true\n   */\n  closeOnEscape?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the dialog should close when clicking outside.\n   * Alternatively, accepts a function that receives the clicked element,\n   * and returns if the dialog should close.\n   *\n   * @default true\n   */\n  closeOnOutsideClick?: CloseOnOutsideClickProp;\n\n  focus?: {\n    /**\n     * Which element to focus when the dialog opens.\n     * Can be a selector string, an element, or a Getter for those.\n     * If null, the focus remains on the trigger element.\n     *\n     * Defaults to the dialog content element.\n     */\n    onOpen?: MaybeGetter<HTMLElement | string | null | undefined>;\n\n    /**\n     * Which element to focus when the dialog closes.\n     * Can be a selector string, an element, or a Getter for those.\n     * If null, the focus goes to the document body.\n     *\n     * Defaults to the last used trigger element.\n     */\n    onClose?: MaybeGetter<HTMLElement | string | null | undefined>;\n  };\n};"
+  },
   "Combobox": {
     "constructorProps": [
       {

@@ -1,0 +1,54 @@
+---
+title: Dialog
+description: A description of the Dialog component.
+---
+import ApiTable from "@components/api-table.astro";
+import Preview from "@previews/dialog.svelte";
+import Features from "@components/features.astro";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Preview client:load />
+
+## Features
+
+<Features>
+- 💪 It works
+</Features>
+
+## Usage
+
+<Tabs>
+  <TabItem label="Builder">
+```svelte
+<script lang="ts">
+  import { Dialog } from "melt/builders";
+
+  const dialog = new Dialog();
+</script>
+
+<div {...dialog.root}>
+  Dialog content
+</div>
+```
+  </TabItem>
+
+  <TabItem label="Component">
+```svelte
+<script lang="ts">
+  import { Dialog } from "melt/components";
+</script>
+
+<Dialog>
+  {#snippet children(dialog)}
+    <div {...dialog.root}>
+      Dialog content
+    </div>
+  {/snippet}
+</Dialog>
+```
+  </TabItem>
+</Tabs>
+
+## API Reference
+
+<ApiTable entry="Dialog" />
