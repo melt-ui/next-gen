@@ -1,5 +1,6 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
+import { dataAttr } from "$lib/utils/attribute";
 import type { CloseOnOutsideClickProp } from "$lib/utils/close-on-outside-click";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { watch } from "runed";
@@ -94,11 +95,18 @@ export class Dialog {
 		});
 	}
 
+	get sharedProps() {
+		return {
+			"data-open": dataAttr(this.open),
+		};
+	}
+
 	/** The trigger element. */
 	get trigger() {
 		return {
 			[dataAttrs.trigger]: "",
 			onclick: () => (this.open = !this.open),
+			...this.sharedProps,
 		} as const;
 	}
 
@@ -115,6 +123,10 @@ export class Dialog {
 		return {
 			[dataAttrs.content]: "",
 			[this.#ak]: this.#contentAttachment,
+			onclose: () => {
+				this.open = false;
+			},
+			...this.sharedProps,
 		} as const satisfies HTMLDialogAttributes;
 	}
 }

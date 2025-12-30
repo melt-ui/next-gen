@@ -63,3 +63,12 @@
 	top: 50%;
 	@apply -translate-y-1/2;
 }
+
+@utility abs-x-center {
+	left: 50%;
+	@apply -translate-x-1/2;
+}
+
+@utility abs-center {
+	@apply abs-x-center abs-y-center;
+}
