@@ -1,16 +1,14 @@
 import { Synced } from "$lib/Synced.svelte";
 import type { MaybeGetter } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
-import type { CloseOnOutsideClickProp } from "$lib/utils/close-on-outside-click";
+import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
-import { watch } from "runed";
+import { isHtmlElement } from "$lib/utils/is";
 import { createAttachmentKey, type Attachment } from "svelte/attachments";
 import type { HTMLDialogAttributes } from "svelte/elements";
+import { on } from "svelte/events";
 
-const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("dialog", [
-	"trigger",
-	"content",
-]);
+const { dataAttrs, createIds } = createBuilderMetadata("dialog", ["trigger", "content"]);
 
 export type DialogProps = {
 	/**
@@ -52,34 +50,18 @@ export type DialogProps = {
 	 *
 	 * @default true
 	 */
-	closeOnOutsideClick?: CloseOnOutsideClickProp;
-
-	focus?: {
-		/**
-		 * Which element to focus when the dialog opens.
-		 * Can be a selector string, an element, or a Getter for those.
-		 * If null, the focus remains on the trigger element.
-		 *
-		 * Defaults to the dialog content element.
-		 */
-		onOpen?: MaybeGetter<HTMLElement | string | null | undefined>;
-
-		/**
-		 * Which element to focus when the dialog closes.
-		 * Can be a selector string, an element, or a Getter for those.
-		 * If null, the focus goes to the document body.
-		 *
-		 * Defaults to the last used trigger element.
-		 */
-		onClose?: MaybeGetter<HTMLElement | string | null | undefined>;
-	};
+	closeOnOutsideClick?: MaybeGetter<boolean | undefined>;
 };
 
 export class Dialog {
 	/* Props */
 	#props!: DialogProps;
+	forceVisible = $derived(extract(this.#props.forceVisible, false));
+	closeOnEscape = $derived(extract(this.#props.closeOnEscape, true));
+	closeOnOutsideClick = $derived(extract(this.#props.closeOnOutsideClick, true));
 
 	/* State */
+	ids = createIds();
 	#open!: Synced<boolean>;
 	// prettier-ignore
 	get open() { return this.#open.current }
@@ -104,6 +86,7 @@ export class Dialog {
 	/** The trigger element. */
 	get trigger() {
 		return {
+			id: this.ids.trigger,
 			[dataAttrs.trigger]: "",
 			onclick: () => (this.open = !this.open),
 			...this.sharedProps,
@@ -116,11 +99,44 @@ export class Dialog {
 			if (this.open && !node.open) node.showModal();
 			else if (!this.open && node.open) node.close();
 		});
+
+		const offs = [
+			on(document, "keydown", (e) => {
+				if (!this.closeOnEscape) return;
+				const el = document.getElementById(this.ids.content);
+				if (e.key !== "Escape" || !this.open || !isHtmlElement(el)) return;
+				e.preventDefault();
+
+				// Set timeout to give time to all event listeners to run
+				setTimeout(() => (this.open = false));
+			}),
+
+			on(node, "click", (e) => {
+				if (!this.open || !this.closeOnOutsideClick) return; // Exit early if not open
+
+				// Don't close if text is selected
+				if (window.getSelection()?.toString()) return;
+
+				// check if click was on backdrop
+				const rect = node.getBoundingClientRect();
+				const isInDialog =
+					e.clientX >= rect.left &&
+					e.clientX <= rect.right &&
+					e.clientY >= rect.top &&
+					e.clientY <= rect.bottom;
+
+				if (isInDialog) return;
+				this.open = false;
+			}),
+		];
+
+		return () => offs.forEach((off) => off());
 	};
 
 	/** The element for the dialog itself. */
 	get content() {
 		return {
+			id: this.ids.content,
 			[dataAttrs.content]: "",
 			[this.#ak]: this.#contentAttachment,
 			onclose: () => {
@@ -130,4 +146,3 @@ export class Dialog {
 		} as const satisfies HTMLDialogAttributes;
 	}
 }
-

@@ -1167,7 +1167,7 @@
       },
       {
         "name": "closeOnOutsideClick",
-        "type": "CloseOnOutsideClickProp",
+        "type": "any",
         "description": "If the popover should close when clicking outside.\nAlternatively, accepts a function that receives the clicked element,\nand returns if the popover should close.",
         "defaultValue": "true",
         "optional": true
@@ -1503,19 +1503,34 @@
       },
       {
         "name": "closeOnOutsideClick",
-        "type": "CloseOnOutsideClickProp",
+        "type": "MaybeGetter<boolean | undefined>",
         "description": "If the dialog should close when clicking outside.\nAlternatively, accepts a function that receives the clicked element,\nand returns if the dialog should close.",
         "defaultValue": "true",
-        "optional": true
-      },
-      {
-        "name": "focus",
-        "type": "| { onOpen?: MaybeGetter<string | HTMLElement | null | undefined> }\n  | undefined",
         "optional": true
       }
     ],
     "methods": [],
     "properties": [
+      {
+        "name": "forceVisible",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "closeOnEscape",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "closeOnOutsideClick",
+        "type": "boolean",
+        "description": ""
+      },
+      {
+        "name": "ids",
+        "type": "{ trigger: string; content: string }",
+        "description": ""
+      },
       {
         "name": "open",
         "type": "boolean",
@@ -1528,16 +1543,16 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly \"data-melt-dialog-trigger\": \"\"\n  readonly onclick: () => boolean\n}",
+        "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly id: string\n  readonly \"data-melt-dialog-trigger\": \"\"\n  readonly onclick: () => boolean\n}",
         "description": "The trigger element."
       },
       {
         "name": "content",
-        "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly \"data-melt-dialog-content\": \"\"\n  readonly onclose: () => void\n}",
+        "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly id: string\n  readonly \"data-melt-dialog-content\": \"\"\n  readonly onclose: () => void\n}",
         "description": "The element for the dialog itself."
       }
     ],
-    "propsAlt": "export type DialogProps = {\n  /**\n   * If the Dialog is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * If the dialog visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the dialog should close when clicking escape.\n   *\n   * @default true\n   */\n  closeOnEscape?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the dialog should close when clicking outside.\n   * Alternatively, accepts a function that receives the clicked element,\n   * and returns if the dialog should close.\n   *\n   * @default true\n   */\n  closeOnOutsideClick?: CloseOnOutsideClickProp;\n\n  focus?: {\n    /**\n     * Which element to focus when the dialog opens.\n     * Can be a selector string, an element, or a Getter for those.\n     * If null, the focus remains on the trigger element.\n     *\n     * Defaults to the dialog content element.\n     */\n    onOpen?: MaybeGetter<HTMLElement | string | null | undefined>;\n\n    /**\n     * Which element to focus when the dialog closes.\n     * Can be a selector string, an element, or a Getter for those.\n     * If null, the focus goes to the document body.\n     *\n     * Defaults to the last used trigger element.\n     */\n    onClose?: MaybeGetter<HTMLElement | string | null | undefined>;\n  };\n};"
+    "propsAlt": "export type DialogProps = {\n  /**\n   * If the Dialog is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * If the dialog visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the dialog should close when clicking escape.\n   *\n   * @default true\n   */\n  closeOnEscape?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the dialog should close when clicking outside.\n   * Alternatively, accepts a function that receives the clicked element,\n   * and returns if the dialog should close.\n   *\n   * @default true\n   */\n  closeOnOutsideClick?: MaybeGetter<boolean | undefined>;\n};"
   },
   "Combobox": {
     "constructorProps": [
@@ -1583,7 +1598,7 @@
       },
       {
         "name": "closeOnOutsideClick",
-        "type": "CloseOnOutsideClickProp",
+        "type": "any",
         "description": "If the popover should close when clicking outside.\nAlternatively, accepts a function that receives the clicked element,\nand returns if the popover should close.",
         "defaultValue": "true",
         "optional": true

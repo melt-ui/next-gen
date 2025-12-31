@@ -21,32 +21,10 @@
 		psst...
 	</button>
 
-	<dialog class="fixed h-full w-full bg-transparent" {...dialog.content}>
-		<div
-			class="abs-center w-[260px] overflow-visible rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800"
-		>
-			<p class="text-center font-semibold">Can I tell you a secret?</p>
-		</div>
+	<dialog
+		class="abs-center w-[260px] overflow-visible rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800"
+		{...dialog.content}
+	>
+		<p class="text-center font-semibold">Can I tell you a secret?</p>
 	</dialog>
 </Preview>
-
-<style>
-	[data-melt-dialog-content] > div {
-		position: absolute;
-		pointer-events: none;
-		opacity: 0;
-
-		transform: scale(0.9);
-
-		transition: 0.3s;
-		transition-property: opacity, transform;
-	}
-
-	[data-melt-dialog-content][data-open] > div {
-		pointer-events: auto;
-		opacity: 1;
-
-		transform: scale(1);
-	}
-</style>
-
