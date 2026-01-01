@@ -30,13 +30,6 @@ export type DialogProps = {
 	onOpenChange?: (value: boolean) => void;
 
 	/**
-	 * If the dialog visibility should be controlled by the user.
-	 *
-	 * @default false
-	 */
-	forceVisible?: MaybeGetter<boolean | undefined>;
-
-	/**
 	 * If the dialog should close when clicking escape.
 	 *
 	 * @default true
@@ -63,7 +56,6 @@ export type DialogProps = {
 export class Dialog {
 	/* Props */
 	#props!: DialogProps;
-	forceVisible = $derived(extract(this.#props.forceVisible, false));
 	closeOnEscape = $derived(extract(this.#props.closeOnEscape, true));
 	closeOnOutsideClick = $derived(extract(this.#props.closeOnOutsideClick, true));
 	scrollLock = $derived(extract(this.#props.scrollLock, true));

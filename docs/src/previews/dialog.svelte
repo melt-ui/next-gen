@@ -22,7 +22,12 @@
 	});
 
 	const dialog = new Dialog({
-		forceVisible: true,
+		scrollLock: () => controls.scrollLock,
+		closeOnEscape: () => controls.closeOnEscape,
+		closeOnOutsideClick: () => controls.closeOnOutsideClick,
+	});
+
+	const inner = new Dialog({
 		scrollLock: () => controls.scrollLock,
 		closeOnEscape: () => controls.closeOnEscape,
 		closeOnOutsideClick: () => controls.closeOnOutsideClick,
@@ -45,5 +50,28 @@
 		{...dialog.content}
 	>
 		<p class="text-center font-semibold">Can I tell you a secret?</p>
+		<div class="mt-2 flex items-center justify-center gap-4">
+			<button
+				class="border-b-2 border-dashed bg-transparent transition hover:cursor-pointer hover:opacity-75 active:opacity-50"
+				onclick={() => {
+					dialog.open = false;
+				}}
+			>
+				no
+			</button>
+			<button
+				class="border-b-2 border-dashed bg-transparent transition hover:cursor-pointer hover:opacity-75 active:opacity-50"
+				{...inner.trigger}
+			>
+				yes
+			</button>
+
+			<dialog
+				class="abs-center w-[260px] overflow-visible rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800"
+				{...inner.content}
+			>
+				<p class="text-center font-semibold">Dialogs are pretty cool</p>
+			</dialog>
+		</div>
 	</dialog>
 </Preview>

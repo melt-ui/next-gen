@@ -1488,13 +1488,6 @@
         "optional": true
       },
       {
-        "name": "forceVisible",
-        "type": "MaybeGetter<boolean | undefined>",
-        "description": "If the dialog visibility should be controlled by the user.",
-        "defaultValue": "false",
-        "optional": true
-      },
-      {
         "name": "closeOnEscape",
         "type": "MaybeGetter<boolean | undefined>",
         "description": "If the dialog should close when clicking escape.",
@@ -1518,11 +1511,6 @@
     ],
     "methods": [],
     "properties": [
-      {
-        "name": "forceVisible",
-        "type": "boolean",
-        "description": ""
-      },
       {
         "name": "closeOnEscape",
         "type": "boolean",
@@ -1564,7 +1552,7 @@
         "description": "The element for the dialog itself."
       }
     ],
-    "propsAlt": "export type DialogProps = {\n  /**\n   * If the Dialog is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * If the dialog visibility should be controlled by the user.\n   *\n   * @default false\n   */\n  forceVisible?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the dialog should close when clicking escape.\n   *\n   * @default true\n   */\n  closeOnEscape?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the dialog should close when clicking outside.\n   * Alternatively, accepts a function that receives the clicked element,\n   * and returns if the dialog should close.\n   *\n   * @default true\n   */\n  closeOnOutsideClick?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the dialog should lock the document scroll when open.\n   *\n   * @default true\n   */\n  scrollLock?: MaybeGetter<boolean | undefined>;\n};"
+    "propsAlt": "export type DialogProps = {\n  /**\n   * If the Dialog is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * If the dialog should close when clicking escape.\n   *\n   * @default true\n   */\n  closeOnEscape?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the dialog should close when clicking outside.\n   * Alternatively, accepts a function that receives the clicked element,\n   * and returns if the dialog should close.\n   *\n   * @default true\n   */\n  closeOnOutsideClick?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the dialog should lock the document scroll when open.\n   *\n   * @default true\n   */\n  scrollLock?: MaybeGetter<boolean | undefined>;\n};"
   },
   "Combobox": {
     "constructorProps": [
