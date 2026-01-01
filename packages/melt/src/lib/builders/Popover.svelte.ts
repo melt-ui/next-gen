@@ -18,16 +18,15 @@ import type { HTMLAttributes } from "svelte/elements";
 import { on } from "svelte/events";
 import * as focusTrap from "focus-trap"; // ESM
 import { untrack } from "svelte";
-import type {
-	CloseOnOutsideClickCheck,
-	CloseOnOutsideClickProp,
-} from "$lib/utils/close-on-outside-click";
 
 const { dataAttrs, dataSelectors } = createBuilderMetadata("popover", [
 	"trigger",
 	"content",
 	"arrow",
 ]);
+
+export type CloseOnOutsideClickCheck = (el: Element | Window | Document) => boolean;
+type CloseOnOutsideClickProp = MaybeGetter<boolean | CloseOnOutsideClickCheck | undefined>;
 
 export const isCloseOnOutsideClickCheck = (
 	value: CloseOnOutsideClickProp,

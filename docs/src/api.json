@@ -1167,7 +1167,7 @@
       },
       {
         "name": "closeOnOutsideClick",
-        "type": "any",
+        "type": "CloseOnOutsideClickProp",
         "description": "If the popover should close when clicking outside.\nAlternatively, accepts a function that receives the clicked element,\nand returns if the popover should close.",
         "defaultValue": "true",
         "optional": true
@@ -1598,7 +1598,7 @@
       },
       {
         "name": "closeOnOutsideClick",
-        "type": "any",
+        "type": "CloseOnOutsideClickProp",
         "description": "If the popover should close when clicking outside.\nAlternatively, accepts a function that receives the clicked element,\nand returns if the popover should close.",
         "defaultValue": "true",
         "optional": true

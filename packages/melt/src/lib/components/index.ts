@@ -15,4 +15,3 @@ export { default as Tooltip } from "./Tooltip.svelte";
 
 export { default as SpatialMenu } from "./SpatialMenu.svelte";
 
-export { default as Dialog } from './Dialog.svelte';
