@@ -1,5 +1,11 @@
 # melt
 
+## 0.43.0
+
+### Minor Changes
+
+- feat: add dialog ([`b2e7456`](https://github.com/melt-ui/next-gen/commit/b2e74566ab6603111809b35808cbfa705e157d2b))
+
 ## 0.42.0
 
 ### Minor Changes
