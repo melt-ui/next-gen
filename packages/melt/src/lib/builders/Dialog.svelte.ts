@@ -20,7 +20,6 @@ export type DialogProps = {
 	 *
 	 * Otherwise, if passing a static value, it'll serve as the default value.
 	 *
-	 *
 	 * @default false
 	 */
 	open?: MaybeGetter<boolean | undefined>;
@@ -115,6 +114,10 @@ export class Dialog {
 		});
 
 		const offs = [
+			on(node, "cancel", (e) => {
+				if (this.closeOnEscape) return;
+				e.preventDefault();
+			}),
 			on(document, "keydown", (e) => {
 				if (!this.closeOnEscape) return;
 				const el = this.refs.get("content");

@@ -1,12 +1,31 @@
 <script lang="ts">
+	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import Preview from "@components/preview.svelte";
 	import { Dialog } from "melt/builders";
 
-	// import { usePreviewControls } from "@components/preview-ctx.svelte";
-	// const controls = usePreviewControls();
+	const controls = usePreviewControls({
+		scrollLock: {
+			type: "boolean",
+			defaultValue: true,
+			label: "Scroll Lock",
+		},
+		closeOnEscape: {
+			type: "boolean",
+			defaultValue: true,
+			label: "Close on Escape",
+		},
+		closeOnOutsideClick: {
+			type: "boolean",
+			defaultValue: true,
+			label: "Close on Outside Click",
+		},
+	});
 
 	const dialog = new Dialog({
 		forceVisible: true,
+		scrollLock: () => controls.scrollLock,
+		closeOnEscape: () => controls.closeOnEscape,
+		closeOnOutsideClick: () => controls.closeOnOutsideClick,
 	});
 </script>
 
