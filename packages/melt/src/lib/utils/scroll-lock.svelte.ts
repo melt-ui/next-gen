@@ -1,27 +1,11 @@
-function isIOS() {
-	if (typeof window === "undefined") return false;
-	const nav = window.navigator;
-	const platform = nav.platform ?? "";
-	const maxTouchPoints = nav.maxTouchPoints ?? -1;
-
-	// iPads can claim to be MacIntel
-	if (platform === "MacIntel" && maxTouchPoints > 1) {
-		return true;
-	}
-	return /iP(hone|ad|od)|iOS/.test(platform);
-}
-
-function isWebKit() {
-	if (typeof window === "undefined" || typeof CSS === "undefined") return false;
-	return CSS.supports?.("-webkit-backdrop-filter", "none") ?? false;
-}
+import { isIOS, isWebKit } from "./platform";
 
 function isOverflowElement(element: HTMLElement): boolean {
 	const overflow = getComputedStyle(element).overflow;
 	return overflow !== "visible";
 }
 
-function hasInsetScrollbars(referenceElement: HTMLElement | null) {
+function hasInsetScrollbars() {
 	if (typeof document === "undefined") {
 		return false;
 	}
@@ -29,7 +13,7 @@ function hasInsetScrollbars(referenceElement: HTMLElement | null) {
 	return win.innerWidth - document.documentElement.clientWidth > 0;
 }
 
-function preventScrollOverlayScrollbars(referenceElement: HTMLElement | null) {
+function preventScrollOverlayScrollbars() {
 	const html = document.documentElement;
 	const body = document.body;
 	const elementToLock = isOverflowElement(html) ? html : body;
@@ -40,7 +24,7 @@ function preventScrollOverlayScrollbars(referenceElement: HTMLElement | null) {
 	};
 }
 
-function preventScrollInsetScrollbars(referenceElement: HTMLElement | null) {
+function preventScrollInsetScrollbars() {
 	const html = document.documentElement;
 	const body = document.body;
 	const win = window;
@@ -172,10 +156,10 @@ class ScrollLocker {
 	timeoutLockId: ReturnType<typeof setTimeout> | null = null;
 	timeoutUnlockId: ReturnType<typeof setTimeout> | null = null;
 
-	acquire(referenceElement: HTMLElement | null) {
+	acquire() {
 		this.lockCount += 1;
 		if (this.lockCount === 1 && this.restore === null) {
-			this.timeoutLockId = setTimeout(() => this.lock(referenceElement), 0);
+			this.timeoutLockId = setTimeout(() => this.lock(), 0);
 		}
 		return this.release;
 	}
@@ -194,7 +178,7 @@ class ScrollLocker {
 		}
 	};
 
-	private lock(referenceElement: HTMLElement | null) {
+	private lock() {
 		if (this.lockCount === 0 || this.restore !== null) {
 			return;
 		}
@@ -207,11 +191,11 @@ class ScrollLocker {
 			return;
 		}
 
-		const hasOverlayScrollbars = isIOS() || !hasInsetScrollbars(referenceElement);
+		const hasOverlayScrollbars = isIOS() || !hasInsetScrollbars();
 
 		this.restore = hasOverlayScrollbars
-			? preventScrollOverlayScrollbars(referenceElement)
-			: preventScrollInsetScrollbars(referenceElement);
+			? preventScrollOverlayScrollbars()
+			: preventScrollInsetScrollbars();
 	}
 }
 
@@ -221,27 +205,21 @@ const SCROLL_LOCKER = new ScrollLocker();
  * Locks the scroll of the document when enabled.
  *
  * @param enabled - Whether to enable the scroll lock.
- * @param referenceElement - Element to use as a reference for lock calculations.
  */
-export function useScrollLock(
-	enabled: boolean = true,
-	referenceElement: HTMLElement | null = null,
-): () => void {
+export function useScrollLock(enabled: boolean = true): () => void {
 	let releaseFn: (() => void) | null = null;
 
-	$effect(() => {
-		if (!enabled) {
-			return;
-		}
-		releaseFn = SCROLL_LOCKER.acquire(referenceElement);
-		return () => {
-			releaseFn?.();
-			releaseFn = null;
-		};
-	});
-
-	return () => {
+	const cleanup = () => {
 		releaseFn?.();
 		releaseFn = null;
 	};
+
+	$effect(() => {
+		if (!enabled) return;
+
+		releaseFn = SCROLL_LOCKER.acquire();
+		return cleanup;
+	});
+
+	return cleanup;
 }

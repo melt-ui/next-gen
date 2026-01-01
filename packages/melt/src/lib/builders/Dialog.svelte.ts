@@ -104,10 +104,7 @@ export class Dialog {
 
 	#ak = createAttachmentKey();
 	#contentAttachment: Attachment<HTMLDialogElement> = (node) => {
-		$effect(() => {
-			const releaseScrollLock = useScrollLock(this.scrollLock && this.open, node);
-			return releaseScrollLock;
-		});
+		useScrollLock(this.scrollLock && this.open);
 
 		$effect(() => {
 			if (this.open && !node.open) {
