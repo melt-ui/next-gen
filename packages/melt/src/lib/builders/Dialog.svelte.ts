@@ -4,6 +4,7 @@ import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { isHtmlElement } from "$lib/utils/is";
+import { useScrollLock } from "$lib/utils/scroll-lock.svelte";
 import { createAttachmentKey, type Attachment } from "svelte/attachments";
 import type { HTMLDialogAttributes } from "svelte/elements";
 import { on } from "svelte/events";
@@ -51,6 +52,13 @@ export type DialogProps = {
 	 * @default true
 	 */
 	closeOnOutsideClick?: MaybeGetter<boolean | undefined>;
+
+	/**
+	 * If the dialog should lock the document scroll when open.
+	 *
+	 * @default true
+	 */
+	scrollLock?: MaybeGetter<boolean | undefined>;
 };
 
 export class Dialog {
@@ -59,6 +67,7 @@ export class Dialog {
 	forceVisible = $derived(extract(this.#props.forceVisible, false));
 	closeOnEscape = $derived(extract(this.#props.closeOnEscape, true));
 	closeOnOutsideClick = $derived(extract(this.#props.closeOnOutsideClick, true));
+	scrollLock = $derived(extract(this.#props.scrollLock, true));
 
 	/* State */
 	refs = createReferences();
@@ -95,6 +104,11 @@ export class Dialog {
 
 	#ak = createAttachmentKey();
 	#contentAttachment: Attachment<HTMLDialogElement> = (node) => {
+		$effect(() => {
+			const releaseScrollLock = useScrollLock(this.scrollLock && this.open, node);
+			return releaseScrollLock;
+		});
+
 		$effect(() => {
 			if (this.open && !node.open) {
 				node.showModal();

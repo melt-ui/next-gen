@@ -1,0 +1,247 @@
+function isIOS() {
+	if (typeof window === "undefined") return false;
+	const nav = window.navigator;
+	const platform = nav.platform ?? "";
+	const maxTouchPoints = nav.maxTouchPoints ?? -1;
+
+	// iPads can claim to be MacIntel
+	if (platform === "MacIntel" && maxTouchPoints > 1) {
+		return true;
+	}
+	return /iP(hone|ad|od)|iOS/.test(platform);
+}
+
+function isWebKit() {
+	if (typeof window === "undefined" || typeof CSS === "undefined") return false;
+	return CSS.supports?.("-webkit-backdrop-filter", "none") ?? false;
+}
+
+function isOverflowElement(element: HTMLElement): boolean {
+	const overflow = getComputedStyle(element).overflow;
+	return overflow !== "visible";
+}
+
+function hasInsetScrollbars(referenceElement: HTMLElement | null) {
+	if (typeof document === "undefined") {
+		return false;
+	}
+	const win = window;
+	return win.innerWidth - document.documentElement.clientWidth > 0;
+}
+
+function preventScrollOverlayScrollbars(referenceElement: HTMLElement | null) {
+	const html = document.documentElement;
+	const body = document.body;
+	const elementToLock = isOverflowElement(html) ? html : body;
+	const originalOverflow = elementToLock.style.overflow;
+	elementToLock.style.overflow = "hidden";
+	return () => {
+		elementToLock.style.overflow = originalOverflow;
+	};
+}
+
+function preventScrollInsetScrollbars(referenceElement: HTMLElement | null) {
+	const html = document.documentElement;
+	const body = document.body;
+	const win = window;
+
+	let scrollTop = 0;
+	let scrollLeft = 0;
+	let rafId: number | null = null;
+
+	const supportsStableScrollbarGutter =
+		typeof CSS !== "undefined" && CSS.supports?.("scrollbar-gutter", "stable");
+
+	if (isWebKit() && (win.visualViewport?.scale ?? 1) !== 1) {
+		return () => {};
+	}
+
+	let originalHtmlStyles: Partial<CSSStyleDeclaration> = {};
+	let originalBodyStyles: Partial<CSSStyleDeclaration> = {};
+	let originalHtmlScrollBehavior = "";
+
+	function lockScroll() {
+		const htmlStyles = win.getComputedStyle(html);
+		const bodyStyles = win.getComputedStyle(body);
+		const htmlScrollbarGutterValue = htmlStyles.scrollbarGutter || "";
+		const hasBothEdges = htmlScrollbarGutterValue.includes("both-edges");
+		const scrollbarGutterValue = hasBothEdges ? "stable both-edges" : "stable";
+
+		scrollTop = html.scrollTop;
+		scrollLeft = html.scrollLeft;
+
+		originalHtmlStyles = {
+			scrollbarGutter: html.style.scrollbarGutter,
+			overflowY: html.style.overflowY,
+			overflowX: html.style.overflowX,
+		};
+		originalHtmlScrollBehavior = html.style.scrollBehavior;
+
+		originalBodyStyles = {
+			position: body.style.position,
+			height: body.style.height,
+			width: body.style.width,
+			boxSizing: body.style.boxSizing,
+			overflowY: body.style.overflowY,
+			overflowX: body.style.overflowX,
+			scrollBehavior: body.style.scrollBehavior,
+		};
+
+		const isScrollableY = html.scrollHeight > html.clientHeight;
+		const isScrollableX = html.scrollWidth > html.clientWidth;
+		const hasConstantOverflowY =
+			htmlStyles.overflowY === "scroll" || bodyStyles.overflowY === "scroll";
+		const hasConstantOverflowX =
+			htmlStyles.overflowX === "scroll" || bodyStyles.overflowX === "scroll";
+
+		const scrollbarWidth = Math.max(0, win.innerWidth - html.clientWidth);
+		const scrollbarHeight = Math.max(0, win.innerHeight - html.clientHeight);
+
+		const marginY = parseFloat(bodyStyles.marginTop) + parseFloat(bodyStyles.marginBottom);
+		const marginX = parseFloat(bodyStyles.marginLeft) + parseFloat(bodyStyles.marginRight);
+		const elementToLock = isOverflowElement(html) ? html : body;
+
+		if (supportsStableScrollbarGutter) {
+			html.style.scrollbarGutter = scrollbarGutterValue;
+			elementToLock.style.overflowY = "hidden";
+			elementToLock.style.overflowX = "hidden";
+			return;
+		}
+
+		Object.assign(html.style, {
+			scrollbarGutter: scrollbarGutterValue,
+			overflowY: "hidden",
+			overflowX: "hidden",
+		});
+
+		if (isScrollableY || hasConstantOverflowY) {
+			html.style.overflowY = "scroll";
+		}
+		if (isScrollableX || hasConstantOverflowX) {
+			html.style.overflowX = "scroll";
+		}
+
+		Object.assign(body.style, {
+			position: "relative",
+			height:
+				marginY || scrollbarHeight ? `calc(100dvh - ${marginY + scrollbarHeight}px)` : "100dvh",
+			width: marginX || scrollbarWidth ? `calc(100vw - ${marginX + scrollbarWidth}px)` : "100vw",
+			boxSizing: "border-box",
+			overflow: "hidden",
+			scrollBehavior: "unset",
+		});
+
+		body.scrollTop = scrollTop;
+		body.scrollLeft = scrollLeft;
+		html.setAttribute("data-melt-scroll-locked", "");
+		html.style.scrollBehavior = "unset";
+	}
+
+	function cleanup() {
+		Object.assign(html.style, originalHtmlStyles);
+		Object.assign(body.style, originalBodyStyles);
+
+		if (!supportsStableScrollbarGutter) {
+			html.scrollTop = scrollTop;
+			html.scrollLeft = scrollLeft;
+			html.removeAttribute("data-melt-scroll-locked");
+			html.style.scrollBehavior = originalHtmlScrollBehavior;
+		}
+	}
+
+	function handleResize() {
+		cleanup();
+		rafId = requestAnimationFrame(lockScroll);
+	}
+
+	lockScroll();
+	win.addEventListener("resize", handleResize);
+
+	return () => {
+		if (rafId !== null) {
+			cancelAnimationFrame(rafId);
+		}
+		cleanup();
+		win.removeEventListener("resize", handleResize);
+	};
+}
+
+class ScrollLocker {
+	lockCount = 0;
+	restore: (() => void) | null = null;
+	timeoutLockId: ReturnType<typeof setTimeout> | null = null;
+	timeoutUnlockId: ReturnType<typeof setTimeout> | null = null;
+
+	acquire(referenceElement: HTMLElement | null) {
+		this.lockCount += 1;
+		if (this.lockCount === 1 && this.restore === null) {
+			this.timeoutLockId = setTimeout(() => this.lock(referenceElement), 0);
+		}
+		return this.release;
+	}
+
+	release = () => {
+		this.lockCount -= 1;
+		if (this.lockCount === 0 && this.restore) {
+			this.timeoutUnlockId = setTimeout(this.unlock, 0);
+		}
+	};
+
+	private unlock = () => {
+		if (this.lockCount === 0 && this.restore) {
+			this.restore?.();
+			this.restore = null;
+		}
+	};
+
+	private lock(referenceElement: HTMLElement | null) {
+		if (this.lockCount === 0 || this.restore !== null) {
+			return;
+		}
+
+		const html = document.documentElement;
+		const htmlOverflowY = window.getComputedStyle(html).overflowY;
+
+		if (htmlOverflowY === "hidden" || htmlOverflowY === "clip") {
+			this.restore = () => {};
+			return;
+		}
+
+		const hasOverlayScrollbars = isIOS() || !hasInsetScrollbars(referenceElement);
+
+		this.restore = hasOverlayScrollbars
+			? preventScrollOverlayScrollbars(referenceElement)
+			: preventScrollInsetScrollbars(referenceElement);
+	}
+}
+
+const SCROLL_LOCKER = new ScrollLocker();
+
+/**
+ * Locks the scroll of the document when enabled.
+ *
+ * @param enabled - Whether to enable the scroll lock.
+ * @param referenceElement - Element to use as a reference for lock calculations.
+ */
+export function useScrollLock(
+	enabled: boolean = true,
+	referenceElement: HTMLElement | null = null,
+): () => void {
+	let releaseFn: (() => void) | null = null;
+
+	$effect(() => {
+		if (!enabled) {
+			return;
+		}
+		releaseFn = SCROLL_LOCKER.acquire(referenceElement);
+		return () => {
+			releaseFn?.();
+			releaseFn = null;
+		};
+	});
+
+	return () => {
+		releaseFn?.();
+		releaseFn = null;
+	};
+}
