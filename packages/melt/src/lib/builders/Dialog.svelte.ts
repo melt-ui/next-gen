@@ -3,7 +3,6 @@ import type { MaybeGetter } from "$lib/types";
 import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
-import { isHtmlElement } from "$lib/utils/is";
 import { useScrollLock } from "$lib/utils/scroll-lock.svelte";
 import { createAttachmentKey, type Attachment } from "svelte/attachments";
 import type { HTMLDialogAttributes } from "svelte/elements";
@@ -88,22 +87,25 @@ export class Dialog {
 		return {
 			[dataAttrs.trigger]: "",
 			[this.refs.key]: this.refs.attach("trigger"),
-			onclick: () => (this.open = !this.open),
+			onclick: () => {
+				this.open = !this.open;
+			},
+			type: "button",
 			...this.sharedProps,
 		} as const;
 	}
 
 	#ak = createAttachmentKey();
 	#contentAttachment: Attachment<HTMLDialogElement> = (node) => {
-		useScrollLock(this.scrollLock && this.open);
-
 		$effect(() => {
-			if (this.open && !node.open) {
+			if (this.open) {
 				node.showModal();
-			} else if (!this.open && node.open) {
+			} else if (!this.open) {
 				node.close();
 			}
 		});
+
+		useScrollLock(this.scrollLock && this.open);
 
 		const offs = [
 			on(node, "cancel", (e) => {
@@ -111,7 +113,7 @@ export class Dialog {
 				e.preventDefault();
 			}),
 
-			on(node, "click", (e) => {
+			on(node, "pointerup", (e) => {
 				if (!this.open || !this.closeOnOutsideClick) return; // Exit early if not open
 
 				// Don't close if text is selected

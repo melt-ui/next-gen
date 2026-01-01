@@ -1,6 +1,6 @@
 ---
 title: Dialog
-description: A description of the Dialog component.
+description: Modal dialogs with focus trap and backdrop handling.
 ---
 import ApiTable from "@components/api-table.astro";
 import Preview from "@previews/dialog.svelte";
@@ -12,7 +12,10 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 ## Features
 
 <Features>
-- 💪 It works
+- 🪟 Uses native HTML `<dialog>` element
+- 🔒 Built-in scroll lock when open
+- 🎯 Focus trap and focus management
+- 🎨 Animation support via CSS
 </Features>
 
 ## Usage
@@ -26,28 +29,18 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
   const dialog = new Dialog();
 </script>
 
-<div {...dialog.root}>
+<button {...dialog.trigger}>
+  Open Dialog
+</button>
+
+<dialog {...dialog.content}>
   Dialog content
-</div>
+</dialog>
 ```
   </TabItem>
 
-  <TabItem label="Component">
-```svelte
-<script lang="ts">
-  import { Dialog } from "melt/components";
-</script>
-
-<Dialog>
-  {#snippet children(dialog)}
-    <div {...dialog.root}>
-      Dialog content
-    </div>
-  {/snippet}
-</Dialog>
-```
-  </TabItem>
 </Tabs>
+
 
 ## API Reference
 

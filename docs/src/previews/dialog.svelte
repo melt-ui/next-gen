@@ -67,7 +67,7 @@
 			</button>
 
 			<dialog
-				class="abs-center w-[260px] overflow-visible rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800"
+				class="abs-center w-[360px] overflow-visible rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-700"
 				{...inner.content}
 			>
 				<p class="text-center font-semibold">Dialogs are pretty cool</p>

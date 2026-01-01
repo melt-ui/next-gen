@@ -1543,7 +1543,7 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly \"data-melt-dialog-trigger\": \"\"\n  readonly onclick: () => boolean\n}",
+        "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly \"data-melt-dialog-trigger\": \"\"\n  readonly onclick: () => void\n  readonly type: \"button\"\n}",
         "description": "The trigger element."
       },
       {
