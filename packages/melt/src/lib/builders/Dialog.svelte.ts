@@ -110,15 +110,6 @@ export class Dialog {
 				if (this.closeOnEscape) return;
 				e.preventDefault();
 			}),
-			on(document, "keydown", (e) => {
-				if (!this.closeOnEscape) return;
-				const el = this.refs.get("content");
-				if (e.key !== "Escape" || !this.open || !isHtmlElement(el)) return;
-				e.preventDefault();
-
-				// Set timeout to give time to all event listeners to run
-				setTimeout(() => (this.open = false));
-			}),
 
 			on(node, "click", (e) => {
 				if (!this.open || !this.closeOnOutsideClick) return; // Exit early if not open
@@ -136,6 +127,7 @@ export class Dialog {
 
 				if (isInDialog) return;
 				this.open = false;
+				e.stopPropagation();
 			}),
 		];
 
