@@ -1,3 +1,4 @@
+import { createAttachmentKey, type Attachment } from "svelte/attachments";
 import { keys } from "./object";
 
 let id = 0;
@@ -45,6 +46,11 @@ export type BuilderMetadata<Name extends string, Parts extends string[]> = {
 	createIds: () => {
 		[P in Parts[number]]: string;
 	};
+	createReferences: () => {
+		get: (key: Parts[number]) => HTMLElement | undefined;
+		attach: (key: Parts[number]) => Attachment<HTMLElement>;
+		key: any;
+	};
 };
 
 export function createBuilderMetadata<const Name extends string, const Parts extends string[]>(
@@ -62,5 +68,24 @@ export function createBuilderMetadata<const Name extends string, const Parts ext
 		dataAttrs,
 		dataSelectors,
 		createIds: () => createIds(dataAttrs),
+		createReferences: () => createReferences<Parts>(),
+	};
+}
+
+export function createReferences<const Parts extends string[]>() {
+	const refs = new Map<Parts[number], HTMLElement>();
+	const ak = createAttachmentKey();
+
+	return {
+		get(key: Parts[number]): HTMLElement | undefined {
+			return refs.get(key);
+		},
+		attach(key: Parts[number]): Attachment<HTMLElement> {
+			return (node) => {
+				refs.set(key, node);
+				return () => refs.delete(key);
+			};
+		},
+		key: ak,
 	};
 }

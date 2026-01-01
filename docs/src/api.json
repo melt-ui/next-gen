@@ -1527,8 +1527,8 @@
         "description": ""
       },
       {
-        "name": "ids",
-        "type": "{ trigger: string; content: string }",
+        "name": "refs",
+        "type": "{\n  get: (key: \"trigger\" | \"content\") => HTMLElement | undefined\n  attach: (key: \"trigger\" | \"content\") => Attachment<HTMLElement>\n  key: any\n}",
         "description": ""
       },
       {
@@ -1543,12 +1543,12 @@
       },
       {
         "name": "trigger",
-        "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly id: string\n  readonly \"data-melt-dialog-trigger\": \"\"\n  readonly onclick: () => boolean\n}",
+        "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly \"data-melt-dialog-trigger\": \"\"\n  readonly onclick: () => boolean\n}",
         "description": "The trigger element."
       },
       {
         "name": "content",
-        "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly id: string\n  readonly \"data-melt-dialog-content\": \"\"\n  readonly onclose: () => void\n}",
+        "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly \"data-melt-dialog-content\": \"\"\n  readonly onclose: () => void\n}",
         "description": "The element for the dialog itself."
       }
     ],

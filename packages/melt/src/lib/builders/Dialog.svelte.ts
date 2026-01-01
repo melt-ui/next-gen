@@ -8,7 +8,7 @@ import { createAttachmentKey, type Attachment } from "svelte/attachments";
 import type { HTMLDialogAttributes } from "svelte/elements";
 import { on } from "svelte/events";
 
-const { dataAttrs, createIds } = createBuilderMetadata("dialog", ["trigger", "content"]);
+const { dataAttrs, createReferences } = createBuilderMetadata("dialog", ["trigger", "content"]);
 
 export type DialogProps = {
 	/**
@@ -61,7 +61,7 @@ export class Dialog {
 	closeOnOutsideClick = $derived(extract(this.#props.closeOnOutsideClick, true));
 
 	/* State */
-	ids = createIds();
+	refs = createReferences();
 	#open!: Synced<boolean>;
 	// prettier-ignore
 	get open() { return this.#open.current }
@@ -86,8 +86,8 @@ export class Dialog {
 	/** The trigger element. */
 	get trigger() {
 		return {
-			id: this.ids.trigger,
 			[dataAttrs.trigger]: "",
+			[this.refs.key]: this.refs.attach("trigger"),
 			onclick: () => (this.open = !this.open),
 			...this.sharedProps,
 		} as const;
@@ -96,14 +96,17 @@ export class Dialog {
 	#ak = createAttachmentKey();
 	#contentAttachment: Attachment<HTMLDialogElement> = (node) => {
 		$effect(() => {
-			if (this.open && !node.open) node.showModal();
-			else if (!this.open && node.open) node.close();
+			if (this.open && !node.open) {
+				node.showModal();
+			} else if (!this.open && node.open) {
+				node.close();
+			}
 		});
 
 		const offs = [
 			on(document, "keydown", (e) => {
 				if (!this.closeOnEscape) return;
-				const el = document.getElementById(this.ids.content);
+				const el = this.refs.get("content");
 				if (e.key !== "Escape" || !this.open || !isHtmlElement(el)) return;
 				e.preventDefault();
 
@@ -136,12 +139,12 @@ export class Dialog {
 	/** The element for the dialog itself. */
 	get content() {
 		return {
-			id: this.ids.content,
 			[dataAttrs.content]: "",
 			[this.#ak]: this.#contentAttachment,
 			onclose: () => {
 				this.open = false;
 			},
+			[this.refs.key]: this.refs.attach("content"),
 			...this.sharedProps,
 		} as const satisfies HTMLDialogAttributes;
 	}
