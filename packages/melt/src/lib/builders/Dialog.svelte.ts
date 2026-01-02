@@ -107,17 +107,25 @@ export class Dialog {
 
 		useScrollLock(this.scrollLock && this.open);
 
+		let prevSel = window.getSelection()?.toString();
 		const offs = [
 			on(node, "cancel", (e) => {
 				if (this.closeOnEscape) return;
 				e.preventDefault();
 			}),
 
+			on(node, "pointerdown", () => {
+				prevSel = window.getSelection()?.toString();
+			}),
+
 			on(node, "pointerup", (e) => {
 				if (!this.open || !this.closeOnOutsideClick) return; // Exit early if not open
 
+				const currSel = window.getSelection()?.toString();
+				const hasNewSel = (currSel?.length ?? 0) > 0 && currSel !== prevSel;
+
 				// Don't close if text is selected
-				if (window.getSelection()?.toString()) return;
+				if (hasNewSel) return;
 
 				// check if click was on backdrop
 				const rect = node.getBoundingClientRect();
