@@ -46,6 +46,11 @@ export type ToasterProps = {
 	 * @default 'pause-all'
 	 */
 	tabHidden?: MaybeGetter<"pause-all" | null | undefined>;
+	
+	/**
+	 * The ids to use for the toaster elements.
+	 */
+	ids?: MaybeGetter<Partial<ReturnType<typeof toasterMeta.createIds>> | undefined>;
 };
 
 export type AddToastArgs<T = object> = {
@@ -97,14 +102,14 @@ export type UpdateToastArgs<T = object> = {
 export class Toaster<T = object> {
 	// Props
 	#props!: ToasterProps;
-	ids = toasterMeta.createIds();
 	closeDelay = $derived(extract(this.#props.closeDelay, 5000));
 	type = $derived(extract(this.#props.type, "polite"));
 	hover = $derived(extract(this.#props.hover, "pause"));
 	tabHidden = $derived(extract(this.#props.tabHidden, "pause-all"));
-
+	
 	// State
 	#toastsMap = new SvelteMap<string, Toast<T>>();
+	ids = $state(toasterMeta.createIds());
 
 	/** The active toasts. */
 	toasts = $derived(Array.from(this.#toastsMap.values()));
@@ -113,6 +118,10 @@ export class Toaster<T = object> {
 
 	constructor(props: ToasterProps = {}) {
 		this.#props = props;
+		this.ids = {
+			...this.ids,
+			...extract(props.ids, {})
+		}
 	}
 
 	/**

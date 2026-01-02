@@ -55,11 +55,14 @@ export type RadioGroupProps = {
 	 * Called when the radio button is clicked.
 	 */
 	onValueChange?: (active: string) => void;
+	
+	/**
+	 * The ids to use for the radio group elements.
+	 */
+	ids?: MaybeGetter<Partial<ReturnType<typeof metadata.createIds>> | undefined>;
 };
 
 export class RadioGroup {
-	ids = $state(metadata.createIds());
-
 	/* Props */
 	#props!: RadioGroupProps;
 	readonly disabled = $derived(extract(this.#props.disabled, false));
@@ -70,6 +73,7 @@ export class RadioGroup {
 
 	/* State */
 	#value: Synced<string>;
+	ids = $state(metadata.createIds());
 
 	constructor(props: RadioGroupProps) {
 		this.#props = props;
@@ -78,6 +82,10 @@ export class RadioGroup {
 			onChange: props.onValueChange,
 			defaultValue: "",
 		});
+		this.ids = {
+			...this.ids,
+			...extract(props.ids, {})
+		}
 	}
 
 	get value() {

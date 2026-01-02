@@ -75,6 +75,11 @@ export type FileUploadProps<Multiple extends boolean = false> = {
 	 * @default false
 	 */
 	avoidDuplicates?: MaybeGetter<boolean | undefined>;
+
+	/**
+	 * The ids to use for the file upload elements.
+	 */
+	ids?: MaybeGetter<Partial<ReturnType<typeof createIds>> | undefined>;
 };
 
 export class FileUpload<Multiple extends boolean = false> {
@@ -87,9 +92,8 @@ export class FileUpload<Multiple extends boolean = false> {
 
 	/* State */
 	#isDragging = $state(false);
-	ids = $state(createIds());
-
 	#selected: SelectionState<File, Multiple>;
+	ids = $state(createIds());
 
 	constructor(props: FileUploadProps<Multiple> = {}) {
 		this.#props = props;
@@ -98,6 +102,10 @@ export class FileUpload<Multiple extends boolean = false> {
 			onChange: props.onSelectedChange,
 			multiple: props.multiple,
 		});
+		this.ids = {
+			...this.ids,
+			...extract(props.ids, {})
+		}
 	}
 
 	get isDragging() {
