@@ -4,6 +4,7 @@ import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { useScrollLock } from "$lib/utils/scroll-lock.svelte";
+import { tick } from "svelte";
 import { createAttachmentKey, type Attachment } from "svelte/attachments";
 import type { HTMLDialogAttributes } from "svelte/elements";
 import { on } from "svelte/events";
@@ -64,8 +65,24 @@ export class Dialog {
 	#open!: Synced<boolean>;
 	// prettier-ignore
 	get open() { return this.#open.current }
-	// prettier-ignore
-	set open(v) { this.#open.current = v }
+	set open(v) {
+		const el = this.refs.get("content");
+		if (!(el instanceof HTMLDialogElement)) {
+			this.#open.current = v;
+			return;
+		}
+		const styles = getComputedStyle(el);
+		const hasTransition =
+			styles.transitionDuration !== "0s" && parseFloat(styles.transitionDuration) > 0;
+
+		if (v) {
+			el.showModal();
+			tick().then(() => (this.#open.current = v));
+		} else {
+			this.#open.current = v;
+			if (!hasTransition) el.close();
+		}
+	}
 
 	constructor(props: DialogProps = {}) {
 		this.#props = props;
@@ -97,21 +114,17 @@ export class Dialog {
 
 	#ak = createAttachmentKey();
 	#contentAttachment: Attachment<HTMLDialogElement> = (node) => {
-		$effect(() => {
-			if (this.open) {
-				node.showModal();
-			} else if (!this.open) {
-				node.close();
-			}
-		});
-
 		useScrollLock(this.scrollLock && this.open);
 
 		let prevSel = window.getSelection()?.toString();
 		const offs = [
+			on(node, "transitionend", () => {
+				if (!this.open) node.close();
+			}),
 			on(node, "cancel", (e) => {
-				if (this.closeOnEscape) return;
 				e.preventDefault();
+				if (!this.closeOnEscape) return;
+				this.open = false;
 			}),
 
 			on(node, "pointerdown", () => {

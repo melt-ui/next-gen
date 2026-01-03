@@ -46,7 +46,7 @@
 	</button>
 
 	<dialog
-		class="abs-center w-[260px] overflow-visible rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800"
+		class="abs-center z-10 w-[260px] overflow-visible rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800"
 		{...dialog.content}
 	>
 		<p class="text-center font-semibold">Can I tell you a secret?</p>
@@ -75,3 +75,20 @@
 		</div>
 	</dialog>
 </Preview>
+
+<style>
+	dialog {
+		opacity: 0;
+		scale: 0.9;
+		transition: 250ms ease;
+	}
+
+	dialog::backdrop {
+		opacity: 0;
+	}
+
+	dialog[data-open] {
+		opacity: 1;
+		scale: 1;
+	}
+</style>
