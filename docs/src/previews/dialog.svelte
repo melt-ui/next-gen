@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import Preview from "@components/preview.svelte";
-	import { Dialog } from "melt/builders";
+	import { Avatar, Dialog } from "melt/builders";
 
 	const controls = usePreviewControls({
 		scrollLock: {
@@ -32,56 +32,89 @@
 		closeOnEscape: () => controls.closeOnEscape,
 		closeOnOutsideClick: () => controls.closeOnOutsideClick,
 	});
+
+	type User = {
+		name: string;
+		img?: string;
+	};
+	const users = $state<User[]>([
+		{ name: "Thomas", img: "/previews/thomas.jpg" },
+		{ name: "Invisigal", img: "/previews/invisigal.webp" },
+		{ name: "Esquie", img: "/previews/esquie.png" },
+		{ name: "Hornet", img: "/previews/hornet.jpg" },
+		{ name: "Denji", img: "/previews/denji.jpg" },
+	]);
+	let curr = $state<number>(0);
 </script>
+
+{#snippet userProfile(user: User)}
+	{@const avatar = new Avatar({ src: user.img })}
+	<div class="relative flex size-32 items-center justify-center overflow-hidden rounded-full">
+		<div
+			class="grid h-full w-full place-items-center rounded-full border bg-neutral-300 text-5xl font-medium text-neutral-700
+			dark:bg-neutral-100/10"
+		>
+			<p>{user.name[0]}</p>
+		</div>
+		<img
+			{...avatar.image}
+			alt={`${user.name}'s profile picture`}
+			class={[
+				"absolute inset-0 !block h-full w-full rounded-[inherit] object-cover",
+				avatar.loadingStatus === "loaded" ? "fade-in" : "invisible",
+			]}
+		/>
+	</div>
+	<p class="mt-2 font-semibold text-gray-800 dark:text-gray-200">
+		{user.name}
+	</p>
+{/snippet}
 
 <Preview>
 	<button
-		class="mx-auto block rounded-xl bg-gray-100 px-4 py-2 font-semibold text-gray-800
-				transition-all hover:cursor-pointer hover:bg-gray-200
-				active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
-				dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
+		class="mx-auto block rounded-xl bg-transparent px-4 py-2
+		transition-all
+		hover:cursor-pointer hover:bg-gray-300/50
+		active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
+		dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
 		{...dialog.trigger}
 	>
-		psst...
+		{@render userProfile(users[curr])}
+		<p class="text-sm font-light dark:text-gray-400">change user?</p>
 	</button>
 
 	<div {...dialog.overlay}></div>
 	<dialog
-		class="abs-center z-10 w-[260px] overflow-visible rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800"
+		class="abs-center visibility:[hidden] pointer-events-none z-10 grid grid-cols-3 overflow-visible rounded-2xl border bg-white p-4
+		shadow-xl
+		data-[open]:pointer-events-auto data-[open]:visible
+		dark:border-gray-600 dark:bg-gray-900"
 		{...dialog.content}
 	>
-		<p class="text-center font-semibold">Can I tell you a secret?</p>
-		<div class="mt-2 flex items-center justify-center gap-4">
+		{#each users as u, i}
 			<button
-				class="border-b-2 border-dashed bg-transparent transition hover:cursor-pointer hover:opacity-75 active:opacity-50"
+				class="rounded-xl bg-transparent px-4 py-2 transition-all
+			hover:cursor-pointer hover:bg-gray-300/50
+			active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
+			dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
 				onclick={() => {
+					curr = i;
 					dialog.open = false;
 				}}
 			>
-				no
+				{@render userProfile(u)}
 			</button>
-			<button
-				class="border-b-2 border-dashed bg-transparent transition hover:cursor-pointer hover:opacity-75 active:opacity-50"
-				{...inner.trigger}
-			>
-				yes
-			</button>
-
-			<dialog
-				class="abs-center w-[360px] overflow-visible rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-700"
-				{...inner.content}
-			>
-				<p class="text-center font-semibold">Dialogs are pretty cool</p>
-			</dialog>
-		</div>
+		{/each}
 	</dialog>
 </Preview>
 
 <style>
 	dialog {
 		opacity: 0;
-		scale: 0.9;
-		transition: 250ms ease;
+		scale: 0.8;
+		transition:
+			scale cubic-bezier(0.175, 0.885, 0.32, 1.275) 250ms,
+			opacity 200ms ease;
 	}
 
 	dialog::backdrop {
@@ -103,6 +136,23 @@
 	}
 
 	[data-melt-dialog-overlay][data-open] {
-		opacity: 0.1;
+		opacity: 0.2;
+	}
+
+	.fade-in {
+		animation: fade-in 0.5s ease-in-out;
+	}
+
+	@keyframes fade-in {
+		from {
+			opacity: 0;
+			filter: blur(10px);
+			scale: 1.2;
+		}
+		to {
+			opacity: 1;
+			filter: blur(0);
+			scale: 1;
+		}
 	}
 </style>
