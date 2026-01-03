@@ -4,6 +4,8 @@ import { styleAttr } from "$lib/utils/attribute";
 import { inBrowser } from "$lib/utils/browser";
 import type { MaybeGetter } from "$lib/types";
 import { watch } from "runed";
+import { createAttachmentKey } from "svelte/attachments";
+import type { HTMLImgAttributes } from "svelte/elements";
 
 const identifiers = createDataIds("avatar", ["image", "fallback"]);
 
@@ -36,25 +38,29 @@ export class Avatar {
 
 	/* State */
 	#loadingStatus: ImageLoadingStatus = $state("loading");
+	#ak = createAttachmentKey();
+
+	#setLoadingStatus(s: ImageLoadingStatus) {
+		this.#loadingStatus = s;
+		this.#props.onLoadingStatusChange?.(s);
+	}
 
 	constructor(props: AvatarProps = {}) {
-		$effect(() => {
-			this.#props.onLoadingStatusChange?.(this.#loadingStatus);
-		});
-
-		watch(
-			() => this.src,
-			() => {
-				this.#loadingStatus = "loading";
-			},
-		);
-
 		this.#props = props;
 	}
 
 	get loadingStatus() {
 		return this.#loadingStatus;
 	}
+
+	#attach = () => {
+		watch(
+			() => this.src,
+			() => {
+				this.#setLoadingStatus("loading");
+			},
+		);
+	};
 
 	get image() {
 		return {
@@ -64,14 +70,15 @@ export class Avatar {
 			onload: () => {
 				if (!inBrowser()) return;
 				const timerId = window.setTimeout(() => {
-					this.#loadingStatus = "loaded";
+					this.#setLoadingStatus("loaded");
 				}, this.delayMs);
 				return () => window.clearTimeout(timerId);
 			},
 			onerror: () => {
-				this.#loadingStatus = "error";
+				this.#setLoadingStatus("error");
 			},
-		} as const;
+			[this.#ak]: this.#attach,
+		} as const satisfies HTMLImgAttributes;
 	}
 
 	get fallback() {
