@@ -83,6 +83,8 @@ export class Dialog {
 	set open(v) {
 		const el = this.refs.get("content");
 		const overlay = this.refs.get("overlay");
+
+		// Shouldn't happen, but...
 		if (!(el instanceof HTMLDialogElement)) {
 			this.#open.current = v;
 			return;
@@ -94,9 +96,11 @@ export class Dialog {
 		if (v) {
 			overlay?.showPopover();
 			el.showModal();
+			// to allow for transitions to happen
 			tick().then(() => (this.#open.current = v));
 		} else {
 			this.#open.current = v;
+			// if there is a transition, transitionend will deal with it
 			if (!hasTransition) {
 				el.close();
 				overlay?.hidePopover();
@@ -153,6 +157,9 @@ export class Dialog {
 				// Don't close if text is selected
 				if (hasNewSel) return;
 
+				const hasChildDialogsOpen = node.querySelector("dialog[open]");
+				if (hasChildDialogsOpen) return;
+
 				// check if click was on backdrop
 				const rect = node.getBoundingClientRect();
 				const isInDialog =
@@ -162,9 +169,8 @@ export class Dialog {
 					e.clientY <= rect.bottom;
 
 				if (isInDialog) return;
-				console.log("closing");
+
 				this.open = false;
-				e.stopPropagation();
 			}),
 		];
 
