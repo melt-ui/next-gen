@@ -10,6 +10,7 @@ export * from "./RadioGroup.svelte";
 export * from "./Select.svelte";
 export * from "./Slider.svelte";
 export * from "./Tabs.svelte";
+export * from './TagsInput.svelte';
 export * from "./Toaster.svelte";
 export * from "./Toggle.svelte";
 export * from "./Tooltip.svelte";
