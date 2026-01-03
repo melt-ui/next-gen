@@ -6,10 +6,14 @@ import { createBuilderMetadata } from "$lib/utils/identifiers";
 import { useScrollLock } from "$lib/utils/scroll-lock.svelte";
 import { tick } from "svelte";
 import { createAttachmentKey, type Attachment } from "svelte/attachments";
-import type { HTMLDialogAttributes } from "svelte/elements";
+import type { HTMLAttributes, HTMLDialogAttributes } from "svelte/elements";
 import { on } from "svelte/events";
 
-const { dataAttrs, createReferences } = createBuilderMetadata("dialog", ["trigger", "content"]);
+const { dataAttrs, createReferences } = createBuilderMetadata("dialog", [
+	"trigger",
+	"content",
+	"overlay",
+]);
 
 export type DialogProps = {
 	/**
@@ -59,14 +63,26 @@ export class Dialog {
 	closeOnEscape = $derived(extract(this.#props.closeOnEscape, true));
 	closeOnOutsideClick = $derived(extract(this.#props.closeOnOutsideClick, true));
 	scrollLock = $derived(extract(this.#props.scrollLock, true));
+	#ak = createAttachmentKey();
+
+	constructor(props: DialogProps = {}) {
+		this.#props = props;
+		this.#open = new Synced({
+			value: props.open,
+			onChange: props.onOpenChange,
+			defaultValue: false,
+		});
+	}
 
 	/* State */
 	refs = createReferences();
 	#open!: Synced<boolean>;
+
 	// prettier-ignore
 	get open() { return this.#open.current }
 	set open(v) {
 		const el = this.refs.get("content");
+		const overlay = this.refs.get("overlay");
 		if (!(el instanceof HTMLDialogElement)) {
 			this.#open.current = v;
 			return;
@@ -76,21 +92,16 @@ export class Dialog {
 			styles.transitionDuration !== "0s" && parseFloat(styles.transitionDuration) > 0;
 
 		if (v) {
+			overlay?.showPopover();
 			el.showModal();
 			tick().then(() => (this.#open.current = v));
 		} else {
 			this.#open.current = v;
-			if (!hasTransition) el.close();
+			if (!hasTransition) {
+				el.close();
+				overlay?.hidePopover();
+			}
 		}
-	}
-
-	constructor(props: DialogProps = {}) {
-		this.#props = props;
-		this.#open = new Synced({
-			value: props.open,
-			onChange: props.onOpenChange,
-			defaultValue: false,
-		});
 	}
 
 	get sharedProps() {
@@ -112,14 +123,16 @@ export class Dialog {
 		} as const;
 	}
 
-	#ak = createAttachmentKey();
 	#contentAttachment: Attachment<HTMLDialogElement> = (node) => {
 		useScrollLock(this.scrollLock && this.open);
 
 		let prevSel = window.getSelection()?.toString();
 		const offs = [
 			on(node, "transitionend", () => {
-				if (!this.open) node.close();
+				if (!this.open) {
+					node.close();
+					this.refs.get("overlay")?.hidePopover();
+				}
 			}),
 			on(node, "cancel", (e) => {
 				e.preventDefault();
@@ -168,5 +181,15 @@ export class Dialog {
 			[this.refs.key]: this.refs.attach("content"),
 			...this.sharedProps,
 		} as const satisfies HTMLDialogAttributes;
+	}
+
+	/** Optional overlay element, to replace dialog::backdrop for animation support */
+	get overlay() {
+		return {
+			popover: "manual",
+			"aria-hidden": true,
+			[this.refs.key]: this.refs.attach("overlay"),
+			...this.sharedProps,
+		} as const satisfies HTMLAttributes<any>;
 	}
 }

@@ -45,6 +45,10 @@
 		psst...
 	</button>
 
+	<div
+		class="duration-250 fixed size-full bg-black opacity-0 data-[open]:opacity-10"
+		{...dialog.overlay}
+	></div>
 	<dialog
 		class="abs-center z-10 w-[260px] overflow-visible rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800"
 		{...dialog.content}

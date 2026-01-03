@@ -1528,7 +1528,7 @@
       },
       {
         "name": "refs",
-        "type": "{\n  get: (key: \"trigger\" | \"content\") => HTMLElement | undefined\n  attach: (key: \"trigger\" | \"content\") => Attachment<HTMLElement>\n  key: any\n}",
+        "type": "{\n  get: (key: \"trigger\" | \"content\" | \"overlay\") => HTMLElement | undefined\n  attach: (key: \"trigger\" | \"content\" | \"overlay\") => Attachment<HTMLElement>\n  key: any\n}",
         "description": ""
       },
       {
@@ -1550,6 +1550,11 @@
         "name": "content",
         "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly \"data-melt-dialog-content\": \"\"\n  readonly onclose: () => void\n}",
         "description": "The element for the dialog itself."
+      },
+      {
+        "name": "overlay",
+        "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly popover: \"manual\"\n  readonly \"aria-hidden\": true\n}",
+        "description": "Optional overlay element, to replace dialog::backdrop for animation support"
       }
     ],
     "propsAlt": "export type DialogProps = {\n  /**\n   * If the Dialog is open.\n   *\n   * When passing a getter, it will be used as source of truth,\n   * meaning that the value only changes when the getter returns a new value.\n   *\n   * Otherwise, if passing a static value, it'll serve as the default value.\n   *\n   * @default false\n   */\n  open?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * Called when the value is supposed to change.\n   */\n  onOpenChange?: (value: boolean) => void;\n\n  /**\n   * If the dialog should close when clicking escape.\n   *\n   * @default true\n   */\n  closeOnEscape?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the dialog should close when clicking outside.\n   * Alternatively, accepts a function that receives the clicked element,\n   * and returns if the dialog should close.\n   *\n   * @default true\n   */\n  closeOnOutsideClick?: MaybeGetter<boolean | undefined>;\n\n  /**\n   * If the dialog should lock the document scroll when open.\n   *\n   * @default true\n   */\n  scrollLock?: MaybeGetter<boolean | undefined>;\n};"
