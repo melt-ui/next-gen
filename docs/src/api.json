@@ -1887,12 +1887,17 @@
     "properties": [
       {
         "name": "src",
-        "type": "string",
+        "type": "string | undefined",
         "description": ""
       },
       {
         "name": "delayMs",
         "type": "number",
+        "description": ""
+      },
+      {
+        "name": "id",
+        "type": "string",
         "description": ""
       },
       {
@@ -1902,7 +1907,7 @@
       },
       {
         "name": "image",
-        "type": "{\n  readonly \"data-melt-avatar-image\": \"\"\n  readonly src: string\n  readonly style: `display: ${string}`\n  readonly onload: () => (() => void) | undefined\n  readonly onerror: () => void\n}",
+        "type": "{\n  readonly \"data-melt-avatar-image\": \"\"\n  readonly src: string | undefined\n  readonly style: `display: ${string}`\n  readonly onload: () => (() => void) | undefined\n  readonly onerror: () => void\n}",
         "description": ""
       },
       {
