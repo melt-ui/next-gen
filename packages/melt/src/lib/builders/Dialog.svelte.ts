@@ -144,7 +144,7 @@ export class Dialog {
 				prevSel = window.getSelection()?.toString();
 			}),
 
-			on(node, "pointerup", (e) => {
+			on(document, "pointerup", (e) => {
 				if (!this.open || !this.closeOnOutsideClick) return; // Exit early if not open
 
 				const currSel = window.getSelection()?.toString();
@@ -162,6 +162,7 @@ export class Dialog {
 					e.clientY <= rect.bottom;
 
 				if (isInDialog) return;
+				console.log("closing");
 				this.open = false;
 				e.stopPropagation();
 			}),
@@ -186,6 +187,7 @@ export class Dialog {
 	/** Optional overlay element, to replace dialog::backdrop for animation support */
 	get overlay() {
 		return {
+			[dataAttrs.overlay]: "",
 			popover: "manual",
 			"aria-hidden": true,
 			[this.refs.key]: this.refs.attach("overlay"),

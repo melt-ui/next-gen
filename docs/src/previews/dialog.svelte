@@ -45,10 +45,7 @@
 		psst...
 	</button>
 
-	<div
-		class="duration-250 fixed size-full bg-black opacity-0 data-[open]:opacity-10"
-		{...dialog.overlay}
-	></div>
+	<div {...dialog.overlay}></div>
 	<dialog
 		class="abs-center z-10 w-[260px] overflow-visible rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800"
 		{...dialog.content}
@@ -88,11 +85,24 @@
 	}
 
 	dialog::backdrop {
-		opacity: 0;
+		display: none;
 	}
 
 	dialog[data-open] {
 		opacity: 1;
 		scale: 1;
+	}
+
+	[data-melt-dialog-overlay] {
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		background: black;
+		opacity: 0;
+		transition: 250ms ease;
+	}
+
+	[data-melt-dialog-overlay][data-open] {
+		opacity: 0.1;
 	}
 </style>

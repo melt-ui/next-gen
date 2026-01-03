@@ -15,7 +15,7 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 - 🪟 Uses native HTML `<dialog>` element
 - 🔒 Built-in scroll lock when open
 - 🎯 Focus trap and focus management
-- 🎨 TODO: Animation support 
+- 🎨 Animation support with custom overlay
 </Features>
 
 ## Usage
@@ -33,6 +33,9 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
   Open Dialog
 </button>
 
+<!-- Optional overlay for animations -->
+<div {...dialog.overlay}></div>
+
 <dialog {...dialog.content}>
   Dialog content
 </dialog>
@@ -41,6 +44,86 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 
 </Tabs>
 
+## Animations
+
+Dialogs support smooth animations for both the content and backdrop. To enable animations, use the `overlay` element instead of the native `::backdrop` pseudo-element.
+
+### Basic Animation Setup
+
+<Tabs>
+  <TabItem label="With Animations">
+```svelte
+<script lang="ts">
+  import { Dialog } from "melt/builders";
+
+  const dialog = new Dialog();
+</script>
+
+<button {...dialog.trigger}>
+  Open Dialog
+</button>
+
+<!-- Overlay with fade animation -->
+<div {...dialog.overlay}></div>
+
+<!-- Dialog with scale and fade animation -->
+<dialog {...dialog.content}>
+  <h2>Hello!</h2>
+  <button onclick={() => dialog.open = false}>Close</button>
+</dialog>
+
+<style>
+  dialog {
+    width: 24rem;
+    background: white;
+    opacity: 0;
+    scale: 0.95;
+    transition: ease 300ms;
+  }
+
+  dialog::backdrop {
+    display: none;
+  }
+
+  dialog[data-open] {
+    opacity: 1;
+    scale: 1;
+  }
+
+  [data-melt-dialog-overlay] {
+    position: fixed;
+		width: 100%;
+		height: 100%;
+    background: black;
+    opacity: 0;
+    transition: ease 300ms;
+  }
+
+  [data-melt-dialog-overlay][data-open] {
+    opacity: 0.1;
+  }
+</style>
+```
+  </TabItem>
+</Tabs>
+
+### How It Works
+
+When you set `dialog.open = true`:
+1. The overlay element shows using the Popover API
+2. The dialog element shows with `showModal()`
+3. A tick() occurs to update the `data-open` attribute
+4. CSS transitions animate the elements to their open state
+
+When you set `dialog.open = false`:
+1. The `data-open` attribute is removed immediately
+2. CSS transitions animate elements to their closed state
+3. When transitions complete, the dialog and overlay are closed
+
+### Animation Tips
+
+- **Transition Duration**: Ensure the `transitionend` event fires by using CSS transitions with non-zero duration
+- **Backdrop**: Hide the native backdrop with `dialog::backdrop { display: none; }` when using the custom overlay
 
 ## API Reference
 

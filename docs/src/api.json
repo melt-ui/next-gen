@@ -1553,7 +1553,7 @@
       },
       {
         "name": "overlay",
-        "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly popover: \"manual\"\n  readonly \"aria-hidden\": true\n}",
+        "type": "{\n  readonly \"data-open\": \"\" | undefined\n  readonly \"data-melt-dialog-overlay\": \"\"\n  readonly popover: \"manual\"\n  readonly \"aria-hidden\": true\n}",
         "description": "Optional overlay element, to replace dialog::backdrop for animation support"
       }
     ],
