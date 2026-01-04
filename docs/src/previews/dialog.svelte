@@ -2,6 +2,8 @@
 	import { usePreviewControls } from "@components/preview-ctx.svelte";
 	import Preview from "@components/preview.svelte";
 	import { Avatar, Dialog } from "melt/builders";
+	import { flip } from "svelte/animate";
+	import { scale } from "svelte/transition";
 	import Close from "~icons/material-symbols/close-rounded";
 	import Trash from "~icons/tabler/trash";
 
@@ -100,22 +102,24 @@
 		dark:border-gray-700 dark:bg-gray-900/80"
 		{...dialog.content}
 	>
-		{#each users as u, i (u.name)}
-			<div class="group relative">
-				<button
-					class="rounded-xl bg-transparent px-4 py-2 transition-all
+		{#each [...users, null] as u, i (u ? u.name : null)}
+			<div animate:flip={{ duration: 250, delay: 500 }} out:scale={{ duration: 500, delay: 100 }}>
+				{#if u}
+					<div class="group relative">
+						<button
+							class="rounded-xl bg-transparent px-4 py-2 transition-all
 				hover:cursor-pointer hover:bg-gray-300/50
 				active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
 				dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
-					onclick={() => {
-						curr = i;
-						dialog.open = false;
-					}}
-				>
-					{@render userProfile(u)}
-				</button>
-				<button
-					class="delete-btn absolute right-3 top-2 grid size-7 place-items-center rounded-full
+							onclick={() => {
+								curr = i;
+								dialog.open = false;
+							}}
+						>
+							{@render userProfile(u)}
+						</button>
+						<button
+							class="delete-btn absolute right-3 top-2 grid size-7 place-items-center rounded-full
 					border border-red-200/50 bg-red-100/80 text-red-400
 					opacity-0 shadow-sm backdrop-blur-sm
 					transition-all duration-200
@@ -123,33 +127,38 @@
 					group-hover:opacity-100
 					dark:border-red-400/20 dark:bg-red-500/20 dark:text-red-300
 					dark:hover:bg-red-500/30 dark:hover:text-red-200"
-					onclick={(e) => {
-						e.stopPropagation();
-						userToDelete = { index: i, user: u };
-						deleteDialog.open = true;
-					}}
-				>
-					<Trash class="size-3.5" />
-				</button>
+							onclick={(e) => {
+								e.stopPropagation();
+								userToDelete = { index: i, user: u };
+								deleteDialog.open = true;
+							}}
+						>
+							<Trash class="size-3.5" />
+						</button>
+					</div>
+				{:else}
+					<button
+						class="rounded-xl bg-transparent px-4 py-2 transition-all
+	hover:cursor-pointer hover:bg-gray-300/50
+	active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
+	dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
+						{...formDialog.trigger}
+					>
+						<div
+							class="relative flex size-32 items-center justify-center overflow-hidden rounded-full"
+						>
+							<div
+								class="grid h-full w-full place-items-center rounded-full border bg-neutral-300 text-5xl font-medium text-neutral-700
+			dark:bg-neutral-800 dark:text-neutral-600"
+							>
+								<p>+</p>
+							</div>
+						</div>
+						<p class="mt-2 font-semibold text-gray-800 dark:text-gray-200">Add new</p>
+					</button>
+				{/if}
 			</div>
 		{/each}
-		<button
-			class="rounded-xl bg-transparent px-4 py-2 transition-all
-			hover:cursor-pointer hover:bg-gray-300/50
-			active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
-			dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
-			{...formDialog.trigger}
-		>
-			<div class="relative flex size-32 items-center justify-center overflow-hidden rounded-full">
-				<div
-					class="grid h-full w-full place-items-center rounded-full border bg-neutral-300 text-5xl font-medium text-neutral-700
-			dark:bg-neutral-800 dark:text-neutral-600"
-				>
-					<p>+</p>
-				</div>
-			</div>
-			<p class="mt-2 font-semibold text-gray-800 dark:text-gray-200">Add new</p>
-		</button>
 
 		<div {...formDialog.overlay}></div>
 		<dialog
