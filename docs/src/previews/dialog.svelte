@@ -35,6 +35,12 @@
 		closeOnOutsideClick: () => controls.closeOnOutsideClick,
 	});
 
+	const deleteDialog = new Dialog({
+		scrollLock: () => controls.scrollLock,
+		closeOnEscape: () => controls.closeOnEscape,
+		closeOnOutsideClick: () => controls.closeOnOutsideClick,
+	});
+
 	type User = {
 		name: string;
 		img?: string;
@@ -47,6 +53,7 @@
 		{ name: "Denji", img: "/previews/dialog/denji.jpg" },
 	]);
 	let curr = $state<number>(0);
+	let userToDelete = $state<{ index: number; user: User } | null>(null);
 </script>
 
 {#snippet userProfile(user: User, a?: Avatar)}
@@ -118,8 +125,8 @@
 					dark:hover:bg-red-500/30 dark:hover:text-red-200"
 					onclick={(e) => {
 						e.stopPropagation();
-						users.splice(i, 1);
-						if (curr >= users.length) curr = Math.max(0, users.length - 1);
+						userToDelete = { index: i, user: u };
+						deleteDialog.open = true;
 					}}
 				>
 					<Trash class="size-3.5" />
@@ -212,6 +219,61 @@
 					</button>
 				</div>
 			</form>
+		</dialog>
+
+		<div {...deleteDialog.overlay}></div>
+		<dialog
+			class="abs-center visibility:[hidden] w-128 pointer-events-none z-10 overflow-visible
+			rounded-2xl border bg-white p-6 shadow-xl backdrop-blur-lg
+			data-[open]:pointer-events-auto data-[open]:visible
+			dark:border-gray-700 dark:bg-gray-900/80"
+			{...deleteDialog.content}
+		>
+			<div class="mb-4 flex items-center justify-between">
+				<h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Delete user</h2>
+				<button
+					class="grid place-items-center rounded-lg bg-transparent p-1 text-gray-400
+					transition-colors hover:bg-gray-100 hover:text-gray-600
+					dark:hover:bg-gray-700 dark:hover:text-gray-200"
+					onclick={() => (deleteDialog.open = false)}
+				>
+					<Close class="size-5" />
+				</button>
+			</div>
+			<hr class="mb-4 border-gray-200 dark:border-gray-700" />
+			<p class="text-gray-600 dark:text-gray-300">
+				Are you sure you want to delete <span class="font-semibold">{userToDelete?.user.name}</span
+				>?
+			</p>
+			<div class="mt-6 flex justify-end gap-3">
+				<button
+					type="button"
+					class="rounded-xl bg-gray-100 px-4 py-2 font-medium text-gray-700
+					transition-all hover:cursor-pointer hover:bg-gray-200
+					active:bg-gray-300
+					dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:active:bg-gray-500"
+					onclick={() => (deleteDialog.open = false)}
+				>
+					Cancel
+				</button>
+				<button
+					type="button"
+					class="rounded-xl bg-red-500 px-4 py-2 font-medium text-white
+					transition-all hover:cursor-pointer hover:bg-red-600
+					active:bg-red-700
+					dark:bg-red-800 dark:hover:bg-red-700 dark:active:bg-red-800"
+					onclick={() => {
+						if (userToDelete) {
+							users.splice(userToDelete.index, 1);
+							if (curr >= users.length) curr = Math.max(0, users.length - 1);
+							userToDelete = null;
+						}
+						deleteDialog.open = false;
+					}}
+				>
+					Delete
+				</button>
+			</div>
 		</dialog>
 	</dialog>
 </Preview>
