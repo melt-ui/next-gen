@@ -103,7 +103,9 @@ export class Accordion<Multiple extends boolean = false> {
 	 * spread attributes for an accordion item.
 	 * @param item
 	 */
-	getItem<Meta extends Record<string, unknown>>(item: AccordionItemMeta<Meta>) {
+	getItem<Meta extends Record<string, unknown>>(
+		item: AccordionItemMeta<Meta>,
+	): AccordionItem<Meta, Multiple> {
 		return new AccordionItem({
 			accordion: this,
 			item,
@@ -211,7 +213,11 @@ export class AccordionItem<Meta extends Record<string, unknown>, Multiple extend
 			onkeydown: (e: KeyboardEvent) => {
 				const key = e.key;
 
-				if (!([kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END] as string[]).includes(key)) {
+				if (
+					!(
+						[kbd.ARROW_DOWN, kbd.ARROW_UP, kbd.HOME, kbd.END, kbd.SPACE, kbd.ENTER] as string[]
+					).includes(key)
+				) {
 					return;
 				}
 
