@@ -2,12 +2,12 @@ import { dataAttr } from "$lib/utils/attribute";
 import { extract } from "$lib/utils/extract";
 import { Synced } from "../Synced.svelte";
 import type { MaybeGetter } from "../types";
-import { createDataIds, createId } from "../utils/identifiers";
+import { createBuilderMetadata, createId } from "../utils/identifiers";
 import { isHtmlElement } from "../utils/is";
 
 const TRIGGER_KEYS = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
 
-const identifiers = createDataIds("tabs", ["trigger", "content", "trigger-list"]);
+const { dataAttrs } = createBuilderMetadata("tabs", ["trigger", "content", "trigger-list"]);
 
 export type TabsProps<T extends string = string> = {
 	/**
@@ -40,16 +40,23 @@ export type TabsProps<T extends string = string> = {
 	 * Called when the `Tabs` instance tries to change the active tab.
 	 */
 	onValueChange?: (active: T) => void;
+	
+	/**
+	 * The ids to use for the tabs elements.
+	 */
+	ids?: MaybeGetter<Partial<Tabs["ids"]> | undefined>;
 };
 
 export class Tabs<T extends string = string> {
-	#value: Synced<T>;
-	#id = createId();
 	/* Props */
 	#props!: TabsProps<T>;
 	readonly selectWhenFocused = $derived(extract(this.#props.selectWhenFocused, true));
 	readonly loop = $derived(extract(this.#props.loop, true));
 	readonly orientation = $derived(extract(this.#props.orientation, "horizontal"));
+
+	/* State */
+	#value: Synced<T>;
+	ids = $state({ root: createId() });
 
 	constructor(props: TabsProps<T>) {
 		this.#props = props;
@@ -57,14 +64,18 @@ export class Tabs<T extends string = string> {
 			value: props.value,
 			onChange: props.onValueChange,
 		});
+		this.ids = {
+			...this.ids,
+			...extract(props.ids, {})
+		}
 	}
 
 	#getTriggerId(value: T) {
-		return `${this.#id}-trigger-${value.replace(/\s/g, "_")}`;
+		return `${this.ids.root}-trigger-${value.replace(/\s/g, "_")}`;
 	}
 
 	#getContentId(value: T) {
-		return `${this.#id}-content-${value.replace(/\s/g, "_")}`;
+		return `${this.ids.root}-content-${value.replace(/\s/g, "_")}`;
 	}
 
 	/** The current selected tab. */
@@ -79,7 +90,7 @@ export class Tabs<T extends string = string> {
 	/** The attributes for the list that contains the tab triggers. */
 	get triggerList() {
 		return {
-			[identifiers["trigger-list"]]: "",
+			[dataAttrs["trigger-list"]]: "",
 			role: "tablist",
 			"aria-orientation": this.orientation,
 			"data-orientation": this.orientation,
@@ -89,7 +100,7 @@ export class Tabs<T extends string = string> {
 	/** Gets the attributes and listeners for a tab trigger. Requires an identifying tab value. */
 	getTrigger(value: T) {
 		return {
-			[identifiers.trigger]: value,
+			[dataAttrs.trigger]: value,
 			"data-active": dataAttr(this.value === value),
 			tabindex: this.value === value ? 0 : -1,
 			role: "tab",
@@ -104,10 +115,10 @@ export class Tabs<T extends string = string> {
 				}
 
 				e.preventDefault();
-				const triggerList = el.closest(`[${identifiers["trigger-list"]}]`);
+				const triggerList = el.closest(`[${dataAttrs["trigger-list"]}]`);
 				if (!triggerList) return;
 
-				const triggers = [...triggerList.querySelectorAll(`[${identifiers.trigger}]`)];
+				const triggers = [...triggerList.querySelectorAll(`[${dataAttrs.trigger}]`)];
 
 				const currIndex = triggers.indexOf(el);
 				let next = el as Element | undefined;
@@ -139,7 +150,7 @@ export class Tabs<T extends string = string> {
 				next.focus();
 
 				if (this.selectWhenFocused) {
-					this.value = next.getAttribute(identifiers.trigger) as T;
+					this.value = next.getAttribute(dataAttrs.trigger) as T;
 				}
 			},
 			id: this.#getTriggerId(value),
@@ -149,7 +160,7 @@ export class Tabs<T extends string = string> {
 	/** Gets the attributes and listeners for the tabs contents. Requires an identifying tab value. */
 	getContent(value: T) {
 		return {
-			[identifiers.content]: "",
+			[dataAttrs.content]: "",
 			hidden: this.value !== value,
 			"data-active": dataAttr(this.value === value),
 			role: "tabpanel",

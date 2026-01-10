@@ -22,6 +22,11 @@ export type CollapsibleProps = {
 	 * A callback called when the value of `open` changes.
 	 */
 	onOpenChange?: (value: boolean) => void;
+	
+	/**
+	 * The ids to use for the collapsible elements.
+	 */
+	ids?: MaybeGetter<Partial<ReturnType<typeof createIds>> | undefined>;
 };
 
 export class Collapsible {
@@ -40,6 +45,10 @@ export class Collapsible {
 			onChange: props.onOpenChange,
 			defaultValue: false,
 		});
+		this.ids = {
+			...this.ids,
+			...extract(props.ids, {})
+		}
 	}
 
 	/**

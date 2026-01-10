@@ -118,6 +118,11 @@ export type PopoverProps = {
 		 */
 		trap?: MaybeGetter<boolean | undefined>;
 	};
+	
+	/**
+	 * The ids to use for the popover elements.
+	 */
+	ids?: MaybeGetter<Partial<BasePopover["ids"]> | undefined>;
 };
 
 export class BasePopover {
@@ -168,12 +173,12 @@ export class BasePopover {
 	}));
 
 	/* State */
-	ids = $state({ popover: createId() });
 	invokerRect = $state<ElementRects["reference"]>();
 	availableWidth = $state<number>();
 	availableHeight = $state<number>();
 	triggerEl: HTMLElement | null = $state(null);
 	#open!: Synced<boolean>;
+	ids = $state({ popover: createId() });
 
 	constructor(props: PopoverProps = {}) {
 		this.#open = new Synced({
@@ -182,6 +187,10 @@ export class BasePopover {
 			defaultValue: false,
 		});
 		this.#props = props;
+		this.ids = {
+			...this.ids,
+			...extract(props.ids, {})
+		}
 	}
 
 	get open() {
