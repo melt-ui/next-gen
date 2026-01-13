@@ -105,6 +105,11 @@ export type ComboboxProps<T, Multiple extends boolean = false> = PopoverProps & 
 	 * @default true
 	 */
 	sameWidth?: MaybeGetter<boolean | undefined>;
+
+	/**
+	 * The ids to use for the combobox elements.
+	 */
+	ids?: MaybeGetter<Partial<ReturnType<typeof createIds> & BasePopover["ids"]> | undefined>;
 };
 
 export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
@@ -180,6 +185,7 @@ export class Combobox<T, Multiple extends boolean = false> extends BasePopover {
 			input: newIds.input,
 			content: oldIds.popover,
 			trigger: newIds.trigger,
+			...extract(props.ids, {})
 		};
 	}
 

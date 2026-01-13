@@ -51,6 +51,11 @@ export type SliderProps = {
 	 * Called when the `Slider` instance tries to change the active tab.
 	 */
 	onValueChange?: (active: number) => void;
+	
+	/**
+	 * The ids to use for the slider elements.
+	 */
+	ids?: MaybeGetter<Partial<ReturnType<typeof createIds>> | undefined>;
 };
 
 export class Slider {
@@ -63,10 +68,10 @@ export class Slider {
 
 	/* State */
 	#value: Synced<number>;
-	ids = createIds();
 	#mouseDown = false;
 	#dragging = false;
 	#mouseDownAt: null | number = null;
+	ids = $state(createIds());
 
 	constructor(props: SliderProps = {}) {
 		this.#props = props;
@@ -75,6 +80,10 @@ export class Slider {
 			onChange: props.onValueChange,
 			defaultValue: 0,
 		});
+		this.ids = {
+			...this.ids,
+			...extract(props.ids, {})
+		}
 	}
 
 	/** The value of the slider. */

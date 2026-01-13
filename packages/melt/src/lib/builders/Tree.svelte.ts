@@ -3,7 +3,7 @@ import { mapAndFilter } from "$lib/utils/array";
 import { dataAttr } from "$lib/utils/attribute";
 import { Collection } from "$lib/utils/collection";
 import { extract } from "$lib/utils/extract";
-import { createDataIds, createId } from "$lib/utils/identifiers";
+import { createBuilderMetadata, createId } from "$lib/utils/identifiers";
 import { isString } from "$lib/utils/is";
 import { first, last } from "$lib/utils/iterator";
 import { isControlOrMeta } from "$lib/utils/platform";
@@ -11,7 +11,7 @@ import { SelectionState, type MaybeMultiple } from "$lib/utils/selection-state.s
 import { createTypeahead, letterRegex } from "$lib/utils/typeahead.svelte";
 import type { FalseIfUndefined } from "$lib/utils/types";
 
-const identifiers = createDataIds("tree", ["root", "item", "group"]);
+const { dataAttrs } = createBuilderMetadata("tree", ["root", "item", "group"]);
 
 /**
  * Represents a tree item with optional metadata and children
@@ -73,6 +73,11 @@ export type TreeProps<Item extends TreeItem, Multiple extends boolean = false> =
 	 * @default 500
 	 */
 	typeaheadTimeout?: MaybeGetter<number | undefined>;
+	
+	/**
+	 * The ids to use for the tree elements.
+	 */
+	ids?: MaybeGetter<Partial<Tree<any>["ids"]> | undefined>;
 };
 
 type Selected<Multiple extends boolean | undefined> = SelectionState<
@@ -86,8 +91,8 @@ type Selected<Multiple extends boolean | undefined> = SelectionState<
  * @template Multiple - Boolean indicating if multiple selection is enabled
  */
 export class Tree<I extends TreeItem, Multiple extends boolean = false> {
+	/* Props */
 	#props!: TreeProps<I, Multiple>;
-
 	/** The items contained in the tree */
 	readonly collection: Collection<I>;
 	/** If `true`, the user can select multiple items holding `Control`/`Meta` or `Shift` */
@@ -101,7 +106,7 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 			timeout: this.#props.typeaheadTimeout,
 			getItems: () => {
 				const activeEl = document.activeElement;
-				if (!isString(activeEl?.getAttribute(identifiers.item))) return [];
+				if (!isString(activeEl?.getAttribute(dataAttrs.item))) return [];
 
 				const visibleChildren = Tree.getAllChildren(this, true);
 
@@ -121,10 +126,10 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 		}),
 	);
 
+	/* State */
 	#selected: Selected<Multiple>;
 	#expanded: SelectionState<string, true>;
-
-	#id = createId();
+	ids = $state({ root: createId() });
 
 	/**
 	 * Creates a new Tree instance
@@ -143,6 +148,10 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 			onChange: props.onExpandedChange,
 			multiple: true,
 		});
+		this.ids = {
+			...this.ids,
+			...extract(props.ids, {})
+		}
 	}
 
 	get items() {
@@ -285,7 +294,7 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 	 * @param id - ID of the item
 	 */
 	getItemId(id: string): string {
-		return `melt-tree-${this.#id}-item--${id}`;
+		return `melt-tree-${this.ids.root}-item--${id}`;
 	}
 
 	/**
@@ -334,7 +343,7 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 	get root() {
 		return {
 			role: "tree",
-			[identifiers.root]: "",
+			[dataAttrs.root]: "",
 		};
 	}
 
@@ -344,7 +353,7 @@ export class Tree<I extends TreeItem, Multiple extends boolean = false> {
 	get group() {
 		return {
 			role: "group",
-			[identifiers.group]: "",
+			[dataAttrs.group]: "",
 		};
 	}
 
@@ -489,7 +498,7 @@ class Child<I extends TreeItem> {
 	get attrs() {
 		return {
 			id: this.elId,
-			[identifiers.item]: "",
+			[dataAttrs.item]: "",
 			"data-selected": dataAttr(this.selected),
 			tabindex: this.tabindex,
 			role: "treeitem",

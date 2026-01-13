@@ -11,6 +11,7 @@ const { dataAttrs, dataSelectors, createIds } = createBuilderMetadata("pin-input
 	"root",
 	"input",
 ]);
+
 export type PinInputError = {
 	method: "paste" | "input";
 	message: string;
@@ -102,6 +103,11 @@ export type PinInputProps = {
 	 * @default true
 	 */
 	allowPaste?: MaybeGetter<boolean | undefined>;
+
+	/**
+	 * The ids to use for the pin input elements.
+	 */
+	ids?: MaybeGetter<Partial<ReturnType<typeof createIds>> | undefined>;
 };
 
 function validateInput(char: string, type: Extracted<PinInputProps["type"]>) {
@@ -124,8 +130,6 @@ function setInputSelectionRange(input: HTMLInputElement, start: number, end: num
 }
 
 export class PinInput {
-	#ids = createIds();
-
 	/* Props */
 	#props!: PinInputProps;
 	readonly maxLength = $derived(extract(this.#props.maxLength, 4));
@@ -139,6 +143,7 @@ export class PinInput {
 	#value!: Synced<string>;
 	#focusedIndex = $state(-1);
 	readonly isFilled = $derived(this.value.length === this.maxLength);
+	ids = $state(createIds());
 
 	constructor(props: PinInputProps = {}) {
 		this.#value = new Synced({
@@ -148,11 +153,15 @@ export class PinInput {
 			equalityCheck: true,
 		});
 		this.#props = props;
+		this.ids = {
+			...this.ids,
+			...extract(props.ids, {})
+		}
 	}
 
 	#getInputEls(): HTMLInputElement[] {
 		if (!inBrowser()) return [];
-		const rootEl = document.getElementById(this.#ids.root);
+		const rootEl = document.getElementById(this.ids.root);
 		if (!rootEl) return [];
 		return [...rootEl.querySelectorAll(dataSelectors.input)].filter(isHtmlInputElement);
 	}
@@ -180,7 +189,7 @@ export class PinInput {
 	get root() {
 		return {
 			[dataAttrs.root]: "",
-			id: this.#ids.root,
+			id: this.ids.root,
 			"data-complete": dataAttr(this.isFilled),
 		} as const;
 	}
