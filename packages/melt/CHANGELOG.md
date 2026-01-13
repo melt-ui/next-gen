@@ -1,5 +1,11 @@
 # melt
 
+## 0.44.1
+
+### Patch Changes
+
+- fix: remove unused jest-axe dependency ([#180](https://github.com/melt-ui/next-gen/pull/180))
+
 ## 0.44.0
 
 ### Minor Changes
