@@ -282,11 +282,15 @@ export class BasePopover {
 		const isVisible = $derived(this.open || this.forceVisible);
 		$effect(() => {
 			const el = document.getElementById(this.ids.popover);
+			// Ensure Svelte runes effect is triggered even if 
+			// `el` is not found in the first render.
+			const visible = isVisible;
+			
 			if (!isHtmlElement(el)) {
 				return;
 			}
 
-			if (isVisible) {
+			if (visible) {
 				return autoOpenPopover({ el });
 			} else {
 				safelyHidePopover(el);
