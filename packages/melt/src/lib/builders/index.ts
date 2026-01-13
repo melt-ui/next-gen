@@ -16,4 +16,4 @@ export * from "./Tooltip.svelte";
 export * from "./Tree.svelte";
 export * from "./SpatialMenu.svelte";
 
-export * from './Dialog.svelte';
+export * from "./Dialog.svelte";

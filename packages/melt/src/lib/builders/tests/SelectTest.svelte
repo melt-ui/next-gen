@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { Select } from "../Select.svelte.js";
+	interface Props {
+		disabled?: boolean;
+	}
 
 	type Item = { label: string; value: unknown };
 	const items: Item[] = [
@@ -8,9 +11,12 @@
 		{ label: "obj", value: { a: 1, b: 2 } },
 	];
 
+	const { disabled }: Props = $props();
+
 	const select = new Select<Item["value"], true>({
 		multiple: true,
 		sameWidth: false,
+		disabled,
 	});
 </script>
 
