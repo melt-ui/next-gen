@@ -92,12 +92,18 @@ export type SelectProps<T, Multiple extends boolean = false> = Omit<PopoverProps
 	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView#block
 	 */
 	scrollAlignment?: MaybeGetter<"nearest" | "center" | null | undefined>;
+
+	/**
+	 * Whether or not the select is disabled.
+	 */
+	disabled?: MaybeGetter<boolean | undefined>;
 };
 
 export class Select<T, Multiple extends boolean = false> extends BasePopover {
 	#props!: SelectProps<T, Multiple>;
 	multiple = $derived(extract(this.#props.multiple, false as Multiple));
 	scrollAlignment = $derived(extract(this.#props.scrollAlignment, "nearest"));
+	disabled = $derived(extract(this.#props.disabled, false));
 
 	/* State */
 	#value!: SelectionState<T, Multiple>;
@@ -256,6 +262,7 @@ export class Select<T, Multiple extends boolean = false> extends BasePopover {
 			"aria-expanded": this.open,
 			"aria-controls": this.ids.content,
 			"aria-owns": this.ids.content,
+			disabled: this.disabled,
 			onkeydown: (e: KeyboardEvent) => {
 				const kbdSubset = pick(kbd, "ARROW_DOWN", "ARROW_UP");
 				if (Object.values(kbdSubset).includes(e.key as any)) e.preventDefault();

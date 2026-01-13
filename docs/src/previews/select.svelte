@@ -44,8 +44,8 @@
 			{...select.trigger}
 			class="flex items-center justify-between overflow-hidden rounded-xl border border-gray-500 bg-gray-100 py-2 pl-3 pr-4 text-left text-gray-800
 				transition hover:cursor-pointer hover:bg-gray-200
-				active:bg-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50
-				dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-500/50 dark:active:bg-gray-600/50"
+				active:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50
+				dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-500/50 dark:active:bg-gray-600/5"
 		>
 			<div class="inline-flex items-center gap-2 overflow-hidden">
 				<AlphabetJapanese class="shrink-0" />
