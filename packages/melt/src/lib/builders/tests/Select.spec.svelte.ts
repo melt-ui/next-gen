@@ -67,6 +67,18 @@ testWithEffect("typeahead", async () => {
 	// await expect(thirdOption).toHaveAttribute("data-highlighted", "");
 });
 
+testWithEffect("Disabled state", () => {
+	render(SelectTest, {
+		target: document.body,
+		props: {
+			disabled: true,
+		},
+	});
+
+	const trigger = page.getByRole("combobox");
+	expect(trigger).toBeDisabled();
+});
+
 testWithEffect("Generic value type: number values", () => {
 	const select = new Select<number>();
 
@@ -526,6 +538,7 @@ testWithEffect("Type tests: trigger getter", () => {
 	// trigger should return object with specific properties
 	expectTypeOf(select.trigger).toHaveProperty("id").toEqualTypeOf<string>();
 	expectTypeOf(select.trigger).toHaveProperty("aria-expanded").toEqualTypeOf<boolean>();
+	expectTypeOf(select.trigger).toHaveProperty("disabled").toEqualTypeOf<boolean>();
 });
 
 testWithEffect("Type tests: content getter", () => {
@@ -550,4 +563,15 @@ testWithEffect("Type tests: multiple property", () => {
 	// multiple should be boolean derived from props
 	expectTypeOf(singleSelect.multiple).toEqualTypeOf<false>();
 	expectTypeOf(multipleSelect.multiple).toEqualTypeOf<true>();
+});
+
+testWithEffect("Type tests: disabled property", () => {
+	const enabledSelect = new Select<string>();
+	const disabledSelect = new Select<string>({
+		disabled: true,
+	});
+
+	// disabled should be boolean derived from props
+	expectTypeOf(enabledSelect.disabled).toEqualTypeOf<boolean>(false);
+	expectTypeOf(disabledSelect.disabled).toEqualTypeOf<boolean>(true);
 });
