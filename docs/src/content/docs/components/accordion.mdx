@@ -56,6 +56,37 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 	</TabItem>
 </Tabs>
 
+### Animating Accordion Using Svelte Transition
+In order to utilize the accordion with animated opening and closing as shown in the preview, the suggested method is to use Svelte transitions. When using Svelte transitions an element that does not yet exist appears on the page with animation. Thus, when creating a new accordion, wrapping the content in a Svelte If function that checks the value of the Boolean isExpanded (explained below under [API Reference](https://next.melt-ui.com/components/accordion#api-reference) Methods) inserts the item description into the page when the accordion is expanded.
+```svelte
+{#if item.isExpanded}
+	<div
+		{...item.content}
+		class={["content overflow-hidden"]}
+        	transition:slide={{ duration: 300 }}
+                >
+        	<div class="">
+        		<p class="margin-none">{@html item.item.description}</p>
+		</div>
+	</div>
+{/if}
+```
+#### Fix For Layout Shift Following Animation
+If you're noticing that at the end of the content transition-out there is a jarring layout shift, the likelihood is that an internal element of the item title has margin applied to it, such as the h2 tag or button tag. To fix this, please ensure that any necessary margin is applied to a wrapping div rather than directly to the h2 or button elements as demonstrated below:
+##### TODO
+Explain above mentioned behavior.
+```svelte
+<div class="desired-margin">
+	<h2 class="margin-none" {...item.heading}>
+		<button class="margin-none"
+                    {...item.trigger}>
+			{item.item.title}
+		</button>
+	</h2>
+```
+### Other Preview Stylings
+If you wish to stylize your accordion similarly to the Preview accordion element displayed above, more details on the exact implementation of said accordion can be found in the github repository [here](https://github.com/melt-ui/next-gen/blob/main/docs/src/previews/accordion.svelte).
+
 ## API Reference
 
 <ApiTable entry="Accordion" />
