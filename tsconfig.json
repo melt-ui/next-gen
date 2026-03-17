@@ -19,7 +19,6 @@
 		"strictNullChecks": true,
 		"stripInternal": true,
 		"ignoreDeprecations": "5.0",
-		"verbatimModuleSyntax": true,
-		"types": ["unplugin-icons/types/astro"]
+		"verbatimModuleSyntax": true
 	}
 }
