@@ -84,10 +84,14 @@ export type TooltipProps = {
 	 * @default false
 	 */
 	disableHoverableContent?: MaybeGetter<boolean | undefined>;
+	
+	/**
+	 * The ids to use for the tooltip elements.
+	 */
+	ids?: MaybeGetter<Partial<ReturnType<typeof createIds>> | undefined>;
 };
 
 export class Tooltip {
-	ids = $state(createIds());
 	invokerRect = $state<ElementRects["reference"]>();
 
 	/** Props */
@@ -131,6 +135,7 @@ export class Tooltip {
 	#openTimeout: number | null = $state(null);
 	#closeTimeout: number | null = $state(null);
 	#floatingData = $state<ComputePositionReturn>();
+	ids = $state(createIds());
 
 	get graceAreaPolygon() {
 		const contentEl = document.getElementById(this.ids.content);
@@ -179,6 +184,10 @@ export class Tooltip {
 			defaultValue: false,
 		});
 		this.#props = props;
+		this.ids = {
+			...this.ids,
+			...extract(props.ids, {})
+		}
 
 		watch([() => this.open, () => this.#openReason], () => {
 			if (!this.open || typeof document === "undefined") return;

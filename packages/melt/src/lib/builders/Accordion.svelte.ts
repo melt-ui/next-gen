@@ -59,6 +59,11 @@ export type AccordionProps<Multiple extends boolean = false> = {
 	 * The callback invoked when the value of the Accordion changes.
 	 */
 	onValueChange?: OnMultipleChange<string, Multiple>;
+
+	/**
+	 * The ids to use for the accordion elements.
+	 */
+	ids?: MaybeGetter<Partial<ReturnType<typeof createIds>> | undefined>;
 };
 
 export class Accordion<Multiple extends boolean = false> {
@@ -78,6 +83,10 @@ export class Accordion<Multiple extends boolean = false> {
 			onChange: props.onValueChange,
 			multiple: props.multiple,
 		}) as Selected<Multiple>;
+		this.ids = {
+			...this.ids,
+			...extract(props.ids, {})
+		}
 	}
 
 	get value() {
