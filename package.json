@@ -47,7 +47,7 @@
 		"glob": "^10.5.0",
 		"globals": "^15.15.0",
 		"jiti": "^1.21.7",
-		"playwright": "^1.58.2",
+		"playwright": "^1.60.0",
 		"prettier": "^3.8.1",
 		"prettier-plugin-astro": "^0.14.1",
 		"prettier-plugin-svelte": "^3.5.1",
