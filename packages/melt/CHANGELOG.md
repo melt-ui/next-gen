@@ -1,5 +1,11 @@
 # melt
 
+## 0.44.1
+
+### Patch Changes
+
+- fix: remove unused jest-axe dependency ([#180](https://github.com/melt-ui/next-gen/pull/180))
+
 ## 0.44.0
 
 ### Minor Changes
@@ -37,7 +43,6 @@
 - Fix `onNavigate` callback behavior in Combobox and Select components ([`be3bf49`](https://github.com/melt-ui/next-gen/commit/be3bf49a69cd3123993bad19b3d05facd1e80d63))
 
   Previously, the `onNavigate` callback would only handle custom navigation and never fall back to default behavior when returning `null`. Now correctly implements the documented behavior:
-
   - When `onNavigate` returns a value: uses that value for navigation
   - When `onNavigate` returns `null`: falls back to default DOM-based navigation
 
@@ -54,7 +59,6 @@
 ### Minor Changes
 
 - Add `onNavigate` prop to Combobox and Select components for virtualization support ([`a11b306`](https://github.com/melt-ui/next-gen/commit/a11b306de71c5e8856c4c675b761eff42a8419df))
-
   - **Combobox**: Added optional `onNavigate` callback to enable custom navigation logic for virtualized lists
   - **Select**: Added optional `onNavigate` callback to enable custom navigation logic for virtualized lists
 
