@@ -561,6 +561,6 @@ testWithEffect("Performance: navigation in grid with many disabled items", async
 	const endTime = performance.now();
 	const duration = endTime - startTime;
 
-	// Should complete within reasonable time (less than 1 second)
-	expect(duration).toBeLessThan(1000);
+	// chromium renders a frame per key press, so 80 presses take at least 1333ms at 60fps
+	expect(duration).toBeLessThan(2000);
 });
