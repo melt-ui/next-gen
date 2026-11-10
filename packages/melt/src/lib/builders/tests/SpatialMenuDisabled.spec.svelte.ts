@@ -545,22 +545,32 @@ testWithEffect("Performance: navigation in grid with many disabled items", async
 
 	render(SpatialMenuDisabledTest, { disabledPattern });
 	const root = page.getByTestId("spatial-root");
+	const items = page.getByTestId("spatial-item").all();
 
 	await user.click(root.element());
+
+	// dispatch directly so the timing covers navigation and not the round trip to the test runner
+	const press = (key: string) =>
+		root.element().dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
 
 	const startTime = performance.now();
 
 	// Perform many navigation operations
 	for (let i = 0; i < 20; i++) {
-		await user.keyboard("{ArrowRight}");
-		await user.keyboard("{ArrowDown}");
-		await user.keyboard("{ArrowLeft}");
-		await user.keyboard("{ArrowUp}");
+		press("ArrowRight");
+		press("ArrowDown");
+		press("ArrowLeft");
+		press("ArrowUp");
 	}
 
 	const endTime = performance.now();
 	const duration = endTime - startTime;
 
-	// chromium renders a frame per key press, so 80 presses take at least 1333ms at 60fps
-	expect(duration).toBeLessThan(2000);
+	// the enabled items form the first column, so each round moves from item 1 to item 4 and back
+	await expect.element(items[0]!).toHaveAttribute("data-highlighted");
+	press("ArrowDown");
+	await expect.element(items[3]!).toHaveAttribute("data-highlighted");
+
+	// about 1ms per press, far below a frame
+	expect(duration).toBeLessThan(100);
 });
